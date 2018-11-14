@@ -17,7 +17,6 @@
 package org.springframework.shell.samples.noautoconf;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -51,7 +50,7 @@ import org.springframework.shell.standard.commands.StandardCommandsAutoConfigura
 		// Built-In Commands
 		StandardCommandsAutoConfiguration.class,
 		// Allows ${} support
-		PropertyPlaceholderAutoConfiguration.class,
+		//PropertyPlaceholderAutoConfiguration.class,
 		// Sample Commands
 		JCommanderCommands.class,
 		LegacyCommands.class,
