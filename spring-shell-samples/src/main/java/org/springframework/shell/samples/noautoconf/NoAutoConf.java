@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.shell.SpringShellAutoConfiguration;
 import org.springframework.shell.jcommander.JCommanderParameterResolverAutoConfiguration;
 import org.springframework.shell.jline.JLineShellAutoConfiguration;
-import org.springframework.shell.legacy.LegacyAdapterAutoConfiguration;
 import org.springframework.shell.samples.jcommander.JCommanderCommands;
 import org.springframework.shell.samples.legacy.LegacyCommands;
 import org.springframework.shell.samples.standard.Commands;
@@ -45,7 +44,6 @@ import org.springframework.shell.standard.commands.StandardCommandsAutoConfigura
 		JLineShellAutoConfiguration.class,
 		// Various Resolvers
 		JCommanderParameterResolverAutoConfiguration.class,
-		LegacyAdapterAutoConfiguration.class,
 		StandardAPIAutoConfiguration.class,
 		// Built-In Commands
 		StandardCommandsAutoConfiguration.class,
