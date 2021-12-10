@@ -54,9 +54,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
 
-import javax.validation.*;
-import javax.validation.metadata.MethodDescriptor;
-import javax.validation.metadata.ParameterDescriptor;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.metadata.MethodDescriptor;
+import jakarta.validation.metadata.ParameterDescriptor;
+
+// import javax.validation.*;
+// import javax.validation.metadata.MethodDescriptor;
+// import javax.validation.metadata.ParameterDescriptor;
 
 /**
  * Default ParameterResolver implementation that supports the following features:

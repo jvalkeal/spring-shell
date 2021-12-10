@@ -23,7 +23,9 @@ import java.util.Optional;
 
 import org.springframework.core.MethodParameter;
 
-import javax.validation.metadata.ElementDescriptor;
+import jakarta.validation.metadata.ElementDescriptor;
+
+// import javax.validation.metadata.ElementDescriptor;
 
 /**
  * Encapsulates information about a shell invokable method parameter, so that it can be documented.

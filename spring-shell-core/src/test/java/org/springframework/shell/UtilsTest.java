@@ -18,7 +18,7 @@ package org.springframework.shell;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+// import org.junit.Test;
 
 /**
  * Tests for {@link Utils}.
@@ -27,11 +27,11 @@ import org.junit.Test;
  */
 public class UtilsTest {
 
-	@Test
-	public void testUnCamelify() throws Exception {
-		assertThat(Utils.unCamelify("HelloWorld")).isEqualTo("hello-world");
-		assertThat(Utils.unCamelify("helloWorld")).isEqualTo("hello-world");
-		assertThat(Utils.unCamelify("helloWorldHowAreYou")).isEqualTo("hello-world-how-are-you");
-		assertThat(Utils.unCamelify("URL")).isEqualTo("url");
-	}
+	// @Test
+	// public void testUnCamelify() throws Exception {
+	// 	assertThat(Utils.unCamelify("HelloWorld")).isEqualTo("hello-world");
+	// 	assertThat(Utils.unCamelify("helloWorld")).isEqualTo("hello-world");
+	// 	assertThat(Utils.unCamelify("helloWorldHowAreYou")).isEqualTo("hello-world-how-are-you");
+	// 	assertThat(Utils.unCamelify("URL")).isEqualTo("url");
+	// }
 }

@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+// import javax.annotation.PostConstruct;
 
 import org.jline.reader.*;
 import org.jline.reader.impl.history.DefaultHistory;
@@ -51,6 +51,8 @@ import org.springframework.shell.CompletingParsedLine;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.Shell;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * Shell implementation using JLine to capture input and trigger completions.

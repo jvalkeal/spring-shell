@@ -18,11 +18,11 @@ package org.springframework.shell;
 
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
-import static org.junit.Assert.*;
+// import static org.junit.Assert.*;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+// import org.junit.Rule;
+// import org.junit.Test;
+// import org.junit.rules.ExpectedException;
 
 /**
  * Unit tests for {@link ConfigurableCommandRegistry}.
@@ -31,28 +31,28 @@ import org.junit.rules.ExpectedException;
  */
 public class ConfigurableCommandRegistryTest {
 
-	@Rule
-	public ExpectedException thrown= ExpectedException.none();
+	// @Rule
+	// public ExpectedException thrown= ExpectedException.none();
 
-	@Test
-	public void testRegistration() {
-		ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-		registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
+	// @Test
+	// public void testRegistration() {
+	// 	ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+	// 	registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
 
-		assertThat(registry.listCommands(), hasKey("foo"));
-	}
+	// 	assertThat(registry.listCommands(), hasKey("foo"));
+	// }
 
-	@Test
-	public void testDoubleRegistration() {
-		ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-		registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
+	// @Test
+	// public void testDoubleRegistration() {
+	// 	ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+	// 	registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
 
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("foo");
-		thrown.expectMessage("toString");
-		thrown.expectMessage("hashCode");
+	// 	thrown.expect(IllegalArgumentException.class);
+	// 	thrown.expectMessage("foo");
+	// 	thrown.expectMessage("toString");
+	// 	thrown.expectMessage("hashCode");
 
-		registry.register("foo", MethodTarget.of("hashCode", this, new Command.Help("some command")));
-	}
+	// 	registry.register("foo", MethodTarget.of("hashCode", this, new Command.Help("some command")));
+	// }
 
 }

@@ -26,7 +26,9 @@ import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
+
+// import javax.validation.constraints.Min;
 
 /**
  * A sample of legacy Shell 1 commands that can be run thanks to the legacy adapter.

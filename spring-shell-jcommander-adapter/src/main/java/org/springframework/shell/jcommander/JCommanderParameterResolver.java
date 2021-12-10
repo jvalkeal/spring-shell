@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.metadata.BeanDescriptor;
+// import javax.validation.Validation;
+// import javax.validation.Validator;
+// import javax.validation.ValidatorFactory;
+// import javax.validation.metadata.BeanDescriptor;
 
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.JCommander;
@@ -45,6 +45,11 @@ import org.springframework.shell.ParameterDescription;
 import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.ValueResult;
 import org.springframework.util.ReflectionUtils;
+
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.metadata.BeanDescriptor;
 
 import static org.springframework.shell.Utils.unCamelify;
 

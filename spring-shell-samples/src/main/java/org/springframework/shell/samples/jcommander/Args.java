@@ -21,7 +21,9 @@ import java.util.List;
 
 import com.beust.jcommander.Parameter;
 
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Min;
+
+// import javax.validation.constraints.Min;
 
 /**
  * An example straight from the JCommander documentation.

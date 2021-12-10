@@ -44,10 +44,15 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.metadata.ConstraintDescriptor;
+
+// import javax.validation.MessageInterpolator;
+// import javax.validation.Validation;
+// import javax.validation.ValidatorFactory;
+// import javax.validation.metadata.ConstraintDescriptor;
 
 /**
  * A command to display help about all available commands.

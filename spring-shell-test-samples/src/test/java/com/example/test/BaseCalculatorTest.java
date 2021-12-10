@@ -1,9 +1,11 @@
 package com.example.test;
 
 import static org.springframework.util.ReflectionUtils.invokeMethod;
-import javax.validation.constraints.NotNull;
+// import javax.validation.constraints.NotNull;
 import org.springframework.shell.CommandRegistry;
 import org.springframework.shell.MethodTarget;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  *

@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableValidator;
+// import javax.annotation.PostConstruct;
+// import javax.validation.ConstraintViolation;
+// import javax.validation.Validation;
+// import javax.validation.Validator;
+// import javax.validation.ValidatorFactory;
+// import javax.validation.executable.ExecutableValidator;
 
 import org.jline.utils.Signals;
 
@@ -42,6 +42,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.ReflectionUtils;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 /**
  * Main class implementing a shell loop.
@@ -149,7 +155,7 @@ public class Shell implements CommandRegistry {
 	/**
 	 * Evaluate a single "line" of input from the user by trying to map words to a command and
 	 * arguments.
-	 * 
+	 *
 	 * <p>
 	 * This method does not throw exceptions, it catches them and returns them as a regular
 	 * result

@@ -30,7 +30,9 @@ import org.springframework.shell.standard.ShellOption;
 import org.springframework.shell.standard.ValueProviderSupport;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
+
+// import javax.validation.constraints.Size;
 
 /**
  * Example commands for the Shell 2 Standard resolver.
@@ -49,7 +51,7 @@ public class Commands {
 	public String changePassword(@Size(min = 8) String password) {
 		return "Password changed";
 	}
-	
+
 	@ShellMethod(value = "Shows non trivial character encoding.")
 	public String helloWorld() {
 		return "こんにちは世界";

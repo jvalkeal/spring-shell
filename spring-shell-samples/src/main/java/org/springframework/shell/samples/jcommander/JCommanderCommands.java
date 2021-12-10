@@ -20,7 +20,9 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
+
+// import javax.validation.Valid;
 
 /**
  * A class with JCommander commands.

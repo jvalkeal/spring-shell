@@ -18,8 +18,8 @@ package org.springframework.shell;
 
 import java.util.Collection;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+// import javax.validation.Validation;
+// import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +33,9 @@ import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.shell.result.ResultHandlerConfig;
+
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 /**
  * Creates supporting beans for running the Shell
