@@ -16,13 +16,10 @@
 
 package org.springframework.shell;
 
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.hamcrest.collection.IsMapContaining.hasKey;
-// import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-// import org.junit.Rule;
-// import org.junit.Test;
-// import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link ConfigurableCommandRegistry}.
@@ -31,28 +28,23 @@ import static org.hamcrest.collection.IsMapContaining.hasKey;
  */
 public class ConfigurableCommandRegistryTest {
 
-	// @Rule
-	// public ExpectedException thrown= ExpectedException.none();
+	@Test
+	public void testRegistration() {
+		ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+		registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
+		assertThat(registry.listCommands()).containsKeys("foo");
+	}
 
-	// @Test
-	// public void testRegistration() {
-	// 	ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-	// 	registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
+	@Test
+	public void testDoubleRegistration() {
+		ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+		registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
 
-	// 	assertThat(registry.listCommands(), hasKey("foo"));
-	// }
-
-	// @Test
-	// public void testDoubleRegistration() {
-	// 	ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
-	// 	registry.register("foo", MethodTarget.of("toString", this, new Command.Help("some command")));
-
-	// 	thrown.expect(IllegalArgumentException.class);
-	// 	thrown.expectMessage("foo");
-	// 	thrown.expectMessage("toString");
-	// 	thrown.expectMessage("hashCode");
-
-	// 	registry.register("foo", MethodTarget.of("hashCode", this, new Command.Help("some command")));
-	// }
-
+		assertThatThrownBy(() -> {
+			registry.register("foo", MethodTarget.of("hashCode", this, new Command.Help("some command")));
+		}).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("foo")
+				.hasMessageContaining("toString")
+				.hasMessageContaining("hashCode");
+	}
 }
