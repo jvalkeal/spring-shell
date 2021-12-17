@@ -1,3 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.shell.SpringShellAutoConfiguration,\
+org.springframework.shell.Xxx1AutoConfiguration,\
+org.springframework.shell.Xxx2AutoConfiguration,\
+org.springframework.shell.Xxx3AutoConfiguration,\
+org.springframework.shell.Xxx4AutoConfiguration,\
+org.springframework.shell.Xxx5AutoConfiguration,\
 org.springframework.shell.jline.JLineShellAutoConfiguration
