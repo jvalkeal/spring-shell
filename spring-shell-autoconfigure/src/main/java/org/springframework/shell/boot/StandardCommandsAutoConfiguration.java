@@ -23,9 +23,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.shell.boot.condition.OnCompletionCommandCondition;
 import org.springframework.shell.result.ThrowableResultHandler;
 import org.springframework.shell.standard.commands.Clear;
+import org.springframework.shell.standard.commands.Completion;
 import org.springframework.shell.standard.commands.Help;
 import org.springframework.shell.standard.commands.History;
 import org.springframework.shell.standard.commands.Quit;
@@ -81,5 +84,12 @@ public class StandardCommandsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.shell.command.history", value = "enabled", havingValue = "true", matchIfMissing = true)
 	public History historyCommand(org.jline.reader.History jLineHistory) {
 		return new History(jLineHistory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(Completion.Command.class)
+	@Conditional(OnCompletionCommandCondition.class)
+	public Completion completion(SpringShellProperties properties) {
+		return new Completion(properties.getCommand().getCompletion().getRootCommand());
 	}
 }
