@@ -27,9 +27,17 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.completion.BashCompletions;
 
+/**
+ * Command to create a shell completion files, i.e. for {@code bash}.
+ *
+ * @author Janne Valkealahti
+ */
 @ShellComponent
 public class Completion extends AbstractShellComponent implements ResourceLoaderAware {
 
+	/**
+	 * Marker interface used in auto-config.
+	 */
 	public interface Command {
 	}
 
@@ -47,19 +55,20 @@ public class Completion extends AbstractShellComponent implements ResourceLoader
 
 	@ShellMethod(key = "completion bash", value = "Generate bash completion script")
 	public String bash() {
-		BashCompletions bashCompletions = new BashCompletions(resourceLoader);
-		return bashCompletions.generate(rootCommand, getCommands());
+		BashCompletions bashCompletions = new BashCompletions(resourceLoader, getCommandRegistry(),
+				getParameterResolver().collect(Collectors.toList()));
+		return bashCompletions.generate(rootCommand);
 	}
 
-	private List<String> getCommands() {
-		Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
-		List<String> topCommands = commandsByName.keySet().stream()
-				.map(command -> {
-					String[] split = command.split(" ");
-					return split[0];
-				})
-				.distinct()
-				.collect(Collectors.toList());
-		return topCommands;
-	}
+	// private List<String> getCommands() {
+	// 	Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
+	// 	List<String> topCommands = commandsByName.keySet().stream()
+	// 			.map(command -> {
+	// 				String[] split = command.split(" ");
+	// 				return split[0];
+	// 			})
+	// 			.distinct()
+	// 			.collect(Collectors.toList());
+	// 	return topCommands;
+	// }
 }

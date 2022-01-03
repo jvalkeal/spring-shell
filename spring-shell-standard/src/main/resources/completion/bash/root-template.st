@@ -5,7 +5,7 @@ _<name>_root_command()
     command_aliases=()
 
     commands=()
-    <commands:{c | commands+=("<c>")}; separator="\n">
+    <topcommands:{c | commands+=("<c.last>")}; separator="\n">
 
     flags=()
     two_word_flags=()
