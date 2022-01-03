@@ -73,7 +73,6 @@ public abstract class AbstractCompletions {
 	protected CommandModel generateCommandModel() {
 		Map<String, MethodTarget> commandsByName = commandRegistry.listCommands();
 		HashMap<String, DefaultCommandModelCommand> commands = new HashMap<>();
-		// List<CommandModelCommand> topCommands = new ArrayList<>();
 		HashSet<CommandModelCommand> topCommands = new HashSet<>();
 		commandsByName.entrySet().stream()
 			.forEach(entry -> {
