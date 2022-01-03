@@ -15,13 +15,10 @@
  */
 package org.springframework.shell.standard.commands;
 
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.MethodTarget;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -59,16 +56,4 @@ public class Completion extends AbstractShellComponent implements ResourceLoader
 				getParameterResolver().collect(Collectors.toList()));
 		return bashCompletions.generate(rootCommand);
 	}
-
-	// private List<String> getCommands() {
-	// 	Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
-	// 	List<String> topCommands = commandsByName.keySet().stream()
-	// 			.map(command -> {
-	// 				String[] split = command.split(" ");
-	// 				return split[0];
-	// 			})
-	// 			.distinct()
-	// 			.collect(Collectors.toList());
-	// 	return topCommands;
-	// }
 }

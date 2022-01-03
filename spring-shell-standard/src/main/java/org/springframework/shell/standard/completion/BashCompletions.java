@@ -39,7 +39,7 @@ public class BashCompletions extends AbstractCompletions {
 		List<CommandModelCommand> topcommands = generateCommandModel().commands().stream()
 				.collect(Collectors.toList());
 		List<CommandModelCommand> subcommands = topcommands.stream()
-				.flatMap(c -> c.subCommands().stream())
+				// .flatMap(c -> c.subCommands().stream())
 				.flatMap(c -> flatten(c))
 				.collect(Collectors.toList());
 		return builder()
@@ -47,7 +47,7 @@ public class BashCompletions extends AbstractCompletions {
 				.withDefaultMultiAttribute("topcommands", topcommands)
 				.withDefaultMultiAttribute("subcommands", subcommands)
 				.appendResourceWithRender("classpath:completion/bash/pre-template.st")
-				// .appendResourceWithRender("classpath:completion/bash/command-template.st")
+				.appendResourceWithRender("classpath:completion/bash/command-template.st")
 				.appendResourceWithRender("classpath:completion/bash/root-template.st")
 				.appendResourceWithRender("classpath:completion/bash/post-template.st")
 				.build();

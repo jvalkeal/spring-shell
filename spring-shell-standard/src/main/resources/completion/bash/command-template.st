@@ -2,12 +2,12 @@
 
 _<name>_<c.parts:{p | <p>}; separator="_">()
 {
-    last_command="<name>"
+    last_command="<name>_<c.parts:{p | <p>}; separator="_">"
 
     command_aliases=()
 
     commands=()
-    <c:{cc | commands+=("<cc.last>")}; separator="\n">
+    <c.mains:{cc | commands+=("<cc>")}; separator="\n">
 
     flags=()
     two_word_flags=()
@@ -18,5 +18,6 @@ _<name>_<c.parts:{p | <p>}; separator="_">()
     must_have_one_flag=()
     must_have_one_noun=()
     noun_aliases=()
-}
+\}
+
 }; separator="\n">

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.stringtemplate.v4.ST;
 
@@ -81,6 +80,7 @@ public abstract class AbstractCompletions {
 				String commandKey = "";
 				for (int i = 0; i < splitKeys.length; i++) {
 					DefaultCommandModelCommand parent = null;
+					String main = splitKeys[i];
 					if (i > 0) {
 						parent = commands.get(commandKey);
 						commandKey = commandKey + " " + splitKeys[i];
@@ -89,7 +89,7 @@ public abstract class AbstractCompletions {
 						commandKey = splitKeys[i];
 					}
 					DefaultCommandModelCommand command = commands.computeIfAbsent(commandKey,
-							(fullCommand) -> new DefaultCommandModelCommand(fullCommand));
+							(fullCommand) -> new DefaultCommandModelCommand(fullCommand, main));
 					MethodTarget methodTarget = entry.getValue();
 					List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
 					List<DefaultCommandModelOption> options = parameterDescriptions.stream()
@@ -125,6 +125,8 @@ public abstract class AbstractCompletions {
 		boolean hasSubCommands();
 		List<CommandModelCommand> subCommands();
 		List<CommandModelOption> options();
+		List<String> getMains();
+		String getMain();
 	}
 
 	interface CommandModelOption {
@@ -148,11 +150,13 @@ public abstract class AbstractCompletions {
 	class DefaultCommandModelCommand implements CommandModelCommand {
 
 		private String fullCommand;
+		private String mainCommand;
 		private List<CommandModelCommand> commands = new ArrayList<>();
 		private List<CommandModelOption> options = new ArrayList<>();
 
-		DefaultCommandModelCommand(String fullCommand) {
+		DefaultCommandModelCommand(String fullCommand, String mainCommand) {
 			this.fullCommand = fullCommand;
+			this.mainCommand = mainCommand;
 		}
 
 		@Override
@@ -164,6 +168,18 @@ public abstract class AbstractCompletions {
 		public String getLast() {
 			String[] split = fullCommand.split(" ");
 			return split[split.length - 1];
+		}
+
+		@Override
+		public String getMain() {
+			return mainCommand;
+		}
+
+		@Override
+		public List<String> getMains() {
+			return this.commands.stream()
+					.map(c -> c.getMain())
+					.collect(Collectors.toList());
 		}
 
 		@Override
