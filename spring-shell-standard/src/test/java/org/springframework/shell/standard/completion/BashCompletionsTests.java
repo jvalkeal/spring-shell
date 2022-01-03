@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.standard.completion;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.shell.ConfigurableCommandRegistry;
+import org.springframework.shell.ParameterResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,9 +48,10 @@ public class BashCompletionsTests {
 
 	@Test
 	public void testDoesNotError() {
-		// BashCompletions generate = new BashCompletions(context);
-		// List<String> commands = Arrays.asList("command1", "command2");
-		// String bash = generate.generate("root-command", commands);
-		// assertThat(bash).contains("root-command");
+		ConfigurableCommandRegistry commandRegistry = new ConfigurableCommandRegistry();
+		List<ParameterResolver> parameterResolvers = new ArrayList<>();
+		BashCompletions completions = new BashCompletions(context, commandRegistry, parameterResolvers);
+		String bash = completions.generate("root-command");
+		assertThat(bash).contains("root-command");
 	}
 }

@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -72,7 +73,8 @@ public abstract class AbstractCompletions {
 	protected CommandModel generateCommandModel() {
 		Map<String, MethodTarget> commandsByName = commandRegistry.listCommands();
 		HashMap<String, DefaultCommandModelCommand> commands = new HashMap<>();
-		List<CommandModelCommand> topCommands = new ArrayList<>();
+		// List<CommandModelCommand> topCommands = new ArrayList<>();
+		HashSet<CommandModelCommand> topCommands = new HashSet<>();
 		commandsByName.entrySet().stream()
 			.forEach(entry -> {
 				String key = entry.getKey();
@@ -105,7 +107,7 @@ public abstract class AbstractCompletions {
 					}
 				}
 			});
-		return new DefaultCommandModel(topCommands);
+		return new DefaultCommandModel(new ArrayList<>(topCommands));
 	}
 
 	private List<ParameterDescription> getParameterDescriptions(MethodTarget methodTarget) {
