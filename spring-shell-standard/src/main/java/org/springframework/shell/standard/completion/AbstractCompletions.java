@@ -127,6 +127,7 @@ public abstract class AbstractCompletions {
 		List<CommandModelCommand> subCommands();
 		List<CommandModelOption> options();
 		List<String> getMains();
+		List<String> getTwowordflags();
 		String getMain();
 	}
 
@@ -180,6 +181,13 @@ public abstract class AbstractCompletions {
 		public List<String> getMains() {
 			return this.commands.stream()
 					.map(c -> c.getMain())
+					.collect(Collectors.toList());
+		}
+
+		@Override
+		public List<String> getTwowordflags() {
+			return this.options.stream()
+					.map(o -> o.option())
 					.collect(Collectors.toList());
 		}
 

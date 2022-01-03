@@ -17,16 +17,21 @@ package org.springframework.shell.standard.completion;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.shell.CommandRegistry;
 import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.ParameterResolver;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.standard.StandardParameterResolver;
 import org.springframework.shell.standard.completion.AbstractCompletions.CommandModel;
 import org.springframework.util.ReflectionUtils;
 
@@ -39,13 +44,16 @@ public class AbstractCompletionsTests {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		ConfigurableCommandRegistry commandRegistry = new ConfigurableCommandRegistry();
 		List<ParameterResolver> parameterResolvers = new ArrayList<>();
+		StandardParameterResolver resolver = new StandardParameterResolver(new DefaultConversionService(),
+				Collections.emptySet());
+		parameterResolvers.add(resolver);
 
 		TestCommands commands = new TestCommands();
 
-		Method method1 = ReflectionUtils.findMethod(TestCommands.class, "test1");
+		Method method1 = ReflectionUtils.findMethod(TestCommands.class, "test1", String.class);
 		Method method2 = ReflectionUtils.findMethod(TestCommands.class, "test2");
 		Method method3 = ReflectionUtils.findMethod(TestCommands.class, "test3");
-		Method method4 = ReflectionUtils.findMethod(TestCommands.class, "test4");
+		Method method4 = ReflectionUtils.findMethod(TestCommands.class, "test4", String.class);
 
 		MethodTarget methodTarget1 = new MethodTarget(method1, commands, "help");
 		MethodTarget methodTarget2 = new MethodTarget(method2, commands, "help");
@@ -64,6 +72,10 @@ public class AbstractCompletionsTests {
 				"test3");
 		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
 				.subCommands()).hasSize(1);
+		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
+				.options()).hasSize(1);
+		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
+				.options().get(0).option()).isEqualTo("--param1");
 	}
 
 	private static class TestCompletions extends AbstractCompletions {
@@ -80,20 +92,20 @@ public class AbstractCompletionsTests {
 
 	private static class TestCommands {
 
-		@SuppressWarnings("unused")
-		void test1() {
+		@ShellMethod
+		void test1(@ShellOption String param1) {
 		}
 
-		@SuppressWarnings("unused")
+		@ShellMethod
 		void test2() {
 		}
 
-		@SuppressWarnings("unused")
+		@ShellMethod
 		void test3() {
 		}
 
-		@SuppressWarnings("unused")
-		void test4() {
+		@ShellMethod
+		void test4(@ShellOption String param4) {
 		}
 	}
 }

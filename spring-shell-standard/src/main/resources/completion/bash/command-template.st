@@ -11,6 +11,7 @@ _<name>_<c.parts:{p | <p>}; separator="_">()
 
     flags=()
     two_word_flags=()
+    <c.twowordflags:{cc | two_word_flags+=("<cc>")}; separator="\n">
     local_nonpersistent_flags=()
     flags_with_completion=()
     flags_completion=()
