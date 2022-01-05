@@ -100,7 +100,9 @@ public abstract class AbstractCompletions {
 							.flatMap(pd -> pd.keys().stream())
 							.map(k -> new DefaultCommandModelOption(k))
 							.collect(Collectors.toList());
-					command.addOptions(options);
+					if (i == splitKeys.length - 1) {
+						command.addOptions(options);
+					}
 					if (parent != null) {
 						parent.addCommand(command);
 					}

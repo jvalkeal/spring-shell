@@ -48,8 +48,9 @@ flags=()
 //
 // two_word_flags=() template section in commands
 //
-two_word_flags() ::= <<
+two_word_flags(flags) ::= <<
 two_word_flags=()
+<flags:{f | two_word_flags+=("<f>")}; separator="\n">
 >>
 
 //
@@ -104,7 +105,7 @@ _<name>_<c.parts:{p | <p>}; separator="_">()
 
     <command_aliases()>
     <commands(c.mains)>
-    <two_word_flags()>
+    <two_word_flags(c.twowordflags)>
 }
 >>
 

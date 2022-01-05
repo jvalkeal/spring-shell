@@ -77,12 +77,22 @@ public class AbstractCompletionsTests {
 		assertThat(commandModel.getCommands()).hasSize(3);
 		assertThat(commandModel.getCommands().stream().map(c -> c.getMain())).containsExactlyInAnyOrder("test1", "test2",
 				"test3");
-		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
-				.subCommands()).hasSize(1);
 		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
 				.options()).hasSize(1);
 		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
 				.options().get(0).option()).isEqualTo("--param1");
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test2")).findFirst().get()
+				.options()).hasSize(0);
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+				.options()).hasSize(0);
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+				.subCommands()).hasSize(1);
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+				.subCommands().get(0).getMain()).isEqualTo("test4");
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+				.subCommands().get(0).options()).hasSize(1);
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+				.subCommands().get(0).options().get(0).option()).isEqualTo("--param4");
 	}
 
 	@Test
