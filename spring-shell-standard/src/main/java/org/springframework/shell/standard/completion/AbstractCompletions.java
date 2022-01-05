@@ -177,10 +177,33 @@ public abstract class AbstractCompletions {
 		 */
 		List<String> getFlags();
 
-		List<String> getMains();
-		List<String> getParts();
-		String getMain();
-		String getLast();
+		/**
+		 * Gets sub commands.
+		 *
+		 * @return sub commands
+		 */
+		List<String> getSubCommands();
+
+		/**
+		 * Gets command parts. Essentially full command split into parts.
+		 *
+		 * @return command parts
+		 */
+		List<String> getCommandParts();
+
+		/**
+		 * Gets a main command
+		 *
+		 * @return the main command
+		 */
+		String getMainCommand();
+
+		/**
+		 * Gets a last command part.
+		 *
+		 * @return the last command part
+		 */
+		String getLastCommandPart();
 	}
 
 	interface CommandModelOption {
@@ -210,7 +233,7 @@ public abstract class AbstractCompletions {
 		@Override
 		public List<String> getRootCommands() {
 			return getCommands().stream()
-					.map(c -> c.getLast())
+					.map(c -> c.getLastCommandPart())
 					.collect(Collectors.toList());
 		}
 
@@ -232,25 +255,25 @@ public abstract class AbstractCompletions {
 		}
 
 		@Override
-		public List<String> getParts() {
+		public List<String> getCommandParts() {
 			return Arrays.asList(fullCommand.split(" "));
 		}
 
 		@Override
-		public String getLast() {
+		public String getLastCommandPart() {
 			String[] split = fullCommand.split(" ");
 			return split[split.length - 1];
 		}
 
 		@Override
-		public String getMain() {
+		public String getMainCommand() {
 			return mainCommand;
 		}
 
 		@Override
-		public List<String> getMains() {
+		public List<String> getSubCommands() {
 			return this.commands.stream()
-					.map(c -> c.getMain())
+					.map(c -> c.getMainCommand())
 					.collect(Collectors.toList());
 		}
 
