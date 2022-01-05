@@ -121,6 +121,11 @@ public abstract class AbstractCompletions {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Interface for a command model structure. Is also used as entry model
+	 * for ST4 templates which is a reason it has utility methods for easier usage
+	 * of a templates.
+	 */
 	interface CommandModel {
 
 		/**
@@ -139,15 +144,19 @@ public abstract class AbstractCompletions {
 
 		/**
 		 * Gets root commands.
+		 *
 		 * @return root commands
 		 */
 		List<String> getRootCommands();
 	}
 
+	/**
+	 * Interface for a command in a model. Also contains methods which makes it
+	 * easier to work with ST4 templates.
+	 */
 	interface CommandModelCommand  {
 		List<String> getParts();
 		String getLast();
-		boolean hasSubCommands();
 		List<CommandModelCommand> subCommands();
 		List<CommandModelOption> options();
 		List<String> getMains();
@@ -234,11 +243,6 @@ public abstract class AbstractCompletions {
 		}
 
 		@Override
-		public boolean hasSubCommands() {
-			return !commands.isEmpty();
-		}
-
-		@Override
 		public List<CommandModelCommand> subCommands() {
 			return commands;
 		}
@@ -319,11 +323,9 @@ public abstract class AbstractCompletions {
 
 	interface Builder {
 
-		Builder withDefaultAttribute(String name, Object value);
-		Builder withDefaultMultiAttribute(String name, List<? extends Object> values);
-		Builder appendResourceWithRender(String resource);
-		Builder setGroup(String resource);
-		Builder appendGroupInstance(String instance);
+		Builder attribute(String name, Object value);
+		Builder group(String resource);
+		Builder appendGroup(String instance);
 		String build();
 	}
 
@@ -334,44 +336,19 @@ public abstract class AbstractCompletions {
 		private String groupResource;
 
 		@Override
-		public Builder withDefaultAttribute(String name, Object value) {
+		public Builder attribute(String name, Object value) {
 			this.defaultAttributes.add(name, value);
 			return this;
 		}
 
 		@Override
-		public Builder withDefaultMultiAttribute(String name, List<? extends Object> values) {
-			this.defaultAttributes.addAll(name, values);
-			return this;
-		}
-
-		@Override
-		public Builder appendResourceWithRender(String resource) {
-			// delay so that we render with build
-			Supplier<String> operation = () -> {
-				String template = resourceAsString(resourceLoader.getResource(resource));
-				ST st = new ST(template);
-				defaultAttributes.entrySet().stream().forEach(entry -> {
-					String key = entry.getKey();
-					List<Object> values = entry.getValue();
-					values.stream().forEach(v -> {
-						st.add(key, v);
-					});
-				});
-				return st.render();
-			};
-			operations.add(operation);
-			return this;
-		}
-
-		@Override
-		public Builder setGroup(String resource) {
+		public Builder group(String resource) {
 			groupResource = resource;
 			return this;
 		}
 
 		@Override
-		public Builder appendGroupInstance(String instance) {
+		public Builder appendGroup(String instance) {
 			// delay so that we render with build
 			Supplier<String> operation = () -> {
 				String template = resourceAsString(resourceLoader.getResource(groupResource));

@@ -461,7 +461,7 @@ _<name>_root_command()
     <command_aliases()>
     <commands(commands)>
     <flags()>
-    <two_word_flags()>
+    <two_word_flags([])>
     <local_nonpersistent_flags()>
     <flags_with_completion()>
     <flags_completion()>

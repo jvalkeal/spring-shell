@@ -16,8 +16,6 @@
 package org.springframework.shell.standard.completion;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.shell.CommandRegistry;
@@ -37,26 +35,11 @@ public class BashCompletions extends AbstractCompletions {
 
 	public String generate(String rootCommand) {
 		CommandModel model = generateCommandModel();
-		// List<CommandModelCommand> topcommands = generateCommandModel().getCommands().stream()
-		// 		.collect(Collectors.toList());
-		// List<CommandModelCommand> subcommands = topcommands.stream()
-		// 		.flatMap(c -> flatten(c))
-		// 		.collect(Collectors.toList());
 		return builder()
-				.withDefaultAttribute("name", rootCommand)
-				.withDefaultAttribute("model", model)
-				.setGroup("classpath:completion/bash.stg")
-				.appendGroupInstance("main")
-				// .withDefaultMultiAttribute("topcommands", topcommands)
-				// .withDefaultMultiAttribute("subcommands", subcommands)
-				// .appendResourceWithRender("classpath:completion/bash/pre-template.st")
-				// .appendResourceWithRender("classpath:completion/bash/command-template.st")
-				// .appendResourceWithRender("classpath:completion/bash/root-template.st")
-				// .appendResourceWithRender("classpath:completion/bash/post-template.st")
+				.attribute("name", rootCommand)
+				.attribute("model", model)
+				.group("classpath:completion/bash.stg")
+				.appendGroup("main")
 				.build();
 	}
-
-	// private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
-	// 	return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
-	// }
 }
