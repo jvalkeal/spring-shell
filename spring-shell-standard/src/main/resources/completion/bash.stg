@@ -1,0 +1,143 @@
+//
+// pre content template before commands
+// needs to escape some > characters
+//
+pre(name) ::= <<
+# bash completion for <name> -*- shell-script -*-
+__<name>_debug()
+{
+    if [[ -n ${BASH_COMP_DEBUG_FILE:-} ]]; then
+        echo "$*" \>> "${BASH_COMP_DEBUG_FILE}"
+    fi
+}
+>>
+
+//
+// post content template after commands
+//
+post(name) ::= <<
+if [[ $(type -t compopt) = "builtin" ]]; then
+    complete -o default -F __start_<name> <name>
+else
+    complete -o default -o nospace -F __start_<name> <name>
+fi
+>>
+
+//
+// command_aliases=() template section in commands
+//
+command_aliases() ::= <<
+command_aliases=()
+>>
+
+//
+// commands=() template section in commands
+//
+commands(commands) ::= <<
+commands=()
+<commands:{c | commands+=("<c>")}; separator="\n">
+>>
+
+//
+// flags=() template section in commands
+//
+flags() ::= <<
+flags=()
+>>
+
+//
+// two_word_flags=() template section in commands
+//
+two_word_flags() ::= <<
+two_word_flags=()
+>>
+
+//
+// local_nonpersistent_flags=() template section in commands
+//
+local_nonpersistent_flags() ::= <<
+local_nonpersistent_flags=()
+>>
+
+//
+// flags_with_completion=() template section in commands
+//
+flags_with_completion() ::= <<
+flags_with_completion=()
+>>
+
+//
+// flags_completion=() template section in commands
+//
+flags_completion() ::= <<
+flags_completion=()
+>>
+
+//
+// must_have_one_flag=() template section in commands
+//
+must_have_one_flag() ::= <<
+must_have_one_flag=()
+>>
+
+//
+// must_have_one_noun=() template section in commands
+//
+must_have_one_noun() ::= <<
+must_have_one_noun=()
+>>
+
+//
+// noun_aliases=() template section in commands
+//
+noun_aliases() ::= <<
+noun_aliases=()
+>>
+
+//
+// template for each command
+//
+sub_command(name,c) ::= <<
+_<name>_<c.parts:{p | <p>}; separator="_">()
+{
+    last_command="<name>_<c.parts:{p | <p>}; separator="_">"
+
+    <command_aliases()>
+    <commands(c.mains)>
+    <two_word_flags()>
+}
+>>
+
+//
+// top level root commands template
+//
+root_commands(name,commands) ::= <<
+_<name>_root_command()
+{
+    last_command="<name>"
+
+    <command_aliases()>
+    <commands(commands)>
+    <flags()>
+    <two_word_flags()>
+    <local_nonpersistent_flags()>
+    <flags_with_completion()>
+    <flags_completion()>
+    <must_have_one_flag()>
+    <must_have_one_noun()>
+    <noun_aliases()>
+}
+>>
+
+//
+// main template to call from render
+//
+main(name, model) ::= <<
+<pre(name)>
+
+<model.allCommands:{c | <sub_command(name,c)>}; separator="\n\n">
+
+<root_commands(name,model.rootCommands)>
+
+<post(name)>
+>>

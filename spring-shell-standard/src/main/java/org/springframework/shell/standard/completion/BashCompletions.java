@@ -36,10 +36,9 @@ public class BashCompletions extends AbstractCompletions {
 	}
 
 	public String generate(String rootCommand) {
-		List<CommandModelCommand> topcommands = generateCommandModel().commands().stream()
+		List<CommandModelCommand> topcommands = generateCommandModel().getCommands().stream()
 				.collect(Collectors.toList());
 		List<CommandModelCommand> subcommands = topcommands.stream()
-				// .flatMap(c -> c.subCommands().stream())
 				.flatMap(c -> flatten(c))
 				.collect(Collectors.toList());
 		return builder()

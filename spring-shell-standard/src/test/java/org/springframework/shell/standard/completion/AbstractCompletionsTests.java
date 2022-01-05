@@ -17,10 +17,15 @@ package org.springframework.shell.standard.completion;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupString;
 
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -32,7 +37,9 @@ import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.shell.standard.StandardParameterResolver;
+import org.springframework.shell.standard.completion.AbstractCompletions.Builder;
 import org.springframework.shell.standard.completion.AbstractCompletions.CommandModel;
+import org.springframework.shell.standard.completion.AbstractCompletions.CommandModelCommand;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,15 +74,77 @@ public class AbstractCompletionsTests {
 
 		TestCompletions completions = new TestCompletions(resourceLoader, commandRegistry, parameterResolvers);
 		CommandModel commandModel = completions.testCommandModel();
-		assertThat(commandModel.commands()).hasSize(3);
-		assertThat(commandModel.commands().stream().map(c -> c.getMain())).containsExactlyInAnyOrder("test1", "test2",
+		assertThat(commandModel.getCommands()).hasSize(3);
+		assertThat(commandModel.getCommands().stream().map(c -> c.getMain())).containsExactlyInAnyOrder("test1", "test2",
 				"test3");
-		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test3")).findFirst().get()
 				.subCommands()).hasSize(1);
-		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
 				.options()).hasSize(1);
-		assertThat(commandModel.commands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
+		assertThat(commandModel.getCommands().stream().filter(c -> c.getMain().equals("test1")).findFirst().get()
 				.options().get(0).option()).isEqualTo("--param1");
+	}
+
+	@Test
+	public void testBuilder() {
+		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+		ConfigurableCommandRegistry commandRegistry = new ConfigurableCommandRegistry();
+		List<ParameterResolver> parameterResolvers = new ArrayList<>();
+		StandardParameterResolver resolver = new StandardParameterResolver(new DefaultConversionService(),
+				Collections.emptySet());
+		parameterResolvers.add(resolver);
+
+		TestCommands commands = new TestCommands();
+
+		Method method1 = ReflectionUtils.findMethod(TestCommands.class, "test1", String.class);
+		Method method2 = ReflectionUtils.findMethod(TestCommands.class, "test2");
+		Method method3 = ReflectionUtils.findMethod(TestCommands.class, "test3");
+		Method method4 = ReflectionUtils.findMethod(TestCommands.class, "test4", String.class);
+
+		MethodTarget methodTarget1 = new MethodTarget(method1, commands, "help");
+		MethodTarget methodTarget2 = new MethodTarget(method2, commands, "help");
+		MethodTarget methodTarget3 = new MethodTarget(method3, commands, "help");
+		MethodTarget methodTarget4 = new MethodTarget(method4, commands, "help");
+
+		commandRegistry.register("test1", methodTarget1);
+		commandRegistry.register("test2", methodTarget2);
+		commandRegistry.register("test3", methodTarget3);
+		commandRegistry.register("test3 test4", methodTarget4);
+
+		TestCompletions completions = new TestCompletions(resourceLoader, commandRegistry, parameterResolvers);
+		CommandModel commandModel = completions.testCommandModel();
+
+		// List<CommandModelCommand> topcommands = commandModel.commands().stream()
+		// 		.collect(Collectors.toList());
+		// List<CommandModelCommand> subcommands = topcommands.stream()
+		// 		.flatMap(c -> flatten(c))
+		// 		.collect(Collectors.toList());
+
+		// String groupStr1 =
+		// 	"a(x) ::= <<foo><b(x)>>\n" +
+		// 	"b(y) ::= <y>\n";
+
+		// STGroup group1 = new STGroupString(groupStr1);
+
+		Builder builder = completions.testBuilder();
+
+		// List<String> subcommands = Arrays.asList("command1", "command2");
+
+		String build = builder
+				.withDefaultAttribute("name", "command")
+				.withDefaultAttribute("model", commandModel)
+				// .withDefaultMultiAttribute("subcommands", subcommands)
+				// .withDefaultMultiAttribute("topcommands", topcommands)
+				.setGroup("classpath:completion/bash.stg")
+				.appendGroupInstance("main")
+				.build();
+
+		System.out.println(build);
+
+	}
+
+	private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
+		return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
 	}
 
 	private static class TestCompletions extends AbstractCompletions {
@@ -87,6 +156,10 @@ public class AbstractCompletionsTests {
 
 		CommandModel testCommandModel() {
 			return generateCommandModel();
+		}
+
+		Builder testBuilder() {
+			return super.builder();
 		}
 	}
 

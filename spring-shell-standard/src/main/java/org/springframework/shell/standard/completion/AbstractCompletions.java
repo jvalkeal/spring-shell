@@ -28,8 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupString;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -117,7 +120,26 @@ public abstract class AbstractCompletions {
 	}
 
 	interface CommandModel {
-		List<CommandModelCommand> commands();
+
+		/**
+		 * Gets root level commands where sub-commands can be found.
+		 *
+		 * @return root level commands
+		 */
+		List<CommandModelCommand> getCommands();
+
+		/**
+		 * Gets all commands as a flattened structure.
+		 *
+		 * @return all commands
+		 */
+		List<CommandModelCommand> getAllCommands();
+
+		/**
+		 * Gets root commands.
+		 * @return root commands
+		 */
+		List<String> getRootCommands();
 	}
 
 	interface CommandModelCommand  {
@@ -144,8 +166,26 @@ public abstract class AbstractCompletions {
 		}
 
 		@Override
-		public List<CommandModelCommand> commands() {
+		public List<CommandModelCommand> getCommands() {
 			return commands;
+		}
+
+		@Override
+		public List<CommandModelCommand> getAllCommands() {
+			return getCommands().stream()
+					.flatMap(c -> flatten(c))
+					.collect(Collectors.toList());
+		}
+
+		@Override
+		public List<String> getRootCommands() {
+			return getCommands().stream()
+					.map(c -> c.getLast())
+					.collect(Collectors.toList());
+		}
+
+		private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
+			return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
 		}
 	}
 
@@ -280,6 +320,8 @@ public abstract class AbstractCompletions {
 		Builder withDefaultAttribute(String name, Object value);
 		Builder withDefaultMultiAttribute(String name, List<? extends Object> values);
 		Builder appendResourceWithRender(String resource);
+		Builder setGroup(String resource);
+		Builder appendGroupInstance(String instance);
 		String build();
 	}
 
@@ -287,6 +329,7 @@ public abstract class AbstractCompletions {
 
 		private final MultiValueMap<String, Object> defaultAttributes = new LinkedMultiValueMap<>();
 		private final List<Supplier<String>> operations = new ArrayList<>();
+		private String groupResource;
 
 		@Override
 		public Builder withDefaultAttribute(String name, Object value) {
@@ -306,6 +349,32 @@ public abstract class AbstractCompletions {
 			Supplier<String> operation = () -> {
 				String template = resourceAsString(resourceLoader.getResource(resource));
 				ST st = new ST(template);
+				defaultAttributes.entrySet().stream().forEach(entry -> {
+					String key = entry.getKey();
+					List<Object> values = entry.getValue();
+					values.stream().forEach(v -> {
+						st.add(key, v);
+					});
+				});
+				return st.render();
+			};
+			operations.add(operation);
+			return this;
+		}
+
+		@Override
+		public Builder setGroup(String resource) {
+			groupResource = resource;
+			return this;
+		}
+
+		@Override
+		public Builder appendGroupInstance(String instance) {
+			// delay so that we render with build
+			Supplier<String> operation = () -> {
+				String template = resourceAsString(resourceLoader.getResource(groupResource));
+				STGroup group = new STGroupString(template);
+				ST st = group.getInstanceOf(instance);
 				defaultAttributes.entrySet().stream().forEach(entry -> {
 					String key = entry.getKey();
 					List<Object> values = entry.getValue();
