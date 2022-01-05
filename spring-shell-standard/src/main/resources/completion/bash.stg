@@ -439,14 +439,14 @@ noun_aliases=()
 //
 // template for each command
 //
-sub_command(name,c) ::= <<
-_<name>_<c.parts:{p | <p>}; separator="_">()
+sub_command(name,command) ::= <<
+_<name>_<command.parts:{p | <p>}; separator="_">()
 {
     last_command="<name>_<c.parts:{p | <p>}; separator="_">"
 
     <command_aliases()>
-    <commands(c.mains)>
-    <two_word_flags(c.twowordflags)>
+    <commands(command.mains)>
+    <two_word_flags(command.flags)>
 }
 >>
 

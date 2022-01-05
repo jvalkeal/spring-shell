@@ -155,13 +155,32 @@ public abstract class AbstractCompletions {
 	 * easier to work with ST4 templates.
 	 */
 	interface CommandModelCommand  {
-		List<String> getParts();
-		String getLast();
-		List<CommandModelCommand> subCommands();
-		List<CommandModelOption> options();
+
+		/**
+		 * Gets sub-commands known to this command.
+
+		 * @return known sub-commands
+		 */
+		List<CommandModelCommand> getCommands();
+
+		/**
+		 * Gets options known to this command
+		 *
+		 * @return known options
+		 */
+		List<CommandModelOption> getOptions();
+
+		/**
+		 * Gets command flags.
+		 *
+		 * @return command flags
+		 */
+		List<String> getFlags();
+
 		List<String> getMains();
-		List<String> getTwowordflags();
+		List<String> getParts();
 		String getMain();
+		String getLast();
 	}
 
 	interface CommandModelOption {
@@ -196,7 +215,7 @@ public abstract class AbstractCompletions {
 		}
 
 		private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
-			return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
+			return Stream.concat(Stream.of(command), command.getCommands().stream().flatMap(c -> flatten(c)));
 		}
 	}
 
@@ -236,19 +255,19 @@ public abstract class AbstractCompletions {
 		}
 
 		@Override
-		public List<String> getTwowordflags() {
+		public List<String> getFlags() {
 			return this.options.stream()
 					.map(o -> o.option())
 					.collect(Collectors.toList());
 		}
 
 		@Override
-		public List<CommandModelCommand> subCommands() {
+		public List<CommandModelCommand> getCommands() {
 			return commands;
 		}
 
 		@Override
-		public List<CommandModelOption> options() {
+		public List<CommandModelOption> getOptions() {
 			return options;
 		}
 
