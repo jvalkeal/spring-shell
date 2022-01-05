@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2021-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public class SpringShellPropertiesTests {
 					assertThat(properties.getCommand().getQuit().isEnabled()).isTrue();
 					assertThat(properties.getCommand().getScript().isEnabled()).isTrue();
 					assertThat(properties.getCommand().getStacktrace().isEnabled()).isTrue();
+					assertThat(properties.getCommand().getCompletion().isEnabled()).isTrue();
+					assertThat(properties.getCommand().getCompletion().getRootCommand()).isNull();
 				});
 	}
 
@@ -63,6 +65,8 @@ public class SpringShellPropertiesTests {
 					map.put("spring.shell.command.quit.enabled", "false");
 					map.put("spring.shell.command.script.enabled", "false");
 					map.put("spring.shell.command.stacktrace.enabled", "false");
+					map.put("spring.shell.command.completion.enabled", "false");
+					map.put("spring.shell.command.completion.root-command", "fake");
 					context.getEnvironment().getPropertySources().addLast(new SystemEnvironmentPropertySource(
 							StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, map));
 				})
@@ -78,6 +82,8 @@ public class SpringShellPropertiesTests {
 					assertThat(properties.getCommand().getQuit().isEnabled()).isFalse();
 					assertThat(properties.getCommand().getScript().isEnabled()).isFalse();
 					assertThat(properties.getCommand().getStacktrace().isEnabled()).isFalse();
+					assertThat(properties.getCommand().getCompletion().isEnabled()).isFalse();
+					assertThat(properties.getCommand().getCompletion().getRootCommand()).isEqualTo("fake");
 				});
 	}
 
