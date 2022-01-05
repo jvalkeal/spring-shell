@@ -2,7 +2,7 @@
   "resources": {
     "includes": [
       {
-        "pattern": "completion/bash/.*"
+        "pattern": "completion/.*"
       }
     ]
   }

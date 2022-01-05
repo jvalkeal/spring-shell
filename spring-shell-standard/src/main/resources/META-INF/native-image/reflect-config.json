@@ -1,5 +1,9 @@
 [
   {
+    "name": "org.springframework.shell.standard.completion.AbstractCompletions$DefaultCommandModel",
+    "allDeclaredMethods": true
+  },
+  {
     "name": "org.springframework.shell.standard.completion.AbstractCompletions$DefaultCommandModelCommand",
     "allDeclaredMethods": true
   }

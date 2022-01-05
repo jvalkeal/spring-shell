@@ -153,9 +153,9 @@ public class AbstractCompletionsTests {
 
 	}
 
-	private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
-		return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
-	}
+	// private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
+	// 	return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
+	// }
 
 	private static class TestCompletions extends AbstractCompletions {
 

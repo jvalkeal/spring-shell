@@ -36,23 +36,27 @@ public class BashCompletions extends AbstractCompletions {
 	}
 
 	public String generate(String rootCommand) {
-		List<CommandModelCommand> topcommands = generateCommandModel().getCommands().stream()
-				.collect(Collectors.toList());
-		List<CommandModelCommand> subcommands = topcommands.stream()
-				.flatMap(c -> flatten(c))
-				.collect(Collectors.toList());
+		CommandModel model = generateCommandModel();
+		// List<CommandModelCommand> topcommands = generateCommandModel().getCommands().stream()
+		// 		.collect(Collectors.toList());
+		// List<CommandModelCommand> subcommands = topcommands.stream()
+		// 		.flatMap(c -> flatten(c))
+		// 		.collect(Collectors.toList());
 		return builder()
 				.withDefaultAttribute("name", rootCommand)
-				.withDefaultMultiAttribute("topcommands", topcommands)
-				.withDefaultMultiAttribute("subcommands", subcommands)
-				.appendResourceWithRender("classpath:completion/bash/pre-template.st")
-				.appendResourceWithRender("classpath:completion/bash/command-template.st")
-				.appendResourceWithRender("classpath:completion/bash/root-template.st")
-				.appendResourceWithRender("classpath:completion/bash/post-template.st")
+				.withDefaultAttribute("model", model)
+				.setGroup("classpath:completion/bash.stg")
+				.appendGroupInstance("main")
+				// .withDefaultMultiAttribute("topcommands", topcommands)
+				// .withDefaultMultiAttribute("subcommands", subcommands)
+				// .appendResourceWithRender("classpath:completion/bash/pre-template.st")
+				// .appendResourceWithRender("classpath:completion/bash/command-template.st")
+				// .appendResourceWithRender("classpath:completion/bash/root-template.st")
+				// .appendResourceWithRender("classpath:completion/bash/post-template.st")
 				.build();
 	}
 
-	private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
-		return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
-	}
+	// private Stream<CommandModelCommand> flatten(CommandModelCommand command) {
+	// 	return Stream.concat(Stream.of(command), command.subCommands().stream().flatMap(c -> flatten(c)));
+	// }
 }
