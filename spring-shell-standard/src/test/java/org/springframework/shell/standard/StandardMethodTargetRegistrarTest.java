@@ -26,6 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.shell.Availability;
 import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
+import org.springframework.shell.context.DefaultShellContext;
 import org.springframework.shell.standard.test1.GroupOneCommands;
 import org.springframework.shell.standard.test2.GroupThreeCommands;
 import org.springframework.shell.standard.test2.GroupTwoCommands;
@@ -42,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class StandardMethodTargetRegistrarTest {
 
     private StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
-    private ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry();
+    private ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry(new DefaultShellContext());
 
     @Test
     public void testRegistrations() {

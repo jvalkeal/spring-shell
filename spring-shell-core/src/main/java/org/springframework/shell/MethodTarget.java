@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -36,6 +37,16 @@ public class MethodTarget implements Command {
 	private final Object bean;
 
 	private final Help help;
+
+	private InteractionMode interactionMode;
+
+	public void setInteractionMode(InteractionMode interactionMode) {
+		this.interactionMode = interactionMode;
+	}
+
+	public InteractionMode getInteractionMode() {
+		return interactionMode;
+	}
 
 	/**
 	 * If not null, returns whether or not the command is currently available. Implementations must be idempotent.
