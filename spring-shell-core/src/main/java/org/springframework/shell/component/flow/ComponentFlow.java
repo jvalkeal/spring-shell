@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
@@ -109,10 +111,28 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		VERIFY
 	}
 
+	interface BaseInputSpec<T extends BaseInputSpec<T>> {
+
+		/**
+		 * Sets order of this component.
+		 *
+		 * @param order the order
+		 * @return a builder
+		 */
+		T order(int order);
+
+		/**
+		 * Usual this trick to get typed child.
+		 *
+		 * @return a builder
+		 */
+		T getThis();
+	}
+
 	/**
 	 * Interface for string input spec builder.
 	 */
-	interface StringInputSpec {
+	interface StringInputSpec extends BaseInputSpec<StringInputSpec> {
 
 		/**
 		 * Sets a name.
@@ -195,6 +215,8 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		StringInputSpec storeResult(boolean store);
 
+		StringInputSpec next(Function<StringInputContext, String> next);
+
 		/**
 		 * Build and return parent builder.
 		 *
@@ -206,7 +228,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 	/**
 	 * Interface for path input spec builder.
 	 */
-	interface PathInputSpec {
+	interface PathInputSpec extends BaseInputSpec<PathInputSpec> {
 
 		/**
 		 * Sets a name.
@@ -281,6 +303,8 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		PathInputSpec storeResult(boolean store);
 
+		PathInputSpec next(Function<PathInputContext, String> next);
+
 		/**
 		 * Build and return parent builder.
 		 *
@@ -292,7 +316,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 	/**
 	 * Interface for single item selector spec builder.
 	 */
-	interface SingleItemSelectorSpec {
+	interface SingleItemSelectorSpec extends BaseInputSpec<SingleItemSelectorSpec> {
 
 		/**
 		 * Sets a name.
@@ -392,6 +416,8 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		SingleItemSelectorSpec storeResult(boolean store);
 
+		SingleItemSelectorSpec next(Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> next);
+
 		/**
 		 * Build and return parent builder.
 		 *
@@ -403,7 +429,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 	/**
 	 * Interface for multi input spec builder.
 	 */
-	interface MultiItemSelectorSpec {
+	interface MultiItemSelectorSpec extends BaseInputSpec<MultiItemSelectorSpec>{
 
 		/**
 		 * Sets a name.
@@ -493,6 +519,8 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 * @return a builder
 		 */
 		MultiItemSelectorSpec storeResult(boolean store);
+
+		MultiItemSelectorSpec next(Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> next);
 
 		/**
 		 * Build and return parent builder.
@@ -657,7 +685,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 	}
 
-	static abstract class BaseInput implements Ordered {
+	static abstract class BaseInput<T extends BaseInputSpec<T>> implements Ordered, BaseInputSpec<T> {
 
 		private final BaseBuilder builder;
 		private final String id;
@@ -677,6 +705,12 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 			this.order = order;
 		}
 
+		@Override
+		public T order(int order) {
+			this.order = order;
+			return getThis();
+		}
+
 		public BaseBuilder getBuilder() {
 			return builder;
 		}
@@ -686,7 +720,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 	}
 
-	static abstract class BaseStringInput extends BaseInput implements StringInputSpec {
+	static abstract class BaseStringInput extends BaseInput<StringInputSpec> implements StringInputSpec {
 
 		private String name;
 		private String resultValue;
@@ -698,6 +732,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		private List<Consumer<StringInputContext>> postHandlers = new ArrayList<>();
 		private boolean storeResult = true;
 		private String templateLocation;
+		private Function<StringInputContext, String> next;
 
 		public BaseStringInput(BaseBuilder builder, String id) {
 			super(builder, id);
@@ -764,9 +799,26 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 
 		@Override
+		public StringInputSpec next(Function<StringInputContext, String> next) {
+			this.next = next;
+			return this;
+		}
+
+		// @Override
+		// public StringInputSpec next(Function<StringInputSpec, String> next) {
+		// 	this.next = next;
+		// 	return this;
+		// }
+
+		@Override
 		public Builder and() {
 			getBuilder().addStringInput(this);
 			return getBuilder();
+		}
+
+		@Override
+		public StringInputSpec getThis() {
+			return this;
 		}
 
 		public String getName() {
@@ -808,6 +860,10 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		public boolean isStoreResult() {
 			return storeResult;
 		}
+
+		public Function<StringInputContext, String> getNext() {
+			return next;
+		}
 	}
 
 	static class DefaultStringInputSpec extends BaseStringInput {
@@ -817,7 +873,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 	}
 
-	static abstract class BasePathInput extends BaseInput implements PathInputSpec {
+	static abstract class BasePathInput extends BaseInput<PathInputSpec> implements PathInputSpec {
 
 		private String name;
 		private String resultValue;
@@ -828,6 +884,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		private List<Consumer<PathInputContext>> postHandlers = new ArrayList<>();
 		private boolean storeResult = true;
 		private String templateLocation;
+		private Function<PathInputContext, String> next;
 
 		public BasePathInput(BaseBuilder builder, String id) {
 			super(builder, id);
@@ -888,9 +945,20 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 
 		@Override
+		public PathInputSpec next(Function<PathInputContext, String> next) {
+			this.next = next;
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			getBuilder().addPathInput(this);
 			return getBuilder();
+		}
+
+		@Override
+		public PathInputSpec getThis() {
+			return this;
 		}
 
 		public String getName() {
@@ -928,6 +996,10 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		public boolean isStoreResult() {
 			return storeResult;
 		}
+
+		public Function<PathInputContext, String> getNext() {
+			return next;
+		}
 	}
 
 	static class DefaultPathInputSpec extends BasePathInput {
@@ -937,7 +1009,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 	}
 
-	static abstract class BaseSingleItemSelector extends BaseInput implements SingleItemSelectorSpec {
+	static abstract class BaseSingleItemSelector extends BaseInput<SingleItemSelectorSpec> implements SingleItemSelectorSpec {
 
 		private String name;
 		private String resultValue;
@@ -950,6 +1022,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		private List<Consumer<SingleItemSelectorContext<String, SelectorItem<String>>>> postHandlers = new ArrayList<>();
 		private boolean storeResult = true;
 		private String templateLocation;
+		private Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> next;
 
 		public BaseSingleItemSelector(BaseBuilder builder, String id) {
 			super(builder, id);
@@ -1028,9 +1101,20 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 
 		@Override
+		public SingleItemSelectorSpec next(
+				Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> next) {
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			getBuilder().addSingleItemSelector(this);
 			return getBuilder();
+		}
+
+		@Override
+		public SingleItemSelectorSpec getThis() {
+			return this;
 		}
 
 		public String getName() {
@@ -1075,6 +1159,10 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 
 		public boolean isStoreResult() {
 			return storeResult;
+		}
+
+		public Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> getNext() {
+			return next;
 		}
 	}
 
@@ -1128,7 +1216,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 	}
 
-	static abstract class BaseMultiItemSelector extends BaseInput implements MultiItemSelectorSpec {
+	static abstract class BaseMultiItemSelector extends BaseInput<MultiItemSelectorSpec> implements MultiItemSelectorSpec {
 
 		private String name;
 		private List<String> resultValues = new ArrayList<>();
@@ -1141,6 +1229,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		private List<Consumer<MultiItemSelectorContext<String, SelectorItem<String>>>> postHandlers = new ArrayList<>();
 		private boolean storeResult = true;
 		private String templateLocation;
+		private Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> next;
 
 		public BaseMultiItemSelector(BaseBuilder builder, String id) {
 			super(builder, id);
@@ -1213,9 +1302,21 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		}
 
 		@Override
+		public MultiItemSelectorSpec next(
+				Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> next) {
+			this.next = next;
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			getBuilder().addMultiItemSelector(this);
 			return getBuilder();
+		}
+
+		@Override
+		public MultiItemSelectorSpec getThis() {
+			return this;
 		}
 
 		public String getName() {
@@ -1261,6 +1362,10 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		public boolean isStoreResult() {
 			return storeResult;
 		}
+
+		public Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> getNext() {
+			return next;
+		}
 	}
 
 	static class DefaultMultiInputSpec extends BaseMultiItemSelector {
@@ -1292,6 +1397,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 
 	static class DefaultComponentFlow implements ComponentFlow {
 
+		private static final Logger log = LoggerFactory.getLogger(DefaultComponentFlow.class);
 		private final Terminal terminal;
 		private final List<BaseStringInput> stringInputs;
 		private final List<BasePathInput> pathInputs;
@@ -1317,25 +1423,80 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 			return runGetResults();
 		}
 
+		private static class OrderedInputOperationList {
+
+			private final Map<String, Node> map = new HashMap<>();
+			private Node first;
+
+			OrderedInputOperationList(List<OrderedInputOperation> values) {
+				Node ref = null;
+				for (OrderedInputOperation oio : values) {
+					Node node = new Node(oio);
+					map.put(oio.id, node);
+					if (ref != null) {
+						ref.next = node;
+					}
+					ref = node;
+					if (first == null) {
+						first = node;
+					}
+				}
+			}
+
+			Node get(String id) {
+				return map.get(id);
+			}
+
+			Node getFirst() {
+				return first;
+			}
+
+			static class Node {
+				OrderedInputOperation data;
+				Node next;
+				Node(OrderedInputOperation data) {
+					this.data = data;
+				}
+			}
+		}
+
 		private DefaultComponentFlowResult runGetResults() {
-			Stream<Function<ComponentContext<?>, ComponentContext<?>>> operations = Stream
-					.of(stringInputsStream(), pathInputsStream(), singleItemSelectorsStream(), multiItemSelectorsStream())
-					.flatMap(oio -> oio)
-					.sorted(OrderComparator.INSTANCE)
-					.map(oio -> oio.getOperation());
-			ComponentContext<?> context = chain(ComponentContext.empty(), operations);
+			List<OrderedInputOperation> oios = Stream.of(stringInputsStream(), pathInputsStream(), singleItemSelectorsStream(), multiItemSelectorsStream())
+				.flatMap(oio -> oio)
+				.sorted(OrderComparator.INSTANCE)
+				.collect(Collectors.toList());
+			OrderedInputOperationList oiol = new OrderedInputOperationList(oios);
+			ComponentContext<?> context = ComponentContext.empty();
+
+			OrderedInputOperationList.Node node = oiol.getFirst();
+			while (node != null) {
+				log.debug("Calling apply for {}", node.data.id);
+				context = node.data.getOperation().apply(context);
+				if (node.data.next != null) {
+					String n = node.data.next.apply(context);
+					if (n != null) {
+						node = oiol.get(n);
+					}
+					else {
+						node = node.next;
+					}
+				}
+				else {
+					node = node.next;
+				}
+			}
 			return new DefaultComponentFlowResult(context);
 		}
 
 		private Stream<OrderedInputOperation> stringInputsStream() {
 			return stringInputs.stream().map(input -> {
+				StringInput selector = new StringInput(terminal, input.getName(), input.getDefaultValue());
 				Function<ComponentContext<?>, ComponentContext<?>> operation = (context) -> {
 						if (input.getResultMode() == ResultMode.ACCEPT && input.isStoreResult()
 								&& StringUtils.hasText(input.getResultValue())) {
 							context.put(input.getId(), input.getResultValue());
 							return context;
 						}
-						StringInput selector = new StringInput(terminal, input.getName(), input.getDefaultValue());
 						selector.setResourceLoader(resourceLoader);
 						selector.setTemplateExecutor(templateExecutor);
 						selector.setMaskCharater(input.getMaskCharacter());
@@ -1363,19 +1524,21 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 						}
 						return selector.run(context);
 				};
-				return OrderedInputOperation.of(input.getOrder(), operation);
+				Function<StringInputContext, String> f1 = input.getNext();
+				Function<ComponentContext<?>, String> f2 = context -> f1 != null ? f1.apply(selector.getThisContext(context)) : null;
+				return OrderedInputOperation.of(input.getId(), input.getOrder(), operation, f2);
 			});
 		}
 
 		private Stream<OrderedInputOperation> pathInputsStream() {
 			return pathInputs.stream().map(input -> {
+				PathInput selector = new PathInput(terminal, input.getName());
 				Function<ComponentContext<?>, ComponentContext<?>> operation = (context) -> {
 						if (input.getResultMode() == ResultMode.ACCEPT && input.isStoreResult()
 								&& StringUtils.hasText(input.getResultValue())) {
 							context.put(input.getId(), Paths.get(input.getResultValue()));
 							return context;
 						}
-						PathInput selector = new PathInput(terminal, input.getName());
 						selector.setResourceLoader(resourceLoader);
 						selector.setTemplateExecutor(templateExecutor);
 						if (StringUtils.hasText(input.getTemplateLocation())) {
@@ -1397,23 +1560,25 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 						}
 						return selector.run(context);
 				};
-				return OrderedInputOperation.of(input.getOrder(), operation);
+				Function<PathInputContext, String> f1 = input.getNext();
+				Function<ComponentContext<?>, String> f2 = context -> f1 != null ? f1.apply(selector.getThisContext(context)) : null;
+				return OrderedInputOperation.of(input.getId(), input.getOrder(), operation, f2);
 			});
 		}
 
 		private Stream<OrderedInputOperation> singleItemSelectorsStream() {
 			return singleInputs.stream().map(input -> {
+				List<SelectorItem<String>> selectorItems = input.getSelectItems().entrySet().stream()
+					.map(e -> SelectorItem.of(e.getKey(), e.getValue()))
+					.collect(Collectors.toList());
+				SingleItemSelector<String, SelectorItem<String>> selector = new SingleItemSelector<>(terminal,
+						selectorItems, input.getName(), input.getComparator());
 				Function<ComponentContext<?>, ComponentContext<?>> operation = (context) -> {
 					if (input.getResultMode() == ResultMode.ACCEPT && input.isStoreResult()
 							&& StringUtils.hasText(input.getResultValue())) {
 						context.put(input.getId(), input.getResultValue());
 						return context;
 					}
-					List<SelectorItem<String>> selectorItems = input.getSelectItems().entrySet().stream()
-						.map(e -> SelectorItem.of(e.getKey(), e.getValue()))
-						.collect(Collectors.toList());
-					SingleItemSelector<String, SelectorItem<String>> selector = new SingleItemSelector<>(terminal,
-							selectorItems, input.getName(), input.getComparator());
 					selector.setResourceLoader(resourceLoader);
 					selector.setTemplateExecutor(templateExecutor);
 					if (StringUtils.hasText(input.getTemplateLocation())) {
@@ -1440,23 +1605,25 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 					}
 					return selector.run(context);
 				};
-				return OrderedInputOperation.of(input.getOrder(), operation);
+				Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> f1 = input.getNext();
+				Function<ComponentContext<?>, String> f2 = context -> f1 != null ? f1.apply(selector.getThisContext(context)) : null;
+				return OrderedInputOperation.of(input.getId(), input.getOrder(), operation, f2);
 			});
 		}
 
 		private Stream<OrderedInputOperation> multiItemSelectorsStream() {
 			return multiInputs.stream().map(input -> {
+				List<SelectorItem<String>> selectorItems = input.getSelectItems().stream()
+						.map(si -> SelectorItem.of(si.name(), si.item(), si.enabled()))
+						.collect(Collectors.toList());
+				MultiItemSelector<String, SelectorItem<String>> selector = new MultiItemSelector<>(terminal,
+						selectorItems, input.getName(), input.getComparator());
 				Function<ComponentContext<?>, ComponentContext<?>> operation = (context) -> {
 					if (input.getResultMode() == ResultMode.ACCEPT && input.isStoreResult()
 							&& !ObjectUtils.isEmpty(input.getResultValues())) {
 						context.put(input.getId(), input.getResultValues());
 						return context;
 					}
-					List<SelectorItem<String>> selectorItems = input.getSelectItems().stream()
-							.map(si -> SelectorItem.of(si.name(), si.item(), si.enabled()))
-							.collect(Collectors.toList());
-					MultiItemSelector<String, SelectorItem<String>> selector = new MultiItemSelector<>(terminal,
-							selectorItems, input.getName(), input.getComparator());
 					selector.setResourceLoader(resourceLoader);
 					selector.setTemplateExecutor(templateExecutor);
 					if (StringUtils.hasText(input.getTemplateLocation())) {
@@ -1481,37 +1648,43 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 					}
 					return selector.run(context);
 				};
-				return OrderedInputOperation.of(input.getOrder(), operation);
+				Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> f1 = input.getNext();
+				Function<ComponentContext<?>, String> f2 = context -> f1 != null ? f1.apply(selector.getThisContext(context)) : null;
+				return OrderedInputOperation.of(input.getId(), input.getOrder(), operation, f2);
 			});
-		}
-
-		private static ComponentContext<?> chain(ComponentContext<?> context,
-				Stream<Function<ComponentContext<?>, ComponentContext<?>>> operations) {
-			for (Function<ComponentContext<?>, ComponentContext<?>> operation : operations.collect(Collectors.toList())) {
-				context = operation.apply(context);
-			}
-			return context;
 		}
 	}
 
 	static class OrderedInputOperation implements Ordered {
 
+		private String id;
 		private int order;
 		private Function<ComponentContext<?>, ComponentContext<?>> operation;
+		private Function<ComponentContext<?>, String> next;
 
 		@Override
 		public int getOrder() {
 			return order;
 		}
 
+		public String getId() {
+			return id;
+		}
+
 		public Function<ComponentContext<?>, ComponentContext<?>> getOperation() {
 			return operation;
 		}
 
-		static OrderedInputOperation of(int order, Function<ComponentContext<?>, ComponentContext<?>> operation) {
+		public Function<ComponentContext<?>, String> getNext() {
+			return next;
+		}
+
+		static OrderedInputOperation of(String id, int order, Function<ComponentContext<?>, ComponentContext<?>> operation, Function<ComponentContext<?>, String> next) {
 			OrderedInputOperation oio = new OrderedInputOperation();
+			oio.id = id;
 			oio.order = order;
 			oio.operation = operation;
+			oio.next = next;
 			return oio;
 		}
 	}
