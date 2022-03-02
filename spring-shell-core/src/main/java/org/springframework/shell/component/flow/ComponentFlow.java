@@ -215,6 +215,12 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		StringInputSpec storeResult(boolean store);
 
+		/**
+		 * Define a function which may return id of a next component to go.
+		 *
+		 * @param next next component function
+		 * @return a builder
+		 */
 		StringInputSpec next(Function<StringInputContext, String> next);
 
 		/**
@@ -303,6 +309,12 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		PathInputSpec storeResult(boolean store);
 
+		/**
+		 * Define a function which may return id of a next component to go.
+		 *
+		 * @param next next component function
+		 * @return a builder
+		 */
 		PathInputSpec next(Function<PathInputContext, String> next);
 
 		/**
@@ -416,6 +428,12 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		SingleItemSelectorSpec storeResult(boolean store);
 
+		/**
+		 * Define a function which may return id of a next component to go.
+		 *
+		 * @param next next component function
+		 * @return a builder
+		 */
 		SingleItemSelectorSpec next(Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> next);
 
 		/**
@@ -520,6 +538,12 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		 */
 		MultiItemSelectorSpec storeResult(boolean store);
 
+		/**
+		 * Define a function which may return id of a next component to go.
+		 *
+		 * @param next next component function
+		 * @return a builder
+		 */
 		MultiItemSelectorSpec next(Function<MultiItemSelectorContext<String, SelectorItem<String>>, String> next);
 
 		/**
@@ -803,12 +827,6 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 			this.next = next;
 			return this;
 		}
-
-		// @Override
-		// public StringInputSpec next(Function<StringInputSpec, String> next) {
-		// 	this.next = next;
-		// 	return this;
-		// }
 
 		@Override
 		public Builder and() {
@@ -1103,6 +1121,7 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 		@Override
 		public SingleItemSelectorSpec next(
 				Function<SingleItemSelectorContext<String, SelectorItem<String>>, String> next) {
+			this.next = next;
 			return this;
 		}
 
@@ -1478,7 +1497,8 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 						node = oiol.get(n);
 					}
 					else {
-						node = node.next;
+						// node = node.next;
+						node = null;
 					}
 				}
 				else {
@@ -1679,7 +1699,9 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 			return next;
 		}
 
-		static OrderedInputOperation of(String id, int order, Function<ComponentContext<?>, ComponentContext<?>> operation, Function<ComponentContext<?>, String> next) {
+		static OrderedInputOperation of(String id, int order,
+				Function<ComponentContext<?>, ComponentContext<?>> operation,
+				Function<ComponentContext<?>, String> next) {
 			OrderedInputOperation oio = new OrderedInputOperation();
 			oio.id = id;
 			oio.order = order;
