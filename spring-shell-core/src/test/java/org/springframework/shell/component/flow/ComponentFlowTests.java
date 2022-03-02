@@ -198,6 +198,7 @@ public class ComponentFlowTests extends AbstractShellTests {
 				ComponentFlowResult inputWizardResult = result.get();
 				assertThat(inputWizardResult).isNotNull();
 				String id1 = inputWizardResult.getContext().get("id1");
+				// TODO: should be able to check if variable exists
 				// String id2 = inputWizardResult.getContext().get("id2");
 				String id3 = inputWizardResult.getContext().get("id3");
 				assertThat(id1).isEqualTo("id3");
