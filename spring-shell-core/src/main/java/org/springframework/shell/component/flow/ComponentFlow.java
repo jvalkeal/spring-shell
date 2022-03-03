@@ -45,7 +45,6 @@ import org.springframework.shell.component.SingleItemSelector.SingleItemSelector
 import org.springframework.shell.component.StringInput;
 import org.springframework.shell.component.StringInput.StringInputContext;
 import org.springframework.shell.component.context.ComponentContext;
-import org.springframework.shell.component.flow.ComponentFlow.ComponentFlowResult;
 import org.springframework.shell.component.support.SelectorItem;
 import org.springframework.shell.style.TemplateExecutor;
 import org.springframework.util.ObjectUtils;
@@ -56,11 +55,9 @@ import org.springframework.util.StringUtils;
  * from a user using shell style components for simple text/path input, single select and
  * multi-select.
  *
- * NOTE: Experiment until moved to spring-shell
- *
  * @author Janne Valkealahti
  */
-public interface ComponentFlow extends Wizard<ComponentFlowResult> {
+public interface ComponentFlow {
 
 	/**
 	 * Run a wizard and returns a result from it.
@@ -80,9 +77,9 @@ public interface ComponentFlow extends Wizard<ComponentFlowResult> {
 	}
 
 	/**
-	 * Results from a wizard run.
+	 * Results from a flow run.
 	 */
-	interface ComponentFlowResult extends WizardResult {
+	interface ComponentFlowResult {
 
 		/**
 		 * Gets a context.
