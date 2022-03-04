@@ -34,6 +34,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,7 @@ import static org.springframework.shell.Utils.unCamelify;
  */
 public class JCommanderParameterResolver implements ParameterResolver {
 
+	private final static Logger log = LoggerFactory.getLogger(JCommanderParameterResolver.class);
 	private static final Collection<Class<? extends Annotation>> JCOMMANDER_ANNOTATIONS = Arrays.asList(Parameter.class,
 			DynamicParameter.class, ParametersDelegate.class);
 
@@ -72,6 +75,7 @@ public class JCommanderParameterResolver implements ParameterResolver {
 		Class<?> parameterType = parameter.getParameterType();
 
 		if (isLegalReflectiveAccess(parameterType)) {
+			log.debug("isLegalReflectiveAccess pos1");
 			ReflectionUtils.doWithFields(parameterType, field -> {
 				if (isLegalReflectiveAccess(field.getType())) {
 					ReflectionUtils.makeAccessible(field);
@@ -79,6 +83,7 @@ public class JCommanderParameterResolver implements ParameterResolver {
 							.map(Annotation::annotationType)
 							.anyMatch(JCOMMANDER_ANNOTATIONS::contains);
 					isSupported.compareAndSet(false, hasAnnotation);
+					log.debug("isLegalReflectiveAccess pos2 {}", hasAnnotation);
 				}
 			});
 
@@ -89,9 +94,11 @@ public class JCommanderParameterResolver implements ParameterResolver {
 							.map(Annotation::annotationType)
 							.anyMatch(Parameter.class::equals);
 					isSupported.compareAndSet(false, hasAnnotation);
+					log.debug("isLegalReflectiveAccess pos3 {}", hasAnnotation);
 				}
 			});
 		}
+		log.debug("Supports {}", isSupported.get());
 		return isSupported.get();
 	}
 
@@ -139,7 +146,9 @@ public class JCommanderParameterResolver implements ParameterResolver {
 
 	// Java 9+ warn if you try to reflect on JDK types
 	private static boolean isLegalReflectiveAccess(Class<?> clzz) {
-		return (!clzz.getName().startsWith("java"));
+		return true;
+		// log.debug("isLegalReflectiveAccess {}", !clzz.getName().startsWith("java"));
+		// return (!clzz.getName().startsWith("java"));
 	}
 
 	@Override
