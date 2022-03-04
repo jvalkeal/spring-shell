@@ -15,19 +15,8 @@
  */
 package org.springframework.shell.xxx;
 
-import java.util.function.Function;
+public interface CommandCatalog {
 
-public class CommandExecution {
+	void register(CommandRegistration registration);
 
-	public Object evaluate(CommandRegistration registration, String[] args) {
-		Function<CommandExecutionContext, ?> function = registration.getFunction();
-		CommandExecutionContext ctx = CommandExecutionContext.of();
-		Object res = function.apply(ctx);
-		return res;
-	}
-
-	private CommandExecutionContext resolveContext(CommandRegistration registration, String[] args) {
-		CommandExecutionContext ctx = CommandExecutionContext.of();
-		return ctx;
-	}
 }

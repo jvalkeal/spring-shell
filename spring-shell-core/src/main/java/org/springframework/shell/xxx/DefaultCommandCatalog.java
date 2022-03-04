@@ -15,19 +15,15 @@
  */
 package org.springframework.shell.xxx;
 
-import java.util.function.Function;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-public class CommandExecution {
+public class DefaultCommandCatalog implements CommandCatalog {
 
-	public Object evaluate(CommandRegistration registration, String[] args) {
-		Function<CommandExecutionContext, ?> function = registration.getFunction();
-		CommandExecutionContext ctx = CommandExecutionContext.of();
-		Object res = function.apply(ctx);
-		return res;
-	}
+	private final Set<CommandRegistration> commandRegistrations = new CopyOnWriteArraySet<>();
 
-	private CommandExecutionContext resolveContext(CommandRegistration registration, String[] args) {
-		CommandExecutionContext ctx = CommandExecutionContext.of();
-		return ctx;
+	@Override
+	public void register(CommandRegistration registration) {
+		this.commandRegistrations.add(registration);
 	}
 }
