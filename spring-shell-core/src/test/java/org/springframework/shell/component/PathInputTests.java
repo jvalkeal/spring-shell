@@ -30,6 +30,9 @@ import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.shell.component.PathInput.PathInputContext;
@@ -70,8 +73,21 @@ public class PathInputTests extends AbstractShellTests {
 	}
 
 	@Test
-	public void testResultUserInput() throws InterruptedException, IOException {
-		Path path = fileSystem.getPath("tmp");
+	@EnabledOnOs(value = { OS.LINUX, OS.MAC })
+	public void testResultUserInputUnix(@TempDir Path tempDir) throws InterruptedException, IOException {
+		Path path = tempDir.toAbsolutePath().resolve("one").resolve("two");
+		runResultUserInput(path.toAbsolutePath().toString(), "one/two");
+	}
+
+	@Test
+	@EnabledOnOs(value = { OS.WINDOWS })
+	public void testResultUserInputWin(@TempDir Path tempDir) throws InterruptedException, IOException {
+		Path path = tempDir.toAbsolutePath().resolve("one").resolve("two");
+		runResultUserInput(path.toAbsolutePath().toString(), "one\two");
+	}
+
+	private void runResultUserInput(String text, String assertContains) throws InterruptedException, IOException {
+		Path path = fileSystem.getPath(text);
 		Files.createDirectories(path);
 		ComponentContext<?> empty = ComponentContext.empty();
 		PathInput component1 = new PathInput(getTerminal(), "component1");
@@ -85,7 +101,7 @@ public class PathInputTests extends AbstractShellTests {
 			latch1.countDown();
 		});
 
-		TestBuffer testBuffer = new TestBuffer().append("tmp").cr();
+		TestBuffer testBuffer = new TestBuffer().append(text).cr();
 		write(testBuffer.getBytes());
 
 		latch1.await(2, TimeUnit.SECONDS);
@@ -93,6 +109,6 @@ public class PathInputTests extends AbstractShellTests {
 
 		assertThat(run1Context).isNotNull();
 		assertThat(run1Context.getResultValue()).isNotNull();
-		assertThat(run1Context.getResultValue().toString()).contains("tmp");
+		assertThat(run1Context.getResultValue().toString()).contains(assertContains);
 	}
 }

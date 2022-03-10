@@ -2,16 +2,14 @@ name: CI
 
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - '.github/**'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ 'linux-latest', 'macos-latest', 'windows-latest' ]
         java: [ '8', '11', '17' ]
     name: CI Build ${{ matrix.java }}
     steps:
@@ -22,9 +20,3 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
       - run: ./mvnw -B package
-  publish:
-    needs: [build]
-    name: Call Publish Snapshot
-    uses: spring-projects/spring-shell/.github/workflows/ci-publish.yml@main
-    secrets:
-      jfArtifactorySpring: ${{ secrets.JF_ARTIFACTORY_SPRING }}
