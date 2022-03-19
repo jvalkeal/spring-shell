@@ -17,8 +17,6 @@ package org.springframework.shell.xxx;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.core.ResolvableType;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -55,16 +53,39 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	}
 
 	@Test
-	public void testSimpleFullRegistration() {
+	public void testFunctionRegistration() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getFunction()).isNotNull();
+		assertThat(registration.getMethod()).isNull();
+	}
+
+	@Test
+	public void testMethodRegistration() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.targetMethod()
+				.method(pojo1, "method3", String.class)
+				.and()
+			.build();
+		assertThat(registration.getFunction()).isNull();
+		assertThat(registration.getMethod()).isNotNull();
+	}
+
+	@Test
+	public void testSimpleFullRegistrationWithFunction() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
 			.help("help")
 			.withOption()
 				.name("--arg1")
-				// .type(ResolvableType.forClass(String.class))
 				.description("some arg1")
 				.and()
-			.withAction()
+			.targetFunction()
 				.function(function1)
 				.and()
 			.build();
@@ -73,5 +94,25 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getOptions()).hasSize(1);
 		assertThat(registration.getOptions().get(0).getName()).isEqualTo("arg1");
 		assertThat(registration.getOptions().get(0).getAliases()).containsExactly("--arg1");
+	}
+
+	@Test
+	public void testSimpleFullRegistrationWithMethod() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.name("--arg1")
+				.description("some arg1")
+				.and()
+			.targetMethod()
+				.method(pojo1, "method3", String.class)
+				.and()
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1");
+		assertThat(registration.getHelp()).isEqualTo("help");
+		assertThat(registration.getOptions()).hasSize(1);
+		// assertThat(registration.getOptions().get(0).getName()).isEqualTo("arg1");
+		// assertThat(registration.getOptions().get(0).getAliases()).containsExactly("--arg1");
 	}
 }

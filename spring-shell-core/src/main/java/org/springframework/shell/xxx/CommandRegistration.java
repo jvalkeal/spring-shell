@@ -43,10 +43,22 @@ public interface CommandRegistration {
 	 * @return array of commands
 	 */
 	String[] getCommands();
+
+	/**
+	 * Get help for a command.
+	 *
+	 * @return the help
+	 */
 	String getHelp();
+
+	/**
+	 * Get description for a command.
+	 *
+	 * @return the description
+	 */
 	String getDescription();
 	Function<CommandContext, ?> getFunction();
-	InvocableHandlerMethod getInvocableHandlerMethod();
+	InvocableHandlerMethod getMethod();
 	List<CommandOption> getOptions();
 
 	public static Builder builder() {
@@ -81,9 +93,15 @@ public interface CommandRegistration {
 		Builder and();
 	}
 
-	public interface ActionSpec {
-		ActionSpec function(Function<CommandContext, ?> function);
-		ActionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
+	public interface TargetFunctionSpec {
+		TargetFunctionSpec function(Function<CommandContext, ?> function);
+		// TargetFunctionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
+		Builder and();
+	}
+
+	public interface TargetMethodSpec {
+		// TargetFunctionSpec function(Function<CommandContext, ?> function);
+		TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
 		Builder and();
 	}
 
@@ -121,7 +139,9 @@ public interface CommandRegistration {
 		 *
 		 * @return action spec for chaining
 		 */
-		ActionSpec withAction();
+		TargetFunctionSpec targetFunction();
+
+		TargetMethodSpec targetMethod();
 
 		/**
 		 * Builds a {@link CommandRegistration}.
@@ -184,26 +204,41 @@ public interface CommandRegistration {
 		}
 	}
 
-	static class DefaultActionSpec implements ActionSpec {
+	static class DefaultFunctionSpec implements TargetFunctionSpec {
 
 		private BaseBuilder builder;
 		private Function<CommandContext, ?> function;
-		private Object methodBean;
-		private String methodMethod;
-		private Class<?>[] paramTypes;
 
-		DefaultActionSpec(BaseBuilder builder) {
+		DefaultFunctionSpec(BaseBuilder builder) {
 			this.builder = builder;
 		}
 
 		@Override
-		public ActionSpec function(Function<CommandContext, ?> function) {
+		public TargetFunctionSpec function(Function<CommandContext, ?> function) {
 			this.function = function;
 			return this;
 		}
 
 		@Override
-		public ActionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes) {
+		public Builder and() {
+			builder.function = function;
+			return builder;
+		}
+	}
+
+	static class DefaultMethodSpec implements TargetMethodSpec {
+
+		private BaseBuilder builder;
+		private Object methodBean;
+		private String methodMethod;
+		private Class<?>[] paramTypes;
+
+		DefaultMethodSpec(BaseBuilder builder) {
+			this.builder = builder;
+		}
+
+		@Override
+		public TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes) {
 			this.methodBean = bean;
 			this.methodMethod = method;
 			this.paramTypes = paramTypes;
@@ -212,7 +247,6 @@ public interface CommandRegistration {
 
 		@Override
 		public Builder and() {
-			builder.function = function;
 			if (methodBean != null && methodMethod != null) {
 				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod, paramTypes);
 				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
@@ -262,7 +296,7 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public InvocableHandlerMethod getInvocableHandlerMethod() {
+		public InvocableHandlerMethod getMethod() {
 			return invocableHandlerMethod;
 		}
 
@@ -313,8 +347,13 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public ActionSpec withAction() {
-			return new DefaultActionSpec(this);
+		public TargetFunctionSpec targetFunction() {
+			return new DefaultFunctionSpec(this);
+		}
+
+		@Override
+		public TargetMethodSpec targetMethod() {
+			return new DefaultMethodSpec(this);
 		}
 
 		@Override

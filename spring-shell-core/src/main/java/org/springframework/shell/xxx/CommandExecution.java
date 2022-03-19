@@ -71,18 +71,15 @@ public interface CommandExecution {
 			Object res = null;
 
 			Function<CommandContext, ?> function = registration.getFunction();
-			InvocableHandlerMethod invocableHandlerMethod = registration.getInvocableHandlerMethod();
-
-			HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
-			argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
-			argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
-			invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
-
-
+			InvocableHandlerMethod invocableHandlerMethod = registration.getMethod();
 			if (function != null) {
 				res = function.apply(ctx);
 			}
 			else if (invocableHandlerMethod != null) {
+				HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
+				argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
+				argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
+				invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
 					results.results().stream().forEach(r -> {
@@ -90,7 +87,7 @@ public interface CommandExecution {
 							messageBuilder.setHeader(alias, r.value());
 						}
 					});
-					Message<String[]> build = messageBuilder.build();
+					// Message<String[]> build = messageBuilder.build();
 					// res = invocableHandlerMethod.invoke(messageBuilder.build(), args);
 					res = invocableHandlerMethod.invoke(messageBuilder.build(), null);
 				} catch (Exception e) {

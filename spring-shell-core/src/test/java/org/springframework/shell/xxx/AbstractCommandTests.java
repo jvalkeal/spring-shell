@@ -24,7 +24,7 @@ public abstract class AbstractCommandTests {
 	protected Pojo1 pojo1 = new Pojo1();
 
 	protected Function<CommandContext, String> function1 = ctx -> {
-		String arg1 = ctx.getOptionValue("--arg1");
+		String arg1 = ctx.getOptionValue("arg1");
 		return "hi" + arg1;
 	};
 

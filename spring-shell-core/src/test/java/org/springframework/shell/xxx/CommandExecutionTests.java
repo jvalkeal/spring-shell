@@ -17,8 +17,6 @@ package org.springframework.shell.xxx;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.core.ResolvableType;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandExecutionTests extends AbstractCommandTests {
@@ -30,10 +28,9 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.help("help")
 			.withOption()
 				.name("--arg1")
-				// .type(ResolvableType.forClass(String.class))
 				.description("some arg1")
 				.and()
-			.withAction()
+			.targetFunction()
 				.function(function1)
 				.and()
 			.build();
@@ -49,10 +46,9 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.help("help")
 			.withOption()
 				.name("--arg1")
-				// .type(ResolvableType.forClass(String.class))
 				.description("some arg1")
 				.and()
-			.withAction()
+			.targetMethod()
 				.method(pojo1, "method3", String.class)
 				.and()
 			.build();
