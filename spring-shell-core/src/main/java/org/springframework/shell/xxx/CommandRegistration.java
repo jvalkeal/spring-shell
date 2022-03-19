@@ -15,12 +15,20 @@
  */
 package org.springframework.shell.xxx;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.lang.Nullable;
+import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Interface defining a command registration endpoint.
@@ -29,10 +37,16 @@ import org.springframework.core.ResolvableType;
  */
 public interface CommandRegistration {
 
-	String getCommand();
+	/**
+	 * Gets an array of commands for this registration.
+	 *
+	 * @return array of commands
+	 */
+	String[] getCommands();
 	String getHelp();
 	String getDescription();
-	Function<CommandExecutionContext, ?> getFunction();
+	Function<CommandContext, ?> getFunction();
+	InvocableHandlerMethod getInvocableHandlerMethod();
 	List<CommandOption> getOptions();
 
 	public static Builder builder() {
@@ -40,23 +54,80 @@ public interface CommandRegistration {
 	}
 
 	public interface OptionSpec {
-		OptionSpec name(String name);
-		OptionSpec type(ResolvableType type);
+
+		/**
+		 * Define options. First name in an array with "-" leading characters stripped
+		 * determines option main name, others will become as aliases.
+		 *
+		 * @param names the option names
+		 * @return option spec for chaining
+		 */
+		OptionSpec name(String... names);
+		// OptionSpec type(ResolvableType type);
+
+		/**
+		 * Define a {@code description} for an option.
+		 *
+		 * @param description the option description
+		 * @return option spec for chaining
+		 */
 		OptionSpec description(String description);
+
+		/**
+		 * Return a builder for chaining.
+		 *
+		 * @return a builder for chaining
+		 */
 		Builder and();
 	}
 
 	public interface ActionSpec {
-		ActionSpec function(Function<CommandExecutionContext, ?> function);
-		ActionSpec method(Object bean, String method);
+		ActionSpec function(Function<CommandContext, ?> function);
+		ActionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
 		Builder and();
 	}
 
 	public interface Builder {
-		Builder command(String help);
+
+		/**
+		 * Define commands this registration uses. Essentially defines a full set of
+		 * main and sub commands. It doesn't matter if full command is defined in one
+		 * string or multiple strings as "words" are splitted and trimmed with
+		 * whitespaces. You will get result of {@code command subcommand1 subcommand2, ...}.
+		 *
+		 * @param commands the commands
+		 * @return builder for chaining
+		 */
+		Builder command(String... commands);
+
+		/**
+		 * Define a simple help text for a commmand.
+		 *
+		 * @param help the help text
+		 * @return builder for chaining
+		 */
 		Builder help(String help);
+
+		/**
+		 * Define an option what this command should user for. Can be used multiple
+		 * times.
+		 *
+		 * @return option spec for chaining
+		 */
 		OptionSpec withOption();
+
+		/**
+		 * Define an action what this command should execute. Can be used only once.
+		 *
+		 * @return action spec for chaining
+		 */
 		ActionSpec withAction();
+
+		/**
+		 * Builds a {@link CommandRegistration}.
+		 *
+		 * @return a command registration
+		 */
 		CommandRegistration build();
 	}
 
@@ -64,7 +135,8 @@ public interface CommandRegistration {
 
 		private BaseBuilder builder;
 		private String name;
-		private ResolvableType type;
+		private String[] aliases;
+		// private ResolvableType type;
 		private String description;
 
 		DefaultOptionSpec(BaseBuilder builder) {
@@ -72,16 +144,17 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public OptionSpec name(String name) {
-			this.name = name;
+		public OptionSpec name(String... names) {
+			this.name = StringUtils.trimLeadingCharacter(names[0], '-');
+			this.aliases = names;
 			return this;
 		}
 
-		@Override
-		public OptionSpec type(ResolvableType type) {
-			this.type = type;
-			return this;
-		}
+		// @Override
+		// public OptionSpec type(ResolvableType type) {
+		// 	this.type = type;
+		// 	return this;
+		// }
 
 		@Override
 		public OptionSpec description(String description) {
@@ -98,9 +171,13 @@ public interface CommandRegistration {
 			return name;
 		}
 
-		public ResolvableType getType() {
-			return type;
+		public String[] getAliases() {
+			return aliases;
 		}
+
+		// public ResolvableType getType() {
+		// 	return type;
+		// }
 
 		public String getDescription() {
 			return description;
@@ -110,54 +187,63 @@ public interface CommandRegistration {
 	static class DefaultActionSpec implements ActionSpec {
 
 		private BaseBuilder builder;
-		private Function<CommandExecutionContext, ?> function;
+		private Function<CommandContext, ?> function;
 		private Object methodBean;
 		private String methodMethod;
+		private Class<?>[] paramTypes;
 
 		DefaultActionSpec(BaseBuilder builder) {
 			this.builder = builder;
 		}
 
 		@Override
-		public ActionSpec function(Function<CommandExecutionContext, ?> function) {
+		public ActionSpec function(Function<CommandContext, ?> function) {
 			this.function = function;
 			return this;
 		}
 
 		@Override
-		public ActionSpec method(Object bean, String method) {
+		public ActionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes) {
 			this.methodBean = bean;
 			this.methodMethod = method;
+			this.paramTypes = paramTypes;
 			return this;
 		}
 
 		@Override
 		public Builder and() {
 			builder.function = function;
+			if (methodBean != null && methodMethod != null) {
+				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod, paramTypes);
+				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
+				builder.invocableHandlerMethod = invocableHandlerMethod;
+			}
 			return builder;
 		}
 	}
 
 	static class DefaultCommandRegistration implements CommandRegistration {
 
-		private String command;
+		private String[] commands;
 		private String help;
 		private String description;
-		private Function<CommandExecutionContext, ?> function;
+		private Function<CommandContext, ?> function;
+		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs;
 
-		public DefaultCommandRegistration(String command, String help, String description,
-				Function<CommandExecutionContext, ?> function, List<DefaultOptionSpec> optionSpecs) {
-			this.command = command;
+		public DefaultCommandRegistration(String[] commands, String help, String description,
+				Function<CommandContext, ?> function, List<DefaultOptionSpec> optionSpecs, InvocableHandlerMethod invocableHandlerMethod) {
+			this.commands = commands;
 			this.help = help;
 			this.description = description;
 			this.function = function;
 			this.optionSpecs = optionSpecs;
+			this.invocableHandlerMethod = invocableHandlerMethod;
 		}
 
 		@Override
-		public String getCommand() {
-			return command;
+		public String[] getCommands() {
+			return commands;
 		}
 
 		@Override
@@ -171,14 +257,19 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public Function<CommandExecutionContext, ?> getFunction() {
+		public Function<CommandContext, ?> getFunction() {
 			return function;
+		}
+
+		@Override
+		public InvocableHandlerMethod getInvocableHandlerMethod() {
+			return invocableHandlerMethod;
 		}
 
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getName(), o.getType(), o.getDescription()))
+				.map(o -> CommandOption.of(o.getName(), o.getAliases(), /*o.getType(),*/ o.getDescription()))
 				.collect(Collectors.toList());
 		}
 	}
@@ -189,15 +280,22 @@ public interface CommandRegistration {
 
 	static class BaseBuilder implements Builder {
 
-		private String command;
+		private String[] commands;
 		private String help;
 		private String description;
-		private Function<CommandExecutionContext, ?> function;
+		private Function<CommandContext, ?> function;
+		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs = new ArrayList<>();
 
 		@Override
-		public Builder command(String command) {
-			this.command = command;
+		public Builder command(String... commands) {
+			Assert.notNull(commands, "commands must be set");
+			this.commands = Arrays.asList(commands).stream()
+				.flatMap(c -> Stream.of(c.split(" ")))
+				.filter(c -> StringUtils.hasText(c))
+				.map(c -> c.trim())
+				.collect(Collectors.toList())
+				.toArray(new String[0]);
 			return this;
 		}
 
@@ -221,8 +319,8 @@ public interface CommandRegistration {
 
 		@Override
 		public CommandRegistration build() {
-			return new DefaultCommandRegistration(command, help, description, function, optionSpecs);
+			Assert.notNull(commands, "command cannot be empty");
+			return new DefaultCommandRegistration(commands, help, description, function, optionSpecs, invocableHandlerMethod);
 		}
 	}
-
 }

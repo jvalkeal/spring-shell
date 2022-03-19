@@ -15,10 +15,20 @@
  */
 package org.springframework.shell.xxx;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-import org.springframework.shell.xxx.CommandOptionParser.Results;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
+import org.springframework.messaging.handler.annotation.support.HeadersMethodArgumentResolver;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
+import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.xxx.CommandParser.Results;
 
 /**
  * Interface to evaluate a result from a command with an arguments.
@@ -53,13 +63,41 @@ public interface CommandExecution {
 		public Object evaluate(CommandRegistration registration, String[] args) {
 
 			List<CommandOption> options = registration.getOptions();
-			CommandOptionParser parser = CommandOptionParser.of();
+			CommandParser parser = CommandParser.of();
 			Results results = parser.parse(options, args);
 
-			CommandExecutionContext ctx = CommandExecutionContext.of(args, results);
+			CommandContext ctx = CommandContext.of(args, results);
 
-			Function<CommandExecutionContext, ?> function = registration.getFunction();
-			Object res = function.apply(ctx);
+			Object res = null;
+
+			Function<CommandContext, ?> function = registration.getFunction();
+			InvocableHandlerMethod invocableHandlerMethod = registration.getInvocableHandlerMethod();
+
+			HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
+			argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
+			argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
+			invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
+
+
+			if (function != null) {
+				res = function.apply(ctx);
+			}
+			else if (invocableHandlerMethod != null) {
+				try {
+					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
+					results.results().stream().forEach(r -> {
+						for (String alias : r.option().getAliases()) {
+							messageBuilder.setHeader(alias, r.value());
+						}
+					});
+					Message<String[]> build = messageBuilder.build();
+					// res = invocableHandlerMethod.invoke(messageBuilder.build(), args);
+					res = invocableHandlerMethod.invoke(messageBuilder.build(), null);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
 			return res;
 		}
 	}

@@ -15,6 +15,35 @@
  */
 package org.springframework.shell.xxx;
 
-public class CommandOptionParserTests {
+import java.util.function.Function;
+
+import org.springframework.messaging.handler.annotation.Header;
+
+public abstract class AbstractCommandTests {
+
+	protected Pojo1 pojo1 = new Pojo1();
+
+	protected Function<CommandContext, String> function1 = ctx -> {
+		String arg1 = ctx.getOptionValue("--arg1");
+		return "hi" + arg1;
+	};
+
+	protected static class Pojo1 {
+
+		public void method1() {
+		}
+
+		public String method2() {
+			return null;
+		}
+
+		public String method3(@Header("--arg1") String arg1) {
+			return "hi" + arg1;
+		}
+
+		public String method4(String arg1) {
+			return null;
+		}
+	}
 
 }

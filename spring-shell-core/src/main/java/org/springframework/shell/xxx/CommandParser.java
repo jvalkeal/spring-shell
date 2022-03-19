@@ -20,35 +20,42 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
 
 /**
- *
+ * Interface parsing arguments for a {@link CommandRegistration}. A command is
+ * always identified by a set of words like
+ * {@code command subcommand1 subcommand2} and remaining part of it are options
+ * which this interface intercepts and translates into format we can understand.
  *
  * @author Janne Valkealahti
  */
-public interface CommandOptionParser {
+public interface CommandParser {
 
 	interface Result {
 		CommandOption option();
 		Object value();
 
-		public static Result of(CommandOption option, Object value) {
+		static Result of(CommandOption option, Object value) {
 			return new DefaultResult(option, value);
 		}
 	}
 
+	/**
+	 * Results of a {@link CommandParser}. Basically contains a list of {@link Result}s.
+	 */
 	interface Results {
 		List<Result> results();
 
-		public static Results of(List<Result> results) {
+		static Results of(List<Result> results) {
 			return new DefaultResults(results);
 		}
 	}
 
 	Results parse(List<CommandOption> options, String[] args);
 
-	public static CommandOptionParser of() {
-		return new DefaultCommadOptionParser();
+	public static CommandParser of() {
+		return new DefaultCommadParser();
 	}
 
 	static class DefaultResults implements Results {
@@ -86,7 +93,7 @@ public interface CommandOptionParser {
 		}
 	}
 
-	static class DefaultCommadOptionParser implements CommandOptionParser {
+	static class DefaultCommadParser implements CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
@@ -97,7 +104,10 @@ public interface CommandOptionParser {
 			for (int i = 0; i < args.length; i++) {
 				String arg = args[i];
 				if (onOption == null) {
-					Optional<CommandOption> option = options.stream().filter(o -> o.getName().equals(arg)).findFirst();
+					Optional<CommandOption> option = options.stream()
+						// .filter(o -> o.getName().equals(arg))
+						.filter(o -> ObjectUtils.containsElement(o.getAliases(), arg))
+						.findFirst();
 					if (option.isPresent()) {
 						onOption = option.get();
 					}

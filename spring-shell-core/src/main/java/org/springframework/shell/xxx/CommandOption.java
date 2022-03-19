@@ -25,22 +25,25 @@ import org.springframework.core.ResolvableType;
 public interface CommandOption {
 
 	String getName();
-	ResolvableType getType();
+	String[] getAliases();
+	// ResolvableType getType();
 	String getDescription();
 
-	public static CommandOption of(String name, ResolvableType type, String description) {
-		return new DefaultCommandOption(name, type, description);
+	public static CommandOption of(String name, String[] aliases, /*ResolvableType type,*/ String description) {
+		return new DefaultCommandOption(name, aliases, /*type,*/ description);
 	}
 
 	public static class DefaultCommandOption implements CommandOption {
 
 		private String name;
-		private ResolvableType type;
+		private String[] aliases;
+		// private ResolvableType type;
 		private String description;
 
-		public DefaultCommandOption(String name, ResolvableType type, String description) {
+		public DefaultCommandOption(String name, String[] aliases, /*ResolvableType type,*/ String description) {
 			this.name = name;
-			this.type = type;
+			this.aliases = aliases;
+			// this.type = type;
 			this.description = description;
 		}
 
@@ -50,9 +53,14 @@ public interface CommandOption {
 		}
 
 		@Override
-		public ResolvableType getType() {
-			return type;
+		public String[] getAliases() {
+			return aliases;
 		}
+
+		// @Override
+		// public ResolvableType getType() {
+		// 	return type;
+		// }
 
 		@Override
 		public String getDescription() {

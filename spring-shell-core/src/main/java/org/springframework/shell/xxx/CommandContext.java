@@ -17,31 +17,40 @@ package org.springframework.shell.xxx;
 
 import java.util.Optional;
 
-import org.springframework.shell.xxx.CommandOptionParser.Result;
-import org.springframework.shell.xxx.CommandOptionParser.Results;
+import org.springframework.shell.xxx.CommandParser.Result;
+import org.springframework.shell.xxx.CommandParser.Results;
 
 /**
- *
+ * Interface containing information about current command execution.
  *
  * @author Janne Valkealahti
  */
-public interface CommandExecutionContext {
+public interface CommandContext {
 
+	/**
+	 * Gets a raw args passed into a currently executing command.
+	 *
+	 * @return raw command arguments
+	 */
 	String[] getArgs();
+
 	boolean hasMappedOption(String name);
 	Results getParseResults();
 	<T> T getOptionValue(String name);
 
-	public static CommandExecutionContext of(String[] args, Results results) {
-		return new DefaultCommandExecutionContext(args, results);
+	static CommandContext of(String[] args, Results results) {
+		return new DefaultCommandContext(args, results);
 	}
 
-	static class DefaultCommandExecutionContext implements CommandExecutionContext {
+	/**
+	 * Default implementation of a {@link CommandContext}.
+	 */
+	static class DefaultCommandContext implements CommandContext {
 
 		private String[] args;
 		private Results results;
 
-		DefaultCommandExecutionContext(String[] args, Results results) {
+		DefaultCommandContext(String[] args, Results results) {
 			this.args = args;
 			this.results = results;
 		}

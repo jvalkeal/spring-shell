@@ -15,36 +15,63 @@
  */
 package org.springframework.shell.xxx;
 
-import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class CommandRegistrationTests {
-
-	private Function<CommandExecutionContext, String> function1 = ctx -> {
-		String arg1 = ctx.getOptionValue("--arg1");
-		return "hi" + arg1;
-	};
+public class CommandRegistrationTests extends AbstractCommandTests {
 
 	@Test
-	public void testSimpleFunctionExecution() {
+	public void testCommandMustBeSet() {
+		assertThatThrownBy(() -> {
+			CommandRegistration.builder().build();
+		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("command cannot be empty");
+	}
+
+	@Test
+	public void testCommandStructures() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1");
+
+		registration = CommandRegistration.builder()
+			.command("command1", "command2")
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1", "command2");
+
+		registration = CommandRegistration.builder()
+			.command("command1 command2")
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1", "command2");
+
+		registration = CommandRegistration.builder()
+			.command(" command1  command2 ")
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1", "command2");
+	}
+
+	@Test
+	public void testSimpleFullRegistration() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
 			.help("help")
 			.withOption()
 				.name("--arg1")
-				.type(ResolvableType.forClass(String.class))
+				// .type(ResolvableType.forClass(String.class))
 				.description("some arg1")
 				.and()
 			.withAction()
 				.function(function1)
 				.and()
 			.build();
-		assertThat(registration.getCommand()).isEqualTo("command1");
+		assertThat(registration.getCommands()).containsExactly("command1");
 		assertThat(registration.getHelp()).isEqualTo("help");
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).getName()).isEqualTo("arg1");
+		assertThat(registration.getOptions().get(0).getAliases()).containsExactly("--arg1");
 	}
 }
