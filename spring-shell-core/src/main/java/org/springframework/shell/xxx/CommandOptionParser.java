@@ -51,7 +51,7 @@ public interface CommandOptionParser {
 		return new DefaultCommadOptionParser();
 	}
 
-	public static class DefaultResults implements Results {
+	static class DefaultResults implements Results {
 
 		private List<Result> results;
 
@@ -65,7 +65,7 @@ public interface CommandOptionParser {
 		}
 	}
 
-	public static class DefaultResult implements Result {
+	static class DefaultResult implements Result {
 
 		private CommandOption option;
 		private Object value;
@@ -86,7 +86,7 @@ public interface CommandOptionParser {
 		}
 	}
 
-	public static class DefaultCommadOptionParser implements CommandOptionParser {
+	static class DefaultCommadOptionParser implements CommandOptionParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {

@@ -111,6 +111,8 @@ public interface CommandRegistration {
 
 		private BaseBuilder builder;
 		private Function<CommandExecutionContext, ?> function;
+		private Object methodBean;
+		private String methodMethod;
 
 		DefaultActionSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -124,6 +126,8 @@ public interface CommandRegistration {
 
 		@Override
 		public ActionSpec method(Object bean, String method) {
+			this.methodBean = bean;
+			this.methodMethod = method;
 			return this;
 		}
 

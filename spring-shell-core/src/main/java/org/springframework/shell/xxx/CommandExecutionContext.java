@@ -36,7 +36,7 @@ public interface CommandExecutionContext {
 		return new DefaultCommandExecutionContext(args, results);
 	}
 
-	public static class DefaultCommandExecutionContext implements CommandExecutionContext {
+	static class DefaultCommandExecutionContext implements CommandExecutionContext {
 
 		private String[] args;
 		private Results results;
@@ -71,7 +71,9 @@ public interface CommandExecutionContext {
 		}
 
 		private Optional<Result> find(String name) {
-			return results.results().stream().filter(r -> r.option().getName().equals(name)).findFirst();
+			return results.results().stream()
+				.filter(r -> r.option().getName().equals(name))
+				.findFirst();
 		}
 	}
 }
