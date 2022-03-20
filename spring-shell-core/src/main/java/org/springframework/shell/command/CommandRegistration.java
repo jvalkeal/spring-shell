@@ -58,10 +58,18 @@ public interface CommandRegistration {
 	 * @return the description
 	 */
 	String getDescription();
+
 	Function<CommandContext, ?> getFunction();
+
 	InvocableHandlerMethod getMethod();
+
 	List<CommandOption> getOptions();
 
+	/**
+	 * Gets a new instance of a {@link Buidler}.
+	 *
+	 * @return a new builder instance
+	 */
 	public static Builder builder() {
 		return new DefaultBuilder();
 	}

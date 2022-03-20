@@ -21,7 +21,15 @@ import org.springframework.core.MethodParameter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 
+/**
+ * Implementation of a {@link HandlerMethodArgumentResolver} resolving
+ * {@link CommandContext}.
+ *
+ * @author Janne Valkealahti
+ */
 public class CommandContextMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+	public static final String HEADER_COMMAND_CONTEXT = "springShellCommandContext";
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -32,8 +40,7 @@ public class CommandContextMethodArgumentResolver implements HandlerMethodArgume
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, Message<?> message){
-		CommandContext commandContext = message.getHeaders().get("commandContext", CommandContext.class);
+		CommandContext commandContext = message.getHeaders().get(HEADER_COMMAND_CONTEXT, CommandContext.class);
 		return parameter.isOptional() ? Optional.ofNullable(commandContext) : commandContext;
 	}
-
 }

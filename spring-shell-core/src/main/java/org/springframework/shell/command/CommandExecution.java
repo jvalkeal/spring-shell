@@ -68,6 +68,8 @@ public interface CommandExecution {
 
 			Function<CommandContext, ?> function = registration.getFunction();
 			InvocableHandlerMethod invocableHandlerMethod = registration.getMethod();
+
+			// pick the target to execute
 			if (function != null) {
 				res = function.apply(ctx);
 			}
@@ -84,9 +86,7 @@ public interface CommandExecution {
 							messageBuilder.setHeader(alias, r.value());
 						}
 					});
-					messageBuilder.setHeader("commandContext", ctx);
-					// Message<String[]> build = messageBuilder.build();
-					// res = invocableHandlerMethod.invoke(messageBuilder.build(), args);
+					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
 					res = invocableHandlerMethod.invoke(messageBuilder.build(), null);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
