@@ -18,7 +18,6 @@ package org.springframework.shell.command;
 import java.util.function.Function;
 
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.shell.command.CommandContext;
 
 public abstract class AbstractCommandTests {
 

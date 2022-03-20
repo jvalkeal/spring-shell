@@ -17,9 +17,6 @@ package org.springframework.shell.command;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.command.CommandCatalog;
-import org.springframework.shell.command.CommandRegistration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandCatalogTests extends AbstractCommandTests {

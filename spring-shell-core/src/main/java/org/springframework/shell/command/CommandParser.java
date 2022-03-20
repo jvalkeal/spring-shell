@@ -152,6 +152,9 @@ public interface CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
+			// Currently relatively naive way to parse options and is expected to
+			// get a full rework when more sophisticated features like options groups
+			// etc are added.
 			List<Result> results = new ArrayList<>();
 			CommandOption onOption = null;
 

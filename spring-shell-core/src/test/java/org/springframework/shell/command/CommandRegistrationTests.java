@@ -17,8 +17,6 @@ package org.springframework.shell.command;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.command.CommandRegistration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
