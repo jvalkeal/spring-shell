@@ -30,19 +30,30 @@ public abstract class AbstractCommandTests {
 
 	protected static class Pojo1 {
 
-		public void method1() {
+		public int method1Count;
+		public CommandContext method1Ctx;
+		public int method2Count;
+		public int method3Count;
+		public int method4Count;
+
+		public void method1(CommandContext ctx) {
+			method1Ctx = ctx;
+			method1Count++;
 		}
 
 		public String method2() {
-			return null;
+			method2Count++;
+			return "hi";
 		}
 
 		public String method3(@Header("--arg1") String arg1) {
+			method3Count++;
 			return "hi" + arg1;
 		}
 
 		public String method4(String arg1) {
-			return null;
+			method4Count++;
+			return "hi" + arg1;
 		}
 	}
 

@@ -79,6 +79,7 @@ public interface CommandExecution {
 				HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
 				argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
 				argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
+				argumentResolvers.addResolver(new CommandContextMethodArgumentResolver());
 				invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
@@ -87,6 +88,7 @@ public interface CommandExecution {
 							messageBuilder.setHeader(alias, r.value());
 						}
 					});
+					messageBuilder.setHeader("commandContext", ctx);
 					// Message<String[]> build = messageBuilder.build();
 					// res = invocableHandlerMethod.invoke(messageBuilder.build(), args);
 					res = invocableHandlerMethod.invoke(messageBuilder.build(), null);

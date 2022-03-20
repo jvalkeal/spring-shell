@@ -27,6 +27,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -135,12 +136,17 @@ public interface CommandRegistration {
 		OptionSpec withOption();
 
 		/**
-		 * Define an action what this command should execute. Can be used only once.
+		 * Define a target what this command should execute. Can be used only once.
 		 *
 		 * @return action spec for chaining
 		 */
 		TargetFunctionSpec targetFunction();
 
+		/**
+		 * Define a target what this command should execute. Can be used only once.
+		 *
+		 * @return action spec for chaining
+		 */
 		TargetMethodSpec targetMethod();
 
 		/**
@@ -248,7 +254,7 @@ public interface CommandRegistration {
 		@Override
 		public Builder and() {
 			if (methodBean != null && methodMethod != null) {
-				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod, paramTypes);
+				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod, ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
 				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
 				builder.invocableHandlerMethod = invocableHandlerMethod;
 			}
@@ -359,6 +365,14 @@ public interface CommandRegistration {
 		@Override
 		public CommandRegistration build() {
 			Assert.notNull(commands, "command cannot be empty");
+			int targets = 0;
+			if (function != null) {
+				targets++;
+			}
+			if (invocableHandlerMethod != null) {
+				targets++;
+			}
+			Assert.isTrue(targets == 1, "only one target can exist");
 			return new DefaultCommandRegistration(commands, help, description, function, optionSpecs, invocableHandlerMethod);
 		}
 	}

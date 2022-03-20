@@ -33,21 +33,33 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testCommandStructures() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
+			.targetFunction()
+				.function(function1)
+				.and()
 			.build();
 		assertThat(registration.getCommands()).containsExactly("command1");
 
 		registration = CommandRegistration.builder()
 			.command("command1", "command2")
+			.targetFunction()
+				.function(function1)
+				.and()
 			.build();
 		assertThat(registration.getCommands()).containsExactly("command1", "command2");
 
 		registration = CommandRegistration.builder()
 			.command("command1 command2")
+			.targetFunction()
+				.function(function1)
+				.and()
 			.build();
 		assertThat(registration.getCommands()).containsExactly("command1", "command2");
 
 		registration = CommandRegistration.builder()
 			.command(" command1  command2 ")
+			.targetFunction()
+				.function(function1)
+				.and()
 			.build();
 		assertThat(registration.getCommands()).containsExactly("command1", "command2");
 	}
@@ -74,6 +86,21 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 			.build();
 		assertThat(registration.getFunction()).isNull();
 		assertThat(registration.getMethod()).isNotNull();
+	}
+
+	@Test
+	public void testCanUseOnlyOneTarget() {
+		assertThatThrownBy(() -> {
+			CommandRegistration.builder()
+				.command("command1")
+				.targetFunction()
+					.function(function1)
+					.and()
+				.targetMethod()
+					.method(pojo1, "method3", String.class)
+					.and()
+				.build();
+		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("only one target can exist");
 	}
 
 	@Test

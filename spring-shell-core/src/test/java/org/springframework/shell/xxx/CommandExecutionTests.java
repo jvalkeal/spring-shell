@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommandExecutionTests extends AbstractCommandTests {
 
 	@Test
-	public void testSimpleFunctionExecution() {
+	public void testFunctionExecution() {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("command1")
 			.help("help")
@@ -40,7 +40,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 	}
 
 	@Test
-	public void testMethodExecution() {
+	public void testMethodExecution1() {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("command1")
 			.help("help")
@@ -55,6 +55,27 @@ public class CommandExecutionTests extends AbstractCommandTests {
 		CommandExecution execution = CommandExecution.of();
 		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
 		assertThat(result).isEqualTo("himyarg1value");
+		assertThat(pojo1.method3Count).isEqualTo(1);
+	}
+
+	@Test
+	public void testMethodExecution2() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.name("--arg1")
+				.description("some arg1")
+				.and()
+			.targetMethod()
+				.method(pojo1, "method1")
+				.and()
+			.build();
+		CommandExecution execution = CommandExecution.of();
+		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
+		// assertThat(result).isEqualTo("himyarg1value");
+		assertThat(pojo1.method1Count).isEqualTo(1);
+		assertThat(pojo1.method1Ctx).isNotNull();
 	}
 
 }

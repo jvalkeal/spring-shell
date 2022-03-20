@@ -25,6 +25,9 @@ public class CommandCatalogTests extends AbstractCommandTests {
 	public void testCommandCatalog () {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("group1 sub1")
+			.targetFunction()
+				.function(function1)
+				.and()
 			.build();
 		CommandCatalog catalog = CommandCatalog.of();
 		catalog.register(r1);
