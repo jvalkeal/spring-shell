@@ -15,7 +15,12 @@
  */
 package org.springframework.shell.command;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.command.CommandCatalog.CommandResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,5 +39,22 @@ public class CommandCatalogTests extends AbstractCommandTests {
 		assertThat(catalog.getCommands()).hasSize(1);
 		catalog.unregister(r1);
 		assertThat(catalog.getCommands()).hasSize(0);
+	}
+
+	@Test
+	public void testResolver() {
+		CommandResolver resolver = () -> {
+			HashMap<String, CommandRegistration> regs = new HashMap<>();
+			CommandRegistration r1 = CommandRegistration.builder()
+				.command("group1 sub1")
+				.targetFunction()
+					.function(function1)
+					.and()
+				.build();
+			regs.put("group1 sub1", r1);
+			return regs;
+		};
+		CommandCatalog catalog = CommandCatalog.of(Arrays.asList(resolver));
+		assertThat(catalog.getCommands()).hasSize(1);
 	}
 }

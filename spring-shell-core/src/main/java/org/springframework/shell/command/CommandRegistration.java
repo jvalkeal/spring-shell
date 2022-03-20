@@ -96,12 +96,10 @@ public interface CommandRegistration {
 
 	public interface TargetFunctionSpec {
 		TargetFunctionSpec function(Function<CommandContext, ?> function);
-		// TargetFunctionSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
 		Builder and();
 	}
 
 	public interface TargetMethodSpec {
-		// TargetFunctionSpec function(Function<CommandContext, ?> function);
 		TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
 		Builder and();
 	}

@@ -15,9 +15,11 @@
  */
 package org.springframework.shell.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,12 +54,39 @@ public interface CommandCatalog {
 	Collection<CommandRegistration> getCommands();
 
 	/**
+	 * Interface to resolve currently existing commands. It is useful to have fully
+	 * dynamic set of commands which may exists only if some conditions in a running
+	 * shell are met. For example if shell is targeting arbitrary server environment
+	 * some commands may or may not exist depending on a runtime state.
+	 */
+	@FunctionalInterface
+	interface CommandResolver {
+
+		/**
+		 * Resolve a map of commands.
+		 *
+		 * @return a map of commands
+		 */
+		Map<String, CommandRegistration> resolve();
+	}
+
+	/**
 	 * Gets an instance of a default {@link CommandCatalog}.
 	 *
 	 * @return default command catalog
 	 */
 	static CommandCatalog of() {
-		return new DefaultCommandCatalog();
+		return new DefaultCommandCatalog(null);
+	}
+
+	/**
+	 * Gets an instance of a default {@link CommandCatalog}.
+	 *
+	 * @param resolvers the command resolvers
+	 * @return default command catalog
+	 */
+	static CommandCatalog of(Collection<CommandResolver> resolvers) {
+		return new DefaultCommandCatalog(resolvers);
 	}
 
 	/**
@@ -66,6 +95,13 @@ public interface CommandCatalog {
 	static class DefaultCommandCatalog implements CommandCatalog {
 
 		private final HashMap<String, CommandRegistration> commandRegistrations = new HashMap<>();
+		private final Collection<CommandResolver> resolvers = new ArrayList<>();
+
+		DefaultCommandCatalog(Collection<CommandResolver> resolvers) {
+			if (resolvers != null) {
+				this.resolvers.addAll(resolvers);
+			}
+		}
 
 		@Override
 		public void register(CommandRegistration registration) {
@@ -81,7 +117,12 @@ public interface CommandCatalog {
 
 		@Override
 		public Collection<CommandRegistration> getCommands() {
-			return commandRegistrations.values();
+			HashMap<String, CommandRegistration> regs = new HashMap<>();
+			regs.putAll(commandRegistrations);
+			for (CommandResolver resolver : resolvers) {
+				regs.putAll(resolver.resolve());
+			}
+			return regs.values();
 		}
 
 		private static String commandName(String[] commands) {
