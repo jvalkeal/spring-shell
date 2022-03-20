@@ -13,26 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
-import org.junit.jupiter.api.Test;
+public class CommandParserTests extends AbstractCommandTests {
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class CommandCatalogTests extends AbstractCommandTests {
-
-	@Test
-	public void testCommandCatalog () {
-		CommandRegistration r1 = CommandRegistration.builder()
-			.command("group1 sub1")
-			.targetFunction()
-				.function(function1)
-				.and()
-			.build();
-		CommandCatalog catalog = CommandCatalog.of();
-		catalog.register(r1);
-		assertThat(catalog.getCommands()).hasSize(1);
-		catalog.unregister(r1);
-		assertThat(catalog.getCommands()).hasSize(0);
-	}
 }

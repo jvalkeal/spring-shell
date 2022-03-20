@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
 import java.util.Optional;
 
-import org.springframework.shell.xxx.CommandParser.Result;
-import org.springframework.shell.xxx.CommandParser.Results;
+import org.springframework.shell.command.CommandParser.Result;
+import org.springframework.shell.command.CommandParser.Results;
 
 /**
  * Interface containing information about current command execution.

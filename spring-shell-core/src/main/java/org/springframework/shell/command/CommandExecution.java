@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.springframework.messaging.handler.invocation.HandlerMethodArgumentRes
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.xxx.CommandParser.Results;
+import org.springframework.shell.command.CommandParser.Results;
 
 /**
  * Interface to evaluate a result from a command with an arguments.

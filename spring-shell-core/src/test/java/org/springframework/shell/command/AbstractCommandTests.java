@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
 import java.util.function.Function;
 
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.shell.command.CommandContext;
 
 public abstract class AbstractCommandTests {
 
