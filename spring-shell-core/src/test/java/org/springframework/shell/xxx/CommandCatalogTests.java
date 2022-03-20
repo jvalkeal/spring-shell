@@ -32,6 +32,7 @@ public class CommandCatalogTests extends AbstractCommandTests {
 		CommandCatalog catalog = CommandCatalog.of();
 		catalog.register(r1);
 		assertThat(catalog.getCommands()).hasSize(1);
+		catalog.unregister(r1);
+		assertThat(catalog.getCommands()).hasSize(0);
 	}
-
 }

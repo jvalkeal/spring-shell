@@ -15,9 +15,15 @@
  */
 package org.springframework.shell.xxx;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -32,6 +38,13 @@ public interface CommandCatalog {
 	 * @param registration the command registration
 	 */
 	void register(CommandRegistration registration);
+
+	/**
+	 * Unregister a {@link CommandRegistration}.
+	 *
+	 * @param registration the command registration
+	 */
+	void unregister(CommandRegistration registration);
 
 	/**
 	 * Gets all command registrations.
@@ -54,16 +67,31 @@ public interface CommandCatalog {
 	 */
 	static class DefaultCommandCatalog implements CommandCatalog {
 
-		private final Set<CommandRegistration> commandRegistrations = new CopyOnWriteArraySet<>();
+		private final HashMap<String, CommandRegistration> commandRegistrations = new HashMap<>();
 
 		@Override
 		public void register(CommandRegistration registration) {
-			commandRegistrations.add(registration);
+			String commandName = commandName(registration.getCommands());
+			commandRegistrations.put(commandName, registration);
+		}
+
+		@Override
+		public void unregister(CommandRegistration registration) {
+			String commandName = commandName(registration.getCommands());
+			commandRegistrations.remove(commandName);
 		}
 
 		@Override
 		public Collection<CommandRegistration> getCommands() {
-			return commandRegistrations;
+			return commandRegistrations.values();
+		}
+
+		private static String commandName(String[] commands) {
+			return Arrays.asList(commands).stream()
+				.flatMap(c -> Stream.of(c.split(" ")))
+				.filter(c -> StringUtils.hasText(c))
+				.map(c -> c.trim())
+				.collect(Collectors.joining(" "));
 		}
 	}
 }
