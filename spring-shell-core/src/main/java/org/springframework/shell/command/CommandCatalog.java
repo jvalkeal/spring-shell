@@ -18,15 +18,13 @@ package org.springframework.shell.command;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.util.StringUtils;
 
 /**
- *
+ * Interface defining contract to handle existing {@link CommandRegistration}s.
  *
  * @author Janne Valkealahti
  */

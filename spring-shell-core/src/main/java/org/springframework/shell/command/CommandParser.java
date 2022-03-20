@@ -32,10 +32,32 @@ import org.springframework.util.ObjectUtils;
  */
 public interface CommandParser {
 
+	/**
+	 * Result of a parsing {@link CommandOption} with an argument.
+	 */
 	interface Result {
+
+		/**
+		 * Gets the {@link CommandOption}.
+		 *
+		 * @return the command option
+		 */
 		CommandOption option();
+
+		/**
+		 * Gets the value.
+		 *
+		 * @return the value
+		 */
 		Object value();
 
+		/**
+		 * Gets an instance of a default {@link Result}.
+		 *
+		 * @param option the command option
+		 * @param value the value
+		 * @return a result
+		 */
 		static Result of(CommandOption option, Object value) {
 			return new DefaultResult(option, value);
 		}
@@ -45,19 +67,46 @@ public interface CommandParser {
 	 * Results of a {@link CommandParser}. Basically contains a list of {@link Result}s.
 	 */
 	interface Results {
+
+		/**
+		 * Gets the results.
+		 *
+		 * @return the results
+		 */
 		List<Result> results();
 
+		/**
+		 * Gets an instance of a default {@link Results}.
+		 *
+		 * @param results
+		 * @return
+		 */
 		static Results of(List<Result> results) {
 			return new DefaultResults(results);
 		}
 	}
 
+	/**
+	 * Parse options with a given arguments.
+	 *
+	 * @param options the command options
+	 * @param args the arguments
+	 * @return parsed results
+	 */
 	Results parse(List<CommandOption> options, String[] args);
 
-	public static CommandParser of() {
+	/**
+	 * Gets an instance of a default command parser.
+	 *
+	 * @return instance of a default command parser
+	 */
+	static CommandParser of() {
 		return new DefaultCommadParser();
 	}
 
+	/**
+	 * Default implementation of a {@link Results}.
+	 */
 	static class DefaultResults implements Results {
 
 		private List<Result> results;
@@ -72,6 +121,9 @@ public interface CommandParser {
 		}
 	}
 
+	/**
+	 * Default implementation of a {@link Result}.
+	 */
 	static class DefaultResult implements Result {
 
 		private CommandOption option;
@@ -93,19 +145,20 @@ public interface CommandParser {
 		}
 	}
 
+	/**
+	 * Default implementation of a {@link CommandParser}.
+	 */
 	static class DefaultCommadParser implements CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
-
 			List<Result> results = new ArrayList<>();
-
 			CommandOption onOption = null;
+
 			for (int i = 0; i < args.length; i++) {
 				String arg = args[i];
 				if (onOption == null) {
 					Optional<CommandOption> option = options.stream()
-						// .filter(o -> o.getName().equals(arg))
 						.filter(o -> ObjectUtils.containsElement(o.getAliases(), arg))
 						.findFirst();
 					if (option.isPresent()) {
@@ -118,9 +171,7 @@ public interface CommandParser {
 					onOption = null;
 				}
 			}
-
 			return Results.of(results);
 		}
-
 	}
 }

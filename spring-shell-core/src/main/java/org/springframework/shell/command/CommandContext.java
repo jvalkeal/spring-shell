@@ -32,12 +32,39 @@ public interface CommandContext {
 	 *
 	 * @return raw command arguments
 	 */
-	String[] getArgs();
+	String[] getRawArgs();
 
+	/**
+	 * Gets if option has been mapped.
+	 *
+	 * @param name the option name
+	 * @return true if option has been mapped, false otherwise
+	 */
 	boolean hasMappedOption(String name);
+
+	/**
+	 * Gets a command option parser results.
+	 *
+	 * @return the command option parser results
+	 */
 	Results getParseResults();
+
+	/**
+	 * Gets an mapped option value.
+	 *
+	 * @param <T> the type to map to
+	 * @param name the option name
+	 * @return mapped value
+	 */
 	<T> T getOptionValue(String name);
 
+	/**
+	 * Gets an instance of a default {@link CommandContext}.
+	 *
+	 * @param args the arguments
+	 * @param results the results
+	 * @return a command context
+	 */
 	static CommandContext of(String[] args, Results results) {
 		return new DefaultCommandContext(args, results);
 	}
@@ -56,7 +83,7 @@ public interface CommandContext {
 		}
 
 		@Override
-		public String[] getArgs() {
+		public String[] getRawArgs() {
 			return args;
 		}
 
@@ -71,6 +98,7 @@ public interface CommandContext {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public <T> T getOptionValue(String name) {
 			Optional<Result> find = find(name);
 			if (find.isPresent()) {
