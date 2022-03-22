@@ -139,7 +139,5 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getCommands()).containsExactly("command1");
 		assertThat(registration.getHelp()).isEqualTo("help");
 		assertThat(registration.getOptions()).hasSize(1);
-		// assertThat(registration.getOptions().get(0).getName()).isEqualTo("arg1");
-		// assertThat(registration.getOptions().get(0).getAliases()).containsExactly("--arg1");
 	}
 }

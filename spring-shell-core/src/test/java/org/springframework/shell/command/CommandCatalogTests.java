@@ -17,6 +17,7 @@ package org.springframework.shell.command;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,18 +44,31 @@ public class CommandCatalogTests extends AbstractCommandTests {
 
 	@Test
 	public void testResolver() {
-		CommandResolver resolver = () -> {
-			HashMap<String, CommandRegistration> regs = new HashMap<>();
-			CommandRegistration r1 = CommandRegistration.builder()
-				.command("group1 sub1")
-				.targetFunction()
-					.function(function1)
-					.and()
-				.build();
-			regs.put("group1 sub1", r1);
-			return regs;
-		};
+		// catalog itself would not have any registered command but
+		// this custom resolver adds one which may dymanically go away.
+		DynamicCommandResolver resolver = new DynamicCommandResolver();
 		CommandCatalog catalog = CommandCatalog.of(Arrays.asList(resolver));
 		assertThat(catalog.getCommands()).hasSize(1);
+		resolver.enabled = false;
+		assertThat(catalog.getCommands()).hasSize(0);
+	}
+
+	class DynamicCommandResolver implements CommandResolver {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("group1 sub1")
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+		boolean enabled = true;
+
+		@Override
+		public Map<String, CommandRegistration> resolve() {
+			HashMap<String, CommandRegistration> regs = new HashMap<>();
+			if (enabled) {
+				regs.put("group1 sub1", r1);
+			}
+			return regs;
+		}
 	}
 }

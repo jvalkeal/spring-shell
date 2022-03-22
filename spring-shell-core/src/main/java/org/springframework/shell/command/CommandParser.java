@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -162,19 +161,30 @@ public interface CommandParser {
 				String arg = args[i];
 				if (onOption == null) {
 					Optional<CommandOption> option = options.stream()
-						.filter(o -> ObjectUtils.containsElement(o.getAliases(), arg))
+						.filter(o -> optionMatchesArg(o, arg))
 						.findFirst();
 					if (option.isPresent()) {
 						onOption = option.get();
 					}
 				}
 				else {
-					// ResolvableType type = onOption.getType();
 					results.add(Result.of(onOption, arg));
 					onOption = null;
 				}
 			}
 			return Results.of(results);
+		}
+
+		private boolean optionMatchesArg(CommandOption option, String arg) {
+			if (String.format("--%s", option.getName()).equals(arg)) {
+				return true;
+			}
+			for (String alias : option.getAliases()) {
+				if (arg.equals(alias)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

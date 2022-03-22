@@ -72,8 +72,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.and()
 			.build();
 		CommandExecution execution = CommandExecution.of();
-		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
-		// assertThat(result).isEqualTo("himyarg1value");
+		execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
 		assertThat(pojo1.method1Count).isEqualTo(1);
 		assertThat(pojo1.method1Ctx).isNotNull();
 	}

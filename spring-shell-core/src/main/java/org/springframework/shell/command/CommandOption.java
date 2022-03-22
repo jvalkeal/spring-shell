@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.command;
 
-import org.springframework.core.ResolvableType;
-
 /**
  * Interface representing an option in a command.
  *
@@ -45,8 +43,6 @@ public interface CommandOption {
 	 */
 	String getDescription();
 
-	// ResolvableType getType();
-
 	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
@@ -55,8 +51,8 @@ public interface CommandOption {
 	 * @param description the description
 	 * @return default command option
 	 */
-	public static CommandOption of(String name, String[] aliases, /*ResolvableType type,*/ String description) {
-		return new DefaultCommandOption(name, aliases, /*type,*/ description);
+	public static CommandOption of(String name, String[] aliases, String description) {
+		return new DefaultCommandOption(name, aliases, description);
 	}
 
 	/**
@@ -66,13 +62,11 @@ public interface CommandOption {
 
 		private String name;
 		private String[] aliases;
-		// private ResolvableType type;
 		private String description;
 
-		public DefaultCommandOption(String name, String[] aliases, /*ResolvableType type,*/ String description) {
+		public DefaultCommandOption(String name, String[] aliases, String description) {
 			this.name = name;
 			this.aliases = aliases;
-			// this.type = type;
 			this.description = description;
 		}
 
@@ -85,11 +79,6 @@ public interface CommandOption {
 		public String[] getAliases() {
 			return aliases;
 		}
-
-		// @Override
-		// public ResolvableType getType() {
-		// 	return type;
-		// }
 
 		@Override
 		public String getDescription() {

@@ -15,6 +15,46 @@
  */
 package org.springframework.shell.command;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.command.CommandParser.Results;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class CommandParserTests extends AbstractCommandTests {
 
+	private CommandParser parser;
+
+	@BeforeEach
+	public void setupCommandParserTests() {
+		parser = CommandParser.of();
+	}
+
+	@Test
+	public void testOptionNameToArg() {
+		CommandOption option1 = CommandOption.of("arg1", new String[0], "desc");
+		CommandOption option2 = CommandOption.of("arg2", new String[0], "desc");
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"--arg1", "foo"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("foo");
+	}
+
+	@Test
+	public void testOptionAliasToArg() {
+		CommandOption option1 = CommandOption.of("arg1", new String[]{"--arg11"}, "desc");
+		CommandOption option2 = CommandOption.of("arg2", new String[]{"--arg22"}, "desc");
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"--arg22", "foo"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option2);
+		assertThat(results.results().get(0).value()).isEqualTo("foo");
+	}
 }

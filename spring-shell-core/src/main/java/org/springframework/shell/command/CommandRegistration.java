@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.util.Assert;
@@ -59,10 +58,27 @@ public interface CommandRegistration {
 	 */
 	String getDescription();
 
+	/**
+	 * Gets a target {@link Function} to execute.
+	 *
+	 * @return the target function to execute
+	 */
+	@Nullable
 	Function<CommandContext, ?> getFunction();
 
+	/**
+	 * Gets a target {@link InvocableHandlerMethod} to execute.
+	 *
+	 * @return the target method to execute
+	 */
+	@Nullable
 	InvocableHandlerMethod getMethod();
 
+	/**
+	 * Gets an options.
+	 *
+	 * @return the options
+	 */
 	List<CommandOption> getOptions();
 
 	/**
@@ -84,7 +100,6 @@ public interface CommandRegistration {
 		 * @return option spec for chaining
 		 */
 		OptionSpec name(String... names);
-		// OptionSpec type(ResolvableType type);
 
 		/**
 		 * Define a {@code description} for an option.
@@ -168,7 +183,6 @@ public interface CommandRegistration {
 		private BaseBuilder builder;
 		private String name;
 		private String[] aliases;
-		// private ResolvableType type;
 		private String description;
 
 		DefaultOptionSpec(BaseBuilder builder) {
@@ -181,12 +195,6 @@ public interface CommandRegistration {
 			this.aliases = names;
 			return this;
 		}
-
-		// @Override
-		// public OptionSpec type(ResolvableType type) {
-		// 	this.type = type;
-		// 	return this;
-		// }
 
 		@Override
 		public OptionSpec description(String description) {
@@ -207,21 +215,17 @@ public interface CommandRegistration {
 			return aliases;
 		}
 
-		// public ResolvableType getType() {
-		// 	return type;
-		// }
-
 		public String getDescription() {
 			return description;
 		}
 	}
 
-	static class DefaultFunctionSpec implements TargetFunctionSpec {
+	static class DefaultTargetFunctionSpec implements TargetFunctionSpec {
 
 		private BaseBuilder builder;
 		private Function<CommandContext, ?> function;
 
-		DefaultFunctionSpec(BaseBuilder builder) {
+		DefaultTargetFunctionSpec(BaseBuilder builder) {
 			this.builder = builder;
 		}
 
@@ -238,14 +242,14 @@ public interface CommandRegistration {
 		}
 	}
 
-	static class DefaultMethodSpec implements TargetMethodSpec {
+	static class DefaultTargetMethodSpec implements TargetMethodSpec {
 
 		private BaseBuilder builder;
 		private Object methodBean;
 		private String methodMethod;
 		private Class<?>[] paramTypes;
 
-		DefaultMethodSpec(BaseBuilder builder) {
+		DefaultTargetMethodSpec(BaseBuilder builder) {
 			this.builder = builder;
 		}
 
@@ -260,7 +264,8 @@ public interface CommandRegistration {
 		@Override
 		public Builder and() {
 			if (methodBean != null && methodMethod != null) {
-				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod, ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
+				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod,
+						ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
 				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
 				builder.invocableHandlerMethod = invocableHandlerMethod;
 			}
@@ -315,7 +320,7 @@ public interface CommandRegistration {
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getName(), o.getAliases(), /*o.getType(),*/ o.getDescription()))
+				.map(o -> CommandOption.of(o.getName(), o.getAliases(), o.getDescription()))
 				.collect(Collectors.toList());
 		}
 	}
@@ -360,12 +365,12 @@ public interface CommandRegistration {
 
 		@Override
 		public TargetFunctionSpec targetFunction() {
-			return new DefaultFunctionSpec(this);
+			return new DefaultTargetFunctionSpec(this);
 		}
 
 		@Override
 		public TargetMethodSpec targetMethod() {
-			return new DefaultMethodSpec(this);
+			return new DefaultTargetMethodSpec(this);
 		}
 
 		@Override
