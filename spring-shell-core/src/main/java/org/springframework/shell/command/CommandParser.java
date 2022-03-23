@@ -101,7 +101,7 @@ public interface CommandParser {
 	 * @return instance of a default command parser
 	 */
 	static CommandParser of() {
-		return new DefaultCommadParser();
+		return new DefaultCommandParser();
 	}
 
 	/**
@@ -148,7 +148,7 @@ public interface CommandParser {
 	/**
 	 * Default implementation of a {@link CommandParser}.
 	 */
-	static class DefaultCommadParser implements CommandParser {
+	static class DefaultCommandParser implements CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
