@@ -16,6 +16,7 @@
 package org.springframework.shell.command;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.util.Assert;
@@ -109,6 +111,14 @@ public interface CommandRegistration {
 		OptionSpec shortNames(Character... names);
 
 		/**
+		 * Define a type for an option.
+		 *
+		 * @param type the type
+		 * @return option spec for chaining
+		 */
+		OptionSpec type(Type type);
+
+		/**
 		 * Define a {@code description} for an option.
 		 *
 		 * @param description the option description
@@ -190,6 +200,7 @@ public interface CommandRegistration {
 		private BaseBuilder builder;
 		private String[] longNames;
 		private Character[] shortNames;
+		private ResolvableType type;
 		private String description;
 
 		DefaultOptionSpec(BaseBuilder builder) {
@@ -205,6 +216,12 @@ public interface CommandRegistration {
 		@Override
 		public OptionSpec shortNames(Character... names) {
 			this.shortNames = names;
+			return this;
+		}
+
+		@Override
+		public OptionSpec type(Type type) {
+			this.type = ResolvableType.forType(type);
 			return this;
 		}
 
@@ -225,6 +242,10 @@ public interface CommandRegistration {
 
 		public Character[] getShortNames() {
 			return shortNames;
+		}
+
+		public ResolvableType getType() {
+			return type;
 		}
 
 		public String getDescription() {
@@ -332,7 +353,7 @@ public interface CommandRegistration {
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription()))
+				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType()))
 				.collect(Collectors.toList());
 		}
 	}
