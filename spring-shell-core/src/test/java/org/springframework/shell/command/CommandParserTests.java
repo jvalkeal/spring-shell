@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.shell.command.CommandParser.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,5 +57,37 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo");
+	}
+
+	@Test
+	public void testBooleanWithoutArg() {
+		ResolvableType type = ResolvableType.forType(boolean.class);
+		CommandOption option1 = shortOption('v', type);
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"-v"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo(true);
+	}
+
+	@Test
+	public void testBooleanWithArg() {
+		ResolvableType type = ResolvableType.forType(boolean.class);
+		CommandOption option1 = shortOption('v', type);
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"-v", "false"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo(false);
+	}
+
+	private static CommandOption shortOption(char name) {
+		return shortOption(name, null);
+	}
+
+	private static CommandOption shortOption(char name, ResolvableType type) {
+		return CommandOption.of(new String[0], new Character[] { name }, "desc", type);
 	}
 }

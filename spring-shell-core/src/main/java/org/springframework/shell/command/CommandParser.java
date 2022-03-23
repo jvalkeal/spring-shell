@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -152,45 +153,78 @@ public interface CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
-			// Currently relatively naive way to parse options and is expected to
-			// get a full rework when more sophisticated features like options groups
-			// etc are added.
-			List<Result> results = new ArrayList<>();
-			CommandOption onOption = null;
-
-			for (int i = 0; i < args.length; i++) {
-				String arg = args[i];
-				if (onOption == null) {
-					Optional<CommandOption> option = options.stream()
-						.filter(o -> optionMatchesArg(o, arg))
-						.findFirst();
-					if (option.isPresent()) {
-						onOption = option.get();
-					}
-				}
-				else {
-					results.add(Result.of(onOption, arg));
-					onOption = null;
-				}
-			}
+			ArgsVisitor argsVisitor = new ArgsVisitor(options, args);
+			List<Result> results = argsVisitor.visit();
 			return Results.of(results);
 		}
 
-		private boolean optionMatchesArg(CommandOption option, String arg) {
-			arg = StringUtils.trimLeadingCharacter(arg, '-');
-			for (String alias : option.getLongNames()) {
-				if (arg.equals(alias)) {
-					return true;
-				}
+		private static class ArgsVisitor {
+			final List<CommandOption> options;
+			final String[] args;
+			int position;
+
+			ArgsVisitor(List<CommandOption> options, String[] args) {
+				this.options = options;
+				this.args = args;
 			}
-			if (arg.length() == 1) {
-				for (Character c : option.getShortNames()) {
-					if(arg.equals(c.toString())) {
+
+			List<Result> visit() {
+				List<Result> results = new ArrayList<>();
+				Result result;
+				while ((result = nextResult()) != null) {
+					results.add(result);
+				}
+				return results;
+			}
+
+			private Result nextResult() {
+				if (position > args.length - 1) {
+					return null;
+				}
+				String arg = args[position];
+				Optional<CommandOption> option = options.stream()
+					.filter(o -> optionMatchesArg(o, arg))
+					.findFirst();
+				if (option.isPresent()) {
+					String nextArg = position < args.length - 1 ? args[position + 1] : null;
+					ResolvableType type = option.get().getType();
+					if (type != null && type.isAssignableFrom(boolean.class)) {
+						boolean value = nextArg != null ? Boolean.parseBoolean(nextArg) : true;
+						position++;
+						return Result.of(option.get(), value);
+					}
+					else {
+						if (nextArg != null) {
+							position++;
+							return Result.of(option.get(), nextArg);
+						}
+					}
+				}
+				position++;
+				return null;
+			}
+
+			private boolean optionMatchesArg(CommandOption option, String arg) {
+				if (!arg.startsWith("-")) {
+					return false;
+				}
+				arg = StringUtils.trimLeadingCharacter(arg, '-');
+				for (String alias : option.getLongNames()) {
+					if (arg.equals(alias)) {
 						return true;
 					}
 				}
+				if (arg.length() == 1) {
+					for (Character c : option.getShortNames()) {
+						if(arg.equals(c.toString())) {
+							return true;
+						}
+					}
+				}
+				return false;
 			}
-			return false;
+
 		}
 	}
+
 }

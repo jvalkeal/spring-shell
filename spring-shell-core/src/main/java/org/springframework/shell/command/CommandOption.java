@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.command;
 
+import org.springframework.core.ResolvableType;
+
 /**
  * Interface representing an option in a command.
  *
@@ -43,6 +45,8 @@ public interface CommandOption {
 	 */
 	String getDescription();
 
+	ResolvableType getType();
+
 	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
@@ -52,7 +56,21 @@ public interface CommandOption {
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
-		return new DefaultCommandOption(longNames, shortNames, description);
+		return of(longNames, shortNames, description, null);
+	}
+
+	/**
+	 * Gets an instance of a default {@link CommandOption}.
+	 *
+	 * @param longNames the long names
+	 * @param shortNames the short names
+	 * @param description the description
+	 * @param type the type
+	 * @return default command option
+	 */
+	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
+			ResolvableType type) {
+		return new DefaultCommandOption(longNames, shortNames, description, type);
 	}
 
 	/**
@@ -63,11 +81,14 @@ public interface CommandOption {
 		private String[] longNames;
 		private Character[] shortNames;
 		private String description;
+		private ResolvableType type;
 
-		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description) {
+		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
+				ResolvableType type) {
 			this.longNames = longNames;
 			this.shortNames = shortNames;
 			this.description = description;
+			this.type = type;
 		}
 
 		@Override
@@ -83,6 +104,11 @@ public interface CommandOption {
 		@Override
 		public String getDescription() {
 			return description;
+		}
+
+		@Override
+		public ResolvableType getType() {
+			return type;
 		}
 	}
 }
