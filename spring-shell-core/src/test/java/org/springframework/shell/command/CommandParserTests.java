@@ -37,8 +37,8 @@ public class CommandParserTests extends AbstractCommandTests {
 
 	@Test
 	public void testLongName() {
-		CommandOption option1 = CommandOption.of(new String[]{"arg1"}, new Character[0], "desc");
-		CommandOption option2 = CommandOption.of(new String[]{"arg2"}, new Character[0], "desc");
+		CommandOption option1 = longOption("arg1");
+		CommandOption option2 = longOption("arg2");
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"--arg1", "foo"};
 		Results results = parser.parse(options, args);
@@ -49,8 +49,8 @@ public class CommandParserTests extends AbstractCommandTests {
 
 	@Test
 	public void testShortName() {
-		CommandOption option1 = CommandOption.of(new String[0], new Character[]{'a'}, "desc");
-		CommandOption option2 = CommandOption.of(new String[0], new Character[]{'b'}, "desc");
+		CommandOption option1 = shortOption('a');
+		CommandOption option2 = shortOption('b');
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"-a", "foo"};
 		Results results = parser.parse(options, args);
@@ -81,6 +81,14 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo(false);
+	}
+
+	private static CommandOption longOption(String name) {
+		return longOption(name, null);
+	}
+
+	private static CommandOption longOption(String name, ResolvableType type) {
+		return CommandOption.of(new String[] { name }, new Character[0], "desc", type);
 	}
 
 	private static CommandOption shortOption(char name) {
