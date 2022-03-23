@@ -46,7 +46,7 @@ public abstract class AbstractCommandTests {
 			return "hi";
 		}
 
-		public String method3(@Header("--arg1") String arg1) {
+		public String method3(@Header("arg1") String arg1) {
 			method3Count++;
 			return "hi" + arg1;
 		}

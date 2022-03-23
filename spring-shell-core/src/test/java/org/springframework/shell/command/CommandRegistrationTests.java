@@ -109,7 +109,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 			.command("command1")
 			.help("help")
 			.withOption()
-				.name("--arg1")
+				.longNames("arg1")
 				.description("some arg1")
 				.and()
 			.targetFunction()
@@ -119,8 +119,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getCommands()).containsExactly("command1");
 		assertThat(registration.getHelp()).isEqualTo("help");
 		assertThat(registration.getOptions()).hasSize(1);
-		assertThat(registration.getOptions().get(0).getName()).isEqualTo("arg1");
-		assertThat(registration.getOptions().get(0).getAliases()).containsExactly("--arg1");
+		assertThat(registration.getOptions().get(0).getLongNames()).containsExactly("arg1");
 	}
 
 	@Test
@@ -129,7 +128,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 			.command("command1")
 			.help("help")
 			.withOption()
-				.name("--arg1")
+				.longNames("arg1")
 				.description("some arg1")
 				.and()
 			.targetMethod()

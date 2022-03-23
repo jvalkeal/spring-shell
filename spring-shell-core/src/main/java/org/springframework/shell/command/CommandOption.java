@@ -23,18 +23,18 @@ package org.springframework.shell.command;
 public interface CommandOption {
 
 	/**
-	 * Gets a name of an option.
+	 * Gets a long names of an option.
 	 *
-	 * @return name of an option
+	 * @return long names of an option
 	 */
-	String getName();
+	String[] getLongNames();
 
 	/**
-	 * Gets an aliases of an option
+	 * Gets a short names of an option.
 	 *
-	 * @return aliases of an option
+	 * @return short names of an option
 	 */
-	String[] getAliases();
+	Character[] getShortNames();
 
 	/**
 	 * Gets a description of an option.
@@ -46,13 +46,13 @@ public interface CommandOption {
 	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
-	 * @param name the name
-	 * @param aliases the aliases
+	 * @param longNames the long names
+	 * @param shortNames the short names
 	 * @param description the description
 	 * @return default command option
 	 */
-	public static CommandOption of(String name, String[] aliases, String description) {
-		return new DefaultCommandOption(name, aliases, description);
+	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
+		return new DefaultCommandOption(longNames, shortNames, description);
 	}
 
 	/**
@@ -60,24 +60,24 @@ public interface CommandOption {
 	 */
 	public static class DefaultCommandOption implements CommandOption {
 
-		private String name;
-		private String[] aliases;
+		private String[] longNames;
+		private Character[] shortNames;
 		private String description;
 
-		public DefaultCommandOption(String name, String[] aliases, String description) {
-			this.name = name;
-			this.aliases = aliases;
+		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description) {
+			this.longNames = longNames;
+			this.shortNames = shortNames;
 			this.description = description;
 		}
 
 		@Override
-		public String getName() {
-			return name;
+		public String[] getLongNames() {
+			return longNames;
 		}
 
 		@Override
-		public String[] getAliases() {
-			return aliases;
+		public Character[] getShortNames() {
+			return shortNames;
 		}
 
 		@Override

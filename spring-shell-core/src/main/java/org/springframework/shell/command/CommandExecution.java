@@ -82,8 +82,15 @@ public interface CommandExecution {
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
 					results.results().stream().forEach(r -> {
-						for (String alias : r.option().getAliases()) {
-							messageBuilder.setHeader(alias, r.value());
+						if (r.option().getLongNames() != null) {
+							for (String n : r.option().getLongNames()) {
+								messageBuilder.setHeader(n, r.value());
+							}
+						}
+						if (r.option().getShortNames() != null) {
+							for (Character n : r.option().getShortNames()) {
+								messageBuilder.setHeader(n.toString(), r.value());
+							}
 						}
 					});
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);

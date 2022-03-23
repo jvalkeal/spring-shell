@@ -93,13 +93,20 @@ public interface CommandRegistration {
 	public interface OptionSpec {
 
 		/**
-		 * Define options. First name in an array with "-" leading characters stripped
-		 * determines option main name, others will become as aliases.
+		 * Define long option names.
 		 *
-		 * @param names the option names
+		 * @param names the long option names
 		 * @return option spec for chaining
 		 */
-		OptionSpec name(String... names);
+		OptionSpec longNames(String... names);
+
+		/**
+		 * Define short option names.
+		 *
+		 * @param names the long option names
+		 * @return option spec for chaining
+		 */
+		OptionSpec shortNames(Character... names);
 
 		/**
 		 * Define a {@code description} for an option.
@@ -181,8 +188,8 @@ public interface CommandRegistration {
 	static class DefaultOptionSpec implements OptionSpec {
 
 		private BaseBuilder builder;
-		private String name;
-		private String[] aliases;
+		private String[] longNames;
+		private Character[] shortNames;
 		private String description;
 
 		DefaultOptionSpec(BaseBuilder builder) {
@@ -190,9 +197,14 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public OptionSpec name(String... names) {
-			this.name = StringUtils.trimLeadingCharacter(names[0], '-');
-			this.aliases = names;
+		public OptionSpec longNames(String... names) {
+			this.longNames = names;
+			return this;
+		}
+
+		@Override
+		public OptionSpec shortNames(Character... names) {
+			this.shortNames = names;
 			return this;
 		}
 
@@ -207,12 +219,12 @@ public interface CommandRegistration {
 			return builder;
 		}
 
-		public String getName() {
-			return name;
+		public String[] getLongNames() {
+			return longNames;
 		}
 
-		public String[] getAliases() {
-			return aliases;
+		public Character[] getShortNames() {
+			return shortNames;
 		}
 
 		public String getDescription() {
@@ -320,7 +332,7 @@ public interface CommandRegistration {
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getName(), o.getAliases(), o.getDescription()))
+				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription()))
 				.collect(Collectors.toList());
 		}
 	}

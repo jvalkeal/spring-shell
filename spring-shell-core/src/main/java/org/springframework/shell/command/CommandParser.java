@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Interface parsing arguments for a {@link CommandRegistration}. A command is
@@ -176,12 +177,17 @@ public interface CommandParser {
 		}
 
 		private boolean optionMatchesArg(CommandOption option, String arg) {
-			if (String.format("--%s", option.getName()).equals(arg)) {
-				return true;
-			}
-			for (String alias : option.getAliases()) {
+			arg = StringUtils.trimLeadingCharacter(arg, '-');
+			for (String alias : option.getLongNames()) {
 				if (arg.equals(alias)) {
 					return true;
+				}
+			}
+			if (arg.length() == 1) {
+				for (Character c : option.getShortNames()) {
+					if(arg.equals(c.toString())) {
+						return true;
+					}
 				}
 			}
 			return false;

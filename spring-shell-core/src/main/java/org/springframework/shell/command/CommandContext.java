@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.springframework.shell.command.CommandParser.Result;
 import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Interface containing information about current command execution.
@@ -109,7 +110,7 @@ public interface CommandContext {
 
 		private Optional<Result> find(String name) {
 			return results.results().stream()
-				.filter(r -> r.option().getName().equals(name))
+				.filter(r -> ObjectUtils.containsElement(r.option().getLongNames(), name))
 				.findFirst();
 		}
 	}
