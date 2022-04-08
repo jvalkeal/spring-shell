@@ -15,11 +15,19 @@
  */
 package org.springframework.shell.command;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandExecutionTests extends AbstractCommandTests {
+
+	private CommandExecution execution;
+
+	@BeforeEach
+	public void setupCommandExecutionTests() {
+		execution = CommandExecution.of();
+	}
 
 	@Test
 	public void testFunctionExecution() {
@@ -34,7 +42,6 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.function(function1)
 				.and()
 			.build();
-		CommandExecution execution = CommandExecution.of();
 		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
 		assertThat(result).isEqualTo("himyarg1value");
 	}
@@ -52,7 +59,6 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.method(pojo1, "method3", String.class)
 				.and()
 			.build();
-		CommandExecution execution = CommandExecution.of();
 		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
 		assertThat(result).isEqualTo("himyarg1value");
 		assertThat(pojo1.method3Count).isEqualTo(1);
@@ -71,7 +77,6 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.method(pojo1, "method1")
 				.and()
 			.build();
-		CommandExecution execution = CommandExecution.of();
 		execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
 		assertThat(pojo1.method1Count).isEqualTo(1);
 		assertThat(pojo1.method1Ctx).isNotNull();

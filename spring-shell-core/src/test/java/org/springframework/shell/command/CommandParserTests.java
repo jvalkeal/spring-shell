@@ -16,6 +16,7 @@
 package org.springframework.shell.command;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,12 @@ public class CommandParserTests extends AbstractCommandTests {
 	@BeforeEach
 	public void setupCommandParserTests() {
 		parser = CommandParser.of();
+	}
+
+	@Test
+	public void testEmptyOptionsAndArgs() {
+		Results results = parser.parse(Collections.emptyList(), new String[0]);
+		assertThat(results.results()).hasSize(0);
 	}
 
 	@Test

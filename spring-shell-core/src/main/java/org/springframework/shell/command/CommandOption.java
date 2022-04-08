@@ -45,6 +45,11 @@ public interface CommandOption {
 	 */
 	String getDescription();
 
+	/**
+	 * Gets a {@link ResolvableType} of an option.
+	 *
+	 * @return type of an option
+	 */
 	ResolvableType getType();
 
 	/**
