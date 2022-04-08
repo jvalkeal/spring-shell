@@ -19,13 +19,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.shell.command.CommandParser.MissingOptionException;
 import org.springframework.shell.command.CommandParser.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CommandParserTests extends AbstractCommandTests {
 
@@ -90,12 +93,32 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results().get(0).value()).isEqualTo(false);
 	}
 
+	@Test
+	public void testMissingRequiredOption() {
+		CommandOption option1 = longOption("arg1", true);
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{};
+		assertThatThrownBy(() -> {
+			parser.parse(options, args);
+		})
+			.isInstanceOf(MissingOptionException.class)
+			.extracting("options", InstanceOfAssertFactories.LIST).containsExactly(option1);
+	}
+
 	private static CommandOption longOption(String name) {
 		return longOption(name, null);
 	}
 
+	private static CommandOption longOption(String name, boolean required) {
+		return longOption(name, null, required);
+	}
+
 	private static CommandOption longOption(String name, ResolvableType type) {
-		return CommandOption.of(new String[] { name }, new Character[0], "desc", type);
+		return longOption(name, type, false);
+	}
+
+	private static CommandOption longOption(String name, ResolvableType type, boolean required) {
+		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required);
 	}
 
 	private static CommandOption shortOption(char name) {

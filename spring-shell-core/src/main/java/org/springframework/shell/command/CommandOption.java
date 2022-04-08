@@ -53,6 +53,13 @@ public interface CommandOption {
 	ResolvableType getType();
 
 	/**
+	 * Gets a flag if option is required.
+	 *
+	 * @return the required flag
+	 */
+	boolean isRequired();
+
+	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
 	 * @param longNames the long names
@@ -61,7 +68,7 @@ public interface CommandOption {
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
-		return of(longNames, shortNames, description, null);
+		return of(longNames, shortNames, description, null, false);
 	}
 
 	/**
@@ -75,7 +82,22 @@ public interface CommandOption {
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
 			ResolvableType type) {
-		return new DefaultCommandOption(longNames, shortNames, description, type);
+		return of(longNames, shortNames, description, type, false);
+	}
+
+	/**
+	 * Gets an instance of a default {@link CommandOption}.
+	 *
+	 * @param longNames the long names
+	 * @param shortNames the short names
+	 * @param description the description
+	 * @param type the type
+	 * @param required the required flag
+	 * @return default command option
+	 */
+	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
+			ResolvableType type, boolean required) {
+		return new DefaultCommandOption(longNames, shortNames, description, type, required);
 	}
 
 	/**
@@ -87,13 +109,15 @@ public interface CommandOption {
 		private Character[] shortNames;
 		private String description;
 		private ResolvableType type;
+		private boolean required;
 
 		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
-				ResolvableType type) {
+				ResolvableType type, boolean required) {
 			this.longNames = longNames;
 			this.shortNames = shortNames;
 			this.description = description;
 			this.type = type;
+			this.required = required;
 		}
 
 		@Override
@@ -114,6 +138,11 @@ public interface CommandOption {
 		@Override
 		public ResolvableType getType() {
 			return type;
+		}
+
+		@Override
+		public boolean isRequired() {
+			return required;
 		}
 	}
 }

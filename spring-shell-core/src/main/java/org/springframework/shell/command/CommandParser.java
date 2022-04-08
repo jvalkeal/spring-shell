@@ -18,6 +18,7 @@ package org.springframework.shell.command;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.util.StringUtils;
@@ -88,6 +89,9 @@ public interface CommandParser {
 
 	/**
 	 * Parse options with a given arguments.
+	 *
+	 * May throw various runtime exceptions depending how parser is configure.
+	 * For example if required option is missing an exception is thrown.
 	 *
 	 * @param options the command options
 	 * @param args the arguments
@@ -161,10 +165,12 @@ public interface CommandParser {
 			final List<CommandOption> options;
 			final String[] args;
 			int position;
+			final List<CommandOption> optionsRequired;
 
 			ArgsVisitor(List<CommandOption> options, String[] args) {
 				this.options = options;
 				this.args = args;
+				this.optionsRequired = options.stream().filter(o -> o.isRequired()).collect(Collectors.toList());
 			}
 
 			List<Result> visit() {
@@ -173,6 +179,7 @@ public interface CommandParser {
 				while ((result = nextResult()) != null) {
 					results.add(result);
 				}
+				sanityCheck();
 				return results;
 			}
 
@@ -186,6 +193,7 @@ public interface CommandParser {
 					.findFirst();
 				if (option.isPresent()) {
 					String nextArg = position < args.length - 1 ? args[position + 1] : null;
+					onOptionFound(option.get());
 					ResolvableType type = option.get().getType();
 					if (type != null && type.isAssignableFrom(boolean.class)) {
 						boolean value = nextArg != null ? Boolean.parseBoolean(nextArg) : true;
@@ -201,6 +209,16 @@ public interface CommandParser {
 				}
 				position++;
 				return null;
+			}
+
+			private void onOptionFound(CommandOption option) {
+				optionsRequired.remove(option);
+			}
+
+			private void sanityCheck() {
+				if (!optionsRequired.isEmpty()) {
+					throw MissingOptionException.of("Missing required options", optionsRequired);
+				}
 			}
 
 			private boolean optionMatchesArg(CommandOption option, String arg) {
@@ -226,4 +244,36 @@ public interface CommandParser {
 		}
 	}
 
+	static class CommandParserException extends RuntimeException {
+
+		public CommandParserException(String message) {
+			super(message);
+		}
+
+		public CommandParserException(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public static CommandParserException of(String message) {
+			return new CommandParserException(message);
+		}
+	}
+
+	static class MissingOptionException extends CommandParserException {
+
+		private List<CommandOption> options;
+
+		public MissingOptionException(String message, List<CommandOption> options) {
+			super(message);
+			this.options = options;
+		}
+
+		public static MissingOptionException of(String message, List<CommandOption> options) {
+			return new MissingOptionException(message, options);
+		}
+
+		public List<CommandOption> getOptions() {
+			return options;
+		}
+	}
 }
