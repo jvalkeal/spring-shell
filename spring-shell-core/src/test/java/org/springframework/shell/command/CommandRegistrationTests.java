@@ -162,4 +162,76 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getOptions().get(0).getShortNames()).containsExactly('v');
 		assertThat(registration.getOptions().get(0).getType()).isEqualTo(ResolvableType.forType(boolean.class));
 	}
+
+	@Test
+	public void testOptionWithRequired() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('v')
+				.type(boolean.class)
+				.description("some arg1")
+				.required(true)
+				.and()
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1");
+		assertThat(registration.getHelp()).isEqualTo("help");
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).getShortNames()).containsExactly('v');
+		assertThat(registration.getOptions().get(0).isRequired()).isTrue();
+
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('v')
+				.type(boolean.class)
+				.description("some arg1")
+				.required(false)
+				.and()
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).isRequired()).isFalse();
+
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('v')
+				.type(boolean.class)
+				.description("some arg1")
+				.and()
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).isRequired()).isFalse();
+
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('v')
+				.type(boolean.class)
+				.description("some arg1")
+				.required()
+				.and()
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).isRequired()).isTrue();
+	}
 }

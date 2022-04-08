@@ -127,6 +127,22 @@ public interface CommandRegistration {
 		OptionSpec description(String description);
 
 		/**
+		 * Define if option is required.
+		 *
+		 * @param required the required flag
+		 * @return option spec for chaining
+		 */
+		OptionSpec required(boolean required);
+
+		/**
+		 * Define option to be required. Syntatic sugar calling
+		 * {@link #required(boolean)} with {@code true}.
+		 *
+		 * @return option spec for chaining
+		 */
+		OptionSpec required();
+
+		/**
 		 * Return a builder for chaining.
 		 *
 		 * @return a builder for chaining
@@ -202,6 +218,7 @@ public interface CommandRegistration {
 		private Character[] shortNames;
 		private ResolvableType type;
 		private String description;
+		private boolean required;
 
 		DefaultOptionSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -232,6 +249,17 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public OptionSpec required(boolean required) {
+			this.required = required;
+			return this;
+		}
+
+		@Override
+		public OptionSpec required() {
+			return required(true);
+		}
+
+		@Override
 		public Builder and() {
 			return builder;
 		}
@@ -250,6 +278,10 @@ public interface CommandRegistration {
 
 		public String getDescription() {
 			return description;
+		}
+
+		public boolean isRequired() {
+			return required;
 		}
 	}
 
@@ -353,7 +385,8 @@ public interface CommandRegistration {
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType()))
+				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
+						o.isRequired()))
 				.collect(Collectors.toList());
 		}
 	}
