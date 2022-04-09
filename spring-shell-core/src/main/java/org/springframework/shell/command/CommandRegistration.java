@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
+import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -45,6 +46,13 @@ public interface CommandRegistration {
 	 * @return array of commands
 	 */
 	String[] getCommands();
+
+	/**
+	 * Gets an {@link InteractionMode}.
+	 *
+	 * @return the interaction mode
+	 */
+	InteractionMode getInteractionMode();
 
 	/**
 	 * Get help for a command.
@@ -172,6 +180,14 @@ public interface CommandRegistration {
 		 * @return builder for chaining
 		 */
 		Builder command(String... commands);
+
+		/**
+		 * Define {@link InteractionMode} for a command.
+		 *
+		 * @param mode the interaction mode
+		 * @return builder for chaining
+		 */
+		Builder interactionMode(InteractionMode mode);
 
 		/**
 		 * Define a simple help text for a commmand.
@@ -341,15 +357,18 @@ public interface CommandRegistration {
 	static class DefaultCommandRegistration implements CommandRegistration {
 
 		private String[] commands;
+		private InteractionMode interactionMode;
 		private String help;
 		private String description;
 		private Function<CommandContext, ?> function;
 		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs;
 
-		public DefaultCommandRegistration(String[] commands, String help, String description,
-				Function<CommandContext, ?> function, List<DefaultOptionSpec> optionSpecs, InvocableHandlerMethod invocableHandlerMethod) {
+		public DefaultCommandRegistration(String[] commands, InteractionMode interactionMode, String help,
+				String description, Function<CommandContext, ?> function, List<DefaultOptionSpec> optionSpecs,
+				InvocableHandlerMethod invocableHandlerMethod) {
 			this.commands = commands;
+			this.interactionMode = interactionMode;
 			this.help = help;
 			this.description = description;
 			this.function = function;
@@ -360,6 +379,11 @@ public interface CommandRegistration {
 		@Override
 		public String[] getCommands() {
 			return commands;
+		}
+
+		@Override
+		public InteractionMode getInteractionMode() {
+			return interactionMode;
 		}
 
 		@Override
@@ -398,6 +422,7 @@ public interface CommandRegistration {
 	static class BaseBuilder implements Builder {
 
 		private String[] commands;
+		private InteractionMode interactionMode = InteractionMode.ALL;
 		private String help;
 		private String description;
 		private Function<CommandContext, ?> function;
@@ -413,6 +438,12 @@ public interface CommandRegistration {
 				.map(c -> c.trim())
 				.collect(Collectors.toList())
 				.toArray(new String[0]);
+			return this;
+		}
+
+		@Override
+		public Builder interactionMode(InteractionMode mode) {
+			this.interactionMode = mode != null ? mode : InteractionMode.ALL;
 			return this;
 		}
 
@@ -450,7 +481,8 @@ public interface CommandRegistration {
 				targets++;
 			}
 			Assert.isTrue(targets == 1, "only one target can exist");
-			return new DefaultCommandRegistration(commands, help, description, function, optionSpecs, invocableHandlerMethod);
+			return new DefaultCommandRegistration(commands, interactionMode, help, description, function, optionSpecs,
+					invocableHandlerMethod);
 		}
 	}
 }

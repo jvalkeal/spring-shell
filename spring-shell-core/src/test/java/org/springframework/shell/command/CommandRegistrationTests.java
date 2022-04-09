@@ -18,6 +18,7 @@ package org.springframework.shell.command;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.shell.context.InteractionMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,6 +30,27 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThatThrownBy(() -> {
 			CommandRegistration.builder().build();
 		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("command cannot be empty");
+	}
+
+	@Test
+	public void testBasics() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1");
+		assertThat(registration.getInteractionMode()).isEqualTo(InteractionMode.ALL);
+
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.interactionMode(InteractionMode.NONINTERACTIVE)
+			.targetFunction()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getInteractionMode()).isEqualTo(InteractionMode.NONINTERACTIVE);
 	}
 
 	@Test
