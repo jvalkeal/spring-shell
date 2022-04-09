@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -157,15 +159,22 @@ public interface CommandParser {
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
 			ArgsVisitor argsVisitor = new ArgsVisitor(options, args);
-			List<Result> results = argsVisitor.visit();
+			List<Result> results = argsVisitor.visitArgs();
 			return Results.of(results);
+		}
+
+		private static enum State {
+			EXPECT_OPTION, EXPECT_ARGUMENT, ON_ARGUMENTS
 		}
 
 		private static class ArgsVisitor {
 			final List<CommandOption> options;
 			final String[] args;
-			int position;
 			final List<CommandOption> optionsRequired;
+			int position;
+			State state = State.EXPECT_OPTION;
+			CommandOption currentOption;
+			MultiValueMap<CommandOption, String> mappedArguments = new LinkedMultiValueMap<>();
 
 			ArgsVisitor(List<CommandOption> options, String[] args) {
 				this.options = options;
@@ -173,45 +182,65 @@ public interface CommandParser {
 				this.optionsRequired = options.stream().filter(o -> o.isRequired()).collect(Collectors.toList());
 			}
 
-			List<Result> visit() {
+			private List<Result> visitArgs() {
 				List<Result> results = new ArrayList<>();
-				Result result;
-				while ((result = nextResult()) != null) {
-					results.add(result);
+
+				// first iteration to map arguments to options
+				for (int i = 0; i < args.length; i++) {
+					position = i;
+					visitArg();
 				}
+
+				// second iteration for mapped argument creating requested types
+				mappedArguments.entrySet().stream().forEach(e -> {
+					CommandOption option = e.getKey();
+					List<String> arguments = e.getValue();
+					results.add(Result.of(option, convertArguments(option, arguments)));
+				});
+
+				// may throw errors
 				sanityCheck();
 				return results;
 			}
 
-			private Result nextResult() {
-				if (position > args.length - 1) {
-					return null;
-				}
+			private void visitArg() {
 				String arg = args[position];
+				if (state == State.EXPECT_OPTION) {
+					CommandOption option = matchOption(arg);
+					if (option != null) {
+						currentOption = option;
+						state = State.EXPECT_ARGUMENT;
+						onOptionFound(currentOption);
+					}
+					else {
+						// TODO: what to do
+					}
+				}
+				else if (state == State.EXPECT_ARGUMENT) {
+					mappedArguments.add(currentOption, arg);
+					state = State.ON_ARGUMENTS;
+				}
+				else if (state == State.ON_ARGUMENTS) {
+					CommandOption option = matchOption(arg);
+					if (option != null) {
+						currentOption = option;
+						state = State.EXPECT_ARGUMENT;
+					}
+					else {
+						mappedArguments.add(currentOption, arg);
+					}
+				}
+			}
+
+			private CommandOption matchOption(String arg) {
 				Optional<CommandOption> option = options.stream()
 					.filter(o -> optionMatchesArg(o, arg))
 					.findFirst();
-				if (option.isPresent()) {
-					String nextArg = position < args.length - 1 ? args[position + 1] : null;
-					onOptionFound(option.get());
-					ResolvableType type = option.get().getType();
-					if (type != null && type.isAssignableFrom(boolean.class)) {
-						boolean value = nextArg != null ? Boolean.parseBoolean(nextArg) : true;
-						position++;
-						return Result.of(option.get(), value);
-					}
-					else {
-						if (nextArg != null) {
-							position++;
-							return Result.of(option.get(), nextArg);
-						}
-					}
-				}
-				position++;
-				return null;
+				return option.orElse(null);
 			}
 
 			private void onOptionFound(CommandOption option) {
+				mappedArguments.putIfAbsent(option, new ArrayList<>());
 				optionsRequired.remove(option);
 			}
 
@@ -241,6 +270,20 @@ public interface CommandParser {
 				return false;
 			}
 
+			private Object convertArguments(CommandOption option, List<String> arguments) {
+				ResolvableType type = option.getType();
+				if (type != null && type.isAssignableFrom(boolean.class)) {
+					if (arguments.size() == 0) {
+						return true;
+					}
+					else {
+						return Boolean.parseBoolean(arguments.get(0));
+					}
+				}
+				else {
+					return arguments.stream().collect(Collectors.joining(" "));
+				}
+			}
 		}
 	}
 

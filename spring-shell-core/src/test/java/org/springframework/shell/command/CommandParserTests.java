@@ -70,6 +70,20 @@ public class CommandParserTests extends AbstractCommandTests {
 	}
 
 	@Test
+	public void testMultipleArgs() {
+		CommandOption option1 = longOption("arg1");
+		CommandOption option2 = longOption("arg2");
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"--arg1", "foo", "--arg2", "bar"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(2);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("foo");
+		assertThat(results.results().get(1).option()).isSameAs(option2);
+		assertThat(results.results().get(1).value()).isEqualTo("bar");
+	}
+
+	@Test
 	public void testBooleanWithoutArg() {
 		ResolvableType type = ResolvableType.forType(boolean.class);
 		CommandOption option1 = shortOption('v', type);
@@ -103,6 +117,31 @@ public class CommandParserTests extends AbstractCommandTests {
 		})
 			.isInstanceOf(MissingOptionException.class)
 			.extracting("options", InstanceOfAssertFactories.LIST).containsExactly(option1);
+	}
+
+	@Test
+	public void testSpaceInArgWithOneArg() {
+		CommandOption option1 = longOption("arg1");
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"--arg1", "foo bar"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("foo bar");
+	}
+
+	@Test
+	public void testSpaceInArgWithMultipleArgs() {
+		CommandOption option1 = longOption("arg1");
+		CommandOption option2 = longOption("arg2");
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"--arg1", "foo bar", "--arg2", "hi"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(2);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("foo bar");
+		assertThat(results.results().get(1).option()).isSameAs(option2);
+		assertThat(results.results().get(1).value()).isEqualTo("hi");
 	}
 
 	private static CommandOption longOption(String name) {
