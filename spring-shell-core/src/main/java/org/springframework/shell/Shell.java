@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandExecution;
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Main class implementing a shell loop.
@@ -66,7 +71,7 @@ public class Shell {
 	 */
 	public static final Object NO_INPUT = new Object();
 
-	private final CommandRegistry commandRegistry;
+	private final CommandCatalog commandRegistry;
 
 	private Validator validator = Utils.defaultValidator();
 
@@ -78,7 +83,7 @@ public class Shell {
 	 */
 	protected static final Object UNRESOLVED = new Object();
 
-	public Shell(ResultHandlerService resultHandlerService, CommandRegistry commandRegistry) {
+	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry) {
 		this.resultHandlerService = resultHandlerService;
 		this.commandRegistry = commandRegistry;
 	}
@@ -136,7 +141,55 @@ public class Shell {
 	 * result
 	 * </p>
 	 */
+	// public Object evaluate(Input input) {
+	// 	if (noInput(input)) {
+	// 		return NO_INPUT;
+	// 	}
+
+	// 	String line = input.words().stream().collect(Collectors.joining(" ")).trim();
+	// 	String command = findLongestCommand(line);
+
+	// 	List<String> words = input.words();
+	// 	if (command != null) {
+	// 		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
+	// 		MethodTarget methodTarget = methodTargets.get(command);
+	// 		Availability availability = methodTarget.getAvailability();
+	// 		if (availability.isAvailable()) {
+	// 			List<String> wordsForArgs = wordsForArguments(command, words);
+	// 			Method method = methodTarget.getMethod();
+
+	// 			Thread commandThread = Thread.currentThread();
+	// 			Object sh = Signals.register("INT", () -> commandThread.interrupt());
+	// 			try {
+	// 				Object[] args = resolveArgs(method, wordsForArgs);
+	// 				validateArgs(args, methodTarget);
+
+	// 				return ReflectionUtils.invokeMethod(method, methodTarget.getBean(), args);
+	// 			}
+	// 			catch (UndeclaredThrowableException e) {
+	// 				if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
+	// 					Thread.interrupted(); // to reset interrupted flag
+	// 				}
+	// 				return e.getCause();
+	// 			}
+	// 			catch (Exception e) {
+	// 				return e;
+	// 			}
+	// 			finally {
+	// 				Signals.unregister("INT", sh);
+	// 			}
+	// 		}
+	// 		else {
+	// 			return new CommandNotCurrentlyAvailable(command, availability);
+	// 		}
+	// 	}
+	// 	else {
+	// 		return new CommandNotFound(words);
+	// 	}
+	// }
+
 	public Object evaluate(Input input) {
+		// TODO: XXX availability
 		if (noInput(input)) {
 			return NO_INPUT;
 		}
@@ -144,22 +197,27 @@ public class Shell {
 		String line = input.words().stream().collect(Collectors.joining(" ")).trim();
 		String command = findLongestCommand(line);
 
+
+
 		List<String> words = input.words();
 		if (command != null) {
-			Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-			MethodTarget methodTarget = methodTargets.get(command);
-			Availability availability = methodTarget.getAvailability();
-			if (availability.isAvailable()) {
+
+			Optional<CommandRegistration> commandRegistration = commandRegistry.getCommands().stream()
+				.filter(r -> {
+					String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+					return c.equals(command);
+				})
+				.findFirst();
+
+			if (commandRegistration.isPresent()) {
 				List<String> wordsForArgs = wordsForArguments(command, words);
-				Method method = methodTarget.getMethod();
 
 				Thread commandThread = Thread.currentThread();
 				Object sh = Signals.register("INT", () -> commandThread.interrupt());
 				try {
-					Object[] args = resolveArgs(method, wordsForArgs);
-					validateArgs(args, methodTarget);
-
-					return ReflectionUtils.invokeMethod(method, methodTarget.getBean(), args);
+					// Object[] args = resolveArgs(method, wordsForArgs);
+					CommandExecution execution = CommandExecution.of();
+					return execution.evaluate(commandRegistration.get(), words.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {
 					if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
@@ -173,15 +231,20 @@ public class Shell {
 				finally {
 					Signals.unregister("INT", sh);
 				}
+
 			}
 			else {
-				return new CommandNotCurrentlyAvailable(command, availability);
+				return new CommandNotFound(words);
 			}
+
 		}
 		else {
 			return new CommandNotFound(words);
 		}
+
+		// return null;
 	}
+
 
 	/**
 	 * Return true if the parsed input ends up being empty (<em>e.g.</em> hitting ENTER on an
@@ -223,26 +286,26 @@ public class Shell {
 		String prefix = context.upToCursor();
 
 		List<CompletionProposal> candidates = new ArrayList<>();
-		candidates.addAll(commandsStartingWith(prefix));
+		// candidates.addAll(commandsStartingWith(prefix));
 
-		String best = findLongestCommand(prefix);
-		if (best != null) {
-			CompletionContext argsContext = context.drop(best.split(" ").length);
-			// Try to complete arguments
-			Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-			MethodTarget methodTarget = methodTargets.get(best);
-			Method method = methodTarget.getMethod();
+		// String best = findLongestCommand(prefix);
+		// if (best != null) {
+		// 	CompletionContext argsContext = context.drop(best.split(" ").length);
+		// 	// Try to complete arguments
+		// 	Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
+		// 	MethodTarget methodTarget = methodTargets.get(best);
+		// 	Method method = methodTarget.getMethod();
 
-			List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
-			for (ParameterResolver resolver : parameterResolvers) {
-				for (int index = 0; index < parameters.size(); index++) {
-					MethodParameter parameter = parameters.get(index);
-					if (resolver.supports(parameter)) {
-						resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
-					}
-				}
-			}
-		}
+		// 	List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
+		// 	for (ParameterResolver resolver : parameterResolvers) {
+		// 		for (int index = 0; index < parameters.size(); index++) {
+		// 			MethodParameter parameter = parameters.get(index);
+		// 			if (resolver.supports(parameter)) {
+		// 				resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
+		// 			}
+		// 		}
+		// 	}
+		// }
 		return candidates;
 	}
 
@@ -250,18 +313,31 @@ public class Shell {
 		// Workaround for https://github.com/spring-projects/spring-shell/issues/150
 		// (sadly, this ties this class to JLine somehow)
 		int lastWordStart = prefix.lastIndexOf(' ') + 1;
-		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		return methodTargets.entrySet().stream()
-				.filter(e -> e.getKey().startsWith(prefix))
-				.map(e -> toCommandProposal(e.getKey().substring(lastWordStart), e.getValue()))
-				.collect(Collectors.toList());
+		// Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
+		// return methodTargets.entrySet().stream()
+		// 		.filter(e -> e.getKey().startsWith(prefix))
+		// 		.map(e -> toCommandProposal(e.getKey().substring(lastWordStart), e.getValue()))
+		// 		.collect(Collectors.toList());
+		return commandRegistry.getCommands().stream()
+			.filter(r -> {
+				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+				return c.startsWith(prefix);
+			})
+			.map(r -> toCommandProposal(r))
+			.collect(Collectors.toList());
 	}
 
-	private CompletionProposal toCommandProposal(String command, MethodTarget methodTarget) {
-		return new CompletionProposal(command)
+	// private CompletionProposal toCommandProposal(String command, MethodTarget methodTarget) {
+	// 	return new CompletionProposal(command)
+	// 			.dontQuote(true)
+	// 			.category("Available commands")
+	// 			.description(methodTarget.getHelp());
+	// }
+	private CompletionProposal toCommandProposal(CommandRegistration registration) {
+		return new CompletionProposal(StringUtils.arrayToDelimitedString(registration.getCommands(), " "))
 				.dontQuote(true)
 				.category("Available commands")
-				.description(methodTarget.getHelp());
+				.description(registration.getHelp());
 	}
 
 	private void validateArgs(Object[] args, MethodTarget methodTarget) {
@@ -313,10 +389,21 @@ public class Shell {
 	 * @return a valid command name, or {@literal null} if none matched
 	 */
 	private String findLongestCommand(String prefix) {
-		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		String result = methodTargets.keySet().stream()
+		String result = commandRegistry.getCommandNames().stream()
 				.filter(command -> prefix.equals(command) || prefix.startsWith(command + " "))
 				.reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2);
 		return "".equals(result) ? null : result;
 	}
+
+	private String findLongestCommandRegistration(String prefix) {
+		commandRegistry.getCommands().stream()
+			.filter(r -> {
+				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+				return prefix.equals(c) || prefix.startsWith(c + " ");
+			})
+			// .reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2)
+			;
+		return null;
+	}
+
 }

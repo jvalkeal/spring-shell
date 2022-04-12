@@ -25,16 +25,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.shell.Availability;
 import org.springframework.shell.Command;
-import org.springframework.shell.ConfigurableCommandRegistry;
+// import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.Utils;
+import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.CommandRegistration.Builder;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -52,6 +62,7 @@ import static org.springframework.util.StringUtils.collectionToDelimitedString;
  */
 public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, ApplicationContextAware {
 
+	private final Logger log = LoggerFactory.getLogger(StandardMethodTargetRegistrar.class);
 	private ApplicationContext applicationContext;
 
 	private Map<String, MethodTarget> commands = new HashMap<>();
@@ -62,7 +73,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 	}
 
 	@Override
-	public void register(ConfigurableCommandRegistry registry) {
+	public void register(CommandCatalog registry) {
 		Map<String, Object> commandBeans = applicationContext.getBeansWithAnnotation(ShellComponent.class);
 		for (Object bean : commandBeans.values()) {
 			Class<?> clazz = bean.getClass();
@@ -74,10 +85,50 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 				}
 				String group = getOrInferGroup(method);
 				for (String key : keys) {
+					log.debug("xxx1 {} {}", key, keys);
 					Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
 					MethodTarget target = new MethodTarget(method, bean, new Command.Help(shellMapping.value(), group),
 							availabilityIndicator, shellMapping.interactionMode());
-					registry.register(key, target);
+					// registry.register(key, target);
+
+
+					Builder builder = CommandRegistration.builder().command(key);
+
+					InvocableHandlerMethod xxx = new InvocableHandlerMethod(bean, method);
+					for (MethodParameter ppp : xxx.getMethodParameters()) {
+						ShellOption ooo = ppp.getParameterAnnotation(ShellOption.class);
+						log.debug("xxx2 {} {}", ppp, ooo);
+						if (ooo != null) {
+							List<String> longNames = new ArrayList<>();
+							Arrays.asList(ooo.value()).stream().forEach(o -> {
+								String stripped = StringUtils.trimLeadingCharacter(o, '-');
+								log.debug("xxx3 {} {}", o, stripped);
+								if (o.length() == stripped.length() + 2) {
+									log.debug("xxx4 {} {}", o, stripped);
+									longNames.add(stripped);
+								}
+							});
+							if (!longNames.isEmpty()) {
+								log.debug("xxx5 {} {}", longNames);
+								builder.withOption().longNames(longNames.toArray(new String[0]));
+							}
+						}
+					}
+
+					builder.targetMethod().method(bean, method).and();
+
+					CommandRegistration registration = builder.build();
+
+					// CommandRegistration registration = CommandRegistration.builder()
+					// 	.command(keys)
+					// 	// .withOption()
+					// 	// 	.longNames(names)
+					// 	// 	.and()
+					// 	.targetMethod()
+					// 		.method(bean, method)
+					// 		.and()
+					// 	.build();
+					registry.register(registration);
 					commands.put(key, target);
 				}
 			}, method -> method.getAnnotation(ShellMethod.class) != null);

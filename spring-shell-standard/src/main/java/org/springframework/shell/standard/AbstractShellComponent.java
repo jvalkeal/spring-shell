@@ -26,9 +26,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.CommandRegistry;
 import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.Shell;
+import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.style.TemplateExecutor;
 import org.springframework.shell.style.ThemeResolver;
 
@@ -47,7 +47,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
 
     private ObjectProvider<Terminal> terminalProvider;
 
-    private ObjectProvider<CommandRegistry> commandRegistryProvider;
+    private ObjectProvider<CommandCatalog> commandRegistryProvider;
 
     private ObjectProvider<ParameterResolver> parameterResolverProvider;
 
@@ -69,7 +69,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
     public void afterPropertiesSet() throws Exception {
         shellProvider = applicationContext.getBeanProvider(Shell.class);
         terminalProvider = applicationContext.getBeanProvider(Terminal.class);
-        commandRegistryProvider = applicationContext.getBeanProvider(CommandRegistry.class);
+        commandRegistryProvider = applicationContext.getBeanProvider(CommandCatalog.class);
         parameterResolverProvider = applicationContext.getBeanProvider(ParameterResolver.class);
         templateExecutorProvider = applicationContext.getBeanProvider(TemplateExecutor.class);
         themeResolverProvider = applicationContext.getBeanProvider(ThemeResolver.class);
@@ -91,7 +91,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
         return terminalProvider.getObject();
     }
 
-    protected CommandRegistry getCommandRegistry() {
+    protected CommandCatalog getCommandRegistry() {
         return commandRegistryProvider.getObject();
     }
 

@@ -165,6 +165,7 @@ public interface CommandRegistration {
 
 	public interface TargetMethodSpec {
 		TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
+		TargetMethodSpec method(Object bean, Method method);
 		Builder and();
 	}
 
@@ -328,6 +329,7 @@ public interface CommandRegistration {
 		private BaseBuilder builder;
 		private Object methodBean;
 		private String methodMethod;
+		private Method method;
 		private Class<?>[] paramTypes;
 
 		DefaultTargetMethodSpec(BaseBuilder builder) {
@@ -343,10 +345,21 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public TargetMethodSpec method(Object bean, Method method) {
+			this.methodBean = bean;
+			this.method = method;
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			if (methodBean != null && methodMethod != null) {
 				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod,
 						ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
+				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
+				builder.invocableHandlerMethod = invocableHandlerMethod;
+			}
+			else if (methodBean != null && method != null) {
 				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
 				builder.invocableHandlerMethod = invocableHandlerMethod;
 			}

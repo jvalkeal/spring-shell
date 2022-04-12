@@ -59,6 +59,8 @@ import static java.util.stream.Collectors.toMap;
 @ShellComponent
 public class Help extends AbstractShellComponent {
 
+	// TODO: XXX
+
 	/**
 	 * Marker interface for beans providing {@literal help} functionality to the shell.
 	 *
@@ -94,7 +96,8 @@ public class Help extends AbstractShellComponent {
 					"--command" }, help = "The command to obtain help for.") String command)
 			throws IOException {
 		if (command == null) {
-			return listCommands();
+			// return listCommands();
+			return "";
 		}
 		else {
 			return documentCommand(command);
@@ -116,28 +119,28 @@ public class Help extends AbstractShellComponent {
 	 * Return a description of a specific command. Uses a layout inspired by *nix man pages.
 	 */
 	private CharSequence documentCommand(String command) {
-		MethodTarget methodTarget = getCommandRegistry().listCommands().get(command);
-		if (methodTarget == null) {
-			throw new IllegalArgumentException("Unknown command '" + command + "'");
-		}
+		// MethodTarget methodTarget = getCommandRegistry().listCommands().get(command);
+		// if (methodTarget == null) {
+		// 	throw new IllegalArgumentException("Unknown command '" + command + "'");
+		// }
 
 		AttributedStringBuilder result = new AttributedStringBuilder().append("\n\n");
-		List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
+		// List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
 
-		// NAME
-		documentCommandName(result, command, methodTarget.getHelp());
+		// // NAME
+		// documentCommandName(result, command, methodTarget.getHelp());
 
-		// SYNOPSYS
-		documentSynopsys(result, command, parameterDescriptions);
+		// // SYNOPSYS
+		// documentSynopsys(result, command, parameterDescriptions);
 
-		// OPTIONS
-		documentOptions(result, parameterDescriptions);
+		// // OPTIONS
+		// documentOptions(result, parameterDescriptions);
 
-		// ALSO KNOWN AS
-		documentAliases(result, command, methodTarget);
+		// // ALSO KNOWN AS
+		// documentAliases(result, command, methodTarget);
 
-		// AVAILABILITY
-		documentAvailability(result, methodTarget);
+		// // AVAILABILITY
+		// documentAvailability(result, methodTarget);
 
 		result.append("\n");
 		return result;
@@ -242,20 +245,20 @@ public class Help extends AbstractShellComponent {
 		}
 	}
 
-	private void documentAliases(AttributedStringBuilder result, String command, MethodTarget methodTarget) {
-		Set<String> aliases = getCommandRegistry().listCommands().entrySet().stream()
-				.filter(e -> e.getValue().equals(methodTarget))
-				.map(Map.Entry::getKey)
-				.filter(c -> !command.equals(c))
-				.collect(toCollection(TreeSet::new));
+	// private void documentAliases(AttributedStringBuilder result, String command, MethodTarget methodTarget) {
+	// 	Set<String> aliases = getCommandRegistry().listCommands().entrySet().stream()
+	// 			.filter(e -> e.getValue().equals(methodTarget))
+	// 			.map(Map.Entry::getKey)
+	// 			.filter(c -> !command.equals(c))
+	// 			.collect(toCollection(TreeSet::new));
 
-		if (!aliases.isEmpty()) {
-			result.append("ALSO KNOWN AS", AttributedStyle.BOLD).append("\n");
-			for (String alias : aliases) {
-				result.append('\t').append(alias).append('\n');
-			}
-		}
-	}
+	// 	if (!aliases.isEmpty()) {
+	// 		result.append("ALSO KNOWN AS", AttributedStyle.BOLD).append("\n");
+	// 		for (String alias : aliases) {
+	// 			result.append('\t').append(alias).append('\n');
+	// 		}
+	// 	}
+	// }
 
 	private void documentAvailability(AttributedStringBuilder result, MethodTarget methodTarget) {
 		Availability availability = methodTarget.getAvailability();
@@ -271,45 +274,45 @@ public class Help extends AbstractShellComponent {
 		return keys.iterator().next();
 	}
 
-	private CharSequence listCommands() {
-		Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
+	// private CharSequence listCommands() {
+	// 	Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
 
-		AttributedStringBuilder result = new AttributedStringBuilder();
-		result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
+	// 	AttributedStringBuilder result = new AttributedStringBuilder();
+	// 	result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
 
-		SortedMap<String, Map<String, MethodTarget>> commandsByGroupAndName = commandsByName.entrySet().stream()
-				.collect(groupingBy(e -> e.getValue().getGroup(), TreeMap::new, // group by and sort by command group
-						toMap(Entry::getKey, Entry::getValue)));
-		// display groups, sorted alphabetically, "Default" first
-		commandsByGroupAndName.forEach((group, commandsInGroup) -> {
-			if (showGroups) {
-				result.append("".equals(group) ? "Default" : group, AttributedStyle.BOLD).append('\n');
-			}
-			Map<MethodTarget, SortedSet<String>> commandNamesByMethod = commandsInGroup.entrySet().stream()
-					.collect(groupingBy(Entry::getValue, // group by command method
-							mapping(Entry::getKey, toCollection(TreeSet::new)))); // sort command names
-			// display commands, sorted alphabetically by their first alias
-			commandNamesByMethod.entrySet().stream().sorted(sortByFirstCommandName()).forEach(e -> {
-				String prefix = showGroups ? "      " : "";
-				prefix = prefix + (isAvailable(e.getKey()) ? "  " : " *");
-				result
-						.append(prefix)
-						.append(String.join(", ", e.getValue()), AttributedStyle.BOLD)
-						.append(": ")
-						.append(e.getKey().getHelp())
-						.append('\n');
-			});
-			if (showGroups) {
-				result.append('\n');
-			}
-		});
+	// 	SortedMap<String, Map<String, MethodTarget>> commandsByGroupAndName = commandsByName.entrySet().stream()
+	// 			.collect(groupingBy(e -> e.getValue().getGroup(), TreeMap::new, // group by and sort by command group
+	// 					toMap(Entry::getKey, Entry::getValue)));
+	// 	// display groups, sorted alphabetically, "Default" first
+	// 	commandsByGroupAndName.forEach((group, commandsInGroup) -> {
+	// 		if (showGroups) {
+	// 			result.append("".equals(group) ? "Default" : group, AttributedStyle.BOLD).append('\n');
+	// 		}
+	// 		Map<MethodTarget, SortedSet<String>> commandNamesByMethod = commandsInGroup.entrySet().stream()
+	// 				.collect(groupingBy(Entry::getValue, // group by command method
+	// 						mapping(Entry::getKey, toCollection(TreeSet::new)))); // sort command names
+	// 		// display commands, sorted alphabetically by their first alias
+	// 		commandNamesByMethod.entrySet().stream().sorted(sortByFirstCommandName()).forEach(e -> {
+	// 			String prefix = showGroups ? "      " : "";
+	// 			prefix = prefix + (isAvailable(e.getKey()) ? "  " : " *");
+	// 			result
+	// 					.append(prefix)
+	// 					.append(String.join(", ", e.getValue()), AttributedStyle.BOLD)
+	// 					.append(": ")
+	// 					.append(e.getKey().getHelp())
+	// 					.append('\n');
+	// 		});
+	// 		if (showGroups) {
+	// 			result.append('\n');
+	// 		}
+	// 	});
 
-		if (commandsByName.values().stream().distinct().anyMatch(m -> !isAvailable(m))) {
-			result.append("Commands marked with (*) are currently unavailable.\nType `help <command>` to learn more.\n\n");
-		}
+	// 	if (commandsByName.values().stream().distinct().anyMatch(m -> !isAvailable(m))) {
+	// 		result.append("Commands marked with (*) are currently unavailable.\nType `help <command>` to learn more.\n\n");
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	private Comparator<Entry<MethodTarget, SortedSet<String>>> sortByFirstCommandName() {
 		return Comparator.comparing(e -> e.getValue().first());
