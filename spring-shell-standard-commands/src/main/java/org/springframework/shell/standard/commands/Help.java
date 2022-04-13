@@ -146,9 +146,11 @@ public class Help extends AbstractShellComponent {
 
 		// // ALSO KNOWN AS
 		// documentAliases(result, command, methodTarget);
+		documentAliases(result, command, registrations, registration);
 
 		// // AVAILABILITY
 		// documentAvailability(result, methodTarget);
+		documentAvailability(result, registration);
 
 		result.append("\n");
 		return result;
@@ -268,8 +270,32 @@ public class Help extends AbstractShellComponent {
 	// 	}
 	// }
 
-	private void documentAvailability(AttributedStringBuilder result, MethodTarget methodTarget) {
-		Availability availability = methodTarget.getAvailability();
+	private void documentAliases(AttributedStringBuilder result, String command,
+			Map<String, CommandRegistration> registrations, CommandRegistration registration) {
+		List<String> aliases = registrations.entrySet().stream()
+			.filter(e -> e.getValue().equals(registration))
+			.map(Map.Entry::getKey)
+			.collect(Collectors.toList());
+
+		if (!aliases.isEmpty()) {
+			result.append("ALSO KNOWN AS", AttributedStyle.BOLD).append("\n");
+			for (String alias : aliases) {
+				result.append('\t').append(alias).append('\n');
+			}
+		}
+	}
+
+	// private void documentAvailability(AttributedStringBuilder result, MethodTarget methodTarget) {
+	// 	Availability availability = methodTarget.getAvailability();
+	// 	if (!availability.isAvailable()) {
+	// 		result.append("CURRENTLY UNAVAILABLE", AttributedStyle.BOLD).append("\n");
+	// 		result.append('\t').append("This command is currently not available because ")
+	// 				.append(availability.getReason())
+	// 				.append(".\n");
+	// 	}
+	// }
+	private void documentAvailability(AttributedStringBuilder result, CommandRegistration registration) {
+		Availability availability = registration.getAvailability();
 		if (!availability.isAvailable()) {
 			result.append("CURRENTLY UNAVAILABLE", AttributedStyle.BOLD).append("\n");
 			result.append('\t').append("This command is currently not available because ")

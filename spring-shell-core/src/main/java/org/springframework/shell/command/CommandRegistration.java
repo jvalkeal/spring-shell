@@ -21,12 +21,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
+import org.springframework.shell.Availability;
 import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -74,6 +76,13 @@ public interface CommandRegistration {
 	 * @return the description
 	 */
 	String getDescription();
+
+	/**
+	 * Get {@link Availability} for a command
+	 *
+	 * @return the availability
+	 */
+	Availability getAvailability();
 
 	/**
 	 * Gets a target {@link Function} to execute.
@@ -204,6 +213,8 @@ public interface CommandRegistration {
 		 * @return builder for chaining
 		 */
 		Builder help(String help);
+
+		Builder availability(Supplier<Availability> availability);
 
 		/**
 		 * Define a group for a command.
@@ -389,18 +400,20 @@ public interface CommandRegistration {
 		private String help;
 		private String group;
 		private String description;
+		private Supplier<Availability> availability;
 		private Function<CommandContext, ?> function;
 		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs;
 
 		public DefaultCommandRegistration(String[] commands, InteractionMode interactionMode, String help,
-				String group, String description, Function<CommandContext, ?> function,
+				String group, String description, Supplier<Availability> availability, Function<CommandContext, ?> function,
 				List<DefaultOptionSpec> optionSpecs, InvocableHandlerMethod invocableHandlerMethod) {
 			this.commands = commands;
 			this.interactionMode = interactionMode;
 			this.help = help;
 			this.group = group;
 			this.description = description;
+			this.availability = availability;
 			this.function = function;
 			this.optionSpecs = optionSpecs;
 			this.invocableHandlerMethod = invocableHandlerMethod;
@@ -429,6 +442,11 @@ public interface CommandRegistration {
 		@Override
 		public String getDescription() {
 			return description;
+		}
+
+		@Override
+		public Availability getAvailability() {
+			return availability != null ? availability.get() : Availability.available();
 		}
 
 		@Override
@@ -461,6 +479,7 @@ public interface CommandRegistration {
 		private String help;
 		private String group;
 		private String description;
+		private Supplier<Availability> availability;
 		private Function<CommandContext, ?> function;
 		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs = new ArrayList<>();
@@ -496,6 +515,12 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public Builder availability(Supplier<Availability> availability) {
+			this.availability = availability;
+			return this;
+		}
+
+		@Override
 		public OptionSpec withOption() {
 			DefaultOptionSpec spec = new DefaultOptionSpec(this);
 			optionSpecs.add(spec);
@@ -523,8 +548,8 @@ public interface CommandRegistration {
 				targets++;
 			}
 			Assert.isTrue(targets == 1, "only one target can exist");
-			return new DefaultCommandRegistration(commands, interactionMode, help, group, description, function,
-					optionSpecs, invocableHandlerMethod);
+			return new DefaultCommandRegistration(commands, interactionMode, help, group, description, availability,
+					function, optionSpecs, invocableHandlerMethod);
 		}
 	}
 }
