@@ -62,6 +62,13 @@ public interface CommandRegistration {
 	String getHelp();
 
 	/**
+	 * Get group for a command.
+	 *
+	 * @return the group
+	 */
+	String getGroup();
+
+	/**
 	 * Get description for a command.
 	 *
 	 * @return the description
@@ -197,6 +204,14 @@ public interface CommandRegistration {
 		 * @return builder for chaining
 		 */
 		Builder help(String help);
+
+		/**
+		 * Define a group for a command.
+		 *
+		 * @param group the group
+		 * @return builder for chaining
+		 */
+		Builder group(String group);
 
 		/**
 		 * Define an option what this command should user for. Can be used multiple
@@ -372,17 +387,19 @@ public interface CommandRegistration {
 		private String[] commands;
 		private InteractionMode interactionMode;
 		private String help;
+		private String group;
 		private String description;
 		private Function<CommandContext, ?> function;
 		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs;
 
 		public DefaultCommandRegistration(String[] commands, InteractionMode interactionMode, String help,
-				String description, Function<CommandContext, ?> function, List<DefaultOptionSpec> optionSpecs,
-				InvocableHandlerMethod invocableHandlerMethod) {
+				String group, String description, Function<CommandContext, ?> function,
+				List<DefaultOptionSpec> optionSpecs, InvocableHandlerMethod invocableHandlerMethod) {
 			this.commands = commands;
 			this.interactionMode = interactionMode;
 			this.help = help;
+			this.group = group;
 			this.description = description;
 			this.function = function;
 			this.optionSpecs = optionSpecs;
@@ -402,6 +419,11 @@ public interface CommandRegistration {
 		@Override
 		public String getHelp() {
 			return help;
+		}
+
+		@Override
+		public String getGroup() {
+			return group;
 		}
 
 		@Override
@@ -437,6 +459,7 @@ public interface CommandRegistration {
 		private String[] commands;
 		private InteractionMode interactionMode = InteractionMode.ALL;
 		private String help;
+		private String group;
 		private String description;
 		private Function<CommandContext, ?> function;
 		private InvocableHandlerMethod invocableHandlerMethod;
@@ -463,6 +486,12 @@ public interface CommandRegistration {
 		@Override
 		public Builder help(String help) {
 			this.help = help;
+			return this;
+		}
+
+		@Override
+		public Builder group(String group) {
+			this.group = group;
 			return this;
 		}
 
@@ -494,8 +523,8 @@ public interface CommandRegistration {
 				targets++;
 			}
 			Assert.isTrue(targets == 1, "only one target can exist");
-			return new DefaultCommandRegistration(commands, interactionMode, help, description, function, optionSpecs,
-					invocableHandlerMethod);
+			return new DefaultCommandRegistration(commands, interactionMode, help, group, description, function,
+					optionSpecs, invocableHandlerMethod);
 		}
 	}
 }

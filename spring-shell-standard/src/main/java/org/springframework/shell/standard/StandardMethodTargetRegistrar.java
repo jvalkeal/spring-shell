@@ -65,7 +65,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 	private final Logger log = LoggerFactory.getLogger(StandardMethodTargetRegistrar.class);
 	private ApplicationContext applicationContext;
 
-	private Map<String, MethodTarget> commands = new HashMap<>();
+	// private Map<String, MethodTarget> commands = new HashMap<>();
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -87,12 +87,12 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 				for (String key : keys) {
 					log.debug("xxx1 {} {}", key, keys);
 					Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
-					MethodTarget target = new MethodTarget(method, bean, new Command.Help(shellMapping.value(), group),
-							availabilityIndicator, shellMapping.interactionMode());
+					// MethodTarget target = new MethodTarget(method, bean, new Command.Help(shellMapping.value(), group),
+					// 		availabilityIndicator, shellMapping.interactionMode());
 					// registry.register(key, target);
 
 
-					Builder builder = CommandRegistration.builder().command(key);
+					Builder builder = CommandRegistration.builder().command(key).group(group);
 
 					InvocableHandlerMethod xxx = new InvocableHandlerMethod(bean, method);
 					for (MethodParameter ppp : xxx.getMethodParameters()) {
@@ -129,7 +129,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 					// 		.and()
 					// 	.build();
 					registry.register(registration);
-					commands.put(key, target);
+					// commands.put(key, target);
 				}
 			}, method -> method.getAnnotation(ShellMethod.class) != null);
 		}
@@ -242,9 +242,9 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 		}
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + " contributing "
-				+ collectionToDelimitedString(commands.keySet(), ", ", "[", "]");
-	}
+	// @Override
+	// public String toString() {
+	// 	return getClass().getSimpleName() + " contributing "
+	// 			+ collectionToDelimitedString(commands.keySet(), ", ", "[", "]");
+	// }
 }

@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
 import org.springframework.messaging.handler.annotation.support.HeadersMethodArgumentResolver;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
@@ -48,13 +49,23 @@ public interface CommandExecution {
 	 * @return default command execution
 	 */
 	public static CommandExecution of() {
-		return new DefaultCommandExecution();
+		return new DefaultCommandExecution(null);
+	}
+
+	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers) {
+		return new DefaultCommandExecution(resolvers);
 	}
 
 	/**
 	 * Default implementation of a {@link CommandExecution}.
 	 */
 	static class DefaultCommandExecution implements CommandExecution {
+
+		private List<? extends HandlerMethodArgumentResolver> resolvers;
+
+		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers) {
+			this.resolvers = resolvers;
+		}
 
 		public Object evaluate(CommandRegistration registration, String[] args) {
 
@@ -75,9 +86,12 @@ public interface CommandExecution {
 			}
 			else if (invocableHandlerMethod != null) {
 				HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
-				argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
-				argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
-				argumentResolvers.addResolver(new CommandContextMethodArgumentResolver());
+				if (resolvers != null) {
+					argumentResolvers.addResolvers(resolvers);
+				}
+				// argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
+				// argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
+				// argumentResolvers.addResolver(new CommandContextMethodArgumentResolver());
 				invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
@@ -101,6 +115,19 @@ public interface CommandExecution {
 			}
 
 			return res;
+		}
+	}
+
+	static class CommandExecutionHandlerMethodArgumentResolvers {
+
+		private final List<? extends HandlerMethodArgumentResolver> resolvers;
+
+		public CommandExecutionHandlerMethodArgumentResolvers(List<? extends HandlerMethodArgumentResolver> resolvers) {
+			this.resolvers = resolvers;
+		}
+
+		public List<? extends HandlerMethodArgumentResolver> getResolvers() {
+			return resolvers;
 		}
 	}
 }

@@ -41,6 +41,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandExecution;
+import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -76,6 +77,7 @@ public class Shell {
 	private Validator validator = Utils.defaultValidator();
 
 	protected List<ParameterResolver> parameterResolvers;
+	private CommandExecutionHandlerMethodArgumentResolvers argumentResolvers;
 
 	/**
 	 * Marker object to distinguish unresolved arguments from {@code null}, which is a valid
@@ -97,6 +99,11 @@ public class Shell {
 	public void setParameterResolvers(List<ParameterResolver> resolvers) {
 		this.parameterResolvers = new ArrayList<>(resolvers);
 		AnnotationAwareOrderComparator.sort(parameterResolvers);
+	}
+
+	@Autowired
+	public void setArgumentResolvers(CommandExecutionHandlerMethodArgumentResolvers argumentResolvers) {
+		this.argumentResolvers = argumentResolvers;
 	}
 
 	/**
@@ -216,7 +223,7 @@ public class Shell {
 				Object sh = Signals.register("INT", () -> commandThread.interrupt());
 				try {
 					// Object[] args = resolveArgs(method, wordsForArgs);
-					CommandExecution execution = CommandExecution.of();
+					CommandExecution execution = CommandExecution.of(argumentResolvers.getResolvers());
 					return execution.evaluate(commandRegistration.get(), words.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {

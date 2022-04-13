@@ -41,16 +41,19 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.and()
 			.build();
 		assertThat(registration.getCommands()).containsExactly("command1");
+		assertThat(registration.getGroup()).isNull();
 		assertThat(registration.getInteractionMode()).isEqualTo(InteractionMode.ALL);
 
 		registration = CommandRegistration.builder()
 			.command("command1")
 			.interactionMode(InteractionMode.NONINTERACTIVE)
+			.group("fakegroup")
 			.targetFunction()
 				.function(function1)
 				.and()
 			.build();
 		assertThat(registration.getInteractionMode()).isEqualTo(InteractionMode.NONINTERACTIVE);
+		assertThat(registration.getGroup()).isEqualTo("fakegroup");
 	}
 
 	@Test

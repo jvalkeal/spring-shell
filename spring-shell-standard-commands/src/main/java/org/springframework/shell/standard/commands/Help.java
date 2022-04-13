@@ -17,6 +17,7 @@
 package org.springframework.shell.standard.commands;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.MethodTarget;
 import org.springframework.shell.ParameterDescription;
 import org.springframework.shell.Utils;
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.CommandValueProvider;
 import org.springframework.shell.standard.ShellComponent;
@@ -96,8 +98,7 @@ public class Help extends AbstractShellComponent {
 					"--command" }, help = "The command to obtain help for.") String command)
 			throws IOException {
 		if (command == null) {
-			// return listCommands();
-			return "";
+			return listCommands();
 		}
 		else {
 			return documentCommand(command);
@@ -123,11 +124,14 @@ public class Help extends AbstractShellComponent {
 		// if (methodTarget == null) {
 		// 	throw new IllegalArgumentException("Unknown command '" + command + "'");
 		// }
+		if (!getCommandRegistry().getCommandNames().contains(command)) {
+			throw new IllegalArgumentException("Unknown command '" + command + "'");
+		}
 
 		AttributedStringBuilder result = new AttributedStringBuilder().append("\n\n");
 		// List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
 
-		// // NAME
+		// NAME
 		// documentCommandName(result, command, methodTarget.getHelp());
 
 		// // SYNOPSYS
@@ -277,8 +281,8 @@ public class Help extends AbstractShellComponent {
 	// private CharSequence listCommands() {
 	// 	Map<String, MethodTarget> commandsByName = getCommandRegistry().listCommands();
 
-	// 	AttributedStringBuilder result = new AttributedStringBuilder();
-	// 	result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
+	//	AttributedStringBuilder result = new AttributedStringBuilder();
+	//	result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
 
 	// 	SortedMap<String, Map<String, MethodTarget>> commandsByGroupAndName = commandsByName.entrySet().stream()
 	// 			.collect(groupingBy(e -> e.getValue().getGroup(), TreeMap::new, // group by and sort by command group
@@ -314,12 +318,60 @@ public class Help extends AbstractShellComponent {
 	// 	return result;
 	// }
 
-	private Comparator<Entry<MethodTarget, SortedSet<String>>> sortByFirstCommandName() {
+	private CharSequence listCommands() {
+		AttributedStringBuilder result = new AttributedStringBuilder();
+
+		getCommandRegistry().getCommands();
+
+		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandRegistry().getCommands().stream()
+				.collect(Collectors.groupingBy(
+					e -> e.getGroup(),
+					TreeMap::new,
+					Collectors.toMap(e -> Arrays.asList(e.getCommands()).stream().collect(Collectors.joining(" ")), e -> e)
+					))
+				;
+
+		commandsByGroupAndName.forEach((group, commandsInGroup) -> {
+			if (showGroups) {
+				result.append("".equals(group) ? "Default" : group, AttributedStyle.BOLD).append('\n');
+			}
+			Map<CommandRegistration, SortedSet<String>> commandNamesByMethod = commandsInGroup.entrySet().stream()
+					.collect(groupingBy(Entry::getValue, // group by command method
+							mapping(Entry::getKey, toCollection(TreeSet::new)))); // sort command names
+			// display commands, sorted alphabetically by their first alias
+			commandNamesByMethod.entrySet().stream().sorted(sortByFirstCommandName()).forEach(e -> {
+				String prefix = showGroups ? "      " : "";
+				prefix = prefix + (isAvailable(e.getKey()) ? "  " : " *");
+				result
+						.append(prefix)
+						.append(String.join(", ", e.getValue()), AttributedStyle.BOLD)
+						.append(": ")
+						.append(e.getKey().getHelp())
+						.append('\n');
+			});
+			if (showGroups) {
+				result.append('\n');
+			}
+		});
+
+
+		result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
+		return result;
+	}
+
+
+	// private Comparator<Entry<MethodTarget, SortedSet<String>>> sortByFirstCommandName() {
+	// 	return Comparator.comparing(e -> e.getValue().first());
+	// }
+	private Comparator<Entry<CommandRegistration, SortedSet<String>>> sortByFirstCommandName() {
 		return Comparator.comparing(e -> e.getValue().first());
 	}
 
-	private boolean isAvailable(MethodTarget methodTarget) {
-		return methodTarget.getAvailability().isAvailable();
+	// private boolean isAvailable(MethodTarget methodTarget) {
+	// 	return methodTarget.getAvailability().isAvailable();
+	// }
+	private boolean isAvailable(CommandRegistration methodTarget) {
+		return true;
 	}
 
 	private void appendUnderlinedFormal(AttributedStringBuilder result, ParameterDescription description) {
