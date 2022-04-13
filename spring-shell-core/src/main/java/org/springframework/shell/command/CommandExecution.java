@@ -18,9 +18,6 @@ package org.springframework.shell.command;
 import java.util.List;
 import java.util.function.Function;
 
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
-import org.springframework.messaging.handler.annotation.support.HeadersMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
@@ -46,12 +43,9 @@ public interface CommandExecution {
 	/**
 	 * Gets an instance of a default {@link CommandExecution}.
 	 *
+	 * @param resolvers the handler method argument resolvers
 	 * @return default command execution
 	 */
-	public static CommandExecution of() {
-		return new DefaultCommandExecution(null);
-	}
-
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers) {
 		return new DefaultCommandExecution(resolvers);
 	}
@@ -89,9 +83,6 @@ public interface CommandExecution {
 				if (resolvers != null) {
 					argumentResolvers.addResolvers(resolvers);
 				}
-				// argumentResolvers.addResolver(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
-				// argumentResolvers.addResolver(new HeadersMethodArgumentResolver());
-				// argumentResolvers.addResolver(new CommandContextMethodArgumentResolver());
 				invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);

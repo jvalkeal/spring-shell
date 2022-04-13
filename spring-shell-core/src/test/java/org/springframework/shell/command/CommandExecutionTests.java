@@ -15,8 +15,15 @@
  */
 package org.springframework.shell.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +33,10 @@ public class CommandExecutionTests extends AbstractCommandTests {
 
 	@BeforeEach
 	public void setupCommandExecutionTests() {
-		execution = CommandExecution.of();
+		List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
+		resolvers.add(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
+		resolvers.add(new CommandContextMethodArgumentResolver());
+		execution = CommandExecution.of(resolvers);
 	}
 
 	@Test
