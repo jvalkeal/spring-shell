@@ -110,11 +110,18 @@ public interface CommandExecution {
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
 					res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[])null);
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					throw new CommandExecutionException(e);
 				}
 			}
 
 			return res;
+		}
+	}
+
+	static class CommandExecutionException extends RuntimeException {
+
+		public CommandExecutionException(Throwable cause) {
+			super(cause);
 		}
 	}
 

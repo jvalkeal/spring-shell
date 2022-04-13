@@ -47,6 +47,13 @@ public interface CommandCatalog {
 	void unregister(CommandRegistration registration);
 
 	/**
+	 * Gets all {@link CommandRegistration}s mapped with their names.
+	 *
+	 * @return all command registrations
+	 */
+	Map<String, CommandRegistration> getRegistrations();
+
+	/**
 	 * Gets all command registrations.
 	 *
 	 * @return command registrations
@@ -120,6 +127,16 @@ public interface CommandCatalog {
 		public void unregister(CommandRegistration registration) {
 			String commandName = commandName(registration.getCommands());
 			commandRegistrations.remove(commandName);
+		}
+
+		@Override
+		public Map<String, CommandRegistration> getRegistrations() {
+			HashMap<String, CommandRegistration> regs = new HashMap<>();
+			regs.putAll(commandRegistrations);
+			for (CommandResolver resolver : resolvers) {
+				regs.putAll(resolver.resolve());
+			}
+			return regs;
 		}
 
 		@Override

@@ -124,21 +124,25 @@ public class Help extends AbstractShellComponent {
 		// if (methodTarget == null) {
 		// 	throw new IllegalArgumentException("Unknown command '" + command + "'");
 		// }
-		if (!getCommandRegistry().getCommandNames().contains(command)) {
+		Map<String, CommandRegistration> registrations = getCommandRegistry().getRegistrations();
+		CommandRegistration registration = registrations.get(command);
+		if (registration == null) {
 			throw new IllegalArgumentException("Unknown command '" + command + "'");
 		}
 
 		AttributedStringBuilder result = new AttributedStringBuilder().append("\n\n");
 		// List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
+		List<ParameterDescription> parameterDescriptions = getParameterDescriptions(registration);
 
 		// NAME
 		// documentCommandName(result, command, methodTarget.getHelp());
+		documentCommandName(result, command, registration.getHelp());
 
 		// // SYNOPSYS
-		// documentSynopsys(result, command, parameterDescriptions);
+		documentSynopsys(result, command, parameterDescriptions);
 
 		// // OPTIONS
-		// documentOptions(result, parameterDescriptions);
+		documentOptions(result, parameterDescriptions);
 
 		// // ALSO KNOWN AS
 		// documentAliases(result, command, methodTarget);
@@ -385,12 +389,19 @@ public class Help extends AbstractShellComponent {
 		}
 	}
 
-	private List<ParameterDescription> getParameterDescriptions(MethodTarget methodTarget) {
-		return Utils.createMethodParameters(methodTarget.getMethod())
+	// private List<ParameterDescription> getParameterDescriptions(MethodTarget methodTarget) {
+	// 	return Utils.createMethodParameters(methodTarget.getMethod())
+	// 			.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
+	// 					.flatMap(pr -> pr.describe(mp)))
+	// 			.collect(Collectors.toList());
+
+	// }
+
+	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
+		return Utils.createMethodParameters(registration.getMethod().getMethod())
 				.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
 						.flatMap(pr -> pr.describe(mp)))
 				.collect(Collectors.toList());
-
 	}
 
 	private static class DummyContext implements MessageInterpolator.Context {

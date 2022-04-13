@@ -41,6 +41,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandExecution;
+import org.springframework.shell.command.CommandExecution.CommandExecutionException;
 import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.util.ReflectionUtils;
@@ -230,6 +231,9 @@ public class Shell {
 					if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
 						Thread.interrupted(); // to reset interrupted flag
 					}
+					return e.getCause();
+				}
+				catch (CommandExecutionException e) {
 					return e.getCause();
 				}
 				catch (Exception e) {
