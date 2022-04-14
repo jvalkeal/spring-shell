@@ -19,9 +19,7 @@ package org.springframework.shell.standard;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +27,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.core.MethodParameter;
-// import org.springframework.shell.CommandRegistry;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
-import org.springframework.shell.MethodTarget;
 import org.springframework.shell.Utils;
+import org.springframework.shell.command.CommandCatalog;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,36 +43,31 @@ import static org.mockito.Mockito.when;
  */
 public class CommandValueProviderTest {
 
-	// TODO: XXX
-	// @Mock
-	// private CommandRegistry shell;
+	@Mock
+	private CommandCatalog catalog;
 
-	// @BeforeEach
-	// public void setUp() {
-	// 	MockitoAnnotations.openMocks(this);
-	// }
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-	// @Test
-	// public void testValues() {
-	// 	CommandValueProvider valueProvider = new CommandValueProvider(shell);
+	@Test
+	public void testValues() {
+		CommandValueProvider valueProvider = new CommandValueProvider(catalog);
 
-	// 	Method help = ReflectionUtils.findMethod(Command.class, "help", String.class);
-	// 	MethodParameter methodParameter = Utils.createMethodParameter(help, 0);
-	// 	CompletionContext completionContext = new CompletionContext(Arrays.asList("help", "m"), 0, 0);
-	// 	boolean supports = valueProvider.supports(methodParameter, completionContext);
+		Method help = ReflectionUtils.findMethod(Command.class, "help", String.class);
+		MethodParameter methodParameter = Utils.createMethodParameter(help, 0);
+		CompletionContext completionContext = new CompletionContext(Arrays.asList("help", "m"), 0, 0);
+		boolean supports = valueProvider.supports(methodParameter, completionContext);
 
-	// 	assertThat(supports).isEqualTo(true);
+		assertThat(supports).isEqualTo(true);
 
-	// 	Map<String, MethodTarget> commands = new HashMap<>();
-	// 	commands.put("me", null);
-	// 	commands.put("meow", null);
-	// 	commands.put("yourself", null);
-	// 	when(shell.listCommands()).thenReturn(commands);
-	// 	List<CompletionProposal> proposals = valueProvider.complete(methodParameter, completionContext, new String[0]);
+		when(catalog.getCommandNames()).thenReturn(Arrays.asList("me", "meow", "yourself"));
+		List<CompletionProposal> proposals = valueProvider.complete(methodParameter, completionContext, new String[0]);
 
-	// 	assertThat(proposals).extracting("value", String.class)
-	// 		.contains("me", "meow", "yourself");
-	// }
+		assertThat(proposals).extracting("value", String.class)
+			.contains("me", "meow", "yourself");
+	}
 
 
 	public static class Command {
