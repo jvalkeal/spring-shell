@@ -292,31 +292,57 @@ public class Shell {
 	 * in. When and how this method is invoked is implementation specific and decided by the
 	 * actual user interface.
 	 */
+	// public List<CompletionProposal> complete(CompletionContext context) {
+
+	// 	String prefix = context.upToCursor();
+
+	// 	List<CompletionProposal> candidates = new ArrayList<>();
+	// 	candidates.addAll(commandsStartingWith(prefix));
+
+	// 	String best = findLongestCommand(prefix);
+	// 	if (best != null) {
+	// 		CompletionContext argsContext = context.drop(best.split(" ").length);
+	// 		// Try to complete arguments
+	// 		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
+	// 		MethodTarget methodTarget = methodTargets.get(best);
+	// 		Method method = methodTarget.getMethod();
+
+	// 		List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
+	// 		for (ParameterResolver resolver : parameterResolvers) {
+	// 			for (int index = 0; index < parameters.size(); index++) {
+	// 				MethodParameter parameter = parameters.get(index);
+	// 				if (resolver.supports(parameter)) {
+	// 					resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	return candidates;
+	// }
 	public List<CompletionProposal> complete(CompletionContext context) {
 
 		String prefix = context.upToCursor();
 
 		List<CompletionProposal> candidates = new ArrayList<>();
-		// candidates.addAll(commandsStartingWith(prefix));
+		candidates.addAll(commandsStartingWith(prefix));
 
-		// String best = findLongestCommand(prefix);
-		// if (best != null) {
-		// 	CompletionContext argsContext = context.drop(best.split(" ").length);
-		// 	// Try to complete arguments
-		// 	Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		// 	MethodTarget methodTarget = methodTargets.get(best);
-		// 	Method method = methodTarget.getMethod();
+		String best = findLongestCommand(prefix);
+		if (best != null) {
+			CompletionContext argsContext = context.drop(best.split(" ").length);
+			// Try to complete arguments
+			CommandRegistration registration = commandRegistry.getRegistrations().get(best);
+			Method method = registration.getMethod().getMethod();
 
-		// 	List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
-		// 	for (ParameterResolver resolver : parameterResolvers) {
-		// 		for (int index = 0; index < parameters.size(); index++) {
-		// 			MethodParameter parameter = parameters.get(index);
-		// 			if (resolver.supports(parameter)) {
-		// 				resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
-		// 			}
-		// 		}
-		// 	}
-		// }
+			List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
+			for (ParameterResolver resolver : parameterResolvers) {
+				for (int index = 0; index < parameters.size(); index++) {
+					MethodParameter parameter = parameters.get(index);
+					if (resolver.supports(parameter)) {
+						resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
+					}
+				}
+			}
+		}
 		return candidates;
 	}
 
