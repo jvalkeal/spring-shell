@@ -23,9 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-// import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.ParameterResolver;
-import org.springframework.shell.context.DefaultShellContext;
+import org.springframework.shell.command.CommandCatalog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,11 +48,10 @@ public class BashCompletionsTests {
 
 	@Test
 	public void testDoesNotError() {
-		// TODO: XXX
-		// ConfigurableCommandRegistry commandRegistry = new ConfigurableCommandRegistry(new DefaultShellContext());
-		// List<ParameterResolver> parameterResolvers = new ArrayList<>();
-		// BashCompletions completions = new BashCompletions(context, commandRegistry, parameterResolvers);
-		// String bash = completions.generate("root-command");
-		// assertThat(bash).contains("root-command");
+		CommandCatalog commandCatalog = CommandCatalog.of();
+		List<ParameterResolver> parameterResolvers = new ArrayList<>();
+		BashCompletions completions = new BashCompletions(context, commandCatalog, parameterResolvers);
+		String bash = completions.generate("root-command");
+		assertThat(bash).contains("root-command");
 	}
 }

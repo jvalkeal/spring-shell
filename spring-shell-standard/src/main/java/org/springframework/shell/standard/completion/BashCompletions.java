@@ -28,10 +28,9 @@ import org.springframework.shell.command.CommandCatalog;
  */
 public class BashCompletions extends AbstractCompletions {
 
-	// TODO: XXX
-	public BashCompletions(ResourceLoader resourceLoader, CommandCatalog commandRegistry,
+	public BashCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog,
 			List<ParameterResolver> parameterResolvers) {
-		super(resourceLoader, commandRegistry, parameterResolvers);
+		super(resourceLoader, commandCatalog, parameterResolvers);
 	}
 
 	public String generate(String rootCommand) {

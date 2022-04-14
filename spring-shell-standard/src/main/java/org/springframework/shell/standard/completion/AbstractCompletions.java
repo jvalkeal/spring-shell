@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +36,6 @@ import org.stringtemplate.v4.STGroupString;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.MethodTarget;
 import org.springframework.shell.ParameterDescription;
 import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.Utils;
@@ -57,13 +55,13 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractCompletions {
 
 	private final ResourceLoader resourceLoader;
-	private final CommandCatalog commandRegistry;
+	private final CommandCatalog commandCatalog;
 	private final List<ParameterResolver> parameterResolvers;
 
-	public AbstractCompletions(ResourceLoader resourceLoader, CommandCatalog commandRegistry,
+	public AbstractCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog,
 			List<ParameterResolver> parameterResolvers) {
 		this.resourceLoader = resourceLoader;
-		this.commandRegistry = commandRegistry;
+		this.commandCatalog = commandCatalog;
 		this.parameterResolvers = parameterResolvers;
 	}
 
@@ -77,8 +75,7 @@ public abstract class AbstractCompletions {
 	 * all needed to build completions structure.
 	 */
 	protected CommandModel generateCommandModel() {
-		// Map<String, MethodTarget> commandsByName = commandRegistry.listCommands();
-		Collection<CommandRegistration> commandsByName = commandRegistry.getCommands();
+		Collection<CommandRegistration> commandsByName = commandCatalog.getCommands();
 		HashMap<String, DefaultCommandModelCommand> commands = new HashMap<>();
 		HashSet<CommandModelCommand> topCommands = new HashSet<>();
 		commandsByName.stream()
@@ -100,13 +97,11 @@ public abstract class AbstractCompletions {
 							(fullCommand) -> new DefaultCommandModelCommand(fullCommand, main));
 					// TODO: XXX long vs short
 
-					// MethodTarget methodTarget = entry.getValue();
-					// List<ParameterDescription> parameterDescriptions = getParameterDescriptions(methodTarget);
-					// List<DefaultCommandModelOption> options = parameterDescriptions.stream()
-					// 		.flatMap(pd -> pd.keys().stream())
-					// 		.map(k -> new DefaultCommandModelOption(k))
-					// 		.collect(Collectors.toList());
-					List<DefaultCommandModelOption> options = new ArrayList<>();
+					List<ParameterDescription> parameterDescriptions = getParameterDescriptions(entry);
+					List<DefaultCommandModelOption> options = parameterDescriptions.stream()
+							.flatMap(pd -> pd.keys().stream())
+							.map(k -> new DefaultCommandModelOption(k))
+							.collect(Collectors.toList());
 					entry.getOptions().forEach(o -> {
 						for (String longname : o.getLongNames()) {
 							options.add(new DefaultCommandModelOption(longname));
@@ -126,12 +121,12 @@ public abstract class AbstractCompletions {
 		return new DefaultCommandModel(new ArrayList<>(topCommands));
 	}
 
-	// private List<ParameterDescription> getParameterDescriptions(MethodTarget methodTarget) {
-	// 	return Utils.createMethodParameters(methodTarget.getMethod())
-	// 			.flatMap(mp -> parameterResolvers.stream().filter(pr -> pr.supports(mp)).limit(1L)
-	// 					.flatMap(pr -> pr.describe(mp)))
-	// 			.collect(Collectors.toList());
-	// }
+	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
+		return Utils.createMethodParameters(registration.getMethod().getMethod())
+				.flatMap(mp -> parameterResolvers.stream().filter(pr -> pr.supports(mp)).limit(1L)
+						.flatMap(pr -> pr.describe(mp)))
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Interface for a command model structure. Is also used as entry model
