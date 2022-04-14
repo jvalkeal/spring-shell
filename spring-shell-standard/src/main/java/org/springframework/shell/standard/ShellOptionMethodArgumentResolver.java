@@ -29,7 +29,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandlingException;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -70,7 +69,6 @@ public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodA
 	@Nullable
 	protected Object resolveArgumentInternal(MethodParameter parameter, Message<?> message, List<String> names)
 			throws Exception {
-
 		Object headerValue = null;
 		Object nativeHeaderValue = null;
 		for (String name : names) {
@@ -80,8 +78,6 @@ public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodA
 				break;
 			}
 		}
-		// Object headerValue = message.getHeaders().get(name);
-		// Object nativeHeaderValue = getNativeHeaderValue(message, name);
 
 		if (headerValue != null && nativeHeaderValue != null) {
 			if (logger.isDebugEnabled()) {
@@ -119,12 +115,10 @@ public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodA
 				"' for method parameter type [" + parameter.getParameterType() + "]");
 	}
 
-
 	private static final class HeaderNamedValueInfo extends NamedValueInfo {
 
 		private HeaderNamedValueInfo(ShellOption annotation, List<String> names) {
 			super(names, false, null);
 		}
 	}
-
 }
