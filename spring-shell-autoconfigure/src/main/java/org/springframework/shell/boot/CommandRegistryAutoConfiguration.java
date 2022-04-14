@@ -18,25 +18,11 @@ package org.springframework.shell.boot;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-// import org.springframework.shell.CommandRegistry;
-// import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.command.CommandCatalog;
-import org.springframework.shell.context.ShellContext;
 
 @Configuration(proxyBeanMethods = false)
 public class CommandRegistryAutoConfiguration {
-
-	// @Bean
-	// public CommandRegistry commandRegistry(
-	// 		ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars,
-	// 		ShellContext shellContext) {
-	// 	ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry(shellContext);
-	// 	methodTargetRegistrars.orderedStream().forEach(resolver -> {
-	// 		resolver.register(registry);
-	// 	});
-	// 	return registry;
-	// }
 
 	@Bean
 	public CommandCatalog commandCatalog(ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars) {
