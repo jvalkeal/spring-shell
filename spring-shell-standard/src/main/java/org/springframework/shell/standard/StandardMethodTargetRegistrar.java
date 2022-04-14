@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +35,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.shell.Availability;
-import org.springframework.shell.Command;
-// import org.springframework.shell.ConfigurableCommandRegistry;
-import org.springframework.shell.MethodTarget;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.Utils;
 import org.springframework.shell.command.CommandCatalog;
@@ -49,8 +44,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.util.StringUtils.collectionToDelimitedString;
-
 /**
  * The standard implementation of {@link MethodTargetRegistrar} for new shell
  * applications, resolves methods annotated with {@link ShellMethod} on
@@ -59,13 +52,12 @@ import static org.springframework.util.StringUtils.collectionToDelimitedString;
  * @author Eric Bottard
  * @author Florent Biville
  * @author Camilo Gonzalez
+ * @author Janne Valkealahti
  */
 public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, ApplicationContextAware {
 
 	private final Logger log = LoggerFactory.getLogger(StandardMethodTargetRegistrar.class);
 	private ApplicationContext applicationContext;
-
-	// private Map<String, MethodTarget> commands = new HashMap<>();
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -87,12 +79,12 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 				for (String key : keys) {
 					log.debug("xxx1 {} {}", key, keys);
 					Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
-					// MethodTarget target = new MethodTarget(method, bean, new Command.Help(shellMapping.value(), group),
-					// 		availabilityIndicator, shellMapping.interactionMode());
-					// registry.register(key, target);
 
-
-					Builder builder = CommandRegistration.builder().command(key).group(group);
+					Builder builder = CommandRegistration.builder()
+						.command(key)
+						.group(group)
+						.interactionMode(shellMapping.interactionMode())
+						.availability(availabilityIndicator);
 
 					InvocableHandlerMethod xxx = new InvocableHandlerMethod(bean, method);
 					for (MethodParameter ppp : xxx.getMethodParameters()) {
@@ -118,18 +110,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 					builder.targetMethod().method(bean, method).and();
 
 					CommandRegistration registration = builder.build();
-
-					// CommandRegistration registration = CommandRegistration.builder()
-					// 	.command(keys)
-					// 	// .withOption()
-					// 	// 	.longNames(names)
-					// 	// 	.and()
-					// 	.targetMethod()
-					// 		.method(bean, method)
-					// 		.and()
-					// 	.build();
 					registry.register(registration);
-					// commands.put(key, target);
 				}
 			}, method -> method.getAnnotation(ShellMethod.class) != null);
 		}
@@ -241,10 +222,4 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 			return null;
 		}
 	}
-
-	// @Override
-	// public String toString() {
-	// 	return getClass().getSimpleName() + " contributing "
-	// 			+ collectionToDelimitedString(commands.keySet(), ", ", "[", "]");
-	// }
 }

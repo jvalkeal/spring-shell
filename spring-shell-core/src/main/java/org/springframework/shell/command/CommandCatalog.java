@@ -20,9 +20,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.shell.context.InteractionMode;
+import org.springframework.shell.context.ShellContext;
 import org.springframework.util.StringUtils;
 
 /**
@@ -90,17 +93,18 @@ public interface CommandCatalog {
 	 * @return default command catalog
 	 */
 	static CommandCatalog of() {
-		return new DefaultCommandCatalog(null);
+		return new DefaultCommandCatalog(null, null);
 	}
 
 	/**
 	 * Gets an instance of a default {@link CommandCatalog}.
 	 *
 	 * @param resolvers the command resolvers
+	 * @param shellContext the shell context
 	 * @return default command catalog
 	 */
-	static CommandCatalog of(Collection<CommandResolver> resolvers) {
-		return new DefaultCommandCatalog(resolvers);
+	static CommandCatalog of(Collection<CommandResolver> resolvers, ShellContext shellContext) {
+		return new DefaultCommandCatalog(resolvers, shellContext);
 	}
 
 	/**
@@ -110,8 +114,10 @@ public interface CommandCatalog {
 
 		private final HashMap<String, CommandRegistration> commandRegistrations = new HashMap<>();
 		private final Collection<CommandResolver> resolvers = new ArrayList<>();
+		private final ShellContext shellContext;
 
-		DefaultCommandCatalog(Collection<CommandResolver> resolvers) {
+		DefaultCommandCatalog(Collection<CommandResolver> resolvers, ShellContext shellContext) {
+			this.shellContext = shellContext;
 			if (resolvers != null) {
 				this.resolvers.addAll(resolvers);
 			}
@@ -136,7 +142,22 @@ public interface CommandCatalog {
 			for (CommandResolver resolver : resolvers) {
 				regs.putAll(resolver.resolve());
 			}
-			return regs;
+			return regs.entrySet().stream()
+				.filter(e -> {
+					InteractionMode mim = e.getValue().getInteractionMode();
+					InteractionMode cim = shellContext.getInteractionMode();
+					if (mim == null || cim == null || mim == InteractionMode.ALL) {
+						return true;
+					}
+					else if (mim == InteractionMode.INTERACTIVE) {
+						return cim == InteractionMode.INTERACTIVE || cim == InteractionMode.ALL;
+					}
+					else if (mim == InteractionMode.NONINTERACTIVE) {
+						return cim == InteractionMode.NONINTERACTIVE || cim == InteractionMode.ALL;
+					}
+					return true;
+				})
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		}
 
 		@Override

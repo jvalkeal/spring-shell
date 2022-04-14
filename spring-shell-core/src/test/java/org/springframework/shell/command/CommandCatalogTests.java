@@ -47,7 +47,7 @@ public class CommandCatalogTests extends AbstractCommandTests {
 		// catalog itself would not have any registered command but
 		// this custom resolver adds one which may dymanically go away.
 		DynamicCommandResolver resolver = new DynamicCommandResolver();
-		CommandCatalog catalog = CommandCatalog.of(Arrays.asList(resolver));
+		CommandCatalog catalog = CommandCatalog.of(Arrays.asList(resolver), null);
 		assertThat(catalog.getCommands()).hasSize(1);
 		resolver.enabled = false;
 		assertThat(catalog.getCommands()).hasSize(0);
