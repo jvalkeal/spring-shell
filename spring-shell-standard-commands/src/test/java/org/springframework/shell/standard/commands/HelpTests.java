@@ -191,7 +191,6 @@ public class HelpTests {
 		public ParameterResolver parameterResolver() {
 			return new StandardParameterResolver(new DefaultConversionService(), Collections.emptySet());
 		}
-
 	}
 
 	@ShellComponent
@@ -227,5 +226,4 @@ public class HelpTests {
 		public void secondCommandInGroup() {
 		}
 	}
-
 }
