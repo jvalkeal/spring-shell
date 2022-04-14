@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.shell.standard.commands;
 
 import java.io.IOException;
@@ -47,6 +46,7 @@ import org.springframework.shell.standard.CommandValueProvider;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -275,6 +275,7 @@ public class Help extends AbstractShellComponent {
 		List<String> aliases = registrations.entrySet().stream()
 			.filter(e -> e.getValue().equals(registration))
 			.map(Map.Entry::getKey)
+			.filter(c -> !command.equals(c))
 			.collect(Collectors.toList());
 
 		if (!aliases.isEmpty()) {
@@ -350,16 +351,25 @@ public class Help extends AbstractShellComponent {
 
 	private CharSequence listCommands() {
 		AttributedStringBuilder result = new AttributedStringBuilder();
+		result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
 
-		getCommandRegistry().getCommands();
+		// getCommandRegistry().getCommands();
 
-		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandRegistry().getCommands().stream()
-				.collect(Collectors.groupingBy(
-					e -> e.getGroup(),
-					TreeMap::new,
-					Collectors.toMap(e -> Arrays.asList(e.getCommands()).stream().collect(Collectors.joining(" ")), e -> e)
-					))
-				;
+		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandRegistry().getRegistrations().entrySet().stream()
+			.collect(Collectors.groupingBy(
+				e -> StringUtils.hasText(e.getValue().getGroup()) ? e.getValue().getGroup() : "",
+				TreeMap::new,
+				Collectors.toMap(Entry::getKey, Entry::getValue)
+			))
+			;
+
+		// SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandRegistry().getCommands().stream()
+		// 		.collect(Collectors.groupingBy(
+		// 			e -> e.getGroup(),
+		// 			TreeMap::new,
+		// 			Collectors.toMap(e -> Arrays.asList(e.getCommands()).stream().collect(Collectors.joining(" ")), e -> e)
+		// 			))
+		// 		;
 
 		commandsByGroupAndName.forEach((group, commandsInGroup) -> {
 			if (showGroups) {
@@ -385,7 +395,6 @@ public class Help extends AbstractShellComponent {
 		});
 
 
-		result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
 		return result;
 	}
 
