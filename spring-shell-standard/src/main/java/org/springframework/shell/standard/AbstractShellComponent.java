@@ -47,7 +47,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
 
     private ObjectProvider<Terminal> terminalProvider;
 
-    private ObjectProvider<CommandCatalog> commandRegistryProvider;
+    private ObjectProvider<CommandCatalog> commandCatalogProvider;
 
     private ObjectProvider<ParameterResolver> parameterResolverProvider;
 
@@ -69,7 +69,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
     public void afterPropertiesSet() throws Exception {
         shellProvider = applicationContext.getBeanProvider(Shell.class);
         terminalProvider = applicationContext.getBeanProvider(Terminal.class);
-        commandRegistryProvider = applicationContext.getBeanProvider(CommandCatalog.class);
+        commandCatalogProvider = applicationContext.getBeanProvider(CommandCatalog.class);
         parameterResolverProvider = applicationContext.getBeanProvider(ParameterResolver.class);
         templateExecutorProvider = applicationContext.getBeanProvider(TemplateExecutor.class);
         themeResolverProvider = applicationContext.getBeanProvider(ThemeResolver.class);
@@ -91,8 +91,8 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
         return terminalProvider.getObject();
     }
 
-    protected CommandCatalog getCommandRegistry() {
-        return commandRegistryProvider.getObject();
+    protected CommandCatalog getCommandCatalog() {
+        return commandCatalogProvider.getObject();
     }
 
     protected Stream<ParameterResolver> getParameterResolver() {

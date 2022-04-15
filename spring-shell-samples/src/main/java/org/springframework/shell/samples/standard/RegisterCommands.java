@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.samples.standard;
 
+import java.util.function.Function;
+
+import org.springframework.shell.command.CommandContext;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.ShellComponent;
@@ -52,19 +55,39 @@ public class RegisterCommands extends AbstractShellComponent {
 
     @ShellMethod(key = "register add", value = "Register commands", group = "Register Commands")
     public String register() {
-		getCommandRegistry().register(dynamic1);
-		getCommandRegistry().register(dynamic2);
-		getCommandRegistry().register(dynamic3);
-		return "Registered commands dynamic1, dynamic2, dynamic3";
+		getCommandCatalog().register(dynamic1);
+		getCommandCatalog().register(dynamic2);
+		getCommandCatalog().register(dynamic3);
+		registerFunctionCommand("dynamic4");
+		return "Registered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
 
     @ShellMethod(key = "register remove", value = "Deregister commands", group = "Register Commands")
     public String deregister() {
-		getCommandRegistry().unregister(dynamic1);
-		getCommandRegistry().unregister(dynamic2);
-		getCommandRegistry().unregister(dynamic3);
-		return "Deregistered commands dynamic1, dynamic2, dynamic3";
+		getCommandCatalog().unregister(dynamic1);
+		getCommandCatalog().unregister(dynamic2);
+		getCommandCatalog().unregister(dynamic3);
+		CommandRegistration dynamic4 = getCommandCatalog().getRegistrations().get("dynamic4");
+		getCommandCatalog().unregister(dynamic4);
+		return "Deregistered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
+
+	private void registerFunctionCommand(String command) {
+		Function<CommandContext, String> function = ctx -> {
+			String arg1 = ctx.getOptionValue("arg1");
+			return String.format("hi, arg1 value is '%s'", arg1);
+		};
+		CommandRegistration registration = CommandRegistration.builder()
+			.command(command)
+			.targetFunction()
+				.function(function)
+				.and()
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.build();
+		getCommandCatalog().register(registration);
+	}
 
 	public static class PojoMethods {
 

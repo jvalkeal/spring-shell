@@ -51,7 +51,7 @@ public class Completion extends AbstractShellComponent {
 
 	@ShellMethod(key = "completion bash", value = "Generate bash completion script")
 	public String bash() {
-		BashCompletions bashCompletions = new BashCompletions(resourceLoader, getCommandRegistry(),
+		BashCompletions bashCompletions = new BashCompletions(resourceLoader, getCommandCatalog(),
 				getParameterResolver().collect(Collectors.toList()));
 		return bashCompletions.generate(rootCommand);
 	}

@@ -115,7 +115,7 @@ public class Help extends AbstractShellComponent {
 	 * Return a description of a specific command. Uses a layout inspired by *nix man pages.
 	 */
 	private CharSequence documentCommand(String command) {
-		Map<String, CommandRegistration> registrations = getCommandRegistry().getRegistrations();
+		Map<String, CommandRegistration> registrations = getCommandCatalog().getRegistrations();
 		CommandRegistration registration = registrations.get(command);
 		if (registration == null) {
 			throw new IllegalArgumentException("Unknown command '" + command + "'");
@@ -276,7 +276,7 @@ public class Help extends AbstractShellComponent {
 		AttributedStringBuilder result = new AttributedStringBuilder();
 		result.append("AVAILABLE COMMANDS\n\n", AttributedStyle.BOLD);
 
-		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandRegistry().getRegistrations().entrySet().stream()
+		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = getCommandCatalog().getRegistrations().entrySet().stream()
 			.collect(Collectors.groupingBy(
 				e -> StringUtils.hasText(e.getValue().getGroup()) ? e.getValue().getGroup() : "",
 				TreeMap::new,
