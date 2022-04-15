@@ -57,20 +57,6 @@ public interface CommandCatalog {
 	Map<String, CommandRegistration> getRegistrations();
 
 	/**
-	 * Gets all command registrations.
-	 *
-	 * @return command registrations
-	 */
-	// Collection<CommandRegistration> getCommands();
-
-	/**
-	 * Gets all command registration names.
-	 *
-	 * @return command registration names
-	 */
-	// Collection<String> getCommandNames();
-
-	/**
 	 * Interface to resolve currently existing commands. It is useful to have fully
 	 * dynamic set of commands which may exists only if some conditions in a running
 	 * shell are met. For example if shell is targeting arbitrary server environment
@@ -159,21 +145,6 @@ public interface CommandCatalog {
 				})
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		}
-
-		// @Override
-		// public Collection<CommandRegistration> getCommands() {
-		// 	HashMap<String, CommandRegistration> regs = new HashMap<>();
-		// 	regs.putAll(commandRegistrations);
-		// 	for (CommandResolver resolver : resolvers) {
-		// 		regs.putAll(resolver.resolve());
-		// 	}
-		// 	return regs.values();
-		// }
-
-		// @Override
-		// public Collection<String> getCommandNames() {
-		// 	return commandRegistrations.keySet();
-		// }
 
 		private static String commandName(String[] commands) {
 			return Arrays.asList(commands).stream()
