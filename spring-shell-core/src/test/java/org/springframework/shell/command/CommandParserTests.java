@@ -144,6 +144,14 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results().get(1).value()).isEqualTo("hi");
 	}
 
+	@Test
+	public void testNonMappedArgs() {
+		String[] args = new String[]{"arg1", "arg2"};
+		Results results = parser.parse(Collections.emptyList(), args);
+		assertThat(results.results()).hasSize(0);
+		assertThat(results.positional()).containsExactly("arg1", "arg2");
+	}
+
 	private static CommandOption longOption(String name) {
 		return longOption(name, null);
 	}

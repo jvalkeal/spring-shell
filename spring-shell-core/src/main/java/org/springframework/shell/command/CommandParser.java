@@ -79,13 +79,20 @@ public interface CommandParser {
 		List<Result> results();
 
 		/**
+		 * Gets the unmapped positional arguments.
+		 *
+		 * @return the unmapped positional arguments
+		 */
+		List<String> positional();
+
+		/**
 		 * Gets an instance of a default {@link Results}.
 		 *
 		 * @param results
 		 * @return
 		 */
-		static Results of(List<Result> results) {
-			return new DefaultResults(results);
+		static Results of(List<Result> results, List<String> positional) {
+			return new DefaultResults(results, positional);
 		}
 	}
 
@@ -116,14 +123,21 @@ public interface CommandParser {
 	static class DefaultResults implements Results {
 
 		private List<Result> results;
+		private List<String> positional;
 
-		DefaultResults(List<Result> results) {
+		DefaultResults(List<Result> results, List<String> positional) {
 			this.results = results;
+			this.positional = positional;
 		}
 
 		@Override
 		public List<Result> results() {
 			return results;
+		}
+
+		@Override
+		public List<String> positional() {
+			return positional;
 		}
 	}
 
@@ -159,12 +173,26 @@ public interface CommandParser {
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
 			ArgsVisitor argsVisitor = new ArgsVisitor(options, args);
-			List<Result> results = argsVisitor.visitArgs();
-			return Results.of(results);
+			VisitResults visitResults = argsVisitor.visitArgs();
+			return Results.of(visitResults.results, visitResults.positional);
 		}
 
 		private static enum State {
 			EXPECT_OPTION, EXPECT_ARGUMENT, ON_ARGUMENTS
+		}
+
+		private static class VisitResults {
+			List<Result> results;
+			List<String> positional;
+
+			VisitResults(List<Result> results, List<String> positional) {
+				this.results = results;
+				this.positional = positional;
+			}
+
+			static VisitResults of(List<Result> results, List<String> positional) {
+				return new VisitResults(results, positional);
+			}
 		}
 
 		private static class ArgsVisitor {
@@ -175,6 +203,7 @@ public interface CommandParser {
 			State state = State.EXPECT_OPTION;
 			CommandOption currentOption;
 			MultiValueMap<CommandOption, String> mappedArguments = new LinkedMultiValueMap<>();
+			List<String> positional = new ArrayList<>();
 
 			ArgsVisitor(List<CommandOption> options, String[] args) {
 				this.options = options;
@@ -182,7 +211,7 @@ public interface CommandParser {
 				this.optionsRequired = options.stream().filter(o -> o.isRequired()).collect(Collectors.toList());
 			}
 
-			private List<Result> visitArgs() {
+			private VisitResults visitArgs() {
 				List<Result> results = new ArrayList<>();
 
 				// first iteration to map arguments to options
@@ -200,7 +229,7 @@ public interface CommandParser {
 
 				// may throw errors
 				sanityCheck();
-				return results;
+				return VisitResults.of(results, positional);
 			}
 
 			private void visitArg() {
@@ -213,7 +242,8 @@ public interface CommandParser {
 						onOptionFound(currentOption);
 					}
 					else {
-						// TODO: what to do
+						// stash unmapped arguments
+						positional.add(arg);
 					}
 				}
 				else if (state == State.EXPECT_ARGUMENT) {

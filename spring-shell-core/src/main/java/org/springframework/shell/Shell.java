@@ -23,7 +23,6 @@ import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +43,6 @@ import org.springframework.shell.command.CommandExecution;
 import org.springframework.shell.command.CommandExecution.CommandExecutionException;
 import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
 import org.springframework.shell.command.CommandRegistration;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -224,7 +222,7 @@ public class Shell {
 				Object sh = Signals.register("INT", () -> commandThread.interrupt());
 				try {
 					// Object[] args = resolveArgs(method, wordsForArgs);
-					CommandExecution execution = CommandExecution.of(argumentResolvers.getResolvers());
+					CommandExecution execution = CommandExecution.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null);
 					return execution.evaluate(commandRegistration.get(), words.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {
@@ -350,28 +348,22 @@ public class Shell {
 		// Workaround for https://github.com/spring-projects/spring-shell/issues/150
 		// (sadly, this ties this class to JLine somehow)
 		int lastWordStart = prefix.lastIndexOf(' ') + 1;
-		// Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		// return methodTargets.entrySet().stream()
-		// 		.filter(e -> e.getKey().startsWith(prefix))
-		// 		.map(e -> toCommandProposal(e.getKey().substring(lastWordStart), e.getValue()))
-		// 		.collect(Collectors.toList());
 		return commandRegistry.getRegistrations().values().stream()
 			.filter(r -> {
 				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
 				return c.startsWith(prefix);
 			})
-			.map(r -> toCommandProposal(r))
+			.map(r -> {
+				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+				c = c.substring(lastWordStart);
+				return toCommandProposal(c, r);
+			})
+			// .map(r -> toCommandProposal(r))
 			.collect(Collectors.toList());
 	}
 
-	// private CompletionProposal toCommandProposal(String command, MethodTarget methodTarget) {
-	// 	return new CompletionProposal(command)
-	// 			.dontQuote(true)
-	// 			.category("Available commands")
-	// 			.description(methodTarget.getHelp());
-	// }
-	private CompletionProposal toCommandProposal(CommandRegistration registration) {
-		return new CompletionProposal(StringUtils.arrayToDelimitedString(registration.getCommands(), " "))
+	private CompletionProposal toCommandProposal(String command, CommandRegistration registration) {
+		return new CompletionProposal(command)
 				.dontQuote(true)
 				.category("Available commands")
 				.description(registration.getHelp());

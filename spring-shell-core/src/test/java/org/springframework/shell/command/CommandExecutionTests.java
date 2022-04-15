@@ -92,4 +92,22 @@ public class CommandExecutionTests extends AbstractCommandTests {
 		assertThat(pojo1.method1Ctx).isNotNull();
 	}
 
+	@Test
+	public void testMethodExecution3() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.longNames("arg1")
+				.description("some arg1")
+				.and()
+			.targetMethod()
+				.method(pojo1, "method4")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{"myarg1value"});
+		assertThat(pojo1.method4Count).isEqualTo(1);
+		assertThat(pojo1.method4Arg1).isEqualTo("myarg1value");
+	}
+
 }

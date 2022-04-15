@@ -35,6 +35,7 @@ public abstract class AbstractCommandTests {
 		public int method2Count;
 		public int method3Count;
 		public int method4Count;
+		public String method4Arg1;
 
 		public void method1(CommandContext ctx) {
 			method1Ctx = ctx;
@@ -52,6 +53,7 @@ public abstract class AbstractCommandTests {
 		}
 
 		public String method4(String arg1) {
+			method4Arg1 = arg1;
 			method4Count++;
 			return "hi" + arg1;
 		}
