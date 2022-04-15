@@ -31,6 +31,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandRegistration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,8 +55,8 @@ public class ShellTest {
 	@Mock
 	ResultHandlerService resultHandlerService;
 
-	// @Mock
-	// CommandRegistry commandRegistry;
+	@Mock
+	CommandCatalog commandRegistry;
 
 	@Mock
 	private ParameterResolver parameterResolver;
@@ -70,27 +73,35 @@ public class ShellTest {
 		shell.parameterResolvers = Arrays.asList(parameterResolver);
 	}
 
-	// @Test
-	// public void commandMatch() throws IOException {
-	// 	when(parameterResolver.supports(any())).thenReturn(true);
-	// 	when(inputProvider.readInput()).thenReturn(() -> "hello world how are you doing ?");
-	// 	valueResult = new ValueResult(null, "test");
-	// 	when(parameterResolver.resolve(any(), any())).thenReturn(valueResult);
-	// 	doThrow(new Exit()).when(resultHandlerService).handle(any());
+	@Test
+	public void commandMatch() throws IOException {
+		when(parameterResolver.supports(any())).thenReturn(true);
+		when(inputProvider.readInput()).thenReturn(() -> "hello world how are you doing ?");
+		valueResult = new ValueResult(null, "test");
+		when(parameterResolver.resolve(any(), any())).thenReturn(valueResult);
+		doThrow(new Exit()).when(resultHandlerService).handle(any());
 
-	// 	when(commandRegistry.listCommands()).thenReturn(Collections.singletonMap("hello world",
-	// 			MethodTarget.of("helloWorld", this, new Command.Help("Say hello"))));
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("hello world")
+			.targetMethod()
+				.method(this, "helloWorld")
+				.and()
+			.build();
+		Map<String, CommandRegistration> registrations = new HashMap<>();
+		registrations.put("hello world", registration);
 
-	// 	try {
-	// 		shell.run(inputProvider);
-	// 		fail("Exit expected");
-	// 	}
-	// 	catch (Exit expected) {
+		when(commandRegistry.getRegistrations()).thenReturn(registrations);
 
-	// 	}
+		try {
+			shell.run(inputProvider);
+			fail("Exit expected");
+		}
+		catch (Exit expected) {
+			System.out.println(expected);
+		}
 
-	// 	assertThat(invoked).isTrue();
-	// }
+		assertThat(invoked).isTrue();
+	}
 
 	// @Test
 	// public void commandNotFound() throws IOException {

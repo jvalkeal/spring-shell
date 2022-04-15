@@ -61,14 +61,14 @@ public interface CommandCatalog {
 	 *
 	 * @return command registrations
 	 */
-	Collection<CommandRegistration> getCommands();
+	// Collection<CommandRegistration> getCommands();
 
 	/**
 	 * Gets all command registration names.
 	 *
 	 * @return command registration names
 	 */
-	Collection<String> getCommandNames();
+	// Collection<String> getCommandNames();
 
 	/**
 	 * Interface to resolve currently existing commands. It is useful to have fully
@@ -145,7 +145,7 @@ public interface CommandCatalog {
 			return regs.entrySet().stream()
 				.filter(e -> {
 					InteractionMode mim = e.getValue().getInteractionMode();
-					InteractionMode cim = shellContext.getInteractionMode();
+					InteractionMode cim = shellContext != null ? shellContext.getInteractionMode() : InteractionMode.ALL;
 					if (mim == null || cim == null || mim == InteractionMode.ALL) {
 						return true;
 					}
@@ -160,20 +160,20 @@ public interface CommandCatalog {
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		}
 
-		@Override
-		public Collection<CommandRegistration> getCommands() {
-			HashMap<String, CommandRegistration> regs = new HashMap<>();
-			regs.putAll(commandRegistrations);
-			for (CommandResolver resolver : resolvers) {
-				regs.putAll(resolver.resolve());
-			}
-			return regs.values();
-		}
+		// @Override
+		// public Collection<CommandRegistration> getCommands() {
+		// 	HashMap<String, CommandRegistration> regs = new HashMap<>();
+		// 	regs.putAll(commandRegistrations);
+		// 	for (CommandResolver resolver : resolvers) {
+		// 		regs.putAll(resolver.resolve());
+		// 	}
+		// 	return regs.values();
+		// }
 
-		@Override
-		public Collection<String> getCommandNames() {
-			return commandRegistrations.keySet();
-		}
+		// @Override
+		// public Collection<String> getCommandNames() {
+		// 	return commandRegistrations.keySet();
+		// }
 
 		private static String commandName(String[] commands) {
 			return Arrays.asList(commands).stream()

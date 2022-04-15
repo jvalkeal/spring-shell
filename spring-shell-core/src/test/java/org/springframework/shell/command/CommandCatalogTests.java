@@ -37,9 +37,9 @@ public class CommandCatalogTests extends AbstractCommandTests {
 			.build();
 		CommandCatalog catalog = CommandCatalog.of();
 		catalog.register(r1);
-		assertThat(catalog.getCommands()).hasSize(1);
+		assertThat(catalog.getRegistrations()).hasSize(1);
 		catalog.unregister(r1);
-		assertThat(catalog.getCommands()).hasSize(0);
+		assertThat(catalog.getRegistrations()).hasSize(0);
 	}
 
 	@Test
@@ -48,9 +48,9 @@ public class CommandCatalogTests extends AbstractCommandTests {
 		// this custom resolver adds one which may dymanically go away.
 		DynamicCommandResolver resolver = new DynamicCommandResolver();
 		CommandCatalog catalog = CommandCatalog.of(Arrays.asList(resolver), null);
-		assertThat(catalog.getCommands()).hasSize(1);
+		assertThat(catalog.getRegistrations()).hasSize(1);
 		resolver.enabled = false;
-		assertThat(catalog.getCommands()).hasSize(0);
+		assertThat(catalog.getRegistrations()).hasSize(0);
 	}
 
 	class DynamicCommandResolver implements CommandResolver {

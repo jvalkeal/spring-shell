@@ -75,7 +75,7 @@ public abstract class AbstractCompletions {
 	 * all needed to build completions structure.
 	 */
 	protected CommandModel generateCommandModel() {
-		Collection<CommandRegistration> commandsByName = commandCatalog.getCommands();
+		Collection<CommandRegistration> commandsByName = commandCatalog.getRegistrations().values();
 		HashMap<String, DefaultCommandModelCommand> commands = new HashMap<>();
 		HashSet<CommandModelCommand> topCommands = new HashSet<>();
 		commandsByName.stream()

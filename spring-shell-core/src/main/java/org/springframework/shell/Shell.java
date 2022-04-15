@@ -210,7 +210,7 @@ public class Shell {
 		List<String> words = input.words();
 		if (command != null) {
 
-			Optional<CommandRegistration> commandRegistration = commandRegistry.getCommands().stream()
+			Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
 				.filter(r -> {
 					String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
 					return c.equals(command);
@@ -355,7 +355,7 @@ public class Shell {
 		// 		.filter(e -> e.getKey().startsWith(prefix))
 		// 		.map(e -> toCommandProposal(e.getKey().substring(lastWordStart), e.getValue()))
 		// 		.collect(Collectors.toList());
-		return commandRegistry.getCommands().stream()
+		return commandRegistry.getRegistrations().values().stream()
 			.filter(r -> {
 				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
 				return c.startsWith(prefix);
@@ -426,14 +426,14 @@ public class Shell {
 	 * @return a valid command name, or {@literal null} if none matched
 	 */
 	private String findLongestCommand(String prefix) {
-		String result = commandRegistry.getCommandNames().stream()
+		String result = commandRegistry.getRegistrations().keySet().stream()
 				.filter(command -> prefix.equals(command) || prefix.startsWith(command + " "))
 				.reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2);
 		return "".equals(result) ? null : result;
 	}
 
 	private String findLongestCommandRegistration(String prefix) {
-		commandRegistry.getCommands().stream()
+		commandRegistry.getRegistrations().values().stream()
 			.filter(r -> {
 				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
 				return prefix.equals(c) || prefix.startsWith(c + " ");

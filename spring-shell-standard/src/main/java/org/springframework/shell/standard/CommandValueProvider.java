@@ -39,7 +39,7 @@ public class CommandValueProvider extends ValueProviderSupport {
 
 	@Override
 	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-		return commandRegistry.getCommandNames().stream()
+		return commandRegistry.getRegistrations().keySet().stream()
 			.map(CompletionProposal::new)
 			.collect(Collectors.toList());
 	}

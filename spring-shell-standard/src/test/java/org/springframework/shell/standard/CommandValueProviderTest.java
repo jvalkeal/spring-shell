@@ -19,7 +19,9 @@ package org.springframework.shell.standard;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,7 @@ import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.Utils;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,8 +64,12 @@ public class CommandValueProviderTest {
 		boolean supports = valueProvider.supports(methodParameter, completionContext);
 
 		assertThat(supports).isEqualTo(true);
+		Map<String, CommandRegistration> registrations = new HashMap<>();
+		registrations.put("me", null);
+		registrations.put("meow", null);
+		registrations.put("yourself", null);
 
-		when(catalog.getCommandNames()).thenReturn(Arrays.asList("me", "meow", "yourself"));
+		when(catalog.getRegistrations()).thenReturn(registrations);
 		List<CompletionProposal> proposals = valueProvider.complete(methodParameter, completionContext, new String[0]);
 
 		assertThat(proposals).extracting("value", String.class)

@@ -79,7 +79,7 @@ public class LineReaderAutoConfiguration {
 					public AttributedString highlight(LineReader reader, String buffer) {
 						int l = 0;
 						String best = null;
-						for (String command : commandRegistry.getCommandNames()) {
+						for (String command : commandRegistry.getRegistrations().keySet()) {
 							if (buffer.startsWith(command) && command.length() > l) {
 								l = command.length();
 								best = command;
