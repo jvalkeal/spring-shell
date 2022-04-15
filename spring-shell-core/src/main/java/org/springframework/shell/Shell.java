@@ -223,7 +223,7 @@ public class Shell {
 				try {
 					// Object[] args = resolveArgs(method, wordsForArgs);
 					CommandExecution execution = CommandExecution.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null);
-					return execution.evaluate(commandRegistration.get(), words.toArray(new String[0]));
+					return execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {
 					if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {

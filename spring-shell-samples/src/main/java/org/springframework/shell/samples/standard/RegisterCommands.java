@@ -30,9 +30,24 @@ public class RegisterCommands extends AbstractShellComponent {
 	private final CommandRegistration dynamic3;
 
 	public RegisterCommands() {
-		dynamic1 = CommandRegistration.builder().command("dynamic1").targetMethod().method(pojoMethods, "dynamic1").and().build();
-		dynamic2 = CommandRegistration.builder().command("dynamic2").targetMethod().method(pojoMethods, "dynamic2").and().build();
-		dynamic3 = CommandRegistration.builder().command("dynamic3").targetMethod().method(pojoMethods, "dynamic3").and().build();
+		dynamic1 = CommandRegistration.builder()
+			.command("dynamic1")
+			.targetMethod()
+				.method(pojoMethods, "dynamic1")
+				.and()
+			.build();
+		dynamic2 = CommandRegistration.builder()
+			.command("dynamic2")
+			.targetMethod()
+				.method(pojoMethods, "dynamic2")
+				.and()
+			.build();
+		dynamic3 = CommandRegistration.builder()
+			.command("dynamic3")
+			.targetMethod()
+				.method(pojoMethods, "dynamic3")
+				.and()
+			.build();
 	}
 
     @ShellMethod(key = "register add", value = "Register commands", group = "Register Commands")
