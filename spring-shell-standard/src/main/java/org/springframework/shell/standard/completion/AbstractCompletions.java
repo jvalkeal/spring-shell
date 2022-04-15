@@ -95,8 +95,8 @@ public abstract class AbstractCompletions {
 					}
 					DefaultCommandModelCommand command = commands.computeIfAbsent(commandKey,
 							(fullCommand) -> new DefaultCommandModelCommand(fullCommand, main));
-					// TODO: XXX long vs short
 
+					// TODO long vs short
 					List<ParameterDescription> parameterDescriptions = getParameterDescriptions(entry);
 					List<DefaultCommandModelOption> options = parameterDescriptions.stream()
 							.flatMap(pd -> pd.keys().stream())

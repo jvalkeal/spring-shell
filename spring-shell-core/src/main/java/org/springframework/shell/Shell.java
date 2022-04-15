@@ -21,15 +21,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.jline.utils.Signals;
 import org.slf4j.Logger;
@@ -73,7 +67,7 @@ public class Shell {
 
 	private final CommandCatalog commandRegistry;
 
-	private Validator validator = Utils.defaultValidator();
+	// private Validator validator = Utils.defaultValidator();
 
 	protected List<ParameterResolver> parameterResolvers;
 	private CommandExecutionHandlerMethodArgumentResolvers argumentResolvers;
@@ -89,10 +83,10 @@ public class Shell {
 		this.commandRegistry = commandRegistry;
 	}
 
-	@Autowired(required = false)
-	public void setValidatorFactory(ValidatorFactory validatorFactory) {
-		this.validator = validatorFactory.getValidator();
-	}
+	// @Autowired(required = false)
+	// public void setValidatorFactory(ValidatorFactory validatorFactory) {
+	// 	this.validator = validatorFactory.getValidator();
+	// }
 
 	@Autowired
 	public void setParameterResolvers(List<ParameterResolver> resolvers) {
@@ -195,7 +189,6 @@ public class Shell {
 	// }
 
 	public Object evaluate(Input input) {
-		// TODO: XXX availability
 		if (noInput(input)) {
 			return NO_INPUT;
 		}
@@ -203,9 +196,8 @@ public class Shell {
 		String line = input.words().stream().collect(Collectors.joining(" ")).trim();
 		String command = findLongestCommand(line);
 
-
-
 		List<String> words = input.words();
+		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
 		if (command != null) {
 
 			Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
@@ -369,48 +361,48 @@ public class Shell {
 				.description(registration.getHelp());
 	}
 
-	private void validateArgs(Object[] args, MethodTarget methodTarget) {
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] == UNRESOLVED) {
-				MethodParameter methodParameter = Utils.createMethodParameter(methodTarget.getMethod(), i);
-				throw new IllegalStateException("Could not resolve " + methodParameter);
-			}
-		}
-		Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables().validateParameters(
-				methodTarget.getBean(),
-				methodTarget.getMethod(),
-				args);
-		if (constraintViolations.size() > 0) {
-			throw new ParameterValidationException(constraintViolations, methodTarget);
-		}
-	}
+	// private void validateArgs(Object[] args, MethodTarget methodTarget) {
+	// 	for (int i = 0; i < args.length; i++) {
+	// 		if (args[i] == UNRESOLVED) {
+	// 			MethodParameter methodParameter = Utils.createMethodParameter(methodTarget.getMethod(), i);
+	// 			throw new IllegalStateException("Could not resolve " + methodParameter);
+	// 		}
+	// 	}
+	// 	Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables().validateParameters(
+	// 			methodTarget.getBean(),
+	// 			methodTarget.getMethod(),
+	// 			args);
+	// 	if (constraintViolations.size() > 0) {
+	// 		throw new ParameterValidationException(constraintViolations, methodTarget);
+	// 	}
+	// }
 
-	/**
-	 * Use all known {@link ParameterResolver}s to try to compute a value for each parameter
-	 * of the method to invoke.
-	 * @param method the method for which parameters should be computed
-	 * @param wordsForArgs the list of 'words' that should be converted to parameter values.
-	 * May include markers for passing parameters 'by name'
-	 * @return an array containing resolved parameter values, or {@link #UNRESOLVED} for
-	 * parameters that could not be resolved
-	 */
-	private Object[] resolveArgs(Method method, List<String> wordsForArgs) {
-		log.debug("Resolving args {} {}", method, wordsForArgs);
-		List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
-		Object[] args = new Object[parameters.size()];
-		Arrays.fill(args, UNRESOLVED);
-		for (ParameterResolver resolver : parameterResolvers) {
-			log.debug("Resolving args with {}", resolver);
-			for (int argIndex = 0; argIndex < args.length; argIndex++) {
-				MethodParameter parameter = parameters.get(argIndex);
-				if (args[argIndex] == UNRESOLVED && resolver.supports(parameter)) {
-					args[argIndex] = resolver.resolve(parameter, wordsForArgs).resolvedValue();
-					log.debug("Resolved {} {} {} {}", method, args[argIndex], resolver, parameter);
-				}
-			}
-		}
-		return args;
-	}
+	// /**
+	//  * Use all known {@link ParameterResolver}s to try to compute a value for each parameter
+	//  * of the method to invoke.
+	//  * @param method the method for which parameters should be computed
+	//  * @param wordsForArgs the list of 'words' that should be converted to parameter values.
+	//  * May include markers for passing parameters 'by name'
+	//  * @return an array containing resolved parameter values, or {@link #UNRESOLVED} for
+	//  * parameters that could not be resolved
+	//  */
+	// private Object[] resolveArgs(Method method, List<String> wordsForArgs) {
+	// 	log.debug("Resolving args {} {}", method, wordsForArgs);
+	// 	List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
+	// 	Object[] args = new Object[parameters.size()];
+	// 	Arrays.fill(args, UNRESOLVED);
+	// 	for (ParameterResolver resolver : parameterResolvers) {
+	// 		log.debug("Resolving args with {}", resolver);
+	// 		for (int argIndex = 0; argIndex < args.length; argIndex++) {
+	// 			MethodParameter parameter = parameters.get(argIndex);
+	// 			if (args[argIndex] == UNRESOLVED && resolver.supports(parameter)) {
+	// 				args[argIndex] = resolver.resolve(parameter, wordsForArgs).resolvedValue();
+	// 				log.debug("Resolved {} {} {} {}", method, args[argIndex], resolver, parameter);
+	// 			}
+	// 		}
+	// 	}
+	// 	return args;
+	// }
 
 	/**
 	 * Returns the longest command that can be matched as first word(s) in the given buffer.
@@ -424,15 +416,15 @@ public class Shell {
 		return "".equals(result) ? null : result;
 	}
 
-	private String findLongestCommandRegistration(String prefix) {
-		commandRegistry.getRegistrations().values().stream()
-			.filter(r -> {
-				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
-				return prefix.equals(c) || prefix.startsWith(c + " ");
-			})
-			// .reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2)
-			;
-		return null;
-	}
+	// private String findLongestCommandRegistration(String prefix) {
+	// 	commandRegistry.getRegistrations().values().stream()
+	// 		.filter(r -> {
+	// 			String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+	// 			return prefix.equals(c) || prefix.startsWith(c + " ");
+	// 		})
+	// 		// .reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2)
+	// 		;
+	// 	return null;
+	// }
 
 }
