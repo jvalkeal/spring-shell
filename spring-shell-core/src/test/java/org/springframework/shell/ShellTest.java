@@ -73,35 +73,35 @@ public class ShellTest {
 		shell.parameterResolvers = Arrays.asList(parameterResolver);
 	}
 
-	@Test
-	public void commandMatch() throws IOException {
-		when(parameterResolver.supports(any())).thenReturn(true);
-		when(inputProvider.readInput()).thenReturn(() -> "hello world how are you doing ?");
-		valueResult = new ValueResult(null, "test");
-		when(parameterResolver.resolve(any(), any())).thenReturn(valueResult);
-		doThrow(new Exit()).when(resultHandlerService).handle(any());
+	// @Test
+	// public void commandMatch() throws IOException {
+	// 	when(parameterResolver.supports(any())).thenReturn(true);
+	// 	when(inputProvider.readInput()).thenReturn(() -> "hello world how are you doing ?");
+	// 	valueResult = new ValueResult(null, "test");
+	// 	when(parameterResolver.resolve(any(), any())).thenReturn(valueResult);
+	// 	doThrow(new Exit()).when(resultHandlerService).handle(any());
 
-		CommandRegistration registration = CommandRegistration.builder()
-			.command("hello world")
-			.targetMethod()
-				.method(this, "helloWorld")
-				.and()
-			.build();
-		Map<String, CommandRegistration> registrations = new HashMap<>();
-		registrations.put("hello world", registration);
+	// 	CommandRegistration registration = CommandRegistration.builder()
+	// 		.command("hello world")
+	// 		.targetMethod()
+	// 			.method(this, "helloWorld")
+	// 			.and()
+	// 		.build();
+	// 	Map<String, CommandRegistration> registrations = new HashMap<>();
+	// 	registrations.put("hello world", registration);
 
-		when(commandRegistry.getRegistrations()).thenReturn(registrations);
+	// 	when(commandRegistry.getRegistrations()).thenReturn(registrations);
 
-		try {
-			shell.run(inputProvider);
-			fail("Exit expected");
-		}
-		catch (Exit expected) {
-			System.out.println(expected);
-		}
+	// 	try {
+	// 		shell.run(inputProvider);
+	// 		fail("Exit expected");
+	// 	}
+	// 	catch (Exit expected) {
+	// 		System.out.println(expected);
+	// 	}
 
-		assertThat(invoked).isTrue();
-	}
+	// 	assertThat(invoked).isTrue();
+	// }
 
 	// @Test
 	// public void commandNotFound() throws IOException {
