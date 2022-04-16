@@ -88,8 +88,9 @@ public interface CommandParser {
 		/**
 		 * Gets an instance of a default {@link Results}.
 		 *
-		 * @param results
-		 * @return
+		 * @param results the results
+		 * @param positional the list of positional arguments
+		 * @return a new instance of results
 		 */
 		static Results of(List<Result> results, List<String> positional) {
 			return new DefaultResults(results, positional);
