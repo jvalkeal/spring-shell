@@ -102,12 +102,7 @@ public class ResolvedCommands {
 
 		@Override
 		public Map<String, CommandRegistration> resolve() {
-			if (enabled) {
-				return registrations;
-			}
-			else {
-				return Collections.emptyMap();
-			}
+			return enabled ? registrations : Collections.emptyMap();
 		}
 	}
 
@@ -143,12 +138,7 @@ public class ResolvedCommands {
 
 		@Override
 		public Map<String, CommandRegistration> resolve() {
-			if (enabled) {
-				return registrations;
-			}
-			else {
-				return Collections.emptyMap();
-			}
+			return enabled ? registrations : Collections.emptyMap();
 		}
 	}
 }
