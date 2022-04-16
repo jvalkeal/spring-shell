@@ -175,13 +175,49 @@ public interface CommandRegistration {
 	}
 
 	public interface TargetFunctionSpec {
+
+		/**
+		 * Register a function target.
+		 *
+		 * @param function the function to register
+		 * @return a target function spec for chaining
+		 */
 		TargetFunctionSpec function(Function<CommandContext, ?> function);
+
+		/**
+		 * Return a builder for chaining.
+		 *
+		 * @return a builder for chaining
+		 */
 		Builder and();
 	}
 
 	public interface TargetMethodSpec {
+
+		/**
+		 * Register a method target.
+		 *
+		 * @param bean the bean
+		 * @param method the method
+		 * @param paramTypes the parameter types
+		 * @return a target method spec for chaining
+		 */
 		TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
+
+		/**
+		 * Register a method target.
+		 *
+		 * @param bean the bean
+		 * @param method the method
+		 * @return a target method spec for chaining
+		 */
 		TargetMethodSpec method(Object bean, Method method);
+
+		/**
+		 * Return a builder for chaining.
+		 *
+		 * @return a builder for chaining
+		 */
 		Builder and();
 	}
 
@@ -207,13 +243,19 @@ public interface CommandRegistration {
 		Builder interactionMode(InteractionMode mode);
 
 		/**
-		 * Define a simple help text for a commmand.
+		 * Define a simple help text for a command.
 		 *
 		 * @param help the help text
 		 * @return builder for chaining
 		 */
 		Builder help(String help);
 
+		/**
+		 * Define an {@link Availability} suppliear for a command.
+		 *
+		 * @param availability the availability
+		 * @return builder for chaining
+		 */
 		Builder availability(Supplier<Availability> availability);
 
 		/**
