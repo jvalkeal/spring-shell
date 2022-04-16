@@ -36,9 +36,6 @@ import org.stringtemplate.v4.STGroupString;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.ParameterDescription;
-import org.springframework.shell.ParameterResolver;
-import org.springframework.shell.Utils;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.util.FileCopyUtils;
@@ -56,13 +53,10 @@ public abstract class AbstractCompletions {
 
 	private final ResourceLoader resourceLoader;
 	private final CommandCatalog commandCatalog;
-	private final List<ParameterResolver> parameterResolvers;
 
-	public AbstractCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog,
-			List<ParameterResolver> parameterResolvers) {
+	public AbstractCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog) {
 		this.resourceLoader = resourceLoader;
 		this.commandCatalog = commandCatalog;
-		this.parameterResolvers = parameterResolvers;
 	}
 
 	protected Builder builder() {
@@ -79,8 +73,8 @@ public abstract class AbstractCompletions {
 		HashMap<String, DefaultCommandModelCommand> commands = new HashMap<>();
 		HashSet<CommandModelCommand> topCommands = new HashSet<>();
 		commandsByName.stream()
-			.forEach(entry -> {
-				String key = StringUtils.arrayToDelimitedString(entry.getCommands(), " ");
+			.forEach(registration -> {
+				String key = StringUtils.arrayToDelimitedString(registration.getCommands(), " ");
 				String[] splitKeys = key.split(" ");
 				String commandKey = "";
 				for (int i = 0; i < splitKeys.length; i++) {
@@ -97,16 +91,11 @@ public abstract class AbstractCompletions {
 							(fullCommand) -> new DefaultCommandModelCommand(fullCommand, main));
 
 					// TODO long vs short
-					List<ParameterDescription> parameterDescriptions = getParameterDescriptions(entry);
-					List<DefaultCommandModelOption> options = parameterDescriptions.stream()
-							.flatMap(pd -> pd.keys().stream())
-							.map(k -> new DefaultCommandModelOption(k))
-							.collect(Collectors.toList());
-					entry.getOptions().forEach(o -> {
-						for (String longname : o.getLongNames()) {
-							options.add(new DefaultCommandModelOption(longname));
-						}
-					});
+					List<CommandModelOption> options = registration.getOptions().stream()
+						.flatMap(co -> Arrays.stream(co.getLongNames()))
+						.map(lo -> CommandModelOption.of("--", lo))
+						.collect(Collectors.toList());
+
 					if (i == splitKeys.length - 1) {
 						command.addOptions(options);
 					}
@@ -119,13 +108,6 @@ public abstract class AbstractCompletions {
 				}
 			});
 		return new DefaultCommandModel(new ArrayList<>(topCommands));
-	}
-
-	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
-		return Utils.createMethodParameters(registration.getMethod().getMethod())
-				.flatMap(mp -> parameterResolvers.stream().filter(pr -> pr.supports(mp)).limit(1L)
-						.flatMap(pr -> pr.describe(mp)))
-				.collect(Collectors.toList());
 	}
 
 	/**
@@ -215,6 +197,10 @@ public abstract class AbstractCompletions {
 
 	interface CommandModelOption {
 		String option();
+
+		static CommandModelOption of(String prefix, String name) {
+			return new DefaultCommandModelOption(String.format("%s%s", prefix, name));
+		}
 	}
 
 	class DefaultCommandModel implements CommandModel {
@@ -301,7 +287,7 @@ public abstract class AbstractCompletions {
 			return options;
 		}
 
-		void addOptions(List<DefaultCommandModelOption> options) {
+		void addOptions(List<CommandModelOption> options) {
 			this.options.addAll(options);
 		}
 
@@ -348,7 +334,7 @@ public abstract class AbstractCompletions {
 		}
 	}
 
-	class DefaultCommandModelOption implements CommandModelOption {
+	static class DefaultCommandModelOption implements CommandModelOption {
 
 		private String option;
 

@@ -15,10 +15,7 @@
  */
 package org.springframework.shell.standard.completion;
 
-import java.util.List;
-
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.command.CommandCatalog;
 
 /**
@@ -28,9 +25,8 @@ import org.springframework.shell.command.CommandCatalog;
  */
 public class BashCompletions extends AbstractCompletions {
 
-	public BashCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog,
-			List<ParameterResolver> parameterResolvers) {
-		super(resourceLoader, commandCatalog, parameterResolvers);
+	public BashCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog) {
+		super(resourceLoader, commandCatalog);
 	}
 
 	public String generate(String rootCommand) {

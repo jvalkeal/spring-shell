@@ -15,21 +15,14 @@
  */
 package org.springframework.shell.standard.completion;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.shell.standard.StandardParameterResolver;
 import org.springframework.shell.standard.completion.AbstractCompletions.CommandModel;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,10 +33,6 @@ public class AbstractCompletionsTests {
 	public void testBasicModelGeneration() {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		CommandCatalog commandCatalog = CommandCatalog.of();
-		List<ParameterResolver> parameterResolvers = new ArrayList<>();
-		StandardParameterResolver resolver = new StandardParameterResolver(new DefaultConversionService(),
-				Collections.emptySet());
-		parameterResolvers.add(resolver);
 
 		TestCommands commands = new TestCommands();
 
@@ -51,6 +40,9 @@ public class AbstractCompletionsTests {
 			.command("test1")
 			.targetMethod()
 				.method(commands, "test1")
+				.and()
+			.withOption()
+				.longNames("param1")
 				.and()
 			.build();
 
@@ -73,6 +65,9 @@ public class AbstractCompletionsTests {
 			.targetMethod()
 				.method(commands, "test4")
 				.and()
+			.withOption()
+				.longNames("param4")
+				.and()
 			.build();
 
 		commandCatalog.register(registration1);
@@ -80,7 +75,7 @@ public class AbstractCompletionsTests {
 		commandCatalog.register(registration3);
 		commandCatalog.register(registration4);
 
-		TestCompletions completions = new TestCompletions(resourceLoader, commandCatalog, parameterResolvers);
+		TestCompletions completions = new TestCompletions(resourceLoader, commandCatalog);
 		CommandModel commandModel = completions.testCommandModel();
 		assertThat(commandModel.getCommands()).hasSize(3);
 		assertThat(commandModel.getCommands().stream().map(c -> c.getMainCommand())).containsExactlyInAnyOrder("test1", "test2",
@@ -107,8 +102,7 @@ public class AbstractCompletionsTests {
 	public void testBuilder() {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 		CommandCatalog commandCatalog = CommandCatalog.of();
-		List<ParameterResolver> parameterResolvers = new ArrayList<>();
-		TestCompletions completions = new TestCompletions(resourceLoader, commandCatalog, parameterResolvers);
+		TestCompletions completions = new TestCompletions(resourceLoader, commandCatalog);
 
 		String result = completions.testBuilder()
 				.attribute("x", "command")
@@ -120,9 +114,8 @@ public class AbstractCompletionsTests {
 
 	private static class TestCompletions extends AbstractCompletions {
 
-		public TestCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog,
-				List<ParameterResolver> parameterResolvers) {
-			super(resourceLoader, commandCatalog, parameterResolvers);
+		public TestCompletions(ResourceLoader resourceLoader, CommandCatalog commandCatalog) {
+			super(resourceLoader, commandCatalog);
 		}
 
 		CommandModel testCommandModel() {

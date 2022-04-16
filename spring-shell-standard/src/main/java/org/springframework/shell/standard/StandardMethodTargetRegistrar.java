@@ -77,7 +77,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 				}
 				String group = getOrInferGroup(method);
 				for (String key : keys) {
-					log.debug("xxx1 {} {}", key, keys);
+					log.debug("Registering with keys='{}' key='{}'", keys, key);
 					Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
 
 					Builder builder = CommandRegistration.builder()
@@ -87,22 +87,21 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 						.interactionMode(shellMapping.interactionMode())
 						.availability(availabilityIndicator);
 
-					InvocableHandlerMethod xxx = new InvocableHandlerMethod(bean, method);
-					for (MethodParameter ppp : xxx.getMethodParameters()) {
-						ShellOption ooo = ppp.getParameterAnnotation(ShellOption.class);
-						log.debug("xxx2 {} {}", ppp, ooo);
-						if (ooo != null) {
+					InvocableHandlerMethod ihm = new InvocableHandlerMethod(bean, method);
+					for (MethodParameter mp : ihm.getMethodParameters()) {
+						ShellOption so = mp.getParameterAnnotation(ShellOption.class);
+						log.debug("Registering with mp='{}' so='{}'", mp, so);
+						if (so != null) {
 							List<String> longNames = new ArrayList<>();
-							Arrays.asList(ooo.value()).stream().forEach(o -> {
+							Arrays.asList(so.value()).stream().forEach(o -> {
 								String stripped = StringUtils.trimLeadingCharacter(o, '-');
-								log.debug("xxx3 {} {}", o, stripped);
+								log.debug("Registering o='{}' stripped='{}'", o, stripped);
 								if (o.length() == stripped.length() + 2) {
-									log.debug("xxx4 {} {}", o, stripped);
 									longNames.add(stripped);
 								}
 							});
 							if (!longNames.isEmpty()) {
-								log.debug("xxx5 {} {}", longNames);
+								log.debug("Registering longNames='{}'", longNames);
 								builder.withOption().longNames(longNames.toArray(new String[0]));
 							}
 						}
