@@ -262,7 +262,6 @@ public class Shell {
 				c = c.substring(lastWordStart);
 				return toCommandProposal(c, r);
 			})
-			// .map(r -> toCommandProposal(r))
 			.collect(Collectors.toList());
 	}
 

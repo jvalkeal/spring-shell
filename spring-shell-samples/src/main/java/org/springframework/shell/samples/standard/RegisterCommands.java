@@ -55,20 +55,14 @@ public class RegisterCommands extends AbstractShellComponent {
 
     @ShellMethod(key = "register add", value = "Register commands", group = "Register Commands")
     public String register() {
-		getCommandCatalog().register(dynamic1);
-		getCommandCatalog().register(dynamic2);
-		getCommandCatalog().register(dynamic3);
+		getCommandCatalog().register(dynamic1, dynamic2, dynamic3);
 		registerFunctionCommand("dynamic4");
 		return "Registered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
 
     @ShellMethod(key = "register remove", value = "Deregister commands", group = "Register Commands")
     public String deregister() {
-		getCommandCatalog().unregister(dynamic1);
-		getCommandCatalog().unregister(dynamic2);
-		getCommandCatalog().unregister(dynamic3);
-		CommandRegistration dynamic4 = getCommandCatalog().getRegistrations().get("dynamic4");
-		getCommandCatalog().unregister(dynamic4);
+		getCommandCatalog().unregister("dynamic1", "dynamic2", "dynamic3", "dynamic4");
 		return "Deregistered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
 

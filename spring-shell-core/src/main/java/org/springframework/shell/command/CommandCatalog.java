@@ -40,14 +40,21 @@ public interface CommandCatalog {
 	 *
 	 * @param registration the command registration
 	 */
-	void register(CommandRegistration registration);
+	void register(CommandRegistration... registration);
 
 	/**
 	 * Unregister a {@link CommandRegistration}.
 	 *
 	 * @param registration the command registration
 	 */
-	void unregister(CommandRegistration registration);
+	void unregister(CommandRegistration... registration);
+
+	/**
+	 * Unregister a {@link CommandRegistration} by its command name.
+	 *
+	 * @param commandName the command name
+	 */
+	void unregister(String... commandName);
 
 	/**
 	 * Gets all {@link CommandRegistration}s mapped with their names.
@@ -110,15 +117,26 @@ public interface CommandCatalog {
 		}
 
 		@Override
-		public void register(CommandRegistration registration) {
-			String commandName = commandName(registration.getCommands());
-			commandRegistrations.put(commandName, registration);
+		public void register(CommandRegistration... registration) {
+			for (CommandRegistration r : registration) {
+				String commandName = commandName(r.getCommands());
+				commandRegistrations.put(commandName, r);
+			}
 		}
 
 		@Override
-		public void unregister(CommandRegistration registration) {
-			String commandName = commandName(registration.getCommands());
-			commandRegistrations.remove(commandName);
+		public void unregister(CommandRegistration... registration) {
+			for (CommandRegistration r : registration) {
+				String commandName = commandName(r.getCommands());
+				commandRegistrations.remove(commandName);
+			}
+		}
+
+		@Override
+		public void unregister(String... commandName) {
+			for (String n : commandName) {
+				commandRegistrations.remove(n);
+			}
 		}
 
 		@Override
