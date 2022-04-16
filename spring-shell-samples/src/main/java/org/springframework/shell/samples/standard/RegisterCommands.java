@@ -15,7 +15,10 @@
  */
 package org.springframework.shell.samples.standard;
 
-import org.springframework.shell.MethodTarget;
+import java.util.function.Function;
+
+import org.springframework.shell.command.CommandContext;
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -25,25 +28,60 @@ import org.springframework.shell.standard.ShellOption;
 public class RegisterCommands extends AbstractShellComponent {
 
 	private final PojoMethods pojoMethods = new PojoMethods();
+	private final CommandRegistration dynamic1;
+	private final CommandRegistration dynamic2;
+	private final CommandRegistration dynamic3;
+
+	public RegisterCommands() {
+		dynamic1 = CommandRegistration.builder()
+			.command("dynamic1")
+			.targetMethod()
+				.method(pojoMethods, "dynamic1")
+				.and()
+			.build();
+		dynamic2 = CommandRegistration.builder()
+			.command("dynamic2")
+			.targetMethod()
+				.method(pojoMethods, "dynamic2")
+				.and()
+			.build();
+		dynamic3 = CommandRegistration.builder()
+			.command("dynamic3")
+			.targetMethod()
+				.method(pojoMethods, "dynamic3")
+				.and()
+			.build();
+	}
 
     @ShellMethod(key = "register add", value = "Register commands", group = "Register Commands")
     public String register() {
-		MethodTarget target1 = MethodTarget.of("dynamic1", pojoMethods, "Dynamic1 command", "Register Commands");
-		MethodTarget target2 = MethodTarget.of("dynamic2", pojoMethods, "Dynamic2 command", "Register Commands");
-		MethodTarget target3 = MethodTarget.of("dynamic3", pojoMethods, "Dynamic3 command", "Register Commands");
-		getCommandRegistry().addCommand("register dynamic1", target1);
-		getCommandRegistry().addCommand("register dynamic2", target2);
-		getCommandRegistry().addCommand("register dynamic3", target3);
-		return "Registered commands dynamic1, dynamic2, dynamic3";
+		getCommandCatalog().register(dynamic1, dynamic2, dynamic3);
+		registerFunctionCommand("dynamic4");
+		return "Registered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
 
     @ShellMethod(key = "register remove", value = "Deregister commands", group = "Register Commands")
     public String deregister() {
-		getCommandRegistry().removeCommand("register dynamic1");
-		getCommandRegistry().removeCommand("register dynamic2");
-		getCommandRegistry().removeCommand("register dynamic3");
-		return "Deregistered commands dynamic1, dynamic2, dynamic3";
+		getCommandCatalog().unregister("dynamic1", "dynamic2", "dynamic3", "dynamic4");
+		return "Deregistered commands dynamic1, dynamic2, dynamic3, dynamic4";
     }
+
+	private void registerFunctionCommand(String command) {
+		Function<CommandContext, String> function = ctx -> {
+			String arg1 = ctx.getOptionValue("arg1");
+			return String.format("hi, arg1 value is '%s'", arg1);
+		};
+		CommandRegistration registration = CommandRegistration.builder()
+			.command(command)
+			.targetFunction()
+				.function(function)
+				.and()
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.build();
+		getCommandCatalog().register(registration);
+	}
 
 	public static class PojoMethods {
 

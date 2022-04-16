@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.shell;
 
 import java.io.IOException;
@@ -21,15 +20,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.jline.utils.Signals;
 import org.slf4j.Logger;
@@ -38,7 +31,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandExecution;
+import org.springframework.shell.command.CommandExecution.CommandExecutionException;
+import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
+import org.springframework.shell.command.CommandRegistration;
+import org.springframework.util.StringUtils;
 
 /**
  * Main class implementing a shell loop.
@@ -66,11 +64,9 @@ public class Shell {
 	 */
 	public static final Object NO_INPUT = new Object();
 
-	private final CommandRegistry commandRegistry;
-
-	private Validator validator = Utils.defaultValidator();
-
+	private final CommandCatalog commandRegistry;
 	protected List<ParameterResolver> parameterResolvers;
+	private CommandExecutionHandlerMethodArgumentResolvers argumentResolvers;
 
 	/**
 	 * Marker object to distinguish unresolved arguments from {@code null}, which is a valid
@@ -78,20 +74,20 @@ public class Shell {
 	 */
 	protected static final Object UNRESOLVED = new Object();
 
-	public Shell(ResultHandlerService resultHandlerService, CommandRegistry commandRegistry) {
+	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry) {
 		this.resultHandlerService = resultHandlerService;
 		this.commandRegistry = commandRegistry;
-	}
-
-	@Autowired(required = false)
-	public void setValidatorFactory(ValidatorFactory validatorFactory) {
-		this.validator = validatorFactory.getValidator();
 	}
 
 	@Autowired
 	public void setParameterResolvers(List<ParameterResolver> resolvers) {
 		this.parameterResolvers = new ArrayList<>(resolvers);
 		AnnotationAwareOrderComparator.sort(parameterResolvers);
+	}
+
+	@Autowired
+	public void setArgumentResolvers(CommandExecutionHandlerMethodArgumentResolvers argumentResolvers) {
+		this.argumentResolvers = argumentResolvers;
 	}
 
 	/**
@@ -145,26 +141,32 @@ public class Shell {
 		String command = findLongestCommand(line);
 
 		List<String> words = input.words();
+		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
 		if (command != null) {
-			Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-			MethodTarget methodTarget = methodTargets.get(command);
-			Availability availability = methodTarget.getAvailability();
-			if (availability.isAvailable()) {
+
+			Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
+				.filter(r -> {
+					String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+					return c.equals(command);
+				})
+				.findFirst();
+
+			if (commandRegistration.isPresent()) {
 				List<String> wordsForArgs = wordsForArguments(command, words);
-				Method method = methodTarget.getMethod();
 
 				Thread commandThread = Thread.currentThread();
 				Object sh = Signals.register("INT", () -> commandThread.interrupt());
 				try {
-					Object[] args = resolveArgs(method, wordsForArgs);
-					validateArgs(args, methodTarget);
-
-					return ReflectionUtils.invokeMethod(method, methodTarget.getBean(), args);
+					CommandExecution execution = CommandExecution.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null);
+					return execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {
 					if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
 						Thread.interrupted(); // to reset interrupted flag
 					}
+					return e.getCause();
+				}
+				catch (CommandExecutionException e) {
 					return e.getCause();
 				}
 				catch (Exception e) {
@@ -175,13 +177,14 @@ public class Shell {
 				}
 			}
 			else {
-				return new CommandNotCurrentlyAvailable(command, availability);
+				return new CommandNotFound(words);
 			}
 		}
 		else {
 			return new CommandNotFound(words);
 		}
 	}
+
 
 	/**
 	 * Return true if the parsed input ends up being empty (<em>e.g.</em> hitting ENTER on an
@@ -229,9 +232,8 @@ public class Shell {
 		if (best != null) {
 			CompletionContext argsContext = context.drop(best.split(" ").length);
 			// Try to complete arguments
-			Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-			MethodTarget methodTarget = methodTargets.get(best);
-			Method method = methodTarget.getMethod();
+			CommandRegistration registration = commandRegistry.getRegistrations().get(best);
+			Method method = registration.getMethod().getMethod();
 
 			List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
 			for (ParameterResolver resolver : parameterResolvers) {
@@ -250,61 +252,24 @@ public class Shell {
 		// Workaround for https://github.com/spring-projects/spring-shell/issues/150
 		// (sadly, this ties this class to JLine somehow)
 		int lastWordStart = prefix.lastIndexOf(' ') + 1;
-		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		return methodTargets.entrySet().stream()
-				.filter(e -> e.getKey().startsWith(prefix))
-				.map(e -> toCommandProposal(e.getKey().substring(lastWordStart), e.getValue()))
-				.collect(Collectors.toList());
+		return commandRegistry.getRegistrations().values().stream()
+			.filter(r -> {
+				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+				return c.startsWith(prefix);
+			})
+			.map(r -> {
+				String c = StringUtils.arrayToDelimitedString(r.getCommands(), " ");
+				c = c.substring(lastWordStart);
+				return toCommandProposal(c, r);
+			})
+			.collect(Collectors.toList());
 	}
 
-	private CompletionProposal toCommandProposal(String command, MethodTarget methodTarget) {
+	private CompletionProposal toCommandProposal(String command, CommandRegistration registration) {
 		return new CompletionProposal(command)
 				.dontQuote(true)
 				.category("Available commands")
-				.description(methodTarget.getHelp());
-	}
-
-	private void validateArgs(Object[] args, MethodTarget methodTarget) {
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] == UNRESOLVED) {
-				MethodParameter methodParameter = Utils.createMethodParameter(methodTarget.getMethod(), i);
-				throw new IllegalStateException("Could not resolve " + methodParameter);
-			}
-		}
-		Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables().validateParameters(
-				methodTarget.getBean(),
-				methodTarget.getMethod(),
-				args);
-		if (constraintViolations.size() > 0) {
-			throw new ParameterValidationException(constraintViolations, methodTarget);
-		}
-	}
-
-	/**
-	 * Use all known {@link ParameterResolver}s to try to compute a value for each parameter
-	 * of the method to invoke.
-	 * @param method the method for which parameters should be computed
-	 * @param wordsForArgs the list of 'words' that should be converted to parameter values.
-	 * May include markers for passing parameters 'by name'
-	 * @return an array containing resolved parameter values, or {@link #UNRESOLVED} for
-	 * parameters that could not be resolved
-	 */
-	private Object[] resolveArgs(Method method, List<String> wordsForArgs) {
-		log.debug("Resolving args {} {}", method, wordsForArgs);
-		List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
-		Object[] args = new Object[parameters.size()];
-		Arrays.fill(args, UNRESOLVED);
-		for (ParameterResolver resolver : parameterResolvers) {
-			log.debug("Resolving args with {}", resolver);
-			for (int argIndex = 0; argIndex < args.length; argIndex++) {
-				MethodParameter parameter = parameters.get(argIndex);
-				if (args[argIndex] == UNRESOLVED && resolver.supports(parameter)) {
-					args[argIndex] = resolver.resolve(parameter, wordsForArgs).resolvedValue();
-					log.debug("Resolved {} {} {} {}", method, args[argIndex], resolver, parameter);
-				}
-			}
-		}
-		return args;
+				.description(registration.getHelp());
 	}
 
 	/**
@@ -313,8 +278,7 @@ public class Shell {
 	 * @return a valid command name, or {@literal null} if none matched
 	 */
 	private String findLongestCommand(String prefix) {
-		Map<String, MethodTarget> methodTargets = commandRegistry.listCommands();
-		String result = methodTargets.keySet().stream()
+		String result = commandRegistry.getRegistrations().keySet().stream()
 				.filter(command -> prefix.equals(command) || prefix.startsWith(command + " "))
 				.reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2);
 		return "".equals(result) ? null : result;
