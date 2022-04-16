@@ -15,18 +15,26 @@
  */
 package org.springframework.shell.boot;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandCatalog.CommandResolver;
 
 @Configuration(proxyBeanMethods = false)
-public class CommandRegistryAutoConfiguration {
+public class CommandCatalogAutoConfiguration {
 
 	@Bean
-	public CommandCatalog commandCatalog(ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars) {
-		CommandCatalog catalog = CommandCatalog.of();
+	@ConditionalOnMissingBean(CommandCatalog.class)
+	public CommandCatalog commandCatalog(ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars,
+			ObjectProvider<CommandResolver> commandResolvers) {
+		List<CommandResolver> resolvers = commandResolvers.orderedStream().collect(Collectors.toList());
+		CommandCatalog catalog = CommandCatalog.of(resolvers, null);
 		methodTargetRegistrars.orderedStream().forEach(resolver -> {
 			resolver.register(catalog);
 		});
