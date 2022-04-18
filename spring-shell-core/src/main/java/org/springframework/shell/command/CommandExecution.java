@@ -99,7 +99,6 @@ public interface CommandExecution {
 						}
 					});
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
-					// res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[])null);
 					res = invocableHandlerMethod.invoke(messageBuilder.build(), results.positional().toArray());
 				} catch (Exception e) {
 					throw new CommandExecutionException(e);
