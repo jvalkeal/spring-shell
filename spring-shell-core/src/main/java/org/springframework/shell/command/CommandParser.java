@@ -17,12 +17,10 @@ package org.springframework.shell.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -86,14 +84,22 @@ public interface CommandParser {
 		List<String> positional();
 
 		/**
+		 * Gets parsing errors.
+		 *
+		 * @return the parsing errors
+		 */
+		List<CommandParserException> errors();
+
+		/**
 		 * Gets an instance of a default {@link Results}.
 		 *
 		 * @param results the results
 		 * @param positional the list of positional arguments
+		 * @param errors the parsing errors
 		 * @return a new instance of results
 		 */
-		static Results of(List<Result> results, List<String> positional) {
-			return new DefaultResults(results, positional);
+		static Results of(List<Result> results, List<String> positional, List<CommandParserException> errors) {
+			return new DefaultResults(results, positional, errors);
 		}
 	}
 
@@ -125,10 +131,12 @@ public interface CommandParser {
 
 		private List<Result> results;
 		private List<String> positional;
+		private List<CommandParserException> errors;
 
-		DefaultResults(List<Result> results, List<String> positional) {
+		DefaultResults(List<Result> results, List<String> positional, List<CommandParserException> errors) {
 			this.results = results;
 			this.positional = positional;
+			this.errors = errors;
 		}
 
 		@Override
@@ -139,6 +147,11 @@ public interface CommandParser {
 		@Override
 		public List<String> positional() {
 			return positional;
+		}
+
+		@Override
+		public List<CommandParserException> errors() {
+			return errors;
 		}
 	}
 
@@ -173,132 +186,136 @@ public interface CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
-			ArgsVisitor argsVisitor = new ArgsVisitor(options, args);
-			VisitResults visitResults = argsVisitor.visitArgs();
-			return Results.of(visitResults.results, visitResults.positional);
-		}
 
-		private static enum State {
-			EXPECT_OPTION, EXPECT_ARGUMENT, ON_ARGUMENTS
-		}
+			List<CommandOption> requiredOptions = options.stream()
+				.filter(o -> o.isRequired())
+				.collect(Collectors.toList());
 
-		private static class VisitResults {
-			List<Result> results;
-			List<String> positional;
+			Lexer lexer = new Lexer(args);
+			List<List<String>> lexerResults = lexer.visit();
+			Parser parser = new Parser();
+			ParserResults parserResults = parser.visit(lexerResults, options);
 
-			VisitResults(List<Result> results, List<String> positional) {
-				this.results = results;
-				this.positional = positional;
-			}
-
-			static VisitResults of(List<Result> results, List<String> positional) {
-				return new VisitResults(results, positional);
-			}
-		}
-
-		private static class ArgsVisitor {
-			final List<CommandOption> options;
-			final String[] args;
-			final List<CommandOption> optionsRequired;
-			int position;
-			State state = State.EXPECT_OPTION;
-			CommandOption currentOption;
-			MultiValueMap<CommandOption, String> mappedArguments = new LinkedMultiValueMap<>();
+			List<Result> results = new ArrayList<>();
 			List<String> positional = new ArrayList<>();
+			List<CommandParserException> errors = new ArrayList<>();
+			parserResults.results.stream().forEach(pr -> {
+				if (pr.option != null) {
+					results.add(new DefaultResult(pr.option, pr.value));
+					requiredOptions.remove(pr.option);
+				}
+				else {
+					positional.addAll(pr.args);
+				}
+				if (pr.error != null) {
+					errors.add(pr.error);
+				}
+			});
 
-			ArgsVisitor(List<CommandOption> options, String[] args) {
-				this.options = options;
+			requiredOptions.stream().forEach(o -> {
+				errors.add(MissingOptionException.of("Missing option", o));
+			});
+
+			return new DefaultResults(results, positional, errors);
+		}
+
+		private static class ParserResult {
+			private CommandOption option;
+			private List<String> args;
+			private Object value;
+			private CommandParserException error;
+			private ParserResult(CommandOption option, List<String> args, Object value, CommandParserException error) {
+				this.option = option;
 				this.args = args;
-				this.optionsRequired = options.stream().filter(o -> o.isRequired()).collect(Collectors.toList());
+				this.value = value;
+				this.error = error;
 			}
-
-			private VisitResults visitArgs() {
-				List<Result> results = new ArrayList<>();
-
-				// first iteration to map arguments to options
-				for (int i = 0; i < args.length; i++) {
-					position = i;
-					visitArg();
-				}
-
-				// second iteration for mapped argument creating requested types
-				mappedArguments.entrySet().stream().forEach(e -> {
-					CommandOption option = e.getKey();
-					List<String> arguments = e.getValue();
-					results.add(Result.of(option, convertArguments(option, arguments)));
-				});
-
-				// may throw errors
-				sanityCheck();
-				return VisitResults.of(results, positional);
+			static ParserResult of(CommandOption option, List<String> args, Object value, CommandParserException error) {
+				return new ParserResult(option, args, value, error);
 			}
+		}
 
-			private void visitArg() {
-				String arg = args[position];
-				if (state == State.EXPECT_OPTION) {
-					CommandOption option = matchOption(arg);
-					if (option != null) {
-						currentOption = option;
-						state = State.EXPECT_ARGUMENT;
-						onOptionFound(currentOption);
-					}
-					else {
-						// stash unmapped arguments
-						positional.add(arg);
-					}
-				}
-				else if (state == State.EXPECT_ARGUMENT) {
-					mappedArguments.add(currentOption, arg);
-					state = State.ON_ARGUMENTS;
-				}
-				else if (state == State.ON_ARGUMENTS) {
-					CommandOption option = matchOption(arg);
-					if (option != null) {
-						currentOption = option;
-						state = State.EXPECT_ARGUMENT;
-					}
-					else {
-						mappedArguments.add(currentOption, arg);
-					}
-				}
+		private static class ParserResults {
+			private List<ParserResult> results;
+			private ParserResults(List<ParserResult> results) {
+				this.results = results;
 			}
-
-			private CommandOption matchOption(String arg) {
-				Optional<CommandOption> option = options.stream()
-					.filter(o -> optionMatchesArg(o, arg))
-					.findFirst();
-				return option.orElse(null);
+			static ParserResults of(List<ParserResult> results) {
+				return new ParserResults(results);
 			}
+ 		}
 
-			private void onOptionFound(CommandOption option) {
-				mappedArguments.putIfAbsent(option, new ArrayList<>());
-				optionsRequired.remove(option);
-			}
+		/**
+		 * Parser works on a results from a lexer. It looks for given options
+		 * and builds parsing results.
+		 */
+		private static class Parser {
 
-			private void sanityCheck() {
-				if (!optionsRequired.isEmpty()) {
-					throw MissingOptionException.of("Missing required options", optionsRequired);
-				}
-			}
-
-			private boolean optionMatchesArg(CommandOption option, String arg) {
-				if (!arg.startsWith("-")) {
-					return false;
-				}
-				arg = StringUtils.trimLeadingCharacter(arg, '-');
-				for (String alias : option.getLongNames()) {
-					if (arg.equals(alias)) {
-						return true;
-					}
-				}
-				if (arg.length() == 1) {
-					for (Character c : option.getShortNames()) {
-						if(arg.equals(c.toString())) {
-							return true;
+			ParserResults visit(List<List<String>> lexerResults, List<CommandOption> options) {
+				List<ParserResult> results = lexerResults.stream()
+					.flatMap(lr -> {
+						List<CommandOption> option = matchOptions(options, lr.get(0));
+						if (option.isEmpty()) {
+							return Stream.of(ParserResult.of(null, lr, null, null));
 						}
+						else {
+							return option.stream().map(o -> {
+								List<String> subArgs = lr.subList(1, lr.size());
+								Object value = convertArguments(o, subArgs);
+								return ParserResult.of(o, subArgs, value, null);
+							});
+						}
+					})
+					.collect(Collectors.toList());
+				return ParserResults.of(results);
+			}
+
+			private List<CommandOption> matchOptions(List<CommandOption> options, String arg) {
+				List<CommandOption> matched = new ArrayList<>();
+				String trimmed = StringUtils.trimLeadingCharacter(arg, '-');
+				int count = arg.length() - trimmed.length();
+				if (count == 1) {
+					if (trimmed.length() == 1) {
+						Character trimmedChar = trimmed.charAt(0);
+						options.stream()
+							.filter(o -> {
+								for (Character sn : o.getShortNames()) {
+									if (trimmedChar.equals(sn)) {
+										return true;
+									}
+								}
+								return false;
+							})
+						.findFirst()
+						.ifPresent(o -> matched.add(o));
+					}
+					else if (trimmed.length() > 1) {
+						trimmed.chars().mapToObj(i -> (char)i)
+							.forEach(c -> {
+								options.stream().forEach(o -> {
+									for (Character sn : o.getShortNames()) {
+										if (c.equals(sn)) {
+											matched.add(o);
+										}
+									}
+								});
+							});
 					}
 				}
-				return false;
+				else if (count == 2) {
+					options.stream()
+						.filter(o -> {
+							for (String ln : o.getLongNames()) {
+								if (trimmed.equals(ln)) {
+									return true;
+								}
+							}
+							return false;
+						})
+						.findFirst()
+						.ifPresent(o -> matched.add(o));
+				}
+				return matched;
 			}
 
 			private Object convertArguments(CommandOption option, List<String> arguments) {
@@ -312,10 +329,59 @@ public interface CommandParser {
 					}
 				}
 				else {
-					return arguments.stream().collect(Collectors.joining(" "));
+					if (arguments.isEmpty()) {
+						return null;
+					}
+					else {
+						return arguments.stream().collect(Collectors.joining(" "));
+					}
 				}
 			}
+
+
 		}
+
+		/**
+		 * Lexers only responsibility is to splice arguments array into
+		 * chunks which belongs together what comes for option structure.
+		 */
+		private static class Lexer {
+			private final String[] args;
+			Lexer(String[] args) {
+				this.args = args;
+			}
+			List<List<String>> visit() {
+				List<List<String>> results = new ArrayList<>();
+
+				List<String> splice = null;
+				for (int i = 0; i < args.length; i++) {
+					if (splice == null) {
+						splice = new ArrayList<>();
+					}
+					String arg = args[i];
+					boolean isOption = arg.startsWith("-");
+					if (isOption) {
+						if (splice.isEmpty()) {
+							splice.add(arg);
+						}
+						else {
+							results.add(splice);
+							splice = null;
+							splice = new ArrayList<>();
+							splice.add(arg);
+						}
+					}
+					else {
+						splice.add(arg);
+					}
+				}
+				if (splice != null && !splice.isEmpty()) {
+					results.add(splice);
+				}
+				return results;
+			}
+		}
+
 	}
 
 	static class CommandParserException extends RuntimeException {
@@ -335,19 +401,19 @@ public interface CommandParser {
 
 	static class MissingOptionException extends CommandParserException {
 
-		private List<CommandOption> options;
+		private CommandOption option;
 
-		public MissingOptionException(String message, List<CommandOption> options) {
+		public MissingOptionException(String message, CommandOption option) {
 			super(message);
-			this.options = options;
+			this.option = option;
 		}
 
-		public static MissingOptionException of(String message, List<CommandOption> options) {
-			return new MissingOptionException(message, options);
+		public static MissingOptionException of(String message, CommandOption option) {
+			return new MissingOptionException(message, option);
 		}
 
-		public List<CommandOption> getOptions() {
-			return options;
+		public CommandOption getOption() {
+			return option;
 		}
 	}
 }

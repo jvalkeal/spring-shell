@@ -110,4 +110,64 @@ public class CommandExecutionTests extends AbstractCommandTests {
 		assertThat(pojo1.method4Arg1).isEqualTo("myarg1value");
 	}
 
+	@Test
+	public void testShortCombinedWithoutValue() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('a')
+				.description("short arg a")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('b')
+				.description("short arg b")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('c')
+				.description("short arg c")
+				.type(boolean.class)
+				.and()
+			.targetMethod()
+				.method(pojo1, "method5")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{"-abc"});
+		assertThat(pojo1.method5ArgA).isTrue();
+		assertThat(pojo1.method5ArgB).isTrue();
+		assertThat(pojo1.method5ArgC).isTrue();
+	}
+
+	@Test
+	public void testShortCombinedSomeHavingValue() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('a')
+				.description("short arg a")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('b')
+				.description("short arg b")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('c')
+				.description("short arg c")
+				.type(boolean.class)
+				.and()
+			.targetMethod()
+				.method(pojo1, "method5")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{"-ac", "-b", "false"});
+		assertThat(pojo1.method5ArgA).isTrue();
+		assertThat(pojo1.method5ArgB).isFalse();
+		assertThat(pojo1.method5ArgC).isTrue();
+	}
+
 }

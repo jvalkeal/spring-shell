@@ -17,16 +17,23 @@ package org.springframework.shell.command;
 
 import java.util.function.Function;
 
+import org.junit.jupiter.api.BeforeEach;
+
 import org.springframework.messaging.handler.annotation.Header;
 
 public abstract class AbstractCommandTests {
 
-	protected Pojo1 pojo1 = new Pojo1();
+	protected Pojo1 pojo1;
 
 	protected Function<CommandContext, String> function1 = ctx -> {
 		String arg1 = ctx.getOptionValue("arg1");
 		return "hi" + arg1;
 	};
+
+	@BeforeEach
+	public void setupAbstractCommandTests() {
+		pojo1 = new Pojo1();
+	}
 
 	protected static class Pojo1 {
 
@@ -36,6 +43,9 @@ public abstract class AbstractCommandTests {
 		public int method3Count;
 		public int method4Count;
 		public String method4Arg1;
+		public Boolean method5ArgA;
+		public Boolean method5ArgB;
+		public Boolean method5ArgC;
 
 		public void method1(CommandContext ctx) {
 			method1Ctx = ctx;
@@ -56,6 +66,12 @@ public abstract class AbstractCommandTests {
 			method4Arg1 = arg1;
 			method4Count++;
 			return "hi" + arg1;
+		}
+
+		public void method5(@Header("a") boolean a, @Header("b") boolean b, @Header("c") boolean c) {
+			method5ArgA = a;
+			method5ArgB = b;
+			method5ArgC = c;
 		}
 	}
 

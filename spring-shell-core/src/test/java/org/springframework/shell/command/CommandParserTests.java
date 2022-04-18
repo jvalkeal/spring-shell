@@ -19,16 +19,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.shell.command.CommandParser.MissingOptionException;
 import org.springframework.shell.command.CommandParser.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CommandParserTests extends AbstractCommandTests {
 
@@ -112,11 +109,8 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1", true);
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{};
-		assertThatThrownBy(() -> {
-			parser.parse(options, args);
-		})
-			.isInstanceOf(MissingOptionException.class)
-			.extracting("options", InstanceOfAssertFactories.LIST).containsExactly(option1);
+		Results results = parser.parse(options, args);
+		assertThat(results.errors()).hasSize(1);
 	}
 
 	@Test
@@ -150,6 +144,78 @@ public class CommandParserTests extends AbstractCommandTests {
 		Results results = parser.parse(Collections.emptyList(), args);
 		assertThat(results.results()).hasSize(0);
 		assertThat(results.positional()).containsExactly("arg1", "arg2");
+	}
+
+	@Test
+	public void testShortOptionsCombined() {
+		CommandOption optionA = shortOption('a');
+		CommandOption optionB = shortOption('b');
+		CommandOption optionC = shortOption('c');
+		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
+		String[] args = new String[]{"-abc"};
+
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(3);
+		assertThat(results.results().get(0).option()).isSameAs(optionA);
+		assertThat(results.results().get(1).option()).isSameAs(optionB);
+		assertThat(results.results().get(2).option()).isSameAs(optionC);
+		assertThat(results.results().get(0).value()).isNull();
+		assertThat(results.results().get(1).value()).isNull();
+		assertThat(results.results().get(2).value()).isNull();
+	}
+
+	@Test
+	public void testShortOptionsCombinedBooleanType() {
+		CommandOption optionA = shortOption('a', ResolvableType.forType(boolean.class));
+		CommandOption optionB = shortOption('b', ResolvableType.forType(boolean.class));
+		CommandOption optionC = shortOption('c', ResolvableType.forType(boolean.class));
+		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
+		String[] args = new String[]{"-abc"};
+
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(3);
+		assertThat(results.results().get(0).option()).isSameAs(optionA);
+		assertThat(results.results().get(1).option()).isSameAs(optionB);
+		assertThat(results.results().get(2).option()).isSameAs(optionC);
+		assertThat(results.results().get(0).value()).isEqualTo(true);
+		assertThat(results.results().get(1).value()).isEqualTo(true);
+		assertThat(results.results().get(2).value()).isEqualTo(true);
+	}
+
+	@Test
+	public void testShortOptionsCombinedBooleanTypeArgFalse() {
+		CommandOption optionA = shortOption('a', ResolvableType.forType(boolean.class));
+		CommandOption optionB = shortOption('b', ResolvableType.forType(boolean.class));
+		CommandOption optionC = shortOption('c', ResolvableType.forType(boolean.class));
+		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
+		String[] args = new String[]{"-abc", "false"};
+
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(3);
+		assertThat(results.results().get(0).option()).isSameAs(optionA);
+		assertThat(results.results().get(1).option()).isSameAs(optionB);
+		assertThat(results.results().get(2).option()).isSameAs(optionC);
+		assertThat(results.results().get(0).value()).isEqualTo(false);
+		assertThat(results.results().get(1).value()).isEqualTo(false);
+		assertThat(results.results().get(2).value()).isEqualTo(false);
+	}
+
+	@Test
+	public void testShortOptionsCombinedBooleanTypeSomeArgFalse() {
+		CommandOption optionA = shortOption('a', ResolvableType.forType(boolean.class));
+		CommandOption optionB = shortOption('b', ResolvableType.forType(boolean.class));
+		CommandOption optionC = shortOption('c', ResolvableType.forType(boolean.class));
+		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
+		String[] args = new String[]{"-ac", "-b", "false"};
+
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(3);
+		assertThat(results.results().get(0).option()).isSameAs(optionA);
+		assertThat(results.results().get(1).option()).isSameAs(optionC);
+		assertThat(results.results().get(2).option()).isSameAs(optionB);
+		assertThat(results.results().get(0).value()).isEqualTo(true);
+		assertThat(results.results().get(1).value()).isEqualTo(true);
+		assertThat(results.results().get(2).value()).isEqualTo(false);
 	}
 
 	private static CommandOption longOption(String name) {
