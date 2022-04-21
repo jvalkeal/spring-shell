@@ -15,14 +15,24 @@
  */
 package org.springframework.shell.command;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.shell.command.invocation.InvocableShellMethod;
+import org.springframework.shell.command.invocation.ShellMethodArgumentResolverComposite;
 
 /**
  * Interface to evaluate a result from a command with an arguments.
@@ -35,7 +45,7 @@ public interface CommandExecution {
 	 * Evaluate a command with a given arguments.
 	 *
 	 * @param registration the command registration
-	 * @param args the command args
+	 * @param args         the command args
 	 * @return evaluated execution
 	 */
 	Object evaluate(CommandRegistration registration, String[] args);
@@ -77,19 +87,15 @@ public interface CommandExecution {
 			// pick the target to execute
 			if (function != null) {
 				res = function.apply(ctx);
-			}
-			else if (invocableHandlerMethod != null) {
-				HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
-				if (resolvers != null) {
-					argumentResolvers.addResolvers(resolvers);
-				}
-				invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
+			} else if (invocableHandlerMethod != null) {
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
+					Map<String, Object> paramValues = new HashMap<>();
 					results.results().stream().forEach(r -> {
 						if (r.option().getLongNames() != null) {
 							for (String n : r.option().getLongNames()) {
 								messageBuilder.setHeader(n, r.value());
+								paramValues.put(n, r.value());
 							}
 						}
 						if (r.option().getShortNames() != null) {
@@ -99,7 +105,41 @@ public interface CommandExecution {
 						}
 					});
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
-					res = invocableHandlerMethod.invoke(messageBuilder.build(), results.positional().toArray());
+
+					// HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
+					// if (resolvers != null) {
+					// 	argumentResolvers.addResolvers(resolvers);
+					// }
+					// if (!paramValues.isEmpty()) {
+					// 	argumentResolvers.addResolver(new ParamNameHandlerMethodArgumentResolver(paramValues));
+					// }
+					// invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
+
+
+					// res = invocableHandlerMethod.invoke(messageBuilder.build(), results.positional().toArray());
+
+					// Object[] providedArgs = results.positional().toArray();
+					// if (providedArgs.length > 0) {
+					// 	DelegatingInvocableHandlerMethod invocableHandlerMethod2 = new DelegatingInvocableHandlerMethod(invocableHandlerMethod.getBean(), invocableHandlerMethod.getMethod());
+					// 	res = invocableHandlerMethod2.invoke(messageBuilder.build(), providedArgs);
+					// }
+					// else {
+					// 	res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[]) null);
+					// }
+					// res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[]) null);
+
+					InvocableShellMethod invocableShellMethod = new InvocableShellMethod(invocableHandlerMethod.getBean(), invocableHandlerMethod.getMethod());
+					ShellMethodArgumentResolverComposite argumentResolvers = new ShellMethodArgumentResolverComposite();
+					if (resolvers != null) {
+						argumentResolvers.addResolvers(resolvers);
+					}
+					if (!paramValues.isEmpty()) {
+						argumentResolvers.addResolver(new ParamNameHandlerMethodArgumentResolver(paramValues));
+					}
+					invocableShellMethod.setMessageMethodArgumentResolvers(argumentResolvers);
+
+					res = invocableShellMethod.invoke(messageBuilder.build(), results.positional().toArray());
+
 				} catch (Exception e) {
 					throw new CommandExecutionException(e);
 				}
@@ -107,6 +147,74 @@ public interface CommandExecution {
 
 			return res;
 		}
+	}
+
+	@Order(100)
+	static class ParamNameHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+		private final Map<String, Object> paramValues = new HashMap<>();
+		ConversionService conversionService = new DefaultConversionService();
+
+		ParamNameHandlerMethodArgumentResolver(Map<String, Object> paramValues) {
+			this.paramValues.putAll(paramValues);
+		}
+
+		@Override
+		public boolean supportsParameter(MethodParameter parameter) {
+			String parameterName = parameter.getParameterName();
+			if (parameterName == null) {
+				return false;
+			}
+			return paramValues.containsKey(parameterName) && conversionService
+					.canConvert(paramValues.get(parameterName).getClass(), parameter.getParameterType());
+		}
+
+		@Override
+		public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
+			return conversionService.convert(paramValues.get(parameter.getParameterName()), parameter.getParameterType());
+			// return paramValues.get(parameter.getParameterName());
+		}
+
+	}
+
+	// @Order(200)
+	// static class PositionalMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+	// 	private final String[] positional;
+
+	// 	PositionalMethodArgumentResolver(String[] positional) {
+	// 		this.positional = positional;
+	// 	}
+
+	// 	@Override
+	// 	public boolean supportsParameter(MethodParameter parameter) {
+	// 		// parameter.getParameterIndex() < ;
+	// 		return false;
+	// 	}
+
+	// 	@Override
+	// 	public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
+	// 		return null;
+	// 	}
+
+	// }
+
+	static class DelegatingInvocableHandlerMethod extends InvocableHandlerMethod {
+
+		public DelegatingInvocableHandlerMethod(Object bean, Method method) {
+			super(bean, method);
+		}
+
+		@Override
+		public Object invoke(Message<?> message, Object... providedArgs) throws Exception {
+			if (providedArgs == null) {
+				return super.invoke(message, providedArgs);
+			}
+			else {
+				return super.doInvoke(providedArgs);
+			}
+		}
+
 	}
 
 	static class CommandExecutionException extends RuntimeException {

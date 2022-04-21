@@ -186,7 +186,6 @@ public interface CommandParser {
 
 		@Override
 		public Results parse(List<CommandOption> options, String[] args) {
-
 			List<CommandOption> requiredOptions = options.stream()
 				.filter(o -> o.isRequired())
 				.collect(Collectors.toList());
@@ -224,22 +223,27 @@ public interface CommandParser {
 			private List<String> args;
 			private Object value;
 			private CommandParserException error;
+
 			private ParserResult(CommandOption option, List<String> args, Object value, CommandParserException error) {
 				this.option = option;
 				this.args = args;
 				this.value = value;
 				this.error = error;
 			}
-			static ParserResult of(CommandOption option, List<String> args, Object value, CommandParserException error) {
+
+			static ParserResult of(CommandOption option, List<String> args, Object value,
+					CommandParserException error) {
 				return new ParserResult(option, args, value, error);
 			}
 		}
 
 		private static class ParserResults {
 			private List<ParserResult> results;
+
 			private ParserResults(List<ParserResult> results) {
 				this.results = results;
 			}
+
 			static ParserResults of(List<ParserResult> results) {
 				return new ParserResults(results);
 			}
@@ -250,7 +254,6 @@ public interface CommandParser {
 		 * and builds parsing results.
 		 */
 		private static class Parser {
-
 			ParserResults visit(List<List<String>> lexerResults, List<CommandOption> options) {
 				List<ParserResult> results = lexerResults.stream()
 					.flatMap(lr -> {
@@ -337,8 +340,6 @@ public interface CommandParser {
 					}
 				}
 			}
-
-
 		}
 
 		/**
@@ -381,7 +382,6 @@ public interface CommandParser {
 				return results;
 			}
 		}
-
 	}
 
 	static class CommandParserException extends RuntimeException {

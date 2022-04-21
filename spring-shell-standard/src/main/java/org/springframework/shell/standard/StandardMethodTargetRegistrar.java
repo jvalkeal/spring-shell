@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
@@ -89,6 +90,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 
 					InvocableHandlerMethod ihm = new InvocableHandlerMethod(bean, method);
 					for (MethodParameter mp : ihm.getMethodParameters()) {
+
 						ShellOption so = mp.getParameterAnnotation(ShellOption.class);
 						log.debug("Registering with mp='{}' so='{}'", mp, so);
 						if (so != null) {
@@ -103,6 +105,15 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 							if (!longNames.isEmpty()) {
 								log.debug("Registering longNames='{}'", longNames);
 								builder.withOption().longNames(longNames.toArray(new String[0]));
+							}
+						}
+						else {
+							mp.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
+							String longName = mp.getParameterName();
+							Class<?> parameterType = mp.getParameterType();
+							if (longName != null) {
+								log.debug("Using mp='{}' longName='{}' parameterType='{}'", mp, longName, parameterType);
+								builder.withOption().longNames(longName).type(parameterType);
 							}
 						}
 					}

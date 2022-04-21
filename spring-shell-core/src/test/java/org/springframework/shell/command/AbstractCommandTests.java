@@ -46,6 +46,14 @@ public abstract class AbstractCommandTests {
 		public Boolean method5ArgA;
 		public Boolean method5ArgB;
 		public Boolean method5ArgC;
+		public int method6Count;
+		public String method6Arg1;
+		public String method6Arg2;
+		public String method6Arg3;
+		public int method7Count;
+		public int method7Arg1;
+		public int method7Arg2;
+		public int method7Arg3;
 
 		public void method1(CommandContext ctx) {
 			method1Ctx = ctx;
@@ -72,6 +80,21 @@ public abstract class AbstractCommandTests {
 			method5ArgA = a;
 			method5ArgB = b;
 			method5ArgC = c;
+		}
+
+		public String method6(String arg1, String arg2, String arg3) {
+			method6Arg1 = arg1;
+			method6Arg2 = arg2;
+			method6Arg3 = arg3;
+			method6Count++;
+			return "hi" + arg1 + arg2 + arg3;
+		}
+
+		public void method7(int arg1, int arg2, int arg3) {
+			method7Arg1 = arg1;
+			method7Arg2 = arg2;
+			method7Arg3 = arg3;
+			method7Count++;
 		}
 	}
 

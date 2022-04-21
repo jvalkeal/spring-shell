@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Eric Bottard
  */
-public class StandardMethodTargetRegistrarTest {
+public class StandardMethodTargetRegistrarTests {
 
 	private StandardMethodTargetRegistrar registrar = new StandardMethodTargetRegistrar();
 	private AnnotationConfigApplicationContext applicationContext;
@@ -72,6 +72,8 @@ public class StandardMethodTargetRegistrarTest {
 
 		assertThat(registrations.get("say-hello")).isNotNull();
 		assertThat(registrations.get("say-hello").getAvailability()).isNotNull();
+		assertThat(registrations.get("say-hello").getOptions()).hasSize(1);
+		assertThat(registrations.get("say-hello").getOptions().get(0).getLongNames()).containsExactly("what");
 
 		assertThat(registrations.get("hi")).isNotNull();
 		assertThat(registrations.get("hi").getAvailability()).isNotNull();
