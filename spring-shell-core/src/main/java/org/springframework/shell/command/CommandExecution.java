@@ -82,8 +82,6 @@ public interface CommandExecution {
 			Object res = null;
 
 			TargetInfo targetInfo = registration.getTarget();
-			// Function<CommandContext, ?> function = registration.getFunction();
-			// InvocableHandlerMethod invocableHandlerMethod = registration.getMethod();
 
 			// pick the target to execute
 			if (targetInfo.getTargetType() == TargetType.FUNCTION) {
@@ -107,28 +105,6 @@ public interface CommandExecution {
 						}
 					});
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
-
-					// HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
-					// if (resolvers != null) {
-					// 	argumentResolvers.addResolvers(resolvers);
-					// }
-					// if (!paramValues.isEmpty()) {
-					// 	argumentResolvers.addResolver(new ParamNameHandlerMethodArgumentResolver(paramValues));
-					// }
-					// invocableHandlerMethod.setMessageMethodArgumentResolvers(argumentResolvers);
-
-
-					// res = invocableHandlerMethod.invoke(messageBuilder.build(), results.positional().toArray());
-
-					// Object[] providedArgs = results.positional().toArray();
-					// if (providedArgs.length > 0) {
-					// 	DelegatingInvocableHandlerMethod invocableHandlerMethod2 = new DelegatingInvocableHandlerMethod(invocableHandlerMethod.getBean(), invocableHandlerMethod.getMethod());
-					// 	res = invocableHandlerMethod2.invoke(messageBuilder.build(), providedArgs);
-					// }
-					// else {
-					// 	res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[]) null);
-					// }
-					// res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[]) null);
 
 					InvocableShellMethod invocableShellMethod = new InvocableShellMethod(targetInfo.getBean(), targetInfo.getMethod());
 					ShellMethodArgumentResolverComposite argumentResolvers = new ShellMethodArgumentResolverComposite();
@@ -174,32 +150,9 @@ public interface CommandExecution {
 		@Override
 		public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
 			return conversionService.convert(paramValues.get(parameter.getParameterName()), parameter.getParameterType());
-			// return paramValues.get(parameter.getParameterName());
 		}
 
 	}
-
-	// @Order(200)
-	// static class PositionalMethodArgumentResolver implements HandlerMethodArgumentResolver {
-
-	// 	private final String[] positional;
-
-	// 	PositionalMethodArgumentResolver(String[] positional) {
-	// 		this.positional = positional;
-	// 	}
-
-	// 	@Override
-	// 	public boolean supportsParameter(MethodParameter parameter) {
-	// 		// parameter.getParameterIndex() < ;
-	// 		return false;
-	// 	}
-
-	// 	@Override
-	// 	public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
-	// 		return null;
-	// 	}
-
-	// }
 
 	static class DelegatingInvocableHandlerMethod extends InvocableHandlerMethod {
 
