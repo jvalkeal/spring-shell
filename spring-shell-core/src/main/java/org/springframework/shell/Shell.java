@@ -44,15 +44,6 @@ import org.springframework.util.StringUtils;
 /**
  * Main class implementing a shell loop.
  *
- * <p>
- * Given some textual input, locate the {@link MethodTarget} to invoke and
- * {@link ResultHandler#handleResult(Object) handle} the result.
- * </p>
- *
- * <p>
- * Also provides hooks for code completion
- * </p>
- *
  * @author Eric Bottard
  * @author Janne Valkealahti
  */
