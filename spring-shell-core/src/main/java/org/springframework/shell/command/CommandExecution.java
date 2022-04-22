@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
@@ -27,10 +26,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
-import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.shell.command.CommandRegistration.TargetInfo;
+import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.shell.command.invocation.ShellMethodArgumentResolverComposite;
 
@@ -81,13 +81,15 @@ public interface CommandExecution {
 
 			Object res = null;
 
-			Function<CommandContext, ?> function = registration.getFunction();
-			InvocableHandlerMethod invocableHandlerMethod = registration.getMethod();
+			TargetInfo targetInfo = registration.getTarget();
+			// Function<CommandContext, ?> function = registration.getFunction();
+			// InvocableHandlerMethod invocableHandlerMethod = registration.getMethod();
 
 			// pick the target to execute
-			if (function != null) {
-				res = function.apply(ctx);
-			} else if (invocableHandlerMethod != null) {
+			if (targetInfo.getTargetType() == TargetType.FUNCTION) {
+				res = targetInfo.getFunction().apply(ctx);
+			}
+			else if (targetInfo.getTargetType() == TargetType.METHOD) {
 				try {
 					MessageBuilder<String[]> messageBuilder = MessageBuilder.withPayload(args);
 					Map<String, Object> paramValues = new HashMap<>();
@@ -128,7 +130,7 @@ public interface CommandExecution {
 					// }
 					// res = invocableHandlerMethod.invoke(messageBuilder.build(), (Object[]) null);
 
-					InvocableShellMethod invocableShellMethod = new InvocableShellMethod(invocableHandlerMethod.getBean(), invocableHandlerMethod.getMethod());
+					InvocableShellMethod invocableShellMethod = new InvocableShellMethod(targetInfo.getBean(), targetInfo.getMethod());
 					ShellMethodArgumentResolverComposite argumentResolvers = new ShellMethodArgumentResolverComposite();
 					if (resolvers != null) {
 						argumentResolvers.addResolvers(resolvers);

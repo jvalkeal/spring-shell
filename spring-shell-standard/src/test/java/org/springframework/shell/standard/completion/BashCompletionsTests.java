@@ -83,7 +83,7 @@ public class BashCompletionsTests {
 		Pojo1 pojo1 = new Pojo1();
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("testmethod1")
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method1")
 				.and()
 			.withOption()
@@ -100,7 +100,7 @@ public class BashCompletionsTests {
 		};
 		CommandRegistration registration = CommandRegistration.builder()
 			.command(command)
-			.targetFunction()
+			.withTarget()
 				.function(function)
 				.and()
 			.withOption()

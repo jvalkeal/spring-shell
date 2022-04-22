@@ -77,7 +77,7 @@ public class ShellTest {
 
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("hello world")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();
@@ -103,7 +103,7 @@ public class ShellTest {
 
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("bonjour")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();
@@ -128,7 +128,7 @@ public class ShellTest {
 
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("hello world")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();
@@ -152,7 +152,7 @@ public class ShellTest {
 
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("hello world")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();
@@ -178,7 +178,7 @@ public class ShellTest {
 
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("fail")
-			.targetMethod()
+			.withTarget()
 				.method(this, "failing")
 				.and()
 			.build();
@@ -209,13 +209,13 @@ public class ShellTest {
 	public void commandNameCompletion() throws Exception {
 		CommandRegistration registration1 = CommandRegistration.builder()
 			.command("hello world")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();
 		CommandRegistration registration2 = CommandRegistration.builder()
 			.command("another command")
-			.targetMethod()
+			.withTarget()
 				.method(this, "helloWorld")
 				.and()
 			.build();

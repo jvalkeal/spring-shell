@@ -96,7 +96,7 @@ public class HelpTests {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("first-command")
 			.help("A rather extensive description of some command.")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "firstCommand")
 				.and()
 			.withOption()
@@ -114,7 +114,7 @@ public class HelpTests {
 		CommandRegistration registration1 = CommandRegistration.builder()
 			.command("first-command")
 			.help("A rather extensive description of some command.")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "firstCommand")
 				.and()
 			.withOption()
@@ -127,7 +127,7 @@ public class HelpTests {
 		CommandRegistration registration2 = CommandRegistration.builder()
 			.command("second-command")
 			.help("The second command. This one is known under several aliases as well.")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "secondCommand")
 				.and()
 			.build();
@@ -137,7 +137,7 @@ public class HelpTests {
 		CommandRegistration registration3 = CommandRegistration.builder()
 			.command("second-command")
 			.help("The last command.")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "thirdCommand")
 				.and()
 			.build();
@@ -147,7 +147,7 @@ public class HelpTests {
 			.command("first-group-command")
 			.help("The first command in a separate group.")
 			.group("Example Group")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "firstCommandInGroup")
 				.and()
 			.build();
@@ -157,7 +157,7 @@ public class HelpTests {
 			.command("second-group-command")
 			.help("The second command in a separate group.")
 			.group("Example Group")
-			.targetMethod()
+			.withTarget()
 				.method(commandsPojo, "secondCommandInGroup")
 				.and()
 			.build();

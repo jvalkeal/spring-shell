@@ -329,7 +329,7 @@ public class Help extends AbstractShellComponent {
 	}
 
 	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
-		return Utils.createMethodParameters(registration.getMethod().getMethod())
+		return Utils.createMethodParameters(registration.getTarget().getMethod())
 				.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
 						.flatMap(pr -> pr.describe(mp)))
 				.collect(Collectors.toList());

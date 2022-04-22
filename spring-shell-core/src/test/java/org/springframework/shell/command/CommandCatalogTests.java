@@ -31,7 +31,7 @@ public class CommandCatalogTests extends AbstractCommandTests {
 	public void testCommandCatalog () {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("group1 sub1")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -56,7 +56,7 @@ public class CommandCatalogTests extends AbstractCommandTests {
 	class DynamicCommandResolver implements CommandResolver {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("group1 sub1")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();

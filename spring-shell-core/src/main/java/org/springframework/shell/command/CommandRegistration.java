@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.shell.Availability;
 import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.Assert;
@@ -85,20 +84,11 @@ public interface CommandRegistration {
 	Availability getAvailability();
 
 	/**
-	 * Gets a target {@link Function} to execute.
+	 * Gets target info.
 	 *
-	 * @return the target function to execute
+	 * @return the target info
 	 */
-	@Nullable
-	Function<CommandContext, ?> getFunction();
-
-	/**
-	 * Gets a target {@link InvocableHandlerMethod} to execute.
-	 *
-	 * @return the target method to execute
-	 */
-	@Nullable
-	InvocableHandlerMethod getMethod();
+	TargetInfo getTarget();
 
 	/**
 	 * Gets an options.
@@ -174,25 +164,64 @@ public interface CommandRegistration {
 		Builder and();
 	}
 
-	public interface TargetFunctionSpec {
+	public interface TargetInfo {
 
-		/**
-		 * Register a function target.
-		 *
-		 * @param function the function to register
-		 * @return a target function spec for chaining
-		 */
-		TargetFunctionSpec function(Function<CommandContext, ?> function);
+		TargetType getTargetType();
+		Object getBean();
+		Method getMethod();
+		Function<CommandContext, ?> getFunction();
 
-		/**
-		 * Return a builder for chaining.
-		 *
-		 * @return a builder for chaining
-		 */
-		Builder and();
+		static TargetInfo of(Object bean, Method method) {
+			return new DefaultTargetInfo(TargetType.METHOD, bean, method, null);
+		}
+
+		static TargetInfo of(Function<CommandContext, ?> function) {
+			return new DefaultTargetInfo(TargetType.FUNCTION, null, null, function);
+		}
+
+		enum TargetType {
+			METHOD, FUNCTION;
+		}
+
+		static class DefaultTargetInfo implements TargetInfo {
+
+			private final TargetType targetType;
+			private final Object bean;
+			private final Method method;
+			private final Function<CommandContext, ?> function;
+
+			public DefaultTargetInfo(TargetType targetType, Object bean, Method method,
+					Function<CommandContext, ?> function) {
+				this.targetType = targetType;
+				this.bean = bean;
+				this.method = method;
+				this.function = function;
+			}
+
+			@Override
+			public TargetType getTargetType() {
+				return targetType;
+			}
+
+			@Override
+			public Object getBean() {
+				return bean;
+			}
+
+			@Override
+			public Method getMethod() {
+				return method;
+			}
+
+			@Override
+			public Function<CommandContext, ?> getFunction() {
+				return function;
+			}
+
+		}
 	}
 
-	public interface TargetMethodSpec {
+	public interface TargetSpec {
 
 		/**
 		 * Register a method target.
@@ -200,18 +229,26 @@ public interface CommandRegistration {
 		 * @param bean the bean
 		 * @param method the method
 		 * @param paramTypes the parameter types
-		 * @return a target method spec for chaining
+		 * @return a target spec for chaining
 		 */
-		TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
+		TargetSpec method(Object bean, String method, @Nullable Class<?>... paramTypes);
 
 		/**
 		 * Register a method target.
 		 *
 		 * @param bean the bean
 		 * @param method the method
-		 * @return a target method spec for chaining
+		 * @return a target spec for chaining
 		 */
-		TargetMethodSpec method(Object bean, Method method);
+		TargetSpec method(Object bean, Method method);
+
+		/**
+		 * Register a function target.
+		 *
+		 * @param function the function to register
+		 * @return a target spec for chaining
+		 */
+		TargetSpec function(Function<CommandContext, ?> function);
 
 		/**
 		 * Return a builder for chaining.
@@ -275,18 +312,11 @@ public interface CommandRegistration {
 		OptionSpec withOption();
 
 		/**
-		 * Define a target what this command should execute. Can be used only once.
+		 * Define a target what this command should execute
 		 *
-		 * @return action spec for chaining
+		 * @return target spec for chaining
 		 */
-		TargetFunctionSpec targetFunction();
-
-		/**
-		 * Define a target what this command should execute. Can be used only once.
-		 *
-		 * @return action spec for chaining
-		 */
-		TargetMethodSpec targetMethod();
+		TargetSpec withTarget();
 
 		/**
 		 * Builds a {@link CommandRegistration}.
@@ -370,67 +400,40 @@ public interface CommandRegistration {
 		}
 	}
 
-	static class DefaultTargetFunctionSpec implements TargetFunctionSpec {
+	static class DefaultTargetSpec implements TargetSpec {
 
 		private BaseBuilder builder;
+		private Object bean;
+		private Method method;
 		private Function<CommandContext, ?> function;
 
-		DefaultTargetFunctionSpec(BaseBuilder builder) {
+		DefaultTargetSpec(BaseBuilder builder) {
 			this.builder = builder;
 		}
 
 		@Override
-		public TargetFunctionSpec function(Function<CommandContext, ?> function) {
+		public TargetSpec method(Object bean, Method method) {
+			this.bean = bean;
+			this.method = method;
+			return this;
+		}
+
+		@Override
+		public TargetSpec method(Object bean, String method, Class<?>... paramTypes) {
+			this.bean = bean;
+			this.method = ReflectionUtils.findMethod(bean.getClass(), method,
+					ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
+			return this;
+		}
+
+		@Override
+		public TargetSpec function(Function<CommandContext, ?> function) {
 			this.function = function;
 			return this;
 		}
 
 		@Override
 		public Builder and() {
-			builder.function = function;
-			return builder;
-		}
-	}
-
-	static class DefaultTargetMethodSpec implements TargetMethodSpec {
-
-		private BaseBuilder builder;
-		private Object methodBean;
-		private String methodMethod;
-		private Method method;
-		private Class<?>[] paramTypes;
-
-		DefaultTargetMethodSpec(BaseBuilder builder) {
-			this.builder = builder;
-		}
-
-		@Override
-		public TargetMethodSpec method(Object bean, String method, @Nullable Class<?>... paramTypes) {
-			this.methodBean = bean;
-			this.methodMethod = method;
-			this.paramTypes = paramTypes;
-			return this;
-		}
-
-		@Override
-		public TargetMethodSpec method(Object bean, Method method) {
-			this.methodBean = bean;
-			this.method = method;
-			return this;
-		}
-
-		@Override
-		public Builder and() {
-			if (methodBean != null && methodMethod != null) {
-				Method method = ReflectionUtils.findMethod(methodBean.getClass(), methodMethod,
-						ObjectUtils.isEmpty(paramTypes) ? null : paramTypes);
-				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
-				builder.invocableHandlerMethod = invocableHandlerMethod;
-			}
-			else if (methodBean != null && method != null) {
-				InvocableHandlerMethod invocableHandlerMethod = new InvocableHandlerMethod(methodBean, method);
-				builder.invocableHandlerMethod = invocableHandlerMethod;
-			}
 			return builder;
 		}
 	}
@@ -443,22 +446,20 @@ public interface CommandRegistration {
 		private String group;
 		private String description;
 		private Supplier<Availability> availability;
-		private Function<CommandContext, ?> function;
-		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs;
+		private DefaultTargetSpec targetSpec;
 
 		public DefaultCommandRegistration(String[] commands, InteractionMode interactionMode, String help,
-				String group, String description, Supplier<Availability> availability, Function<CommandContext, ?> function,
-				List<DefaultOptionSpec> optionSpecs, InvocableHandlerMethod invocableHandlerMethod) {
+				String group, String description, Supplier<Availability> availability,
+				List<DefaultOptionSpec> optionSpecs, DefaultTargetSpec targetSpec) {
 			this.commands = commands;
 			this.interactionMode = interactionMode;
 			this.help = help;
 			this.group = group;
 			this.description = description;
 			this.availability = availability;
-			this.function = function;
 			this.optionSpecs = optionSpecs;
-			this.invocableHandlerMethod = invocableHandlerMethod;
+			this.targetSpec = targetSpec;
 		}
 
 		@Override
@@ -492,21 +493,23 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public Function<CommandContext, ?> getFunction() {
-			return function;
-		}
-
-		@Override
-		public InvocableHandlerMethod getMethod() {
-			return invocableHandlerMethod;
-		}
-
-		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
 				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
 						o.isRequired()))
 				.collect(Collectors.toList());
+		}
+
+		@Override
+		public TargetInfo getTarget() {
+			if (targetSpec.bean != null) {
+				return TargetInfo.of(targetSpec.bean, targetSpec.method);
+			}
+			return TargetInfo.of(targetSpec.function);
+			// else if (targetSpec.function != null) {
+			// 	return TargetInfo.of(targetSpec.function);
+			// }
+			// throw new IllegalStateException("only one target can exist");
 		}
 	}
 
@@ -522,9 +525,8 @@ public interface CommandRegistration {
 		private String group;
 		private String description;
 		private Supplier<Availability> availability;
-		private Function<CommandContext, ?> function;
-		private InvocableHandlerMethod invocableHandlerMethod;
 		private List<DefaultOptionSpec> optionSpecs = new ArrayList<>();
+		private DefaultTargetSpec targetSpec;
 
 		@Override
 		public Builder command(String... commands) {
@@ -570,28 +572,19 @@ public interface CommandRegistration {
 		}
 
 		@Override
-		public TargetFunctionSpec targetFunction() {
-			return new DefaultTargetFunctionSpec(this);
-		}
-
-		@Override
-		public TargetMethodSpec targetMethod() {
-			return new DefaultTargetMethodSpec(this);
+		public TargetSpec withTarget() {
+			DefaultTargetSpec spec = new DefaultTargetSpec(this);
+			targetSpec = spec;
+			return spec;
 		}
 
 		@Override
 		public CommandRegistration build() {
 			Assert.notNull(commands, "command cannot be empty");
-			int targets = 0;
-			if (function != null) {
-				targets++;
-			}
-			if (invocableHandlerMethod != null) {
-				targets++;
-			}
-			Assert.isTrue(targets == 1, "only one target can exist");
+			Assert.notNull(targetSpec, "target cannot be empty");
+			Assert.state(!(targetSpec.bean != null && targetSpec.function != null), "only one target can exist");
 			return new DefaultCommandRegistration(commands, interactionMode, help, group, description, availability,
-					function, optionSpecs, invocableHandlerMethod);
+					optionSpecs, targetSpec);
 		}
 	}
 }

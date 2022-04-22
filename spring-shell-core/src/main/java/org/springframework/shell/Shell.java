@@ -233,7 +233,7 @@ public class Shell {
 			CompletionContext argsContext = context.drop(best.split(" ").length);
 			// Try to complete arguments
 			CommandRegistration registration = commandRegistry.getRegistrations().get(best);
-			Method method = registration.getMethod().getMethod();
+			Method method = registration.getTarget().getMethod();
 
 			List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
 			for (ParameterResolver resolver : parameterResolvers) {

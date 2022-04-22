@@ -118,7 +118,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 						}
 					}
 
-					builder.targetMethod().method(bean, method).and();
+					builder.withTarget().method(bean, method);
 
 					CommandRegistration registration = builder.build();
 					registry.register(registration);

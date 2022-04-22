@@ -38,7 +38,7 @@ public class RegisterCommands extends AbstractShellComponent {
 			.command("register registered1")
 			.group(GROUP)
 			.help("registered1 command")
-			.targetMethod()
+			.withTarget()
 				.method(pojoMethods, "registered1")
 				.and()
 			.build();
@@ -46,7 +46,7 @@ public class RegisterCommands extends AbstractShellComponent {
 			.command("register registered2")
 			.help("registered2 command")
 			.group(GROUP)
-			.targetMethod()
+			.withTarget()
 				.method(pojoMethods, "registered2")
 				.and()
 			.build();
@@ -54,7 +54,7 @@ public class RegisterCommands extends AbstractShellComponent {
 			.command("register registered3")
 			.help("registered3 command")
 			.group(GROUP)
-			.targetMethod()
+			.withTarget()
 				.method(pojoMethods, "registered3")
 				.and()
 			.build();
@@ -83,7 +83,7 @@ public class RegisterCommands extends AbstractShellComponent {
 			.command(command)
 			.help("registered4 command")
 			.group(GROUP)
-			.targetFunction()
+			.withTarget()
 				.function(function)
 				.and()
 			.withOption()

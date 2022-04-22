@@ -38,7 +38,7 @@ public class AbstractCompletionsTests {
 
 		CommandRegistration registration1 = CommandRegistration.builder()
 			.command("test1")
-			.targetMethod()
+			.withTarget()
 				.method(commands, "test1")
 				.and()
 			.withOption()
@@ -48,21 +48,21 @@ public class AbstractCompletionsTests {
 
 		CommandRegistration registration2 = CommandRegistration.builder()
 			.command("test2")
-			.targetMethod()
+			.withTarget()
 				.method(commands, "test2")
 				.and()
 			.build();
 
 		CommandRegistration registration3 = CommandRegistration.builder()
 			.command("test3")
-			.targetMethod()
+			.withTarget()
 				.method(commands, "test3")
 				.and()
 			.build();
 
 		CommandRegistration registration4 = CommandRegistration.builder()
 			.command("test3", "test4")
-			.targetMethod()
+			.withTarget()
 				.method(commands, "test4")
 				.and()
 			.withOption()

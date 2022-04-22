@@ -91,7 +91,7 @@ public class ResolvedCommands {
 				.command("resolve server1 command1")
 				.group(GROUP)
 				.help("server1 command1")
-				.targetFunction()
+				.withTarget()
 					.function(ctx -> {
 						return "hi from server1 command1";
 					})
@@ -116,7 +116,7 @@ public class ResolvedCommands {
 				.command("resolve server2 command1")
 				.group(GROUP)
 				.help("server2 command1")
-				.targetFunction()
+				.withTarget()
 					.function(ctx -> {
 						return "hi from server2 command1";
 					})
@@ -126,7 +126,7 @@ public class ResolvedCommands {
 				.command("resolve server2 command2")
 				.group(GROUP)
 				.help("server2 command2")
-				.targetFunction()
+				.withTarget()
 					.function(ctx -> {
 						return "hi from server2 command2";
 					})

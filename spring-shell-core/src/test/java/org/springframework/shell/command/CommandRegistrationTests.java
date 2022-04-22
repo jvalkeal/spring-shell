@@ -18,6 +18,7 @@ package org.springframework.shell.command;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.context.InteractionMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testBasics() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -48,7 +49,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 			.command("command1")
 			.interactionMode(InteractionMode.NONINTERACTIVE)
 			.group("fakegroup")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -60,7 +61,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testCommandStructures() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -68,7 +69,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 
 		registration = CommandRegistration.builder()
 			.command("command1", "command2")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -76,7 +77,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 
 		registration = CommandRegistration.builder()
 			.command("command1 command2")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -84,7 +85,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 
 		registration = CommandRegistration.builder()
 			.command(" command1  command2 ")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -95,24 +96,28 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testFunctionRegistration() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
-		assertThat(registration.getFunction()).isNotNull();
-		assertThat(registration.getMethod()).isNull();
+		assertThat(registration.getTarget().getTargetType()).isEqualTo(TargetType.FUNCTION);
+		assertThat(registration.getTarget().getFunction()).isNotNull();
+		assertThat(registration.getTarget().getBean()).isNull();
+		assertThat(registration.getTarget().getMethod()).isNull();
 	}
 
 	@Test
 	public void testMethodRegistration() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method3", String.class)
 				.and()
 			.build();
-		assertThat(registration.getFunction()).isNull();
-		assertThat(registration.getMethod()).isNotNull();
+		assertThat(registration.getTarget().getTargetType()).isEqualTo(TargetType.METHOD);
+		assertThat(registration.getTarget().getFunction()).isNull();
+		assertThat(registration.getTarget().getBean()).isNotNull();
+		assertThat(registration.getTarget().getMethod()).isNotNull();
 	}
 
 	@Test
@@ -120,14 +125,12 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThatThrownBy(() -> {
 			CommandRegistration.builder()
 				.command("command1")
-				.targetFunction()
+				.withTarget()
+					.method(pojo1, "method3", String.class)
 					.function(function1)
 					.and()
-				.targetMethod()
-					.method(pojo1, "method3", String.class)
-					.and()
 				.build();
-		}).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("only one target can exist");
+		}).isInstanceOf(IllegalStateException.class).hasMessageContaining("only one target can exist");
 	}
 
 	@Test
@@ -139,7 +142,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -158,7 +161,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method3", String.class)
 				.and()
 			.build();
@@ -177,7 +180,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.type(boolean.class)
 				.description("some arg1")
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -199,7 +202,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.description("some arg1")
 				.required(true)
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -218,7 +221,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.description("some arg1")
 				.required(false)
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -234,7 +237,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.type(boolean.class)
 				.description("some arg1")
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -251,7 +254,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.description("some arg1")
 				.required()
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();

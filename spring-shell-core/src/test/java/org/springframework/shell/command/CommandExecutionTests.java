@@ -48,7 +48,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetFunction()
+			.withTarget()
 				.function(function1)
 				.and()
 			.build();
@@ -65,7 +65,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method3", String.class)
 				.and()
 			.build();
@@ -83,7 +83,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method1")
 				.and()
 			.build();
@@ -101,7 +101,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method4")
 				.and()
 			.build();
@@ -119,7 +119,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method4")
 				.and()
 			.build();
@@ -145,7 +145,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg3")
 				.description("some arg3")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method6")
 				.and()
 			.build();
@@ -175,7 +175,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg3")
 				.description("some arg3")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method7")
 				.and()
 			.build();
@@ -204,7 +204,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg3")
 				.description("some arg3")
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method6")
 				.and()
 			.build();
@@ -236,7 +236,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.description("short arg c")
 				.type(boolean.class)
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method5")
 				.and()
 			.build();
@@ -266,7 +266,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.description("short arg c")
 				.type(boolean.class)
 				.and()
-			.targetMethod()
+			.withTarget()
 				.method(pojo1, "method5")
 				.and()
 			.build();
