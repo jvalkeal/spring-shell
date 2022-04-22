@@ -49,6 +49,9 @@ public class RegisterCommands extends AbstractShellComponent {
 			.withTarget()
 				.method(pojoMethods, "registered2")
 				.and()
+			.withOption()
+				.longNames("arg1")
+				.and()
 			.build();
 		registered3 = CommandRegistration.builder()
 			.command("register registered3")

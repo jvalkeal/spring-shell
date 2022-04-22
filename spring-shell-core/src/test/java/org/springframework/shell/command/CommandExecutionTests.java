@@ -111,6 +111,24 @@ public class CommandExecutionTests extends AbstractCommandTests {
 	}
 
 	@Test
+	public void testMethodSingleWithNamedArgs() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.withTarget()
+				.method(pojo1, "method4")
+				.and()
+			.build();
+		Object result = execution.evaluate(r1, new String[]{"--arg1", "myarg1value"});
+		assertThat(pojo1.method4Count).isEqualTo(1);
+		assertThat(pojo1.method4Arg1).isEqualTo("myarg1value");
+		assertThat(result).isEqualTo("himyarg1value");
+	}
+
+	@Test
 	public void testMethodMultiPositionalArgs() {
 		CommandRegistration r1 = CommandRegistration.builder()
 			.command("command1")
