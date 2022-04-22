@@ -96,6 +96,7 @@ public class InvocableShellMethod {
 
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+	private Validator validator;
 
 	/**
 	 * Create an instance from a bean instance and a method.
@@ -179,6 +180,9 @@ public class InvocableShellMethod {
 		this.resolvedFromHandlerMethod = handlerMethod;
 	}
 
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
 
 	/**
 	 * Set {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} to use to use for resolving method argument values.
@@ -320,18 +324,15 @@ public class InvocableShellMethod {
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
 		try {
-			Method bridgedMethod = getBridgedMethod();
-			Validator validator = Utils.defaultValidator();
-
-			Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables().validateParameters(
-				getBean(),
-				bridgedMethod,
-				args);
-			if (constraintViolations.size() > 0) {
-				throw new ParameterValidationException(constraintViolations);
+			if (validator != null) {
+				Method bridgedMethod = getBridgedMethod();
+				Validator validator = Utils.defaultValidator();
+				Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables()
+						.validateParameters(getBean(), bridgedMethod, args);
+				if (constraintViolations.size() > 0) {
+					throw new ParameterValidationException(constraintViolations);
+				}
 			}
-
-
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {

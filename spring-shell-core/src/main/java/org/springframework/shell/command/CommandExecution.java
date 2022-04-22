@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Validator;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
@@ -57,7 +59,18 @@ public interface CommandExecution {
 	 * @return default command execution
 	 */
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers) {
-		return new DefaultCommandExecution(resolvers);
+		return new DefaultCommandExecution(resolvers, null);
+	}
+
+	/**
+	 * Gets an instance of a default {@link CommandExecution}.
+	 *
+	 * @param resolvers the handler method argument resolvers
+	 * @param validator the validator
+	 * @return default command execution
+	 */
+	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator) {
+		return new DefaultCommandExecution(resolvers, validator);
 	}
 
 	/**
@@ -66,9 +79,11 @@ public interface CommandExecution {
 	static class DefaultCommandExecution implements CommandExecution {
 
 		private List<? extends HandlerMethodArgumentResolver> resolvers;
+		private Validator validator;
 
-		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers) {
+		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator) {
 			this.resolvers = resolvers;
+			this.validator = validator;
 		}
 
 		public Object evaluate(CommandRegistration registration, String[] args) {
@@ -107,6 +122,7 @@ public interface CommandExecution {
 					messageBuilder.setHeader(CommandContextMethodArgumentResolver.HEADER_COMMAND_CONTEXT, ctx);
 
 					InvocableShellMethod invocableShellMethod = new InvocableShellMethod(targetInfo.getBean(), targetInfo.getMethod());
+					invocableShellMethod.setValidator(validator);
 					ShellMethodArgumentResolverComposite argumentResolvers = new ShellMethodArgumentResolverComposite();
 					if (resolvers != null) {
 						argumentResolvers.addResolvers(resolvers);
