@@ -20,8 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +43,8 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.MethodArgumentResolutionException;
+import org.springframework.shell.ParameterValidationException;
+import org.springframework.shell.Utils;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -314,6 +320,18 @@ public class InvocableShellMethod {
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
 		try {
+			Method bridgedMethod = getBridgedMethod();
+			Validator validator = Utils.defaultValidator();
+
+			Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables().validateParameters(
+				getBean(),
+				bridgedMethod,
+				args);
+			if (constraintViolations.size() > 0) {
+				throw new ParameterValidationException(constraintViolations);
+			}
+
+
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {
