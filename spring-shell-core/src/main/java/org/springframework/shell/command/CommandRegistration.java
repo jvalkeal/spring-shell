@@ -106,6 +106,9 @@ public interface CommandRegistration {
 		return new DefaultBuilder();
 	}
 
+	/**
+	 * Spec defining an option.
+	 */
 	public interface OptionSpec {
 
 		/**
@@ -164,11 +167,37 @@ public interface CommandRegistration {
 		Builder and();
 	}
 
+	/**
+	 * Encapsulates info for {@link TargetSpec}.
+	 */
 	public interface TargetInfo {
 
+		/**
+		 * Get target type
+		 *
+		 * @return the target type
+		 */
 		TargetType getTargetType();
+
+		/**
+		 * Get the bean.
+		 *
+		 * @return the bean
+		 */
 		Object getBean();
+
+		/**
+		 * Get the bean method
+		 *
+		 * @return the bean method
+		 */
 		Method getMethod();
+
+		/**
+		 * Get the function
+		 *
+		 * @return the function
+		 */
 		Function<CommandContext, ?> getFunction();
 
 		static TargetInfo of(Object bean, Method method) {
@@ -217,10 +246,12 @@ public interface CommandRegistration {
 			public Function<CommandContext, ?> getFunction() {
 				return function;
 			}
-
 		}
 	}
 
+	/**
+	 * Spec defining a target.
+	 */
 	public interface TargetSpec {
 
 		/**
@@ -258,6 +289,9 @@ public interface CommandRegistration {
 		Builder and();
 	}
 
+	/**
+	 * Builder interface for {@link CommandRegistration}.
+	 */
 	public interface Builder {
 
 		/**
@@ -506,10 +540,6 @@ public interface CommandRegistration {
 				return TargetInfo.of(targetSpec.bean, targetSpec.method);
 			}
 			return TargetInfo.of(targetSpec.function);
-			// else if (targetSpec.function != null) {
-			// 	return TargetInfo.of(targetSpec.function);
-			// }
-			// throw new IllegalStateException("only one target can exist");
 		}
 	}
 
