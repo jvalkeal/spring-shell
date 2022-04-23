@@ -15,34 +15,22 @@
  */
 package org.springframework.shell;
 
-import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Implementing this interface allows sub-systems (such as the {@literal help} command) to
- * discover available commands.
+ * Tests for {@link Utils}.
  *
  * @author Eric Bottard
- * @author Janne Valkealahti
  */
-public interface CommandRegistry {
+public class UtilsTests {
 
-	/**
-	 * Return the mapping from command trigger keywords to implementation.
-	 */
-	Map<String, MethodTarget> listCommands();
-
-	/**
-	 * Register a new command.
-	 *
-	 * @param name the command name
-	 * @param target the method target
-	 */
-	void addCommand(String name, MethodTarget target);
-
-	/**
-	 * Deregister a command.
-	 *
-	 * @param name the command name
-	 */
-	void removeCommand(String name);
+	@Test
+	public void testUnCamelify() throws Exception {
+		assertThat(Utils.unCamelify("HelloWorld")).isEqualTo("hello-world");
+		assertThat(Utils.unCamelify("helloWorld")).isEqualTo("hello-world");
+		assertThat(Utils.unCamelify("helloWorldHowAreYou")).isEqualTo("hello-world-how-are-you");
+		assertThat(Utils.unCamelify("URL")).isEqualTo("url");
+	}
 }
