@@ -30,6 +30,10 @@ public abstract class AbstractCommandTests {
 		return "hi" + arg1;
 	};
 
+	protected Function<CommandContext, Void> function2 = ctx -> {
+		return null;
+	};
+
 	@BeforeEach
 	public void setupAbstractCommandTests() {
 		pojo1 = new Pojo1();

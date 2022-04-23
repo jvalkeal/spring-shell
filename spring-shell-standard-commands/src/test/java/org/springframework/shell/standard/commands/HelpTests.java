@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,15 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.shell.standard.StandardParameterResolver;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileCopyUtils;
@@ -187,10 +183,10 @@ public class HelpTests {
 			return new Help();
 		}
 
-		@Bean
-		public ParameterResolver parameterResolver() {
-			return new StandardParameterResolver(new DefaultConversionService(), Collections.emptySet());
-		}
+		// @Bean
+		// public ParameterResolver parameterResolver() {
+		// 	return new StandardParameterResolver(new DefaultConversionService(), Collections.emptySet());
+		// }
 	}
 
 	@ShellComponent

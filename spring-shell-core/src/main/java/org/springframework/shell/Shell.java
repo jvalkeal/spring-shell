@@ -16,7 +16,6 @@
 package org.springframework.shell;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
@@ -32,13 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandExecution;
 import org.springframework.shell.command.CommandExecution.CommandExecutionException;
 import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.util.StringUtils;
 
 /**
@@ -59,7 +58,7 @@ public class Shell {
 	public static final Object NO_INPUT = new Object();
 
 	private final CommandCatalog commandRegistry;
-	protected List<ParameterResolver> parameterResolvers;
+	protected List<CompletionResolver> completionResolvers = new ArrayList<>();
 	private CommandExecutionHandlerMethodArgumentResolvers argumentResolvers;
 
 	/**
@@ -76,9 +75,9 @@ public class Shell {
 	}
 
 	@Autowired
-	public void setParameterResolvers(List<ParameterResolver> resolvers) {
-		this.parameterResolvers = new ArrayList<>(resolvers);
-		AnnotationAwareOrderComparator.sort(parameterResolvers);
+	public void setCompletionResolvers(List<CompletionResolver> resolvers) {
+		this.completionResolvers = new ArrayList<>(resolvers);
+		AnnotationAwareOrderComparator.sort(completionResolvers);
 	}
 
 	@Autowired
@@ -235,17 +234,38 @@ public class Shell {
 			CompletionContext argsContext = context.drop(best.split(" ").length);
 			// Try to complete arguments
 			CommandRegistration registration = commandRegistry.getRegistrations().get(best);
-			Method method = registration.getTarget().getMethod();
 
-			List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
-			for (ParameterResolver resolver : parameterResolvers) {
-				for (int index = 0; index < parameters.size(); index++) {
-					MethodParameter parameter = parameters.get(index);
-					if (resolver.supports(parameter)) {
-						resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
-					}
-				}
+			// Method method = registration.getTarget().getMethod();
+			// List<MethodParameter> parameters = Utils.createMethodParameters(method).collect(Collectors.toList());
+			// for (ParameterResolver resolver : parameterResolvers) {
+			// 	for (int index = 0; index < parameters.size(); index++) {
+			// 		MethodParameter parameter = parameters.get(index);
+			// 		if (resolver.supports(parameter)) {
+			// 			resolver.complete(parameter, argsContext).stream().forEach(candidates::add);
+			// 		}
+			// 	}
+			// }
+
+			for (CompletionResolver resolver : completionResolvers) {
+				List<CompletionProposal> resolved = resolver.resolve(registration, argsContext);
+				candidates.addAll(resolved);
 			}
+			// registration.getOptions().stream()
+			// 	.flatMap(o -> Stream.of(o.getLongNames()))
+			// 	.map(ln -> new CompletionProposal("--" + ln))
+			// 	.forEach(candidates::add);
+
+			// registration.getOptions().stream()
+			// 	.flatMap(o -> Stream.of(o.getShortNames()))
+			// 	.map(ln -> new CompletionProposal("-" + ln))
+			// 	.forEach(candidates::add);
+
+			// TargetType targetType = registration.getTarget().getTargetType();
+			// if (targetType == TargetType.METHOD) {
+			// }
+			// else if (targetType == TargetType.FUNCTION) {
+			// }
+
 		}
 		return candidates;
 	}

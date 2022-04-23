@@ -26,9 +26,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.shell.ParameterResolver;
 import org.springframework.shell.Shell;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.shell.style.TemplateExecutor;
 import org.springframework.shell.style.ThemeResolver;
 
@@ -49,7 +49,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
 
     private ObjectProvider<CommandCatalog> commandCatalogProvider;
 
-    private ObjectProvider<ParameterResolver> parameterResolverProvider;
+    private ObjectProvider<CompletionResolver> completionResolverProvider;
 
     private ObjectProvider<TemplateExecutor> templateExecutorProvider;
 
@@ -70,7 +70,7 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
         shellProvider = applicationContext.getBeanProvider(Shell.class);
         terminalProvider = applicationContext.getBeanProvider(Terminal.class);
         commandCatalogProvider = applicationContext.getBeanProvider(CommandCatalog.class);
-        parameterResolverProvider = applicationContext.getBeanProvider(ParameterResolver.class);
+        completionResolverProvider = applicationContext.getBeanProvider(CompletionResolver.class);
         templateExecutorProvider = applicationContext.getBeanProvider(TemplateExecutor.class);
         themeResolverProvider = applicationContext.getBeanProvider(ThemeResolver.class);
     }
@@ -95,8 +95,8 @@ public abstract class AbstractShellComponent implements ApplicationContextAware,
         return commandCatalogProvider.getObject();
     }
 
-    protected Stream<ParameterResolver> getParameterResolver() {
-        return parameterResolverProvider.orderedStream();
+    protected Stream<CompletionResolver> getCompletionResolver() {
+        return completionResolverProvider.orderedStream();
     }
 
     protected TemplateExecutor getTemplateExecutor() {

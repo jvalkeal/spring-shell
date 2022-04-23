@@ -16,6 +16,7 @@
 package org.springframework.shell.standard.commands;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -329,10 +330,11 @@ public class Help extends AbstractShellComponent {
 	}
 
 	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
-		return Utils.createMethodParameters(registration.getTarget().getMethod())
-				.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
-						.flatMap(pr -> pr.describe(mp)))
-				.collect(Collectors.toList());
+		// return Utils.createMethodParameters(registration.getTarget().getMethod())
+		// 		.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
+		// 				.flatMap(pr -> pr.describe(mp)))
+		// 		.collect(Collectors.toList());
+		return Collections.emptyList();
 	}
 
 	private static class DummyContext implements MessageInterpolator.Context {

@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.completion.CompletionResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -57,7 +58,7 @@ public class ShellTests {
 	CommandCatalog commandRegistry;
 
 	@Mock
-	private ParameterResolver parameterResolver;
+	private CompletionResolver completionResolver;
 
 	@InjectMocks
 	private Shell shell;
@@ -66,7 +67,7 @@ public class ShellTests {
 
 	@BeforeEach
 	public void setUp() {
-		shell.parameterResolvers = Arrays.asList(parameterResolver);
+		shell.setCompletionResolvers(Arrays.asList(completionResolver));
 	}
 
 	@Test
@@ -270,6 +271,51 @@ public class ShellTests {
 		throw new SomeException();
 	}
 
+	@Test
+	public void completionArgWithMethod() throws Exception {
+		when(completionResolver.resolve(any(), any())).thenReturn(Arrays.asList(new CompletionProposal("--arg1")));
+		CommandRegistration registration1 = CommandRegistration.builder()
+			.command("hello world")
+			.withTarget()
+				.method(this, "helloWorld")
+				.and()
+			.withOption()
+				.longNames("arg1")
+				.description("arg1 desc")
+				.and()
+			.build();
+		Map<String, CommandRegistration> registrations = new HashMap<>();
+		registrations.put("hello world", registration1);
+		when(commandRegistry.getRegistrations()).thenReturn(registrations);
+
+		List<String> proposals = shell.complete(new CompletionContext(Arrays.asList("hello", "world", ""), 2, "".length()))
+				.stream().map(CompletionProposal::value).collect(Collectors.toList());
+		assertThat(proposals).containsExactlyInAnyOrder("--arg1");
+	}
+
+	@Test
+	public void completionArgWithFunction() throws Exception {
+		when(completionResolver.resolve(any(), any())).thenReturn(Arrays.asList(new CompletionProposal("--arg1")));
+		CommandRegistration registration1 = CommandRegistration.builder()
+			.command("hello world")
+			.withTarget()
+				.function(ctx -> {
+					return null;
+				})
+				.and()
+			.withOption()
+				.longNames("arg1")
+				.description("arg1 desc")
+				.and()
+			.build();
+		Map<String, CommandRegistration> registrations = new HashMap<>();
+		registrations.put("hello world", registration1);
+		when(commandRegistry.getRegistrations()).thenReturn(registrations);
+
+		List<String> proposals = shell.complete(new CompletionContext(Arrays.asList("hello", "world", ""), 2, "".length()))
+				.stream().map(CompletionProposal::value).collect(Collectors.toList());
+		assertThat(proposals).containsExactlyInAnyOrder("--arg1");
+	}
 
 	private static class Exit extends RuntimeException {
 	}
