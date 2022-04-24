@@ -120,8 +120,6 @@ public class HelpTests {
 		registrations.put("first-command", registration);
 		registrations.put("1st-command", registration);
 		CharSequence help = this.help.help("first-command").toString();
-		String xxx = (String)help;
-		String sample = sample();
 		assertThat(help).isEqualTo(sample());
 	}
 
