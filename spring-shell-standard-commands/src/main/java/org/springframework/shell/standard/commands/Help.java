@@ -16,7 +16,7 @@
 package org.springframework.shell.standard.commands;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.ParameterDescription;
 import org.springframework.shell.Utils;
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.CommandValueProvider;
@@ -330,11 +331,49 @@ public class Help extends AbstractShellComponent {
 	}
 
 	private List<ParameterDescription> getParameterDescriptions(CommandRegistration registration) {
+		List<CommandOption> options = registration.getOptions();
+		List<ParameterDescription> descriptions = new ArrayList<>();
+
+		for (CommandOption option : options) {
+
+			ParameterDescription description = new ParameterDescription();
+			if (option.getType() != null) {
+				description.type(option.getType().toString());
+				description.formal(option.getType().toClass().getSimpleName());
+			}
+			else {
+				description.formal("");
+			}
+			description.help(option.getDescription());
+			description.mandatoryKey(option.isRequired());
+			if (option.getType() != null && option.getType().isAssignableFrom(boolean.class)) {
+				description.defaultValue("false");
+			}
+			else {
+				description.defaultValue(option.getDefaultValue());
+			}
+
+			List<String> keys = new ArrayList<>();
+			if (option.getLongNames() != null) {
+				for (String ln : option.getLongNames()) {
+					keys.add("--" + ln);
+				}
+			}
+			if (option.getShortNames() != null) {
+				for (Character sn : option.getShortNames()) {
+					keys.add("-" + String.valueOf(sn));
+				}
+			}
+			description.keys(keys);
+
+			descriptions.add(description);
+		}
+
 		// return Utils.createMethodParameters(registration.getTarget().getMethod())
 		// 		.flatMap(mp -> getParameterResolver().filter(pr -> pr.supports(mp)).limit(1L)
 		// 				.flatMap(pr -> pr.describe(mp)))
 		// 		.collect(Collectors.toList());
-		return Collections.emptyList();
+		return descriptions;
 	}
 
 	private static class DummyContext implements MessageInterpolator.Context {

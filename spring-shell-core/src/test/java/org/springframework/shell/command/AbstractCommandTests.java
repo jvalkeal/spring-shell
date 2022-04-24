@@ -58,6 +58,8 @@ public abstract class AbstractCommandTests {
 		public int method7Arg1;
 		public int method7Arg2;
 		public int method7Arg3;
+		public int method8Count;
+		public float[] method8Arg1;
 
 		public void method1(CommandContext ctx) {
 			method1Ctx = ctx;
@@ -100,6 +102,10 @@ public abstract class AbstractCommandTests {
 			method7Arg3 = arg3;
 			method7Count++;
 		}
-	}
 
+		public void method8(float[] arg1) {
+			method8Arg1 = arg1;
+			method8Count++;
+		}
+	}
 }

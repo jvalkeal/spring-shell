@@ -331,6 +331,9 @@ public interface CommandParser {
 						return Boolean.parseBoolean(arguments.get(0));
 					}
 				}
+				else if (type != null && type.isArray()) {
+					return arguments.stream().collect(Collectors.toList()).toArray();
+				}
 				else {
 					if (arguments.isEmpty()) {
 						return null;

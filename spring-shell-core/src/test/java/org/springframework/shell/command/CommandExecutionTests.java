@@ -293,4 +293,41 @@ public class CommandExecutionTests extends AbstractCommandTests {
 		assertThat(pojo1.method5ArgB).isFalse();
 		assertThat(pojo1.method5ArgC).isTrue();
 	}
+
+	@Test
+	public void testFloatArrayOne() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.longNames("arg1")
+				.type(float[].class)
+				.and()
+			.withTarget()
+				.method(pojo1, "method8")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{"--arg1", "0.1"});
+		assertThat(pojo1.method8Count).isEqualTo(1);
+		assertThat(pojo1.method8Arg1).isEqualTo(new float[]{0.1f});
+	}
+
+	@Test
+	public void testFloatArrayTwo() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.longNames("arg1")
+				.type(float[].class)
+				.and()
+			.withTarget()
+				.method(pojo1, "method8")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{"--arg1", "0.1", "0.2"});
+		assertThat(pojo1.method8Count).isEqualTo(1);
+		assertThat(pojo1.method8Arg1).isEqualTo(new float[]{0.1f, 0.2f});
+	}
+
 }

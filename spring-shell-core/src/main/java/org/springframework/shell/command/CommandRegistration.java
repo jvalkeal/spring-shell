@@ -160,6 +160,14 @@ public interface CommandRegistration {
 		OptionSpec required();
 
 		/**
+		 * Define a {@code defaultValue} for an option.
+		 *
+		 * @param defaultValue the option default value
+		 * @return option spec for chaining
+		 */
+		OptionSpec defaultValue(String defaultValue);
+
+		/**
 		 * Return a builder for chaining.
 		 *
 		 * @return a builder for chaining
@@ -368,6 +376,7 @@ public interface CommandRegistration {
 		private ResolvableType type;
 		private String description;
 		private boolean required;
+		private String defaultValue;
 
 		DefaultOptionSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -409,6 +418,12 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public OptionSpec defaultValue(String defaultValue) {
+			this.defaultValue = defaultValue;
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			return builder;
 		}
@@ -431,6 +446,10 @@ public interface CommandRegistration {
 
 		public boolean isRequired() {
 			return required;
+		}
+
+		public String getDefaultValue() {
+			return defaultValue;
 		}
 	}
 
@@ -530,7 +549,7 @@ public interface CommandRegistration {
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
 				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
-						o.isRequired()))
+						o.isRequired(), o.getDefaultValue()))
 				.collect(Collectors.toList());
 		}
 

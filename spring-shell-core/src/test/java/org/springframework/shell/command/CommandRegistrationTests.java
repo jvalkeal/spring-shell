@@ -262,4 +262,25 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getOptions()).hasSize(1);
 		assertThat(registration.getOptions().get(0).isRequired()).isTrue();
 	}
+
+	@Test
+	public void testOptionWithDefaultValue() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.shortNames('v')
+				.type(boolean.class)
+				.description("some arg1")
+				.defaultValue("defaultValue")
+				.and()
+			.withTarget()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getCommands()).containsExactly("command1");
+		assertThat(registration.getHelp()).isEqualTo("help");
+		assertThat(registration.getOptions()).hasSize(1);
+		assertThat(registration.getOptions().get(0).getDefaultValue()).isEqualTo("defaultValue");
+	}
 }

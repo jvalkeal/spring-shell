@@ -97,11 +97,31 @@ public class HelpTests {
 				.and()
 			.withOption()
 				.shortNames('r')
+				.description("Whether to delete recursively")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('f')
+				.description("Do not ask for confirmation. YOLO")
+				.type(boolean.class)
+				.and()
+			.withOption()
+				.shortNames('n')
+				.description("The answer to everything")
+				.defaultValue("42")
+				.type(int.class)
+				.and()
+			.withOption()
+				.shortNames('o')
+				.description("Some other parameters")
+				.type(float[].class)
 				.and()
 			.build();
 		registrations.put("first-command", registration);
 		registrations.put("1st-command", registration);
 		CharSequence help = this.help.help("first-command").toString();
+		String xxx = (String)help;
+		String sample = sample();
 		assertThat(help).isEqualTo(sample());
 	}
 

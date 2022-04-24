@@ -60,6 +60,13 @@ public interface CommandOption {
 	boolean isRequired();
 
 	/**
+	 * Gets a default value of an option.
+	 *
+	 * @return the default value
+	 */
+	String getDefaultValue();
+
+	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
 	 * @param longNames the long names
@@ -68,7 +75,7 @@ public interface CommandOption {
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
-		return of(longNames, shortNames, description, null, false);
+		return of(longNames, shortNames, description, null, false, null);
 	}
 
 	/**
@@ -82,7 +89,7 @@ public interface CommandOption {
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
 			ResolvableType type) {
-		return of(longNames, shortNames, description, type, false);
+		return of(longNames, shortNames, description, type, false, null);
 	}
 
 	/**
@@ -93,11 +100,12 @@ public interface CommandOption {
 	 * @param description the description
 	 * @param type the type
 	 * @param required the required flag
+	 * @param defaultValue the default value
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
-			ResolvableType type, boolean required) {
-		return new DefaultCommandOption(longNames, shortNames, description, type, required);
+			ResolvableType type, boolean required, String defaultValue) {
+		return new DefaultCommandOption(longNames, shortNames, description, type, required, defaultValue);
 	}
 
 	/**
@@ -110,14 +118,16 @@ public interface CommandOption {
 		private String description;
 		private ResolvableType type;
 		private boolean required;
+		private String defaultValue;
 
 		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
-				ResolvableType type, boolean required) {
+				ResolvableType type, boolean required, String defaultValue) {
 			this.longNames = longNames;
 			this.shortNames = shortNames;
 			this.description = description;
 			this.type = type;
 			this.required = required;
+			this.defaultValue = defaultValue;
 		}
 
 		@Override
@@ -143,6 +153,11 @@ public interface CommandOption {
 		@Override
 		public boolean isRequired() {
 			return required;
+		}
+
+		@Override
+		public String getDefaultValue() {
+			return defaultValue;
 		}
 	}
 }

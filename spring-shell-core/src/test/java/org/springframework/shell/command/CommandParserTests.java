@@ -218,6 +218,17 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results().get(2).value()).isEqualTo(false);
 	}
 
+	@Test
+	public void testLongOptionsWithArray() {
+		CommandOption option1 = longOption("arg1", ResolvableType.forType(int[].class));
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"--arg1", "1", "2"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo(new String[] { "1", "2" });
+	}
+
 	private static CommandOption longOption(String name) {
 		return longOption(name, null);
 	}
@@ -231,7 +242,7 @@ public class CommandParserTests extends AbstractCommandTests {
 	}
 
 	private static CommandOption longOption(String name, ResolvableType type, boolean required) {
-		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required);
+		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required, null);
 	}
 
 	private static CommandOption shortOption(char name) {
