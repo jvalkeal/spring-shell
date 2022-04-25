@@ -1,0 +1,4 @@
+=== Command Registration
+Defining a command registation is a first step to introduce a structure of a commands and its options
+and parameters. This is loosely decoupled what happens later like parsing command-line and executing
+actual target code. Essentially it is a definition of an command API shown to a user.
