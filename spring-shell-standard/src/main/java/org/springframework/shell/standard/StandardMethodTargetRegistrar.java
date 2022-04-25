@@ -42,6 +42,7 @@ import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.CommandRegistration.Builder;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -96,16 +97,28 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 						if (so != null) {
 							List<String> longNames = new ArrayList<>();
 							List<Character> shortNames = new ArrayList<>();
-							Arrays.asList(so.value()).stream().forEach(o -> {
-								String stripped = StringUtils.trimLeadingCharacter(o, '-');
-								log.debug("Registering o='{}' stripped='{}'", o, stripped);
-								if (o.length() == stripped.length() + 2) {
-									longNames.add(stripped);
+							if (!ObjectUtils.isEmpty(so.value())) {
+								Arrays.asList(so.value()).stream().forEach(o -> {
+									String stripped = StringUtils.trimLeadingCharacter(o, '-');
+									log.debug("Registering o='{}' stripped='{}'", o, stripped);
+									if (o.length() == stripped.length() + 2) {
+										longNames.add(stripped);
+									}
+									else if (o.length() == stripped.length() + 1 && stripped.length() == 1) {
+										shortNames.add(stripped.charAt(0));
+									}
+								});
+							}
+							else {
+								// ShellOption value not defined
+								mp.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
+								String longName = mp.getParameterName();
+								Class<?> parameterType = mp.getParameterType();
+								if (longName != null) {
+									log.debug("Using mp='{}' longName='{}' parameterType='{}'", mp, longName, parameterType);
+									longNames.add(longName);
 								}
-								else if (o.length() == stripped.length() + 1 && stripped.length() == 1) {
-									shortNames.add(stripped.charAt(0));
-								}
-							});
+							}
 							if (!longNames.isEmpty() || !shortNames.isEmpty()) {
 								log.debug("Registering longNames='{}' shortNames='{}'", longNames, shortNames);
 								builder.withOption()
