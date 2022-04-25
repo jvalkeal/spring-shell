@@ -212,7 +212,11 @@ public interface CommandParser {
 			});
 
 			requiredOptions.stream().forEach(o -> {
-				errors.add(MissingOptionException.of("Missing option", o));
+				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
+				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
+						.collect(Collectors.joining(",")) : "";
+				errors.add(MissingOptionException
+						.of(String.format("Missing option, longnames='%s', shortnames='%s'", ln, sn), o));
 			});
 
 			return new DefaultResults(results, positional, errors);

@@ -95,16 +95,25 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 						log.debug("Registering with mp='{}' so='{}'", mp, so);
 						if (so != null) {
 							List<String> longNames = new ArrayList<>();
+							List<Character> shortNames = new ArrayList<>();
 							Arrays.asList(so.value()).stream().forEach(o -> {
 								String stripped = StringUtils.trimLeadingCharacter(o, '-');
 								log.debug("Registering o='{}' stripped='{}'", o, stripped);
 								if (o.length() == stripped.length() + 2) {
 									longNames.add(stripped);
 								}
+								else if (o.length() == stripped.length() + 1 && stripped.length() == 1) {
+									shortNames.add(stripped.charAt(0));
+								}
 							});
-							if (!longNames.isEmpty()) {
-								log.debug("Registering longNames='{}'", longNames);
-								builder.withOption().longNames(longNames.toArray(new String[0]));
+							if (!longNames.isEmpty() || !shortNames.isEmpty()) {
+								log.debug("Registering longNames='{}' shortNames='{}'", longNames, shortNames);
+								builder.withOption()
+									.type(mp.getParameterType())
+									.longNames(longNames.toArray(new String[0]))
+									.shortNames(shortNames.toArray(new Character[0]))
+
+									.description(so.help());
 							}
 						}
 						else {
@@ -113,7 +122,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 							Class<?> parameterType = mp.getParameterType();
 							if (longName != null) {
 								log.debug("Using mp='{}' longName='{}' parameterType='{}'", mp, longName, parameterType);
-								builder.withOption().longNames(longName).type(parameterType);
+								builder.withOption().longNames(longName).type(parameterType).required();
 							}
 						}
 					}

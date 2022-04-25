@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.shell.result;
 
 import org.jline.terminal.Terminal;
@@ -54,6 +53,11 @@ public class ResultHandlerConfig {
 	@Bean
 	public ParameterValidationExceptionResultHandler parameterValidationExceptionResultHandler(Terminal terminal) {
 		return new ParameterValidationExceptionResultHandler(terminal);
+	}
+
+	@Bean
+	public CommandParserExceptionsExceptionResultHandler commandParserExceptionsExceptionResultHandler(Terminal terminal) {
+		return new CommandParserExceptionsExceptionResultHandler(terminal);
 	}
 
 	@Bean

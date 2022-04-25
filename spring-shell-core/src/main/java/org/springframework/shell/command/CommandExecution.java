@@ -30,6 +30,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.command.CommandParser.CommandParserException;
 import org.springframework.shell.command.CommandParser.Results;
 import org.springframework.shell.command.CommandRegistration.TargetInfo;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
@@ -91,6 +92,10 @@ public interface CommandExecution {
 			List<CommandOption> options = registration.getOptions();
 			CommandParser parser = CommandParser.of();
 			Results results = parser.parse(options, args);
+
+			if (!results.errors().isEmpty()) {
+				throw new CommandParserExceptionsException("Command parser resulted errors", results.errors());
+			}
 
 			CommandContext ctx = CommandContext.of(args, results);
 
@@ -192,6 +197,20 @@ public interface CommandExecution {
 
 		public CommandExecutionException(Throwable cause) {
 			super(cause);
+		}
+	}
+
+	static class CommandParserExceptionsException extends RuntimeException {
+
+		private final List<CommandParserException> parserExceptions;
+
+		public CommandParserExceptionsException(String message, List<CommandParserException> parserExceptions) {
+			super(message);
+			this.parserExceptions = parserExceptions;
+		}
+
+		public List<CommandParserException> getParserExceptions() {
+			return parserExceptions;
 		}
 	}
 

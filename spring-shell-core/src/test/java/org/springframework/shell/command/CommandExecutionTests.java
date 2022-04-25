@@ -24,8 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
+import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CommandExecutionTests extends AbstractCommandTests {
 
@@ -330,4 +332,37 @@ public class CommandExecutionTests extends AbstractCommandTests {
 		assertThat(pojo1.method8Arg1).isEqualTo(new float[]{0.1f, 0.2f});
 	}
 
+	@Test
+	public void testDefaultValueAsNull() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.withTarget()
+				.method(pojo1, "method4")
+				.and()
+			.build();
+		execution.evaluate(r1, new String[]{});
+		assertThat(pojo1.method4Count).isEqualTo(1);
+		assertThat(pojo1.method4Arg1).isNull();
+	}
+
+	@Test
+	public void testRequiredArg() {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.withOption()
+				.longNames("arg1")
+				.required()
+				.and()
+			.withTarget()
+				.method(pojo1, "method4")
+				.and()
+			.build();
+
+		assertThatThrownBy(() -> {
+			execution.evaluate(r1, new String[]{});
+		}).isInstanceOf(CommandParserExceptionsException.class);
+	}
 }
