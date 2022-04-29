@@ -2,3 +2,39 @@
 Defining a command registation is a first step to introduce a structure of a commands and its options
 and parameters. This is loosely decoupled what happens later like parsing command-line and executing
 actual target code. Essentially it is a definition of an command API shown to a user.
+
+==== Commands
+Command in a `spring-shell` structure is defined as an array of commands. This will give
+you something like:
+
+====
+[source, bash]
+----
+command1 sub1
+command2 sub1 subsub1
+command2 sub2 subsub1
+command2 sub2 subsub2
+----
+====
+
+[NOTE]
+====
+We don't currently support mapping commands to explicit parent if sub-commands are defined.
+For example there can't be `command1 sub1` and `command1 sub1 subsub1` registered.
+====
+
+==== Interaction Mode
+Spring Shell has been designed to work on two modes one being interactive which essentially
+is a `REPL` where you have an active shell instance throughout commands and secondly
+non-interactive mode where commands are executed one by one from a command line.
+
+Differentation between these modes are mostly around limitations what can be done
+in each mode as for example it would not be feasible to show what was a previous stacktrace
+of a command if shell is not alive anymore and generally things around information
+if shell is alive or not.
+
+Also being on an active `REPL` session may provide more info about what user has been
+doing within an active session.
+
+==== Options
+tbd
