@@ -24,7 +24,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
 
@@ -38,7 +37,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 	@BeforeEach
 	public void setupCommandExecutionTests() {
 		List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
-		resolvers.add(new HeaderMethodArgumentResolver(new DefaultConversionService(), null));
+		resolvers.add(new ArgumentHeaderMethodArgumentResolver(new DefaultConversionService(), null));
 		resolvers.add(new CommandContextMethodArgumentResolver());
 		execution = CommandExecution.of(resolvers);
 	}

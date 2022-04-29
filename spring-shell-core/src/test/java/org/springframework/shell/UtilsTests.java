@@ -60,11 +60,5 @@ public class UtilsTests {
 
 		split = Utils.split(new String[] { "-a1", "a1", "a2" }, predicate);
 		assertThat(split).containsExactly(Arrays.asList("-a1", "a1", "a2"));
-
-		// split = Utils.split(new String[] { "-a1", "a1", "a2" }, predicate);
-		// assertThat(split).containsExactly(Arrays.asList("-a1", "a1"), Arrays.asList("a2"));
-
-		// split = Utils.split(new String[] { "-a1", "a1", "a2", "-a2", "a3" }, predicate);
-		// assertThat(split).containsExactly(Arrays.asList("-a1", "a1"), Arrays.asList("a2"), Arrays.asList("-a2", "a3"));
 	}
 }

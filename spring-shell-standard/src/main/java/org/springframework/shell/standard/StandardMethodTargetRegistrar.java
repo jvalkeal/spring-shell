@@ -125,7 +125,7 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 									.type(mp.getParameterType())
 									.longNames(longNames.toArray(new String[0]))
 									.shortNames(shortNames.toArray(new Character[0]))
-
+									.position(mp.getParameterIndex())
 									.description(so.help());
 							}
 						}

@@ -134,6 +134,13 @@ public class Utils {
 		return DEFAULT_VALIDATOR;
 	}
 
+	/**
+	 * Split array into list of lists by predicate
+	 *
+	 * @param array the array
+	 * @param predicate the predicate
+	 * @return the list of lists
+	 */
 	public static <T> List<List<T>> split(T[] array, Predicate<T> predicate) {
 		List<T> list = Arrays.asList(array);
 		boolean[] boundaries = new boolean[array.length];
@@ -147,13 +154,6 @@ public class Utils {
 		for (int i = 0; i < boundaries.length; i++) {
 			if (boundaries[i]) {
 				if (tail < i) {
-					// if (tail + 2 < i) {
-					// 	split.add(list.subList(tail, tail + 2));
-					// 	split.add(list.subList(tail + 2, i));
-					// }
-					// else {
-					// 	split.add(list.subList(tail, i));
-					// }
 					split.add(list.subList(tail, i));
 				}
 				tail = i;
@@ -161,13 +161,6 @@ public class Utils {
 		}
 
 		if (tail < array.length) {
-			// if (tail + 2 < array.length) {
-			// 	split.add(list.subList(tail, tail + 2));
-			// 	split.add(list.subList(tail + 2, array.length));
-			// }
-			// else {
-			// 	split.add(list.subList(tail, array.length));
-			// }
 			split.add(list.subList(tail, array.length));
 		}
 
