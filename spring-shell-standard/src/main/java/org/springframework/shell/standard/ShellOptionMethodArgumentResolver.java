@@ -72,9 +72,9 @@ public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodA
 		Object headerValue = null;
 		Object nativeHeaderValue = null;
 		for (String name : names) {
-			headerValue = message.getHeaders().get(name);
+			headerValue = message.getHeaders().get("springShellArgument." + name);
 			if (headerValue != null) {
-				nativeHeaderValue = getNativeHeaderValue(message, name);
+				nativeHeaderValue = getNativeHeaderValue(message, "springShellArgument." + name);
 				break;
 			}
 		}
