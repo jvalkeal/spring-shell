@@ -137,7 +137,8 @@ public interface CommandExecution {
 					}
 					invocableShellMethod.setMessageMethodArgumentResolvers(argumentResolvers);
 
-					res = invocableShellMethod.invoke(messageBuilder.build(), results.positional().toArray());
+					// res = invocableShellMethod.invoke(messageBuilder.build(), results.positional().toArray());
+					res = invocableShellMethod.invoke(messageBuilder.build(), (Object[])null);
 
 				} catch (Exception e) {
 					throw new CommandExecutionException(e);
@@ -175,23 +176,23 @@ public interface CommandExecution {
 
 	}
 
-	static class DelegatingInvocableHandlerMethod extends InvocableHandlerMethod {
+	// static class DelegatingInvocableHandlerMethod extends InvocableHandlerMethod {
 
-		public DelegatingInvocableHandlerMethod(Object bean, Method method) {
-			super(bean, method);
-		}
+	// 	public DelegatingInvocableHandlerMethod(Object bean, Method method) {
+	// 		super(bean, method);
+	// 	}
 
-		@Override
-		public Object invoke(Message<?> message, Object... providedArgs) throws Exception {
-			if (providedArgs == null) {
-				return super.invoke(message, providedArgs);
-			}
-			else {
-				return super.doInvoke(providedArgs);
-			}
-		}
+	// 	@Override
+	// 	public Object invoke(Message<?> message, Object... providedArgs) throws Exception {
+	// 		if (providedArgs == null) {
+	// 			return super.invoke(message, providedArgs);
+	// 		}
+	// 		else {
+	// 			return super.doInvoke(providedArgs);
+	// 		}
+	// 	}
 
-	}
+	// }
 
 	static class CommandExecutionException extends RuntimeException {
 

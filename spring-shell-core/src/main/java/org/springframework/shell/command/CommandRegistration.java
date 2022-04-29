@@ -168,6 +168,14 @@ public interface CommandRegistration {
 		OptionSpec defaultValue(String defaultValue);
 
 		/**
+		 * Define an optional hint for possible positional mapping.
+		 *
+		 * @param position the position
+		 * @return option spec for chaining
+		 */
+		OptionSpec position(Integer position);
+
+		/**
 		 * Return a builder for chaining.
 		 *
 		 * @return a builder for chaining
@@ -377,6 +385,7 @@ public interface CommandRegistration {
 		private String description;
 		private boolean required;
 		private String defaultValue;
+		private Integer position;
 
 		DefaultOptionSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -424,6 +433,12 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public OptionSpec position(Integer position) {
+			this.position = position;
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			return builder;
 		}
@@ -450,6 +465,10 @@ public interface CommandRegistration {
 
 		public String getDefaultValue() {
 			return defaultValue;
+		}
+
+		public Integer getPosition() {
+			return position;
 		}
 	}
 
@@ -549,7 +568,7 @@ public interface CommandRegistration {
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
 				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
-						o.isRequired(), o.getDefaultValue()))
+						o.isRequired(), o.getDefaultValue(), o.getPosition()))
 				.collect(Collectors.toList());
 		}
 

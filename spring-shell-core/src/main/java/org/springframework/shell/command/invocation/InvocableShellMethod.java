@@ -291,11 +291,16 @@ public class InvocableShellMethod {
 		}
 
 		Object[] args = new Object[parameters.length];
+		int providedArgsIndex = 0;
 		for (int i = 0; i < parameters.length; i++) {
 			if (!holders[i].resolved) {
 				if (providedArgs != null && unresolvedCount <= providedArgs.length) {
-					if (conversionService.canConvert(providedArgs[i].getClass(), holders[i].parameter.getParameterType())) {
-						holders[i].arg = conversionService.convert(providedArgs[i], holders[i].parameter.getParameterType());
+					// if (conversionService.canConvert(providedArgs[i].getClass(), holders[i].parameter.getParameterType())) {
+					// 	holders[i].arg = conversionService.convert(providedArgs[i], holders[i].parameter.getParameterType());
+					// }
+					if (conversionService.canConvert(providedArgs[providedArgsIndex].getClass(), holders[i].parameter.getParameterType())) {
+						holders[i].arg = conversionService.convert(providedArgs[providedArgsIndex], holders[i].parameter.getParameterType());
+						providedArgsIndex++;
 					}
 				}
 			}

@@ -67,6 +67,13 @@ public interface CommandOption {
 	String getDefaultValue();
 
 	/**
+	 * Gets a positional value.
+	 *
+	 * @return the positional value
+	 */
+	int getPosition();
+
+	/**
 	 * Gets an instance of a default {@link CommandOption}.
 	 *
 	 * @param longNames the long names
@@ -75,7 +82,7 @@ public interface CommandOption {
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
-		return of(longNames, shortNames, description, null, false, null);
+		return of(longNames, shortNames, description, null, false, null, null);
 	}
 
 	/**
@@ -89,7 +96,7 @@ public interface CommandOption {
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
 			ResolvableType type) {
-		return of(longNames, shortNames, description, type, false, null);
+		return of(longNames, shortNames, description, type, false, null, null);
 	}
 
 	/**
@@ -101,11 +108,12 @@ public interface CommandOption {
 	 * @param type the type
 	 * @param required the required flag
 	 * @param defaultValue the default value
+	 * @param position the position value
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
-			ResolvableType type, boolean required, String defaultValue) {
-		return new DefaultCommandOption(longNames, shortNames, description, type, required, defaultValue);
+			ResolvableType type, boolean required, String defaultValue, Integer position) {
+		return new DefaultCommandOption(longNames, shortNames, description, type, required, defaultValue, position);
 	}
 
 	/**
@@ -119,15 +127,17 @@ public interface CommandOption {
 		private ResolvableType type;
 		private boolean required;
 		private String defaultValue;
+		private int position;
 
 		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
-				ResolvableType type, boolean required, String defaultValue) {
+				ResolvableType type, boolean required, String defaultValue, Integer position) {
 			this.longNames = longNames;
 			this.shortNames = shortNames;
 			this.description = description;
 			this.type = type;
 			this.required = required;
 			this.defaultValue = defaultValue;
+			this.position = position != null && position > -1 ? position : -1 ;
 		}
 
 		@Override
@@ -158,6 +168,11 @@ public interface CommandOption {
 		@Override
 		public String getDefaultValue() {
 			return defaultValue;
+		}
+
+		@Override
+		public int getPosition() {
+			return position;
 		}
 	}
 }

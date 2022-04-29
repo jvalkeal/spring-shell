@@ -147,6 +147,30 @@ public class CommandParserTests extends AbstractCommandTests {
 	}
 
 	@Test
+	public void testNonMappedArgBeforeOption() {
+		CommandOption option1 = longOption("arg1");
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"foo", "--arg1", "value"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("value");
+		assertThat(results.positional()).containsExactly("foo");
+	}
+
+	@Test
+	public void testNonMappedArgAfterOption() {
+		CommandOption option1 = longOption("arg1");
+		List<CommandOption> options = Arrays.asList(option1);
+		String[] args = new String[]{"--arg1", "value", "foo"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(0).value()).isEqualTo("value");
+		assertThat(results.positional()).containsExactly("foo");
+	}
+
+	@Test
 	public void testShortOptionsCombined() {
 		CommandOption optionA = shortOption('a');
 		CommandOption optionB = shortOption('b');
@@ -229,20 +253,52 @@ public class CommandParserTests extends AbstractCommandTests {
 		assertThat(results.results().get(0).value()).isEqualTo(new String[] { "1", "2" });
 	}
 
+	@Test
+	public void testMapPositionalArgs1() {
+		CommandOption option1 = longOption("arg1", false, 0);
+		CommandOption option2 = longOption("arg2", false, 1);
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"--arg1", "1", "2"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(2);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(1).option()).isSameAs(option2);
+		assertThat(results.results().get(0).value()).isEqualTo("1");
+		assertThat(results.results().get(1).value()).isEqualTo("2");
+	}
+
+	@Test
+	public void testMapPositionalArgs2() {
+		CommandOption option1 = longOption("arg1", false, 0);
+		CommandOption option2 = longOption("arg2", false, 1);
+		List<CommandOption> options = Arrays.asList(option1, option2);
+		String[] args = new String[]{"1", "2"};
+		Results results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(2);
+		assertThat(results.results().get(0).option()).isSameAs(option1);
+		assertThat(results.results().get(1).option()).isSameAs(option2);
+		assertThat(results.results().get(0).value()).isEqualTo("1");
+		assertThat(results.results().get(1).value()).isEqualTo("2");
+	}
+
 	private static CommandOption longOption(String name) {
 		return longOption(name, null);
 	}
 
 	private static CommandOption longOption(String name, boolean required) {
-		return longOption(name, null, required);
+		return longOption(name, null, required, null);
 	}
 
 	private static CommandOption longOption(String name, ResolvableType type) {
-		return longOption(name, type, false);
+		return longOption(name, type, false, null);
 	}
 
-	private static CommandOption longOption(String name, ResolvableType type, boolean required) {
-		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required, null);
+	private static CommandOption longOption(String name, boolean required, int position) {
+		return longOption(name, null, required, position);
+	}
+
+	private static CommandOption longOption(String name, ResolvableType type, boolean required, Integer position) {
+		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required, null, position);
 	}
 
 	private static CommandOption shortOption(char name) {

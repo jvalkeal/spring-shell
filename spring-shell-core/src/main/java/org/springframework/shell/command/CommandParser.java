@@ -16,11 +16,14 @@
 package org.springframework.shell.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.shell.Utils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -211,6 +214,21 @@ public interface CommandParser {
 				}
 			});
 
+			Map<Integer, CommandOption> collect = options.stream()
+				.filter(o -> o.getPosition() > -1)
+				.collect(Collectors.toMap(o -> o.getPosition(), o -> o));
+			for (int i = 0; i < parserResults.results.size(); i++) {
+				ParserResult pr = parserResults.results.get(i);
+				if (pr.option == null) {
+					CommandOption mapped = collect.get(i);
+					if (mapped != null) {
+						// results.add(new DefaultResult(mapped, pr.args));
+						results.add(new DefaultResult(mapped, pr.args.get(0)));
+						requiredOptions.remove(mapped);
+					}
+				}
+			}
+
 			requiredOptions.stream().forEach(o -> {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
 				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
@@ -263,14 +281,28 @@ public interface CommandParser {
 					.flatMap(lr -> {
 						List<CommandOption> option = matchOptions(options, lr.get(0));
 						if (option.isEmpty()) {
-							return Stream.of(ParserResult.of(null, lr, null, null));
+							return lr.stream().map(a -> ParserResult.of(null, Arrays.asList(a), null, null));
+							// return Stream.of(ParserResult.of(null, lr, null, null));
 						}
 						else {
-							return option.stream().map(o -> {
+							return option.stream().flatMap(o -> {
 								List<String> subArgs = lr.subList(1, lr.size());
-								Object value = convertArguments(o, subArgs);
-								return ParserResult.of(o, subArgs, value, null);
+								// Object value = convertArguments(o, subArgs);
+								ConvertArgumentsHolder holder = convertArguments(o, subArgs);
+								Object value = holder.value;
+								Stream<ParserResult> unmapped = holder.unmapped.stream()
+									.map(um -> ParserResult.of(null, Arrays.asList(um), null, null));
+								Stream<ParserResult> res = Stream.of(ParserResult.of(o, subArgs, value, null));
+								return Stream.concat(res, unmapped);
+								// return Stream.of(ParserResult.of(o, subArgs, value, null));
 							});
+							// return option.stream().map(o -> {
+							// 	List<String> subArgs = lr.subList(1, lr.size());
+							// 	// Object value = convertArguments(o, subArgs);
+							// 	ConvertArgumentsHolder holder = convertArguments(o, subArgs);
+							// 	Object value = holder.value;
+							// 	return ParserResult.of(o, subArgs, value, null);
+							// });
 						}
 					})
 					.collect(Collectors.toList());
@@ -325,26 +357,64 @@ public interface CommandParser {
 				return matched;
 			}
 
-			private Object convertArguments(CommandOption option, List<String> arguments) {
+			private ConvertArgumentsHolder convertArguments(CommandOption option, List<String> arguments) {
 				ResolvableType type = option.getType();
 				if (type != null && type.isAssignableFrom(boolean.class)) {
 					if (arguments.size() == 0) {
-						return true;
+						// return true;
+						return ConvertArgumentsHolder.of(true);
 					}
 					else {
-						return Boolean.parseBoolean(arguments.get(0));
+						// return Boolean.parseBoolean(arguments.get(0));
+						return ConvertArgumentsHolder.of(Boolean.parseBoolean(arguments.get(0)));
 					}
 				}
 				else if (type != null && type.isArray()) {
-					return arguments.stream().collect(Collectors.toList()).toArray();
+					// return arguments.stream().collect(Collectors.toList()).toArray();
+					return ConvertArgumentsHolder.of(arguments.stream().collect(Collectors.toList()).toArray());
 				}
 				else {
 					if (arguments.isEmpty()) {
-						return null;
+						// return null;
+						return ConvertArgumentsHolder.of();
 					}
 					else {
-						return arguments.stream().collect(Collectors.joining(" "));
+						// return arguments.stream().collect(Collectors.joining(" "));
+						if (arguments.size() == 0) {
+							return ConvertArgumentsHolder.of();
+						}
+						else if (arguments.size() == 1) {
+							return ConvertArgumentsHolder.of(arguments.get(0));
+						}
+						else {
+							return ConvertArgumentsHolder.of(arguments.get(0), arguments.subList(1, arguments.size()));
+						}
+						// return ConvertArgumentsHolder.of(arguments.stream().collect(Collectors.joining(" ")));
 					}
+				}
+			}
+
+			private static class ConvertArgumentsHolder {
+				Object value;
+				final List<String> unmapped = new ArrayList<>();
+
+				ConvertArgumentsHolder(Object value, List<String> unmapped) {
+					this.value = value;
+					if (unmapped != null) {
+						this.unmapped.addAll(unmapped);
+					}
+				}
+
+				static ConvertArgumentsHolder of() {
+					return new ConvertArgumentsHolder(null, null);
+				}
+
+				static ConvertArgumentsHolder of(Object value) {
+					return new ConvertArgumentsHolder(value, null);
+				}
+
+				static ConvertArgumentsHolder of(Object value, List<String> unmapped) {
+					return new ConvertArgumentsHolder(value, unmapped);
 				}
 			}
 		}
@@ -359,34 +429,34 @@ public interface CommandParser {
 				this.args = args;
 			}
 			List<List<String>> visit() {
-				List<List<String>> results = new ArrayList<>();
-
-				List<String> splice = null;
-				for (int i = 0; i < args.length; i++) {
-					if (splice == null) {
-						splice = new ArrayList<>();
-					}
-					String arg = args[i];
-					boolean isOption = arg.startsWith("-");
-					if (isOption) {
-						if (splice.isEmpty()) {
-							splice.add(arg);
-						}
-						else {
-							results.add(splice);
-							splice = null;
-							splice = new ArrayList<>();
-							splice.add(arg);
-						}
-					}
-					else {
-						splice.add(arg);
-					}
-				}
-				if (splice != null && !splice.isEmpty()) {
-					results.add(splice);
-				}
-				return results;
+				return Utils.split(args, t -> t.startsWith("-"));
+				// List<List<String>> results = new ArrayList<>();
+				// List<String> splice = null;
+				// for (int i = 0; i < args.length; i++) {
+				// 	if (splice == null) {
+				// 		splice = new ArrayList<>();
+				// 	}
+				// 	String arg = args[i];
+				// 	boolean isOption = arg.startsWith("-");
+				// 	if (isOption) {
+				// 		if (splice.isEmpty()) {
+				// 			splice.add(arg);
+				// 		}
+				// 		else {
+				// 			results.add(splice);
+				// 			splice = null;
+				// 			splice = new ArrayList<>();
+				// 			splice.add(arg);
+				// 		}
+				// 	}
+				// 	else {
+				// 		splice.add(arg);
+				// 	}
+				// }
+				// if (splice != null && !splice.isEmpty()) {
+				// 	results.add(splice);
+				// }
+				// return results;
 			}
 		}
 	}

@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.handler.annotation.support.HeaderMethodArgumentResolver;
@@ -102,6 +104,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.withOption()
 				.longNames("arg1")
 				.description("some arg1")
+				.position(0)
 				.and()
 			.withTarget()
 				.method(pojo1, "method4")
@@ -138,6 +141,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.withOption()
 				.longNames("arg1")
 				.description("some arg1")
+				.position(0)
 				.and()
 			.withTarget()
 				.method(pojo1, "method4")
@@ -215,14 +219,17 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.withOption()
 				.longNames("arg1")
 				.description("some arg1")
+				.position(0)
 				.and()
 			.withOption()
 				.longNames("arg2")
 				.description("some arg2")
+				.position(1)
 				.and()
 			.withOption()
 				.longNames("arg3")
 				.description("some arg3")
+				.position(2)
 				.and()
 			.withTarget()
 				.method(pojo1, "method6")
@@ -230,6 +237,44 @@ public class CommandExecutionTests extends AbstractCommandTests {
 			.build();
 
 		execution.evaluate(r1, new String[]{"myarg1value", "myarg2value", "myarg3value"});
+		assertThat(pojo1.method6Count).isEqualTo(1);
+		assertThat(pojo1.method6Arg1).isEqualTo("myarg1value");
+		assertThat(pojo1.method6Arg2).isEqualTo("myarg2value");
+		assertThat(pojo1.method6Arg3).isEqualTo("myarg3value");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"myarg1value --arg2 myarg2value --arg3 myarg3value",
+		"--arg1 myarg1value myarg2value --arg3 myarg3value",
+		"--arg1 myarg1value --arg2 myarg2value myarg3value"
+	})
+	public void testMethodMultiplePositionalStringArgsMixed(String arg) {
+		CommandRegistration r1 = CommandRegistration.builder()
+			.command("command1")
+			.help("help")
+			.withOption()
+				.longNames("arg1")
+				.description("some arg1")
+				.position(0)
+				.and()
+			.withOption()
+				.longNames("arg2")
+				.description("some arg2")
+				.position(1)
+				.and()
+			.withOption()
+				.longNames("arg3")
+				.description("some arg3")
+				.position(2)
+				.and()
+			.withTarget()
+				.method(pojo1, "method6")
+				.and()
+			.build();
+		String[] args = arg.split(" ");
+		// execution.evaluate(r1, new String[]{"myarg1value", "--arg2", "myarg2value", "--arg3", "myarg3value"});
+		execution.evaluate(r1, args);
 		assertThat(pojo1.method6Count).isEqualTo(1);
 		assertThat(pojo1.method6Arg1).isEqualTo("myarg1value");
 		assertThat(pojo1.method6Arg2).isEqualTo("myarg2value");

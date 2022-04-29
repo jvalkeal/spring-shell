@@ -135,7 +135,11 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 							Class<?> parameterType = mp.getParameterType();
 							if (longName != null) {
 								log.debug("Using mp='{}' longName='{}' parameterType='{}'", mp, longName, parameterType);
-								builder.withOption().longNames(longName).type(parameterType).required();
+								builder.withOption()
+									.longNames(longName)
+									.type(parameterType)
+									.required()
+									.position(mp.getParameterIndex());
 							}
 						}
 					}
