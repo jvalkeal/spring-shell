@@ -18,10 +18,9 @@ package org.springframework.shell.samples;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.command.CommandRegistration;
-import org.springframework.shell.standard.AbstractShellComponent;
 
 @Configuration
-public class FunctionCommands extends AbstractShellComponent {
+public class FunctionCommands {
 
 	@Bean
 	public CommandRegistration commandRegistration1() {
