@@ -42,7 +42,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.invocation.MethodArgumentResolutionException;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.shell.ParameterValidationException;
 import org.springframework.shell.Utils;
 import org.springframework.util.Assert;
