@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2021-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,29 @@
  */
 package org.springframework.shell.boot;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.shell.CommandRegistry;
-import org.springframework.shell.ConfigurableCommandRegistry;
 import org.springframework.shell.MethodTargetRegistrar;
-import org.springframework.shell.context.ShellContext;
+import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandCatalog.CommandResolver;
 
 @Configuration(proxyBeanMethods = false)
-public class CommandRegistryAutoConfiguration {
+public class CommandCatalogAutoConfiguration {
 
 	@Bean
-	public CommandRegistry commandRegistry(
-			ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars,
-			ShellContext shellContext) {
-		ConfigurableCommandRegistry registry = new ConfigurableCommandRegistry(shellContext);
+	@ConditionalOnMissingBean(CommandCatalog.class)
+	public CommandCatalog commandCatalog(ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars,
+			ObjectProvider<CommandResolver> commandResolvers) {
+		List<CommandResolver> resolvers = commandResolvers.orderedStream().collect(Collectors.toList());
+		CommandCatalog catalog = CommandCatalog.of(resolvers, null);
 		methodTargetRegistrars.orderedStream().forEach(resolver -> {
-			resolver.register(registry);
+			resolver.register(catalog);
 		});
-		return registry;
+		return catalog;
 	}
 }
