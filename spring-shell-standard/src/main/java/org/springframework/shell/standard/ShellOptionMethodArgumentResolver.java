@@ -17,11 +17,7 @@ package org.springframework.shell.standard;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
@@ -29,28 +25,21 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandlingException;
-import org.springframework.messaging.support.NativeMessageHeaderAccessor;
+import org.springframework.shell.support.AbstractArgumentMethodArgumentResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Resolver for {@link ShellOption @ShellOption} arguments. ShellOptions are resolved from
- * either the top-level header map or the nested
- * {@link NativeMessageHeaderAccessor native} header map.
+ * Resolver for {@link ShellOption @ShellOption} arguments.
  *
  * @author Janne Valkealahti
  */
-public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodArgumentResolver {
+public class ShellOptionMethodArgumentResolver extends AbstractArgumentMethodArgumentResolver {
 
-	private static final Logger logger = LoggerFactory.getLogger(ShellOptionMethodArgumentResolver.class);
-
-
-	public ShellOptionMethodArgumentResolver(
-			ConversionService conversionService, @Nullable ConfigurableBeanFactory beanFactory) {
-
+	public ShellOptionMethodArgumentResolver(ConversionService conversionService,
+			@Nullable ConfigurableBeanFactory beanFactory) {
 		super(conversionService, beanFactory);
 	}
-
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -69,50 +58,19 @@ public class ShellOptionMethodArgumentResolver extends AbstractNamedValueMethodA
 	@Nullable
 	protected Object resolveArgumentInternal(MethodParameter parameter, Message<?> message, List<String> names)
 			throws Exception {
-		Object headerValue = null;
-		Object nativeHeaderValue = null;
 		for (String name : names) {
-			headerValue = message.getHeaders().get("springShellArgument." + name);
-			if (headerValue != null) {
-				nativeHeaderValue = getNativeHeaderValue(message, "springShellArgument." + name);
-				break;
+			if (message.getHeaders().containsKey(ARGUMENT_PREFIX + name)) {
+				return message.getHeaders().get(ARGUMENT_PREFIX + name);
 			}
 		}
-
-		if (headerValue != null && nativeHeaderValue != null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("A value was found for '" + names + "', in both the top level header map " +
-						"and also in the nested map for native headers. Using the value from top level map. " +
-						"Use 'nativeHeader.myHeader' to resolve the native header.");
-			}
-		}
-
-		return (headerValue != null ? headerValue : nativeHeaderValue);
-	}
-
-	@Nullable
-	private Object getNativeHeaderValue(Message<?> message, String name) {
-		Map<String, List<String>> nativeHeaders = getNativeHeaders(message);
-		if (name.startsWith("nativeHeaders.")) {
-			name = name.substring("nativeHeaders.".length());
-		}
-		if (nativeHeaders == null || !nativeHeaders.containsKey(name)) {
-			return null;
-		}
-		List<?> nativeHeaderValues = nativeHeaders.get(name);
-		return (nativeHeaderValues.size() == 1 ? nativeHeaderValues.get(0) : nativeHeaderValues);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	private Map<String, List<String>> getNativeHeaders(Message<?> message) {
-		return (Map<String, List<String>>) message.getHeaders().get(NativeMessageHeaderAccessor.NATIVE_HEADERS);
+		return null;
 	}
 
 	@Override
 	protected void handleMissingValue(List<String> headerName, MethodParameter parameter, Message<?> message) {
-		throw new MessageHandlingException(message, "Missing header '" + headerName +
-				"' for method parameter type [" + parameter.getParameterType() + "]");
+		throw new MessageHandlingException(message,
+				"Missing headers '" + StringUtils.collectionToCommaDelimitedString(headerName)
+						+ "' for method parameter type [" + parameter.getParameterType() + "]");
 	}
 
 	private static final class HeaderNamedValueInfo extends NamedValueInfo {

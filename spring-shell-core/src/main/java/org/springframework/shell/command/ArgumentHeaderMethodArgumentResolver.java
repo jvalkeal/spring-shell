@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.command;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
@@ -22,7 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.support.AbstractNamedValueMethodArgumentResolver;
+import org.springframework.shell.support.AbstractArgumentMethodArgumentResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -30,16 +33,12 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class ArgumentHeaderMethodArgumentResolver extends AbstractNamedValueMethodArgumentResolver {
+public class ArgumentHeaderMethodArgumentResolver extends AbstractArgumentMethodArgumentResolver {
 
-	public static final String PREFIX = "springShellArgument.";
-
-	public ArgumentHeaderMethodArgumentResolver(
-			ConversionService conversionService, @Nullable ConfigurableBeanFactory beanFactory) {
-
+	public ArgumentHeaderMethodArgumentResolver(ConversionService conversionService,
+			@Nullable ConfigurableBeanFactory beanFactory) {
 		super(conversionService, beanFactory);
 	}
-
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -55,22 +54,26 @@ public class ArgumentHeaderMethodArgumentResolver extends AbstractNamedValueMeth
 
 	@Override
 	@Nullable
-	protected Object resolveArgumentInternal(MethodParameter parameter, Message<?> message, String name)
+	protected Object resolveArgumentInternal(MethodParameter parameter, Message<?> message, List<String> names)
 			throws Exception {
-		return message.getHeaders().get(PREFIX + name);
+		if (names.size() == 1) {
+			return message.getHeaders().get(ARGUMENT_PREFIX + names.get(0));
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
-	protected void handleMissingValue(String headerName, MethodParameter parameter, Message<?> message) {
+	protected void handleMissingValue(List<String> headerName, MethodParameter parameter, Message<?> message) {
 		throw new MessageHandlingException(message, "Missing header '" + headerName +
 				"' for method parameter type [" + parameter.getParameterType() + "]");
 	}
 
-
 	private static final class HeaderNamedValueInfo extends NamedValueInfo {
 
 		private HeaderNamedValueInfo(Header annotation) {
-			super(annotation.name(), annotation.required(), annotation.defaultValue());
+			super(Arrays.asList(annotation.name()), annotation.required(), annotation.defaultValue());
 		}
 	}
 }

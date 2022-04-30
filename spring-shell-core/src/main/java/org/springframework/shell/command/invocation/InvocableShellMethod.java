@@ -27,8 +27,8 @@ import java.util.stream.IntStream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.BridgeMethodResolver;
@@ -67,7 +67,7 @@ import org.springframework.util.StringUtils;
 public class InvocableShellMethod {
 
 	/** Public for wrapping with fallback logger. */
-	public static final Log defaultLogger = LogFactory.getLog(InvocableShellMethod.class);
+	public static final Logger log = LoggerFactory.getLogger(InvocableShellMethod.class);
 
 	private static final Object[] EMPTY_ARGS = new Object[0];
 
@@ -86,8 +86,6 @@ public class InvocableShellMethod {
 
 	@Nullable
 	private InvocableShellMethod resolvedFromHandlerMethod;
-
-	protected Log logger = defaultLogger;
 
 	private ShellMethodArgumentResolverComposite resolvers = new ShellMethodArgumentResolverComposite();
 
@@ -215,9 +213,9 @@ public class InvocableShellMethod {
 	 */
 	@Nullable
 	public Object invoke(Message<?> message, Object... providedArgs) throws Exception {
-		Object[] args = getMethodArgumentValues2(message, providedArgs);
-		if (logger.isTraceEnabled()) {
-			logger.trace("Arguments: " + Arrays.toString(args));
+		Object[] args = getMethodArgumentValues(message, providedArgs);
+		if (log.isTraceEnabled()) {
+			log.trace("Arguments: " + Arrays.toString(args));
 		}
 		return doInvoke(args);
 	}
@@ -226,44 +224,8 @@ public class InvocableShellMethod {
 	 * Get the method argument values for the current message, checking the provided
 	 * argument values and falling back to the configured argument resolvers.
 	 * <p>The resulting array will be passed into {@link #doInvoke}.
-	 * @since 5.1.2
 	 */
 	protected Object[] getMethodArgumentValues(Message<?> message, Object... providedArgs) throws Exception {
-		MethodParameter[] parameters = getMethodParameters();
-		if (ObjectUtils.isEmpty(parameters)) {
-			return EMPTY_ARGS;
-		}
-
-		Object[] args = new Object[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			MethodParameter parameter = parameters[i];
-			parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
-			args[i] = findProvidedArgument(parameter, providedArgs);
-			if (args[i] != null) {
-				continue;
-			}
-			if (!this.resolvers.supportsParameter(parameter)) {
-				throw new MethodArgumentResolutionException(
-						message, parameter, formatArgumentError(parameter, "No suitable resolver"));
-			}
-			try {
-				args[i] = this.resolvers.resolveArgument(parameter, message);
-			}
-			catch (Exception ex) {
-				// Leave stack trace for later, exception may actually be resolved and handled...
-				if (logger.isDebugEnabled()) {
-					String exMsg = ex.getMessage();
-					if (exMsg != null && !exMsg.contains(parameter.getExecutable().toGenericString())) {
-						logger.debug(formatArgumentError(parameter, exMsg));
-					}
-				}
-				throw ex;
-			}
-		}
-		return args;
-	}
-
-	protected Object[] getMethodArgumentValues2(Message<?> message, Object... providedArgs) throws Exception {
 		ConversionService conversionService = new DefaultConversionService();
 		MethodParameter[] parameters = getMethodParameters();
 		if (ObjectUtils.isEmpty(parameters)) {
@@ -315,7 +277,6 @@ public class InvocableShellMethod {
 			this.arg = arg;
 		}
 	}
-
 
 	/**
 	 * Invoke the handler method with the given argument values.
@@ -369,24 +330,6 @@ public class InvocableShellMethod {
 			result[i] = new HandlerMethodParameter(i);
 		}
 		return result;
-	}
-
-
-	/**
-	 * Set an alternative logger to use than the one based on the class name.
-	 * @param logger the logger to use
-	 * @since 5.1
-	 */
-	public void setLogger(Log logger) {
-		this.logger = logger;
-	}
-
-	/**
-	 * Return the currently configured Logger.
-	 * @since 5.1
-	 */
-	public Log getLogger() {
-		return logger;
 	}
 
 	/**
@@ -452,7 +395,7 @@ public class InvocableShellMethod {
 	 * Return a single annotation on the underlying method traversing its super methods
 	 * if no annotation can be found on the given method itself.
 	 * <p>Also supports <em>merged</em> composed annotations with attribute
-	 * overrides as of Spring Framework 4.3.
+	 * overrides.
 	 * @param annotationType the type of annotation to introspect the method for
 	 * @return the annotation, or {@code null} if none found
 	 * @see AnnotatedElementUtils#findMergedAnnotation
@@ -465,7 +408,6 @@ public class InvocableShellMethod {
 	/**
 	 * Return whether the parameter is declared with the given annotation type.
 	 * @param annotationType the annotation type to look for
-	 * @since 4.3
 	 * @see AnnotatedElementUtils#hasAnnotation
 	 */
 	public <A extends Annotation> boolean hasMethodAnnotation(Class<A> annotationType) {

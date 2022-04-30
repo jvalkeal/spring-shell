@@ -112,13 +112,13 @@ public interface CommandExecution {
 					results.results().stream().forEach(r -> {
 						if (r.option().getLongNames() != null) {
 							for (String n : r.option().getLongNames()) {
-								messageBuilder.setHeader(ArgumentHeaderMethodArgumentResolver.PREFIX + n, r.value());
+								messageBuilder.setHeader(ArgumentHeaderMethodArgumentResolver.ARGUMENT_PREFIX + n, r.value());
 								paramValues.put(n, r.value());
 							}
 						}
 						if (r.option().getShortNames() != null) {
 							for (Character n : r.option().getShortNames()) {
-								messageBuilder.setHeader(ArgumentHeaderMethodArgumentResolver.PREFIX + n.toString(), r.value());
+								messageBuilder.setHeader(ArgumentHeaderMethodArgumentResolver.ARGUMENT_PREFIX + n.toString(), r.value());
 							}
 						}
 					});

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.standard;
+package org.springframework.shell.support;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,9 @@ import org.springframework.util.ClassUtils;
  *
  * @author Janne Valkealahti
  */
-public abstract class AbstractNamedValueMethodArgumentResolver implements HandlerMethodArgumentResolver {
+public abstract class AbstractArgumentMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+	public static final String ARGUMENT_PREFIX = "springShellArgument.";
 
 	private final ConversionService conversionService;
 
@@ -63,7 +65,6 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 
 	private final Map<MethodParameter, NamedValueInfo> namedValueInfoCache = new ConcurrentHashMap<>(256);
 
-
 	/**
 	 * Constructor with a {@link ConversionService} and a {@link BeanFactory}.
 	 * @param conversionService conversion service for converting String values
@@ -71,7 +72,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	 * @param beanFactory a bean factory for resolving {@code ${...}}
 	 * placeholders and {@code #{...}} SpEL expressions in default values
 	 */
-	protected AbstractNamedValueMethodArgumentResolver(ConversionService conversionService,
+	protected AbstractArgumentMethodArgumentResolver(ConversionService conversionService,
 			@Nullable ConfigurableBeanFactory beanFactory) {
 
 		// Fallback on shared ConversionService for now for historic reasons.
@@ -84,7 +85,6 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 		this.configurableBeanFactory = beanFactory;
 		this.expressionContext = (beanFactory != null ? new BeanExpressionContext(beanFactory, null) : null);
 	}
-
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
@@ -230,7 +230,6 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	protected void handleResolvedValue(
 			@Nullable Object arg, List<String> name, MethodParameter parameter, Message<?> message) {
 	}
-
 
 	/**
 	 * Represents a named value declaration.
