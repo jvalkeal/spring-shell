@@ -81,6 +81,20 @@ public interface CommandCatalog {
 	}
 
 	/**
+	 * Interface to customize a {@link CommandCatalog}.
+	 */
+	@FunctionalInterface
+	interface CommandCatalogCustomizer {
+
+		/**
+		 * Customize a command catalog.
+		 *
+		 * @param commandCatalog a command catalog
+		 */
+		void customize(CommandCatalog commandCatalog);
+	}
+
+	/**
 	 * Gets an instance of a default {@link CommandCatalog}.
 	 *
 	 * @return default command catalog

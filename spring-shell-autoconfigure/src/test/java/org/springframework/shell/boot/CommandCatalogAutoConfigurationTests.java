@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.CommandCatalog.CommandResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,6 +59,15 @@ public class CommandCatalogAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void registerCommandRegistration() {
+		this.contextRunner.withUserConfiguration(CustomCommandRegistrationConfiguration.class)
+				.run((context) -> {
+					CommandCatalog commandCatalog = context.getBean(CommandCatalog.class);
+					assertThat(commandCatalog.getRegistrations().get("customcommand")).isNotNull();
+				});
+	}
+
 	@Configuration
 	static class CustomCommandResolverConfiguration {
 
@@ -75,6 +85,22 @@ public class CommandCatalogAutoConfigurationTests {
 		@Bean
 		CommandCatalog customCommandCatalog() {
 			return testCommandCatalog;
+		}
+	}
+
+	@Configuration
+	static class CustomCommandRegistrationConfiguration {
+
+		@Bean
+		CommandRegistration commandRegistration() {
+			return CommandRegistration.builder()
+				.command("customcommand")
+				.withTarget()
+					.function(ctx -> {
+						return null;
+					})
+					.and()
+				.build();
 		}
 	}
 }

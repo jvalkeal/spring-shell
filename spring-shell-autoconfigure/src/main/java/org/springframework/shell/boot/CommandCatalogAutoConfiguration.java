@@ -24,6 +24,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.CommandCatalog.CommandCatalogCustomizer;
 import org.springframework.shell.command.CommandCatalog.CommandResolver;
 
 @Configuration(proxyBeanMethods = false)
@@ -32,12 +34,25 @@ public class CommandCatalogAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(CommandCatalog.class)
 	public CommandCatalog commandCatalog(ObjectProvider<MethodTargetRegistrar> methodTargetRegistrars,
-			ObjectProvider<CommandResolver> commandResolvers) {
+			ObjectProvider<CommandResolver> commandResolvers,
+			ObjectProvider<CommandCatalogCustomizer> commandCatalogCustomizers) {
 		List<CommandResolver> resolvers = commandResolvers.orderedStream().collect(Collectors.toList());
 		CommandCatalog catalog = CommandCatalog.of(resolvers, null);
 		methodTargetRegistrars.orderedStream().forEach(resolver -> {
 			resolver.register(catalog);
 		});
+		commandCatalogCustomizers.orderedStream().forEach(customizer -> {
+			customizer.customize(catalog);
+		});
 		return catalog;
+	}
+
+	@Bean
+	public CommandCatalogCustomizer defaultCommandCatalogCustomizer(ObjectProvider<CommandRegistration> commandRegistrations) {
+		return catalog -> {
+			commandRegistrations.orderedStream().forEach(registration -> {
+				catalog.register(registration);
+			});
+		};
 	}
 }

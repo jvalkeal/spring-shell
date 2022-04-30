@@ -15,7 +15,9 @@
  */
 package org.springframework.shell.command;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.shell.command.CommandParser.Result;
 import org.springframework.shell.command.CommandParser.Results;
@@ -110,7 +112,14 @@ public interface CommandContext {
 
 		private Optional<Result> find(String name) {
 			return results.results().stream()
-				.filter(r -> ObjectUtils.containsElement(r.option().getLongNames(), name))
+				.filter(r -> {
+					Stream<String> l = Arrays.asList(r.option().getLongNames()).stream();
+					Stream<String> s = Arrays.asList(r.option().getShortNames()).stream().map(n -> Character.toString(n));
+					return Stream.concat(l, s)
+						.filter(o -> ObjectUtils.nullSafeEquals(o, name))
+						.findFirst()
+						.isPresent();
+				})
 				.findFirst();
 		}
 	}

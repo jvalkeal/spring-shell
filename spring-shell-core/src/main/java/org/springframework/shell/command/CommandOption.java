@@ -131,8 +131,8 @@ public interface CommandOption {
 
 		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
 				ResolvableType type, boolean required, String defaultValue, Integer position) {
-			this.longNames = longNames;
-			this.shortNames = shortNames;
+			this.longNames = longNames != null ? longNames : new String[0];
+			this.shortNames = shortNames != null ? shortNames : new Character[0];
 			this.description = description;
 			this.type = type;
 			this.required = required;
