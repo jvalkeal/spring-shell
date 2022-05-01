@@ -2,7 +2,8 @@
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
 In this section we go through an actual command registration and leave command options
-and execution later in a documentation.
+and execution later in a documentation. More detailed info can be found from
+<<appendix-tech-intro-registration>>.
 
 There are two different ways to define a command. Firstly through an annotation model and
 secondly through programmatic model. Annotation model if where you define your methods
