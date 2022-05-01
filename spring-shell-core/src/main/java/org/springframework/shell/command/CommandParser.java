@@ -39,7 +39,7 @@ public interface CommandParser {
 	/**
 	 * Result of a parsing {@link CommandOption} with an argument.
 	 */
-	interface Result {
+	interface CommandParserResult {
 
 		/**
 		 * Gets the {@link CommandOption}.
@@ -56,28 +56,28 @@ public interface CommandParser {
 		Object value();
 
 		/**
-		 * Gets an instance of a default {@link Result}.
+		 * Gets an instance of a default {@link CommandParserResult}.
 		 *
 		 * @param option the command option
 		 * @param value the value
 		 * @return a result
 		 */
-		static Result of(CommandOption option, Object value) {
-			return new DefaultResult(option, value);
+		static CommandParserResult of(CommandOption option, Object value) {
+			return new DefaultCommandParserResult(option, value);
 		}
 	}
 
 	/**
-	 * Results of a {@link CommandParser}. Basically contains a list of {@link Result}s.
+	 * Results of a {@link CommandParser}. Basically contains a list of {@link CommandParserResult}s.
 	 */
-	interface Results {
+	interface CommandParserResults {
 
 		/**
 		 * Gets the results.
 		 *
 		 * @return the results
 		 */
-		List<Result> results();
+		List<CommandParserResult> results();
 
 		/**
 		 * Gets the unmapped positional arguments.
@@ -94,15 +94,15 @@ public interface CommandParser {
 		List<CommandParserException> errors();
 
 		/**
-		 * Gets an instance of a default {@link Results}.
+		 * Gets an instance of a default {@link CommandParserResults}.
 		 *
 		 * @param results the results
 		 * @param positional the list of positional arguments
 		 * @param errors the parsing errors
 		 * @return a new instance of results
 		 */
-		static Results of(List<Result> results, List<String> positional, List<CommandParserException> errors) {
-			return new DefaultResults(results, positional, errors);
+		static CommandParserResults of(List<CommandParserResult> results, List<String> positional, List<CommandParserException> errors) {
+			return new DefaultCommandParserResults(results, positional, errors);
 		}
 	}
 
@@ -116,7 +116,7 @@ public interface CommandParser {
 	 * @param args the arguments
 	 * @return parsed results
 	 */
-	Results parse(List<CommandOption> options, String[] args);
+	CommandParserResults parse(List<CommandOption> options, String[] args);
 
 	/**
 	 * Gets an instance of a default command parser.
@@ -128,22 +128,22 @@ public interface CommandParser {
 	}
 
 	/**
-	 * Default implementation of a {@link Results}.
+	 * Default implementation of a {@link CommandParserResults}.
 	 */
-	static class DefaultResults implements Results {
+	static class DefaultCommandParserResults implements CommandParserResults {
 
-		private List<Result> results;
+		private List<CommandParserResult> results;
 		private List<String> positional;
 		private List<CommandParserException> errors;
 
-		DefaultResults(List<Result> results, List<String> positional, List<CommandParserException> errors) {
+		DefaultCommandParserResults(List<CommandParserResult> results, List<String> positional, List<CommandParserException> errors) {
 			this.results = results;
 			this.positional = positional;
 			this.errors = errors;
 		}
 
 		@Override
-		public List<Result> results() {
+		public List<CommandParserResult> results() {
 			return results;
 		}
 
@@ -159,14 +159,14 @@ public interface CommandParser {
 	}
 
 	/**
-	 * Default implementation of a {@link Result}.
+	 * Default implementation of a {@link CommandParserResult}.
 	 */
-	static class DefaultResult implements Result {
+	static class DefaultCommandParserResult implements CommandParserResult {
 
 		private CommandOption option;
 		private Object value;
 
-		DefaultResult(CommandOption option, Object value) {
+		DefaultCommandParserResult(CommandOption option, Object value) {
 			this.option = option;
 			this.value = value;
 		}
@@ -188,7 +188,7 @@ public interface CommandParser {
 	static class DefaultCommandParser implements CommandParser {
 
 		@Override
-		public Results parse(List<CommandOption> options, String[] args) {
+		public CommandParserResults parse(List<CommandOption> options, String[] args) {
 			List<CommandOption> requiredOptions = options.stream()
 				.filter(o -> o.isRequired())
 				.collect(Collectors.toList());
@@ -198,12 +198,12 @@ public interface CommandParser {
 			Parser parser = new Parser();
 			ParserResults parserResults = parser.visit(lexerResults, options);
 
-			List<Result> results = new ArrayList<>();
+			List<CommandParserResult> results = new ArrayList<>();
 			List<String> positional = new ArrayList<>();
 			List<CommandParserException> errors = new ArrayList<>();
 			parserResults.results.stream().forEach(pr -> {
 				if (pr.option != null) {
-					results.add(new DefaultResult(pr.option, pr.value));
+					results.add(new DefaultCommandParserResult(pr.option, pr.value));
 					requiredOptions.remove(pr.option);
 				}
 				else {
@@ -223,7 +223,7 @@ public interface CommandParser {
 					CommandOption mapped = collect.get(i);
 					if (mapped != null) {
 						// results.add(new DefaultResult(mapped, pr.args));
-						results.add(new DefaultResult(mapped, pr.args.get(0)));
+						results.add(new DefaultCommandParserResult(mapped, pr.args.get(0)));
 						requiredOptions.remove(mapped);
 					}
 				}
@@ -237,7 +237,7 @@ public interface CommandParser {
 						.of(String.format("Missing option, longnames='%s', shortnames='%s'", ln, sn), o));
 			});
 
-			return new DefaultResults(results, positional, errors);
+			return new DefaultCommandParserResults(results, positional, errors);
 		}
 
 		private static class ParserResult {

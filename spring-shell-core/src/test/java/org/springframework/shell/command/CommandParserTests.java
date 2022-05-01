@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
-import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.shell.command.CommandParser.CommandParserResults;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +38,7 @@ public class CommandParserTests extends AbstractCommandTests {
 
 	@Test
 	public void testEmptyOptionsAndArgs() {
-		Results results = parser.parse(Collections.emptyList(), new String[0]);
+		CommandParserResults results = parser.parse(Collections.emptyList(), new String[0]);
 		assertThat(results.results()).hasSize(0);
 	}
 
@@ -48,7 +48,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = longOption("arg2");
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"--arg1", "foo"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo");
@@ -60,7 +60,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = shortOption('b');
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"-a", "foo"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo");
@@ -72,7 +72,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = longOption("arg2");
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"--arg1", "foo", "--arg2", "bar"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(2);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo");
@@ -86,7 +86,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = shortOption('v', type);
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"-v"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo(true);
@@ -98,7 +98,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = shortOption('v', type);
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"-v", "false"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo(false);
@@ -109,7 +109,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1", true);
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.errors()).hasSize(1);
 	}
 
@@ -118,7 +118,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1");
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"--arg1", "foo bar"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo bar");
@@ -130,7 +130,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = longOption("arg2");
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"--arg1", "foo bar", "--arg2", "hi"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(2);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("foo bar");
@@ -141,7 +141,7 @@ public class CommandParserTests extends AbstractCommandTests {
 	@Test
 	public void testNonMappedArgs() {
 		String[] args = new String[]{"arg1", "arg2"};
-		Results results = parser.parse(Collections.emptyList(), args);
+		CommandParserResults results = parser.parse(Collections.emptyList(), args);
 		assertThat(results.results()).hasSize(0);
 		assertThat(results.positional()).containsExactly("arg1", "arg2");
 	}
@@ -151,7 +151,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1");
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"foo", "--arg1", "value"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("value");
@@ -163,7 +163,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1");
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"--arg1", "value", "foo"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo("value");
@@ -178,7 +178,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
 		String[] args = new String[]{"-abc"};
 
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(3);
 		assertThat(results.results().get(0).option()).isSameAs(optionA);
 		assertThat(results.results().get(1).option()).isSameAs(optionB);
@@ -196,7 +196,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
 		String[] args = new String[]{"-abc"};
 
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(3);
 		assertThat(results.results().get(0).option()).isSameAs(optionA);
 		assertThat(results.results().get(1).option()).isSameAs(optionB);
@@ -214,7 +214,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
 		String[] args = new String[]{"-abc", "false"};
 
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(3);
 		assertThat(results.results().get(0).option()).isSameAs(optionA);
 		assertThat(results.results().get(1).option()).isSameAs(optionB);
@@ -232,7 +232,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		List<CommandOption> options = Arrays.asList(optionA, optionB, optionC);
 		String[] args = new String[]{"-ac", "-b", "false"};
 
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(3);
 		assertThat(results.results().get(0).option()).isSameAs(optionA);
 		assertThat(results.results().get(1).option()).isSameAs(optionC);
@@ -247,7 +247,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option1 = longOption("arg1", ResolvableType.forType(int[].class));
 		List<CommandOption> options = Arrays.asList(option1);
 		String[] args = new String[]{"--arg1", "1", "2"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(1);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(0).value()).isEqualTo(new String[] { "1", "2" });
@@ -259,7 +259,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = longOption("arg2", false, 1);
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"--arg1", "1", "2"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(2);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(1).option()).isSameAs(option2);
@@ -273,7 +273,7 @@ public class CommandParserTests extends AbstractCommandTests {
 		CommandOption option2 = longOption("arg2", false, 1);
 		List<CommandOption> options = Arrays.asList(option1, option2);
 		String[] args = new String[]{"1", "2"};
-		Results results = parser.parse(options, args);
+		CommandParserResults results = parser.parse(options, args);
 		assertThat(results.results()).hasSize(2);
 		assertThat(results.results().get(0).option()).isSameAs(option1);
 		assertThat(results.results().get(1).option()).isSameAs(option2);

@@ -29,7 +29,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.CommandParser.CommandParserException;
-import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.shell.command.CommandParser.CommandParserResults;
 import org.springframework.shell.command.CommandRegistration.TargetInfo;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
@@ -89,7 +89,7 @@ public interface CommandExecution {
 
 			List<CommandOption> options = registration.getOptions();
 			CommandParser parser = CommandParser.of();
-			Results results = parser.parse(options, args);
+			CommandParserResults results = parser.parse(options, args);
 
 			if (!results.errors().isEmpty()) {
 				throw new CommandParserExceptionsException("Command parser resulted errors", results.errors());

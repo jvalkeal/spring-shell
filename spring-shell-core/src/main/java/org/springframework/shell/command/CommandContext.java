@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.shell.command.CommandParser.Result;
-import org.springframework.shell.command.CommandParser.Results;
+import org.springframework.shell.command.CommandParser.CommandParserResult;
+import org.springframework.shell.command.CommandParser.CommandParserResults;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -50,7 +50,7 @@ public interface CommandContext {
 	 *
 	 * @return the command option parser results
 	 */
-	Results getParseResults();
+	CommandParserResults getParserResults();
 
 	/**
 	 * Gets an mapped option value.
@@ -68,7 +68,7 @@ public interface CommandContext {
 	 * @param results the results
 	 * @return a command context
 	 */
-	static CommandContext of(String[] args, Results results) {
+	static CommandContext of(String[] args, CommandParserResults results) {
 		return new DefaultCommandContext(args, results);
 	}
 
@@ -78,9 +78,9 @@ public interface CommandContext {
 	static class DefaultCommandContext implements CommandContext {
 
 		private String[] args;
-		private Results results;
+		private CommandParserResults results;
 
-		DefaultCommandContext(String[] args, Results results) {
+		DefaultCommandContext(String[] args, CommandParserResults results) {
 			this.args = args;
 			this.results = results;
 		}
@@ -96,21 +96,21 @@ public interface CommandContext {
 		}
 
 		@Override
-		public Results getParseResults() {
+		public CommandParserResults getParserResults() {
 			return results;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public <T> T getOptionValue(String name) {
-			Optional<Result> find = find(name);
+			Optional<CommandParserResult> find = find(name);
 			if (find.isPresent()) {
 				return (T) find.get().value();
 			}
 			return null;
 		}
 
-		private Optional<Result> find(String name) {
+		private Optional<CommandParserResult> find(String name) {
 			return results.results().stream()
 				.filter(r -> {
 					Stream<String> l = Arrays.asList(r.option().getLongNames()).stream();
