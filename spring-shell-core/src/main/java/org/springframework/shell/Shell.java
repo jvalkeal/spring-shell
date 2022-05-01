@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.jline.terminal.Terminal;
 import org.jline.utils.Signals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,7 @@ public class Shell {
 	 */
 	public static final Object NO_INPUT = new Object();
 
+	private final Terminal terminal;
 	private final CommandCatalog commandRegistry;
 	protected List<CompletionResolver> completionResolvers = new ArrayList<>();
 	private CommandExecutionHandlerMethodArgumentResolvers argumentResolvers;
@@ -69,9 +71,10 @@ public class Shell {
 
 	private Validator validator = Utils.defaultValidator();
 
-	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry) {
+	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal) {
 		this.resultHandlerService = resultHandlerService;
 		this.commandRegistry = commandRegistry;
+		this.terminal = terminal;
 	}
 
 	@Autowired
@@ -158,7 +161,7 @@ public class Shell {
 				Object sh = Signals.register("INT", () -> commandThread.interrupt());
 				try {
 					CommandExecution execution = CommandExecution
-							.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator);
+							.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal);
 					return execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
 				}
 				catch (UndeclaredThrowableException e) {

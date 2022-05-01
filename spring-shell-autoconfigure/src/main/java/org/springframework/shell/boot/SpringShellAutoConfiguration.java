@@ -18,6 +18,8 @@ package org.springframework.shell.boot;
 
 import java.util.Set;
 
+import org.jline.terminal.Terminal;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
@@ -61,7 +63,7 @@ public class SpringShellAutoConfiguration {
 	}
 
 	@Bean
-	public Shell shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry) {
-		return new Shell(resultHandlerService, commandRegistry);
+	public Shell shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal) {
+		return new Shell(resultHandlerService, commandRegistry, terminal);
 	}
 }

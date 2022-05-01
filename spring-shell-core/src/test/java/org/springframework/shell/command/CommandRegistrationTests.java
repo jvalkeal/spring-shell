@@ -107,6 +107,21 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	}
 
 	@Test
+	public void testConsumerRegistration() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.withTarget()
+				.consumer(ctx -> {})
+				.and()
+			.build();
+		assertThat(registration.getTarget().getTargetType()).isEqualTo(TargetType.CONSUMER);
+		assertThat(registration.getTarget().getFunction()).isNull();
+		assertThat(registration.getTarget().getConsumer()).isNotNull();
+		assertThat(registration.getTarget().getBean()).isNull();
+		assertThat(registration.getTarget().getMethod()).isNull();
+	}
+
+	@Test
 	public void testMethodRegistration() {
 		CommandRegistration registration = CommandRegistration.builder()
 			.command("command1")

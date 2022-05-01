@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.validation.Validator;
 
+import org.jline.terminal.Terminal;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
@@ -58,7 +60,7 @@ public interface CommandExecution {
 	 * @return default command execution
 	 */
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers) {
-		return new DefaultCommandExecution(resolvers, null);
+		return new DefaultCommandExecution(resolvers, null, null);
 	}
 
 	/**
@@ -66,10 +68,12 @@ public interface CommandExecution {
 	 *
 	 * @param resolvers the handler method argument resolvers
 	 * @param validator the validator
+	 * @param terminal the terminal
 	 * @return default command execution
 	 */
-	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator) {
-		return new DefaultCommandExecution(resolvers, validator);
+	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
+			Terminal terminal) {
+		return new DefaultCommandExecution(resolvers, validator, terminal);
 	}
 
 	/**
@@ -79,10 +83,13 @@ public interface CommandExecution {
 
 		private List<? extends HandlerMethodArgumentResolver> resolvers;
 		private Validator validator;
+		private Terminal terminal;
 
-		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator) {
+		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
+				Terminal terminal) {
 			this.resolvers = resolvers;
 			this.validator = validator;
+			this.terminal = terminal;
 		}
 
 		public Object evaluate(CommandRegistration registration, String[] args) {
@@ -95,7 +102,7 @@ public interface CommandExecution {
 				throw new CommandParserExceptionsException("Command parser resulted errors", results.errors());
 			}
 
-			CommandContext ctx = CommandContext.of(args, results);
+			CommandContext ctx = CommandContext.of(args, results, terminal);
 
 			Object res = null;
 
@@ -104,6 +111,9 @@ public interface CommandExecution {
 			// pick the target to execute
 			if (targetInfo.getTargetType() == TargetType.FUNCTION) {
 				res = targetInfo.getFunction().apply(ctx);
+			}
+			else if (targetInfo.getTargetType() == TargetType.CONSUMER) {
+				targetInfo.getConsumer().accept(ctx);
 			}
 			else if (targetInfo.getTargetType() == TargetType.METHOD) {
 				try {

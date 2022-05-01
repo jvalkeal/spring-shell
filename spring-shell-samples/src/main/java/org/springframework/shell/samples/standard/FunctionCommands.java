@@ -68,4 +68,23 @@ public class FunctionCommands {
 				.and()
 			.build();
 	}
+
+	@Bean
+	public CommandRegistration commandRegistration3() {
+		return CommandRegistration.builder()
+			.command("function", "command3")
+			.help("function sample")
+			.group("Function Commands")
+			.withTarget()
+				.consumer(ctx -> {
+					String arg1 = ctx.getOptionValue("arg1");
+					ctx.getTerminal().writer()
+						.println(String.format("hi, arg1 value is '%s'", arg1));
+				})
+				.and()
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.build();
+	}
 }

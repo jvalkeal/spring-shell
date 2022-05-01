@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.jline.terminal.Terminal;
+
 import org.springframework.shell.command.CommandParser.CommandParserResult;
 import org.springframework.shell.command.CommandParser.CommandParserResults;
 import org.springframework.util.ObjectUtils;
@@ -62,14 +64,22 @@ public interface CommandContext {
 	<T> T getOptionValue(String name);
 
 	/**
+	 * Gets a terminal.
+	 *
+	 * @return a terminal
+	 */
+	Terminal getTerminal();
+
+	/**
 	 * Gets an instance of a default {@link CommandContext}.
 	 *
 	 * @param args the arguments
 	 * @param results the results
+	 * @param terminal the terminal
 	 * @return a command context
 	 */
-	static CommandContext of(String[] args, CommandParserResults results) {
-		return new DefaultCommandContext(args, results);
+	static CommandContext of(String[] args, CommandParserResults results, Terminal terminal) {
+		return new DefaultCommandContext(args, results, terminal);
 	}
 
 	/**
@@ -79,10 +89,12 @@ public interface CommandContext {
 
 		private String[] args;
 		private CommandParserResults results;
+		private Terminal terminal;
 
-		DefaultCommandContext(String[] args, CommandParserResults results) {
+		DefaultCommandContext(String[] args, CommandParserResults results, Terminal terminal) {
 			this.args = args;
 			this.results = results;
+			this.terminal = terminal;
 		}
 
 		@Override
@@ -108,6 +120,11 @@ public interface CommandContext {
 				return (T) find.get().value();
 			}
 			return null;
+		}
+
+		@Override
+		public Terminal getTerminal() {
+			return terminal;
 		}
 
 		private Optional<CommandParserResult> find(String name) {

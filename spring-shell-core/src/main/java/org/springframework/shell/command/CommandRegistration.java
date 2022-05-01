@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -216,16 +217,27 @@ public interface CommandRegistration {
 		 */
 		Function<CommandContext, ?> getFunction();
 
+		/**
+		 * Get the consumer
+		 *
+		 * @return the consumer
+		 */
+		Consumer<CommandContext> getConsumer();
+
 		static TargetInfo of(Object bean, Method method) {
-			return new DefaultTargetInfo(TargetType.METHOD, bean, method, null);
+			return new DefaultTargetInfo(TargetType.METHOD, bean, method, null, null);
 		}
 
 		static TargetInfo of(Function<CommandContext, ?> function) {
-			return new DefaultTargetInfo(TargetType.FUNCTION, null, null, function);
+			return new DefaultTargetInfo(TargetType.FUNCTION, null, null, function, null);
+		}
+
+		static TargetInfo of(Consumer<CommandContext> consumer) {
+			return new DefaultTargetInfo(TargetType.CONSUMER, null, null, null, consumer);
 		}
 
 		enum TargetType {
-			METHOD, FUNCTION;
+			METHOD, FUNCTION, CONSUMER;
 		}
 
 		static class DefaultTargetInfo implements TargetInfo {
@@ -234,13 +246,15 @@ public interface CommandRegistration {
 			private final Object bean;
 			private final Method method;
 			private final Function<CommandContext, ?> function;
+			private final Consumer<CommandContext> consumer;
 
 			public DefaultTargetInfo(TargetType targetType, Object bean, Method method,
-					Function<CommandContext, ?> function) {
+					Function<CommandContext, ?> function, Consumer<CommandContext> consumer) {
 				this.targetType = targetType;
 				this.bean = bean;
 				this.method = method;
 				this.function = function;
+				this.consumer = consumer;
 			}
 
 			@Override
@@ -261,6 +275,11 @@ public interface CommandRegistration {
 			@Override
 			public Function<CommandContext, ?> getFunction() {
 				return function;
+			}
+
+			@Override
+			public Consumer<CommandContext> getConsumer() {
+				return consumer;
 			}
 		}
 	}
@@ -296,6 +315,14 @@ public interface CommandRegistration {
 		 * @return a target spec for chaining
 		 */
 		TargetSpec function(Function<CommandContext, ?> function);
+
+		/**
+		 * Register a consumer target.
+		 *
+		 * @param consumer the consumer to register
+		 * @return a target spec for chaining
+		 */
+		TargetSpec consumer(Consumer<CommandContext> consumer);
 
 		/**
 		 * Return a builder for chaining.
@@ -478,6 +505,7 @@ public interface CommandRegistration {
 		private Object bean;
 		private Method method;
 		private Function<CommandContext, ?> function;
+		private Consumer<CommandContext> consumer;
 
 		DefaultTargetSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -501,6 +529,12 @@ public interface CommandRegistration {
 		@Override
 		public TargetSpec function(Function<CommandContext, ?> function) {
 			this.function = function;
+			return this;
+		}
+
+		@Override
+		public TargetSpec consumer(Consumer<CommandContext> consumer) {
+			this.consumer = consumer;
 			return this;
 		}
 
@@ -577,7 +611,13 @@ public interface CommandRegistration {
 			if (targetSpec.bean != null) {
 				return TargetInfo.of(targetSpec.bean, targetSpec.method);
 			}
-			return TargetInfo.of(targetSpec.function);
+			if (targetSpec.function != null) {
+				return TargetInfo.of(targetSpec.function);
+			}
+			if (targetSpec.consumer != null) {
+				return TargetInfo.of(targetSpec.consumer);
+			}
+			throw new IllegalArgumentException("No bean, function or consumer defined");
 		}
 	}
 
