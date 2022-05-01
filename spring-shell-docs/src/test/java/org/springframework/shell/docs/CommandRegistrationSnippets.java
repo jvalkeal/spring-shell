@@ -23,5 +23,4 @@ public class CommandRegistrationSnippets {
 			.build();
 		// end::snippet2[]
 	}
-
 }
