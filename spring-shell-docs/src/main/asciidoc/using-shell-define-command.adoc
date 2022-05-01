@@ -11,25 +11,6 @@ in a class and annotate class and methods with a spesific annotations. Programma
 is where things are done on a more low level ways by defining command registrations either
 as beans or registering those with a command catalog dynamically.
 
-Command in a `spring-shell` structure is defined as an array of commands. This will give
-you something like:
-
-====
-[source, bash]
-----
-command1 sub1
-command2 sub1 subsub1
-command2 sub2 subsub1
-command2 sub2 subsub2
-----
-====
-
-[NOTE]
-====
-We don't currently support mapping commands to explicit parent if sub-commands are defined.
-For example there can't be `command1 sub1` and `command1 sub1 subsub1` registered.
-====
-
 ==== Annotation Model
 When you use the standard API, methods on beans are turned into executable commands, provided that:
 

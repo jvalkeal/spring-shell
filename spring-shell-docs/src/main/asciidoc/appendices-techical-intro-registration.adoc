@@ -7,7 +7,24 @@ and parameters. This is loosely decoupled what happens later like parsing comman
 actual target code. Essentially it is a definition of an command API shown to a user.
 
 ==== Commands
-tbd
+Command in a `spring-shell` structure is defined as an array of commands. This will give
+you something like:
+
+====
+[source, bash]
+----
+command1 sub1
+command2 sub1 subsub1
+command2 sub2 subsub1
+command2 sub2 subsub2
+----
+====
+
+[NOTE]
+====
+We don't currently support mapping commands to explicit parent if sub-commands are defined.
+For example there can't be `command1 sub1` and `command1 sub1 subsub1` registered.
+====
 
 ==== Interaction Mode
 Spring Shell has been designed to work on two modes one being interactive which essentially
@@ -32,7 +49,6 @@ include::{snippets}/CommandRegistrationSnippets.java[tag=snippet1]
 ----
 ====
 
-
 ====
 [source, java, indent=0]
 ----
@@ -41,4 +57,50 @@ include::{snippets}/CommandRegistrationSnippets.java[tag=snippet2]
 ====
 
 ==== Target
-tbd
+Target defines what is an execution target of a command. It can be a _method_ in a `POJO`,
+`Consumer` or `Function`.
+
+===== Method
+Using a `Method` is a way to define target as a method in an existing pojo.
+
+====
+[source, java, indent=0]
+----
+include::{snippets}/CommandTargetSnippets.java[tag=snippet11]
+----
+====
+
+Having existing class shown above you can then register its method.
+
+====
+[source, java, indent=0]
+----
+include::{snippets}/CommandTargetSnippets.java[tag=snippet12]
+----
+====
+
+===== Function
+Using a `Function` as a target gives a lot of flexibility to handle what
+happens in a command execution as you can handle many things manually using
+a `CommandContext` given to a `Function`. Return type from a `Function` is
+then what gets printed into a shell as a result.
+
+====
+[source, java, indent=0]
+----
+include::{snippets}/CommandTargetSnippets.java[tag=snippet2]
+----
+====
+
+===== Consumer
+Using a `Consumer` is basically same as `Function` with difference being
+that there is not return type. If you need to print something into a shell
+you can get a reference to a `Terminal` from a context and print something
+through it.
+
+====
+[source, java, indent=0]
+----
+include::{snippets}/CommandTargetSnippets.java[tag=snippet3]
+----
+====
