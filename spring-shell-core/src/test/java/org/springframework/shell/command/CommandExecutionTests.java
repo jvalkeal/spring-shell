@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
+import org.springframework.shell.command.CommandRegistration.OptionArity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -104,6 +105,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.position(0)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withTarget()
 				.method(pojo1, "method4")
@@ -141,6 +143,7 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.position(0)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withTarget()
 				.method(pojo1, "method4")
@@ -219,16 +222,19 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.position(0)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withOption()
 				.longNames("arg2")
 				.description("some arg2")
 				.position(1)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withOption()
 				.longNames("arg3")
 				.description("some arg3")
 				.position(2)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withTarget()
 				.method(pojo1, "method6")
@@ -256,16 +262,19 @@ public class CommandExecutionTests extends AbstractCommandTests {
 				.longNames("arg1")
 				.description("some arg1")
 				.position(0)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withOption()
 				.longNames("arg2")
 				.description("some arg2")
 				.position(1)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withOption()
 				.longNames("arg3")
 				.description("some arg3")
 				.position(2)
+				.arity(OptionArity.EXACTLY_ONE)
 				.and()
 			.withTarget()
 				.method(pojo1, "method6")

@@ -15,8 +15,11 @@
  */
 package org.springframework.shell.command;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -214,20 +217,49 @@ public interface CommandParser {
 				}
 			});
 
-			Map<Integer, CommandOption> collect = options.stream()
+			// Map<Integer, CommandOption> collect = options.stream()
+			// 	.filter(o -> o.getPosition() > -1)
+			// 	.collect(Collectors.toMap(o -> o.getPosition(), o -> o));
+			// for (int i = 0; i < parserResults.results.size(); i++) {
+			// 	ParserResult pr = parserResults.results.get(i);
+			// 	if (pr.option == null) {
+			// 		CommandOption mapped = collect.get(i);
+			// 		if (mapped != null) {
+			// 			// TODO: should have and handle arity
+			// 			results.add(new DefaultCommandParserResult(mapped, pr.args.get(0)));
+			// 			requiredOptions.remove(mapped);
+			// 		}
+			// 	}
+			// }
+
+
+			Deque<ParserResult> queue = new ArrayDeque<>(parserResults.results);
+			options.stream()
 				.filter(o -> o.getPosition() > -1)
-				.collect(Collectors.toMap(o -> o.getPosition(), o -> o));
-			for (int i = 0; i < parserResults.results.size(); i++) {
-				ParserResult pr = parserResults.results.get(i);
-				if (pr.option == null) {
-					CommandOption mapped = collect.get(i);
-					if (mapped != null) {
-						// TODO: should have and handle arity
-						results.add(new DefaultCommandParserResult(mapped, pr.args.get(0)));
-						requiredOptions.remove(mapped);
+				.sorted(Comparator.comparingInt(o -> o.getPosition()))
+				.forEach(o -> {
+					int arityMin = o.getArityMin();
+					int arityMax = o.getArityMax();
+					List<String> oargs = new ArrayList<>();
+					if (arityMin > 0) {
+						for (int i = 0; i < arityMax; i++) {
+							ParserResult pop = null;
+							if (!queue.isEmpty()) {
+								pop = queue.pop();
+							}
+							if (pop != null && pop.option == null) {
+								if (!pop.args.isEmpty()) {
+									oargs.add(pop.args.stream().collect(Collectors.joining(" ")));
+								}
+							}
+						}
 					}
-				}
-			}
+					if (!oargs.isEmpty()) {
+						results.add(new DefaultCommandParserResult(o, oargs.stream().collect(Collectors.joining(" "))));
+						requiredOptions.remove(o);
+					}
+				})
+				;
 
 			requiredOptions.stream().forEach(o -> {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";

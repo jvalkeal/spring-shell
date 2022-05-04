@@ -177,11 +177,36 @@ public interface CommandRegistration {
 		OptionSpec position(Integer position);
 
 		/**
+		 * Define an {@code arity} for an option.
+		 *
+		 * @param min the min arity
+		 * @param max the max arity
+		 * @return option spec for chaining
+		 */
+		OptionSpec arity(int min, int max);
+
+		/**
+		 * Define an {@code arity} for an option.
+		 *
+		 * @param arity the arity
+		 * @return option spec for chaining
+		 */
+		OptionSpec arity(OptionArity arity);
+
+		/**
 		 * Return a builder for chaining.
 		 *
 		 * @return a builder for chaining
 		 */
 		Builder and();
+	}
+
+	public enum OptionArity {
+		ZERO,
+		ZERO_OR_ONE,
+		EXACTLY_ONE,
+		ZERO_OR_MORE,
+		ONE_OR_MORE
 	}
 
 	/**
@@ -413,6 +438,8 @@ public interface CommandRegistration {
 		private boolean required;
 		private String defaultValue;
 		private Integer position;
+		private Integer arityMin;
+		private Integer arityMax;
 
 		DefaultOptionSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -466,6 +493,46 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public OptionSpec arity(int min, int max) {
+			Assert.isTrue(min > -1, "arity min must be 0 or more");
+			Assert.isTrue(max >= min, "arity max must be equal more than min");
+			this.arityMin = min;
+			this.arityMax = max;
+			return this;
+		}
+
+		@Override
+		public OptionSpec arity(OptionArity arity) {
+			switch (arity) {
+				case ZERO:
+					this.arityMin = 0;
+					this.arityMax = 0;
+					break;
+				case ZERO_OR_ONE:
+					this.arityMin = 0;
+					this.arityMax = Integer.MAX_VALUE;
+					break;
+				case EXACTLY_ONE:
+					this.arityMin = 1;
+					this.arityMax = 1;
+					break;
+				case ZERO_OR_MORE:
+					this.arityMin = 0;
+					this.arityMax = Integer.MAX_VALUE;
+					break;
+				case ONE_OR_MORE:
+					this.arityMin = 1;
+					this.arityMax = Integer.MAX_VALUE;
+					break;
+				default:
+					this.arityMin = 0;
+					this.arityMax = 0;
+					break;
+			}
+			return this;
+		}
+
+		@Override
 		public Builder and() {
 			return builder;
 		}
@@ -496,6 +563,14 @@ public interface CommandRegistration {
 
 		public Integer getPosition() {
 			return position;
+		}
+
+		public Integer getArityMin() {
+			return arityMin;
+		}
+
+		public Integer getArityMax() {
+			return arityMax;
 		}
 	}
 
@@ -602,7 +677,7 @@ public interface CommandRegistration {
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
 				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
-						o.isRequired(), o.getDefaultValue(), o.getPosition()))
+						o.isRequired(), o.getDefaultValue(), o.getPosition(), o.getArityMin(), o.getArityMax()))
 				.collect(Collectors.toList());
 		}
 

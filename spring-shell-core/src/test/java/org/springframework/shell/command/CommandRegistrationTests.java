@@ -18,6 +18,7 @@ package org.springframework.shell.command;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.context.InteractionMode;
 
@@ -319,4 +320,38 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 		assertThat(registration.getOptions().get(0).getPosition()).isEqualTo(1);
 		assertThat(registration.getOptions().get(1).getPosition()).isEqualTo(-1);
 	}
+
+	@Test
+	public void testArityViaInts() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.withOption()
+				.longNames("arg1")
+				.arity(0, 0)
+				.and()
+			.withTarget()
+				.consumer(ctx -> {})
+				.and()
+			.build();
+			assertThat(registration.getOptions()).hasSize(1);
+			assertThat(registration.getOptions().get(0).getArityMin()).isEqualTo(0);
+			assertThat(registration.getOptions().get(0).getArityMax()).isEqualTo(0);
+		}
+
+	@Test
+	public void testArityViaEnum() {
+		CommandRegistration registration = CommandRegistration.builder()
+			.command("command1")
+			.withOption()
+				.longNames("arg1")
+				.arity(OptionArity.ZERO)
+				.and()
+			.withTarget()
+				.consumer(ctx -> {})
+				.and()
+			.build();
+			assertThat(registration.getOptions()).hasSize(1);
+			assertThat(registration.getOptions().get(0).getArityMin()).isEqualTo(0);
+			assertThat(registration.getOptions().get(0).getArityMax()).isEqualTo(0);
+		}
 }

@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.command.CommandCatalog.CommandResolver;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandCatalogTests extends AbstractCommandTests {

@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.shell.command.CommandCatalog;
-import org.springframework.shell.command.CommandCatalog.CommandCatalogCustomizer;
-import org.springframework.shell.command.CommandCatalog.CommandResolver;
+import org.springframework.shell.command.CommandCatalogCustomizer;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.CommandResolver;
 
 public class CommandCatalogSnippets {
 
