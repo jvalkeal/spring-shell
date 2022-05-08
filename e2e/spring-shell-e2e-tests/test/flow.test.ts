@@ -26,6 +26,7 @@ describe('flow commands', () => {
   const flowConditionalField2SkipsFields1 = async (cli: Cli) => {
     cli.run();
 
+    console.log('cli run');
     await waitForExpect(async () => {
       const screen = cli.screen();
       console.log(screen);
@@ -33,6 +34,7 @@ describe('flow commands', () => {
     });
 
     await cli.keyDown();
+    console.log('cli key down');
     await waitForExpect(async () => {
       const screen = cli.screen();
       console.log(screen);
@@ -40,19 +42,24 @@ describe('flow commands', () => {
     });
 
     await cli.keyEnter();
+    console.log('cli key enter1');
     await waitForExpect(async () => {
       const screen = cli.screen();
+      console.log(screen);
       expect(screen).toEqual(
         expect.arrayContaining([expect.stringContaining('? Field2 [Default defaultField2Value]')])
       );
     });
 
     await cli.keyEnter();
+    console.log('cli key enter2');
     await waitForExpect(async () => {
       const screen = cli.screen();
+      console.log(screen);
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('Field2 defaultField2Value')]));
     });
 
+    console.log('cli wait exit');
     await expect(cli.exitCode()).resolves.toBe(0);
   };
 
