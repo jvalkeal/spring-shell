@@ -41,6 +41,7 @@ export class Cli {
       rows: this.rows
     });
     this.pty.onData(data => {
+      console.log('ondata', this.term, data);
       this.term?.write(data);
     });
     this.exit = new Promise(resolve => {
