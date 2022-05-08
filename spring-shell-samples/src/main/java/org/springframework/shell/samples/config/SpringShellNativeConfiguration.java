@@ -27,11 +27,22 @@ import org.springframework.nativex.hint.FieldHint;
 import org.springframework.nativex.hint.JdkProxyHint;
 import org.springframework.nativex.hint.MethodHint;
 import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.ResourceHint;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(
+	resources = {
+		@ResourceHint(
+			patterns = {
+				"completion/.*",
+				"template/.*.st",
+				"org/springframework/shell/component/.*.stg",
+				"com/sun/jna/win32-x86-64/jnidispatch.dll"
+			}
+		),
+	},
 	types = {
 		@TypeHint(
 			types = {
