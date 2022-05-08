@@ -68,23 +68,23 @@ describe('flow commands', () => {
   /**
    * native commands
    */
-  // describe(nativeDesc, () => {
-  //   beforeAll(() => {
-  //     command = nativeCommand;
-  //   });
+  describe(nativeDesc, () => {
+    beforeAll(() => {
+      command = nativeCommand;
+    });
 
-  //   it(
-  //     flowConditionalField2SkipsFields1Desc,
-  //     async () => {
-  //       cli = new Cli({
-  //         command: command,
-  //         options: [...options, ...flowConditionalCommand]
-  //       });
-  //       await flowConditionalField2SkipsFields1(cli);
-  //     },
-  //     testTimeout
-  //   );
-  // });
+    it(
+      flowConditionalField2SkipsFields1Desc,
+      async () => {
+        cli = new Cli({
+          command: command,
+          options: [...options, ...flowConditionalCommand]
+        });
+        await flowConditionalField2SkipsFields1(cli);
+      },
+      testTimeout
+    );
+  });
 
   /**
    * fatjar commands
