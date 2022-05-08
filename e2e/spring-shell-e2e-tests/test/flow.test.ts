@@ -28,12 +28,14 @@ describe('flow commands', () => {
 
     await waitForExpect(async () => {
       const screen = cli.screen();
+      console.log(screen);
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('Single1')]));
     });
 
     await cli.keyDown();
     await waitForExpect(async () => {
       const screen = cli.screen();
+      console.log(screen);
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('> Field2')]));
     });
 

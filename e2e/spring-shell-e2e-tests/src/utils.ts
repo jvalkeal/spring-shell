@@ -17,5 +17,5 @@ export const jarCommand = isWindows ? 'java.exe' : 'java';
 export const nativeCommand = cliPath;
 export const jarOptions = ['-jar', jarPath];
 export const waitForExpectDefaultTimeout = 20000;
-export const waitForExpectDefaultInterval = 100;
-export const testTimeout = 20000;
+export const waitForExpectDefaultInterval = 2000;
+export const testTimeout = 80000;
