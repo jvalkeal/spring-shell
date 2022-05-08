@@ -31,12 +31,12 @@ export class Cli {
   }
 
   public run(): void {
-    this.pty = pty.spawn(this.options.command, this.options.options || [], {
-      name: 'xterm-256color',
+    this.term = new Terminal({
       cols: this.cols,
       rows: this.rows
     });
-    this.term = new Terminal({
+    this.pty = pty.spawn(this.options.command, this.options.options || [], {
+      name: 'xterm-256color',
       cols: this.cols,
       rows: this.rows
     });
