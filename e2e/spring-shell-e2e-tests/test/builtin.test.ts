@@ -44,23 +44,23 @@ describe('builtin commands', () => {
   /**
    * native commands
    */
-  describe(nativeDesc, () => {
-    beforeAll(() => {
-      command = nativeCommand;
-    });
+  // describe(nativeDesc, () => {
+  //   beforeAll(() => {
+  //     command = nativeCommand;
+  //   });
 
-    it(
-      versionReturnsInfoDesc,
-      async () => {
-        cli = new Cli({
-          command: command,
-          options: [...options, ...versionCommand]
-        });
-        await versionReturnsInfo(cli);
-      },
-      testTimeout
-    );
-  });
+  //   it(
+  //     versionReturnsInfoDesc,
+  //     async () => {
+  //       cli = new Cli({
+  //         command: command,
+  //         options: [...options, ...versionCommand]
+  //       });
+  //       await versionReturnsInfo(cli);
+  //     },
+  //     testTimeout
+  //   );
+  // });
 
   /**
    * fatjar commands
