@@ -10,12 +10,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nickname: win
-            os: windows-2019
-            graal: 22.0.0.2
-          - nickname: macos
-            os: macos-latest
-            graal: 22.0.0.2
+          # - nickname: win
+          #   os: windows-2019
+          #   graal: 22.0.0.2
+          # - nickname: macos
+          #   os: macos-latest
+          #   graal: 22.0.0.2
           - nickname: linux
             os: ubuntu-latest
             graal: 22.0.0.2
@@ -39,6 +39,10 @@ jobs:
           node-version: '14'
       - run: |
           ./mvnw clean package -Pnative
+      - name: Run Commands (linux/macos)
+        run: |
+          java -jar spring-shell-samples/target/spring-shell-samples-2.1.0-SNAPSHOT-exec.jar help
+        if: runner.os != 'Windows'
       - name: compile e2e module
         working-directory: e2e/spring-shell-e2e
         run: |
