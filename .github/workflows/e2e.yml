@@ -57,3 +57,10 @@ jobs:
         run: |
           npm install
           npm test
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: spring-shell-samples-logs-${{ matrix.nickname }}
+          retention-days: 1
+          path: |
+            e2e/spring-shell-e2e-tests/*.log
