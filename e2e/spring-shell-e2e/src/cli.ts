@@ -47,7 +47,7 @@ export class Cli {
     });
     this.exit = new Promise(resolve => {
       this.pty?.onExit(data => {
-        console.log('onexit', data);
+        // console.log('onexit', data);
         resolve(data.exitCode);
       });
     });
@@ -112,12 +112,12 @@ export class Cli {
     if (this.isDisposed) {
       return;
     }
-    if (this.pty) {
-      this.pty.kill();
+    try {
+      this.pty?.kill();
+    } catch (error) {
+      console.error(error);
     }
-    if (this.term) {
-      this.term.dispose();
-    }
+    this.term?.dispose();
     this.isDisposed = true;
   }
 
