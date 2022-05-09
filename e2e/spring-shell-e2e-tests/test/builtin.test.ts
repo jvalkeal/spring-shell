@@ -13,7 +13,7 @@ import {
 } from '../src/utils';
 
 // all buildin commands
-describe('builtin commands', () => {
+xdescribe('builtin commands', () => {
   let cli: Cli;
   let command: string;
   let options: string[] = [];

@@ -28,10 +28,13 @@ describe('flow commands', () => {
 
     // windows on gh actions may take quite a bit of time to start
     // so use long timeout
+    console.log('cli run 1');
     await waitForExpect(async () => {
       const screen = cli.screen();
+      console.log(screen);
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('Single1')]));
     }, 60000);
+    console.log('cli run 2');
 
     await cli.keyDown();
     await waitForExpect(async () => {
@@ -90,7 +93,7 @@ describe('flow commands', () => {
   /**
    * native commands
    */
-   describe(nativeDesc, () => {
+   xdescribe(nativeDesc, () => {
     beforeAll(() => {
       command = nativeCommand;
     });
