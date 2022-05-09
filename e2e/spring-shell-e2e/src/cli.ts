@@ -42,11 +42,12 @@ export class Cli {
       rows: this.rows
     });
     this.pty.onData(data => {
-      console.log('ondata', this.term, data);
+      console.log('ondata', `"${data}"`);
       this.term?.write(data);
     });
     this.exit = new Promise(resolve => {
       this.pty?.onExit(data => {
+        console.log('onexit', data);
         resolve(data.exitCode);
       });
     });
