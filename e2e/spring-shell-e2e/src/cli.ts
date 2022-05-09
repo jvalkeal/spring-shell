@@ -35,6 +35,7 @@ export class Cli {
       cols: this.cols,
       rows: this.rows
     });
+    console.log('spawn', this.options.command, this.options.options);
     this.pty = pty.spawn(this.options.command, this.options.options || [], {
       name: 'xterm-256color',
       cols: this.cols,
