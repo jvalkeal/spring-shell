@@ -13,7 +13,7 @@ import {
 } from '../src/utils';
 
 // all buildin commands
-xdescribe('builtin commands', () => {
+describe('builtin commands', () => {
   let cli: Cli;
   let command: string;
   let options: string[] = [];
@@ -42,11 +42,12 @@ xdescribe('builtin commands', () => {
   }, testTimeout);
 
   /**
-   * native commands
+   * fatjar commands
    */
-  describe(nativeDesc, () => {
+   describe(jarDesc, () => {
     beforeAll(() => {
-      command = nativeCommand;
+      command = jarCommand;
+      options = jarOptions;
     });
 
     it(
@@ -63,12 +64,12 @@ xdescribe('builtin commands', () => {
   });
 
   /**
-   * fatjar commands
+   * native commands
    */
-  describe(jarDesc, () => {
+  describe(nativeDesc, () => {
     beforeAll(() => {
-      command = jarCommand;
-      options = jarOptions;
+      command = nativeCommand;
+      options = [];
     });
 
     it(

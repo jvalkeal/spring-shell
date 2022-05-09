@@ -35,14 +35,14 @@ export class Cli {
       cols: this.cols,
       rows: this.rows
     });
-    console.log('spawn', this.options.command, this.options.options);
+    // console.log('spawn', this.options.command, this.options.options);
     this.pty = pty.spawn(this.options.command, this.options.options || [], {
       name: 'xterm-256color',
       cols: this.cols,
       rows: this.rows
     });
     this.pty.onData(data => {
-      console.log('ondata', `"${data}"`);
+      // console.log('ondata', `"${data}"`);
       this.term?.write(data);
     });
     this.exit = new Promise(resolve => {
@@ -109,6 +109,7 @@ export class Cli {
   }
 
   public dispose(): void {
+    console.log('dispose');
     if (this.isDisposed) {
       return;
     }

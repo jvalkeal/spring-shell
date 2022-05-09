@@ -28,13 +28,13 @@ describe('flow commands', () => {
 
     // windows on gh actions may take quite a bit of time to start
     // so use long timeout
-    console.log('cli run 1');
+    // console.log('cli run 1');
     await waitForExpect(async () => {
       const screen = cli.screen();
-      console.log(screen);
+      // console.log(screen);
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('Single1')]));
     }, 60000);
-    console.log('cli run 2');
+    // console.log('cli run 2');
 
     await cli.keyDown();
     await waitForExpect(async () => {
@@ -72,6 +72,7 @@ describe('flow commands', () => {
    * fatjar commands
    */
   describe(jarDesc, () => {
+    // console.log('ba1');
     beforeAll(() => {
       command = jarCommand;
       options = jarOptions;
@@ -80,6 +81,7 @@ describe('flow commands', () => {
     it(
       flowConditionalField2SkipsFields1Desc,
       async () => {
+        // console.log('it1');
         cli = new Cli({
           command: command,
           options: [...options, ...flowConditionalCommand]
@@ -93,14 +95,17 @@ describe('flow commands', () => {
   /**
    * native commands
    */
-   xdescribe(nativeDesc, () => {
+   describe(nativeDesc, () => {
     beforeAll(() => {
+      // console.log('ba2');
       command = nativeCommand;
+      options = [];
     });
 
     it(
       flowConditionalField2SkipsFields1Desc,
       async () => {
+        // console.log('it2');
         cli = new Cli({
           command: command,
           options: [...options, ...flowConditionalCommand]
