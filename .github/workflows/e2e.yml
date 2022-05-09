@@ -37,8 +37,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      # - run: |
-      #     ./mvnw clean package -Pnative
+      - run: |
+          ./mvnw clean package -Pnative
       - uses: actions/upload-artifact@v2
         with:
           name: spring-shell-samples-${{ matrix.nickname }}
