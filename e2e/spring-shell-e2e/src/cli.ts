@@ -17,6 +17,7 @@ export class Cli {
   private cols: number = 80;
   private rows: number = 20;
   private exit: Promise<number> | undefined;
+  private hasExit: boolean = false;
 
   constructor(private options: CliOptions) {
     if (options.keyWait) {
@@ -48,6 +49,7 @@ export class Cli {
     this.exit = new Promise(resolve => {
       this.pty?.onExit(data => {
         // console.log('onexit', data);
+        this.hasExit = true;
         resolve(data.exitCode);
       });
     });
@@ -109,12 +111,14 @@ export class Cli {
   }
 
   public dispose(): void {
-    console.log('dispose');
+    // console.log('dispose');
     if (this.isDisposed) {
       return;
     }
     try {
-      this.pty?.kill();
+      if (!this.hasExit) {
+        this.pty?.kill();
+      }
     } catch (error) {
       console.error(error);
     }
