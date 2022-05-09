@@ -11,7 +11,7 @@ jobs:
       matrix:
         include:
           - nickname: win
-            os: windows-2019
+            os: windows-latest
             graal: 22.0.0.2
           # - nickname: macos
           #   os: macos-latest
