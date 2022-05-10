@@ -40,7 +40,8 @@ export class Cli {
     this.pty = pty.spawn(this.options.command, this.options.options || [], {
       name: 'xterm-256color',
       cols: this.cols,
-      rows: this.rows
+      rows: this.rows,
+      useConpty: false
     });
     this.pty.onData(data => {
       // console.log('ondata', `"${data}"`);
