@@ -13,12 +13,12 @@ jobs:
           - nickname: win
             os: windows-latest
             graal: 22.0.0.2
-          # - nickname: macos
-          #   os: macos-latest
-          #   graal: 22.0.0.2
-          # - nickname: linux
-          #   os: ubuntu-latest
-          #   graal: 22.0.0.2
+          - nickname: macos
+            os: macos-latest
+            graal: 22.0.0.2
+          - nickname: linux
+            os: ubuntu-latest
+            graal: 22.0.0.2
     name: E2E ${{ matrix.nickname }}
     steps:
       - uses: actions/checkout@v2
