@@ -116,11 +116,12 @@ export class Cli {
       return;
     }
     try {
-      if (!this.hasExit) {
-        this.pty?.kill();
-      }
+      this.pty?.kill();
+      // if (!this.hasExit) {
+      //   this.pty?.kill();
+      // }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
     this.term?.dispose();
     this.isDisposed = true;
