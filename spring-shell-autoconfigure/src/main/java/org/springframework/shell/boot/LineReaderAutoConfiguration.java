@@ -59,7 +59,7 @@ public class LineReaderAutoConfiguration {
 	private org.jline.reader.History jLineHistory;
 
 	@Value("${spring.application.name:spring-shell}.log")
-	private String historyPath;
+	private String fallbackHistoryFileName;
 
 	private SpringShellProperties springShellProperties;
 	private UserConfigPathProvider userConfigPathProvider;
@@ -83,15 +83,6 @@ public class LineReaderAutoConfiguration {
 
 	@Bean
 	public LineReader lineReader() {
-		Path userPath = this.userConfigPathProvider.provide();
-		log.debug("XXX userPath {}", userPath);
-		String historyFileName = this.springShellProperties.getHistory().getName();
-		if (!StringUtils.hasText(historyFileName)) {
-			historyFileName = "spring-shell.log";
-		}
-		String historyPath2 = userPath.resolve(historyFileName).toAbsolutePath().toString();
-		log.debug("XXX historyPath {}", historyPath2);
-		// log.debug("Configuring history with path {} {}", this.springShellProperties.getHistory().getPath());
 		LineReaderBuilder lineReaderBuilder = LineReaderBuilder.builder()
 				.terminal(terminal)
 				.appName("Spring Shell")
@@ -128,7 +119,20 @@ public class LineReaderAutoConfiguration {
 				.parser(parser);
 
 		LineReader lineReader = lineReaderBuilder.build();
-		lineReader.setVariable(LineReader.HISTORY_FILE, Paths.get(historyPath2));
+		if (this.springShellProperties.getHistory().isEnabled()) {
+			// Discover history location
+			Path userConfigPath = this.userConfigPathProvider.provide();
+			log.debug("Resolved userConfigPath {}", userConfigPath);
+			String historyFileName = this.springShellProperties.getHistory().getName();
+			if (!StringUtils.hasText(historyFileName)) {
+				historyFileName = fallbackHistoryFileName;
+			}
+			log.debug("Resolved historyFileName {}", historyFileName);
+			String historyPath = userConfigPath.resolve(historyFileName).toAbsolutePath().toString();
+			log.debug("Resolved historyPath {}", historyPath);
+			// set history file
+			lineReader.setVariable(LineReader.HISTORY_FILE, Paths.get(historyPath));
+		}
 		lineReader.unsetOpt(LineReader.Option.INSERT_TAB); // This allows completion on an empty buffer, rather than inserting a tab
 		jLineHistory.attach(lineReader);
 		return lineReader;

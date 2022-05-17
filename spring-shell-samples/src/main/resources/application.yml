@@ -3,7 +3,7 @@ spring:
     banner-mode: off
   shell:
     config:
-      # env: SPRING_SHELL_HOME
+      env: SPRING_SHELL_SAMPLES_USER_HOME
       location: "{userconfig}/spring-shell-samples"
     history:
       name: spring-shell-samples-history.log
