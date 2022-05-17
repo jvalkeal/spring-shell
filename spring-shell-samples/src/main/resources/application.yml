@@ -2,6 +2,11 @@ spring:
   main:
     banner-mode: off
   shell:
+    config:
+      # env: SPRING_SHELL_HOME
+      location: "{userconfig}/spring-shell-samples"
+    history:
+      name: spring-shell-samples-history.log
     command:
       completion:
         root-command: spring-shell-samples
@@ -10,10 +15,10 @@ logging:
   pattern:
     console:
 ## log debug from a cli
-#  file:
-#    name: shell.log
-#  level:
-#    root: debug
-#    org:
-#      springframework:
-#        shell: debug
+  file:
+    name: shell.log
+  level:
+    root: debug
+    org:
+      springframework:
+        shell: debug
