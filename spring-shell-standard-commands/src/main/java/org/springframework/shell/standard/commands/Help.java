@@ -250,6 +250,10 @@ public class Help extends AbstractShellComponent {
 	private Map<String, Object> buildCommandModel(CommandRegistration registration) {
 		Map<String, Object> model = new HashMap<>();
 
+		model.put("hasSynopsis", false);
+		model.put("hasOptions", false);
+		model.put("hasAliases", false);
+		model.put("hasAvailability", false);
 		model.put("commandName", registration.getCommand());
 		model.put("commandShortDesc", registration.getDescription());
 

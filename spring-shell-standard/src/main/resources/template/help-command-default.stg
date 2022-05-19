@@ -13,13 +13,13 @@ option(option) ::= <<
 >>
 
 options(options) ::= <<
-<("OPTIONS"); format="list-key">
+<("OPTIONS"); format="highlight">
        <options:{ o | <option(o)>}>
 >>
 
 name(commandName, commandShortDesc) ::= <<
-<("NAME"); format="list-key">
-       <commandName; format="list-value"> - <commandShortDesc; format="list-value">
+<("NAME"); format="highlight">
+       <commandName> - <commandShortDesc>
 >>
 
 main(model) ::= <<
