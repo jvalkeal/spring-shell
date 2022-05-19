@@ -1,0 +1,28 @@
+arguments(arguments) ::= <<
+<arguments: { a | <a>}; separator=" or ">
+>>
+
+type(type) ::= <<
+<type>
+>>
+
+option(option) ::= <<
+<arguments(option.arguments)> <type(option.type)>
+
+
+>>
+
+options(options) ::= <<
+<("OPTIONS"); format="list-key">
+       <options:{ o | <option(o)>}>
+>>
+
+name(commandName, commandShortDesc) ::= <<
+<("NAME"); format="list-key">
+       <commandName; format="list-value"> - <commandShortDesc; format="list-value">
+>>
+
+main(model) ::= <<
+<name(model.commandName, model.commandShortDesc)>
+<options(model.options)>
+>>

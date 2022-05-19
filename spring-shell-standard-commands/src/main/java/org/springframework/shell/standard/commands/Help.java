@@ -16,8 +16,15 @@
 package org.springframework.shell.standard.commands;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,15 +33,18 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.MessageInterpolator;
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.ConstraintDescriptor;
 
+import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.shell.Availability;
 import org.springframework.shell.ParameterDescription;
 import org.springframework.shell.Utils;
@@ -45,6 +55,9 @@ import org.springframework.shell.standard.CommandValueProvider;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.style.TemplateExecutor;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -80,8 +93,13 @@ public class Help extends AbstractShellComponent {
 
 	private MessageInterpolator messageInterpolator = Utils.defaultValidatorFactory().getMessageInterpolator();
 	private boolean showGroups = true;
+	private TemplateExecutor templateExecutor;
+	private String commandTemplate;
+	private String commandsTemplate;
 
-	public Help() {
+
+	public Help(TemplateExecutor templateExecutor) {
+		this.templateExecutor = templateExecutor;
 	}
 
 	@Autowired(required = false)
@@ -103,6 +121,37 @@ public class Help extends AbstractShellComponent {
 
 	}
 
+	@ShellMethod(value = "Display help about available commands")
+	public AttributedString helpx(
+			@ShellOption(defaultValue = ShellOption.NULL, valueProvider = CommandValueProvider.class, value = { "-C",
+					"--command" }, help = "The command to obtain help for.", arity = Integer.MAX_VALUE) String command)
+			throws IOException {
+		if (command == null) {
+			return renderCommands();
+		}
+		else {
+			return renderCommand(command);
+		}
+	}
+
+	/**
+	 * Sets a location for a template rendering command help.
+	 *
+	 * @param commandTemplate the command template location
+	 */
+	public void setCommandTemplate(String commandTemplate) {
+		this.commandTemplate = commandTemplate;
+	}
+
+	/**
+	 * Sets a location for a template rendering commands help.
+	 *
+	 * @param commandsTemplate the commands template location
+	 */
+	public void setCommandsTemplate(String commandsTemplate) {
+		this.commandsTemplate = commandsTemplate;
+	}
+
 	/**
 	 * Sets if groups should be shown in a listing, defaults to true. If not enabled
 	 * a simple list is shown without groups.
@@ -111,6 +160,121 @@ public class Help extends AbstractShellComponent {
 	 */
 	public void setShowGroups(boolean showGroups) {
 		this.showGroups = showGroups;
+	}
+
+	private AttributedString renderCommands() {
+		Map<String, CommandRegistration> registrations = getCommandCatalog().getRegistrations();
+
+		Map<String, Object> model;
+		boolean isStg = this.commandTemplate.endsWith(".stg");
+		if (isStg) {
+			model = new HashMap<>();
+			model.put("model", buildCommandsModel(registrations));
+		}
+		else {
+			model = buildCommandsModel(registrations);
+		}
+
+		String templateResource = resourceAsString(getResourceLoader().getResource(this.commandsTemplate));
+		return isStg ? this.templateExecutor.renderGroup(templateResource, model) : this.templateExecutor.render(templateResource, model);
+	}
+
+	private AttributedString renderCommand(String command) {
+		Map<String, CommandRegistration> registrations = getCommandCatalog().getRegistrations();
+		CommandRegistration registration = registrations.get(command);
+		if (registration == null) {
+			throw new IllegalArgumentException("Unknown command '" + command + "'");
+		}
+
+		Map<String, Object> model;
+		boolean isStg = this.commandTemplate.endsWith(".stg");
+		if (isStg) {
+			model = new HashMap<>();
+			model.put("model", buildCommandModel(registration));
+		}
+		else {
+			model = buildCommandModel(registration);
+		}
+
+		String templateResource = resourceAsString(getResourceLoader().getResource(this.commandTemplate));
+		return isStg ? this.templateExecutor.renderGroup(templateResource, model) : this.templateExecutor.render(templateResource, model);
+	}
+
+	private Map<String, Object> buildCommandsModel(Map<String, CommandRegistration> registrations) {
+		Map<String, Object> model = new HashMap<>();
+
+		model.put("showGroups", this.showGroups);
+
+		SortedMap<String, Map<String, CommandRegistration>> commandsByGroupAndName = registrations.entrySet().stream()
+			.collect(Collectors.groupingBy(
+				e -> StringUtils.hasText(e.getValue().getGroup()) ? e.getValue().getGroup() : "",
+				TreeMap::new,
+				Collectors.toMap(Entry::getKey, Entry::getValue)
+			));
+		List<CommandGroupModel> commandGroupsModels =  commandsByGroupAndName.entrySet().stream()
+			.map(e -> {
+				CommandGroupModel commandGroupsModel = new CommandGroupModel();
+				commandGroupsModel.setGroup(e.getKey());
+				commandGroupsModel.setRegistrations(new ArrayList<>(e.getValue().values()));
+				return commandGroupsModel;
+			})
+			.collect(Collectors.toList());
+		model.put("groups", commandGroupsModels);
+		model.put("registrations", registrations.values());
+
+		return model;
+	}
+
+	@SuppressWarnings("unused")
+	private static class CommandGroupModel {
+		String group;
+		List<CommandRegistration> registrations;
+
+		public String getGroup() {
+			return group;
+		}
+
+		public void setGroup(String group) {
+			this.group = group;
+		}
+
+		public List<CommandRegistration> getRegistrations() {
+			return registrations;
+		}
+
+		public void setRegistrations(List<CommandRegistration> registrations) {
+			this.registrations = registrations;
+		}
+	}
+
+	private Map<String, Object> buildCommandModel(CommandRegistration registration) {
+		Map<String, Object> model = new HashMap<>();
+
+		model.put("commandName", registration.getCommand());
+		model.put("commandShortDesc", registration.getDescription());
+
+		List<Map<String, Object>> optionsModel = new ArrayList<>();
+		registration.getOptions().forEach(o -> {
+			Map<String, Object> optionModel = new HashMap<>();
+			optionModel.put("longNames", o.getLongNames());
+			optionModel.put("shortNames", o.getShortNames());
+			List<String> arguments = Stream.concat(Stream.of(o.getLongNames()).map(a -> "--" + a), Stream.of(o.getShortNames()).map(s -> "-" + s)).collect(Collectors.toList());
+			optionModel.put("arguments", arguments);
+			String type = o.getType() == null ? "String" : ClassUtils.getShortName(o.getType().getRawClass());
+			optionModel.put("type", type);
+			optionsModel.add(optionModel);
+		});
+		model.put("options", optionsModel);
+
+		return model;
+	}
+
+	private static String resourceAsString(Resource resource) {
+		try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+			return FileCopyUtils.copyToString(reader);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**

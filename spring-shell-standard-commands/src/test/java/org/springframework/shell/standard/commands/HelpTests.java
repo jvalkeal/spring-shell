@@ -198,7 +198,7 @@ public class HelpTests {
 
 		@Bean
 		public Help help() {
-			return new Help();
+			return new Help(null);
 		}
 
 		// @Bean
