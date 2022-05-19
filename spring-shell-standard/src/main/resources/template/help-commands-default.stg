@@ -3,14 +3,14 @@ name() ::= <<
 
 >>
 
-command(registration) ::= <<
-<(registration.command); format="highlight"><(":"); format="highlight"> <registration.description>
+command(command) ::= <<
+<(command.name); format="highlight"><(":"); format="highlight"> <command.description>
 
 >>
 
 commandGroup(commandGroup) ::= <<
 <(commandGroup.group); format="highlight">
-       <commandGroup.registrations:{ r | <command(r)>}>
+       <commandGroup.commands:{ c | <command(c)>}>
 
 >>
 

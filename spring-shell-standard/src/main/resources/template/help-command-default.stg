@@ -1,3 +1,14 @@
+// NAME
+name(commandName, commandShortDesc) ::= <<
+<("NAME"); format="highlight">
+       <commandName> - <commandShortDesc>
+>>
+
+// SYNOPSYS
+synopsys(commandName, options) ::= <<
+>>
+
+// OPTIONS
 arguments(arguments) ::= <<
 <arguments: { a | <a>}; separator=" or ">
 >>
@@ -17,12 +28,9 @@ options(options) ::= <<
        <options:{ o | <option(o)>}>
 >>
 
-name(commandName, commandShortDesc) ::= <<
-<("NAME"); format="highlight">
-       <commandName> - <commandShortDesc>
->>
-
+// main
 main(model) ::= <<
 <name(model.commandName, model.commandShortDesc)>
+<synopsys(model.commandName, model.options)>
 <options(model.options)>
 >>

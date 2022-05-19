@@ -165,15 +165,18 @@ public class Help extends AbstractShellComponent {
 	private AttributedString renderCommands() {
 		Map<String, CommandRegistration> registrations = getCommandCatalog().getRegistrations();
 
-		Map<String, Object> model;
 		boolean isStg = this.commandTemplate.endsWith(".stg");
-		if (isStg) {
-			model = new HashMap<>();
-			model.put("model", buildCommandsModel(registrations));
-		}
-		else {
-			model = buildCommandsModel(registrations);
-		}
+		// Map<String, Object> model;
+		// if (isStg) {
+		// 	model = new HashMap<>();
+		// 	model.put("model", buildCommandsModel(registrations));
+		// }
+		// else {
+		// 	model = buildCommandsModel(registrations);
+		// }
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("model", GroupsInfoModel.of(this.showGroups, registrations));
 
 		String templateResource = resourceAsString(getResourceLoader().getResource(this.commandsTemplate));
 		return isStg ? this.templateExecutor.renderGroup(templateResource, model) : this.templateExecutor.render(templateResource, model);
