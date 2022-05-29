@@ -1,0 +1,15 @@
+[[dynamic-command-exitcode]]
+==== Exit Code
+Many command line applications when applicable return an _exit code_ which running environment
+can use to differentiate if command has been executed successfully or not. In a `spring-shell`
+this mostly relates when a command is run on a non-interactive mode meaning one command
+is always executed once with an instance of a `spring-shell`.
+
+Default behaviour of an exit codes is as:
+
+- Errors from a command option parsing will result code of `2`
+- Any generic error will result result code of `1`
+- Obviously in any other case result code is `0`
+
+Every `CommandRegistration` can define its own mappings for from an _Exception_ into an
+_exit code_.
