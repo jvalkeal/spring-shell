@@ -19,7 +19,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -191,11 +190,9 @@ public class Shell {
 
 			if (commandRegistration.isPresent()) {
 				if (this.exitCodeMappings != null) {
-					Map<Class<? extends Throwable>, Integer> mappingExceptions = commandRegistration.get().getExitCode()
-							.getMappingExceptions();
 					List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
 							.getMappingFunctions();
-					this.exitCodeMappings.reset(mappingExceptions, mappingFunctions);
+					this.exitCodeMappings.reset(mappingFunctions);
 				}
 
 				List<String> wordsForArgs = wordsForArguments(command, words);

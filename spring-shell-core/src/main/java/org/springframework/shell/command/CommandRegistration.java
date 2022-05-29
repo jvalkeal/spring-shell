@@ -19,9 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -737,7 +735,6 @@ public interface CommandRegistration {
 	static class DefaultExitCodeSpec implements ExitCodeSpec {
 
 		private BaseBuilder builder;
-		private final Map<Class<? extends Throwable>, Integer> exceptions = new HashMap<>();
 		private final List<Function<Throwable, Integer>> functions = new ArrayList<>();
 
 		DefaultExitCodeSpec(BaseBuilder builder) {
@@ -746,7 +743,13 @@ public interface CommandRegistration {
 
 		@Override
 		public ExitCodeSpec map(Class<? extends Throwable> e, int code) {
-			this.exceptions.put(e, code);
+			Function<Throwable, Integer> f = t -> {
+				if (ObjectUtils.nullSafeEquals(t.getClass(), e)) {
+					return code;
+				}
+				return 0;
+			};
+			this.functions.add(f);
 			return this;
 		}
 
@@ -850,7 +853,7 @@ public interface CommandRegistration {
 				return CommandExitCode.of();
 			}
 			else {
-				return CommandExitCode.of(exitCodeSpec.exceptions, exitCodeSpec.functions);
+				return CommandExitCode.of(exitCodeSpec.functions);
 			}
 		}
 

@@ -391,7 +391,6 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.and()
 			.build();
 		assertThat(registration.getExitCode()).isNotNull();
-		assertThat(registration.getExitCode().getMappingExceptions()).hasSize(0);
 		assertThat(registration.getExitCode().getMappingFunctions()).hasSize(0);
 
 		registration = CommandRegistration.builder()
@@ -407,7 +406,6 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 				.and()
 			.build();
 		assertThat(registration.getExitCode()).isNotNull();
-		assertThat(registration.getExitCode().getMappingExceptions()).hasSize(2);
-		assertThat(registration.getExitCode().getMappingFunctions()).hasSize(2);
+		assertThat(registration.getExitCode().getMappingFunctions()).hasSize(4);
 	}
 }

@@ -16,11 +16,22 @@
 package org.springframework.shell.exit;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Interface used with implementation of a boot's ExitCodeExceptionMapper
+ * in a context of spring-shell spesific one. Mostly needed not to have a
+ * direct dependencies to boot classes as currently only one implementation
+ * instance can exist which we need to reset between command executions.
+ *
+ * @author Janne Valkealahti
+ */
 public interface ExitCodeMappings {
 
-	void reset(Map<Class<? extends Throwable>, Integer> exceptions,
-			List<Function<Throwable, Integer>> functions);
+	/**
+	 * Reset mappings into a given functions.
+	 *
+	 * @param functions the mapping functions
+	 */
+	void reset(List<Function<Throwable, Integer>> functions);
 }

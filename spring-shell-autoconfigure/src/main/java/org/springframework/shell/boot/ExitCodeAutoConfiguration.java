@@ -16,9 +16,7 @@
 package org.springframework.shell.boot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.boot.ExitCodeExceptionMapper;
@@ -62,17 +60,11 @@ public class ExitCodeAutoConfiguration {
 
 	static class ShellExitCodeMappingsExceptionMapper implements ExitCodeExceptionMapper, ExitCodeMappings {
 
-		private final Map<Class<? extends Throwable>, Integer> exceptions = new HashMap<>();
 		private final List<Function<Throwable, Integer>> functions = new ArrayList<>();
 
 		@Override
-		public void reset(Map<Class<? extends Throwable>, Integer> exceptions,
-				List<Function<Throwable, Integer>> functions) {
-			this.exceptions.clear();
+		public void reset(List<Function<Throwable, Integer>> functions) {
 			this.functions.clear();
-			if (exceptions != null) {
-				this.exceptions.putAll(exceptions);
-			}
 			if (functions != null) {
 				this.functions.addAll(functions);
 			}
@@ -81,14 +73,8 @@ public class ExitCodeAutoConfiguration {
 		@Override
 		public int getExitCode(Throwable exception) {
 			int exitCode = 0;
-			Integer code = this.exceptions.get(exception.getCause().getClass());
-			if (code != null) {
-				if (code > 0 && code > exitCode || code < 0 && code < exitCode) {
-					exitCode = code;
-				}
-			}
 			for (Function<Throwable, Integer> function : functions) {
-				code = function.apply(exception.getCause());
+				Integer code = function.apply(exception.getCause());
 				if (code != null) {
 					if (code > 0 && code > exitCode || code < 0 && code < exitCode) {
 						exitCode = code;

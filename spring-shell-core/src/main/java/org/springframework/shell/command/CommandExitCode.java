@@ -16,9 +16,7 @@
 package org.springframework.shell.command;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -27,13 +25,6 @@ import java.util.function.Function;
  * @author Janne Valkealahti
  */
 public interface CommandExitCode {
-
-	/**
-	 * Gets a mappings from exceptions to exit codes.
-	 *
-	 * @return exception mappings
-	 */
-	Map<Class<? extends Throwable>, Integer> getMappingExceptions();
 
 	/**
 	 * Gets a function mappings from exceptions to exit codes.
@@ -48,35 +39,25 @@ public interface CommandExitCode {
 	 * @return a command exit code
 	 */
 	public static CommandExitCode of() {
-		return of(new HashMap<>(), new ArrayList<>());
+		return of(new ArrayList<>());
 	}
 
 	/**
 	 * Gets an instance of a default {@link CommandExitCode}.
 	 *
-	 * @param exceptions the exception mappings
 	 * @param functions the function mappings
 	 * @return a command exit code
 	 */
-	public static CommandExitCode of(Map<Class<? extends Throwable>, Integer> exceptions,
-		List<Function<Throwable, Integer>> functions) {
-		return new DefaultCommandExitCode(exceptions, functions);
+	public static CommandExitCode of(List<Function<Throwable, Integer>> functions) {
+		return new DefaultCommandExitCode(functions);
 	}
 
 	static class DefaultCommandExitCode implements CommandExitCode {
 
-		private final Map<Class<? extends Throwable>, Integer> exceptions;
 		private final List<Function<Throwable, Integer>> functions;
 
-		DefaultCommandExitCode(Map<Class<? extends Throwable>, Integer> exceptions,
-				List<Function<Throwable, Integer>> functions) {
-			this.exceptions = exceptions;
+		DefaultCommandExitCode(	List<Function<Throwable, Integer>> functions) {
 			this.functions = functions;
-		}
-
-		@Override
-		public Map<Class<? extends Throwable>, Integer> getMappingExceptions() {
-			return exceptions;
 		}
 
 		@Override
