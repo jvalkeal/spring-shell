@@ -125,7 +125,10 @@ public class E2ECommands {
 				.map(MyException.class, 3)
 				.map(t -> {
 					String msg = t.getMessage();
-					if (msg != null && msg.contains("fun")) {
+					if (msg != null && msg.contains("ok")) {
+						return 0;
+					}
+					else if (msg != null && msg.contains("fun")) {
 						return 4;
 					}
 					return 0;
