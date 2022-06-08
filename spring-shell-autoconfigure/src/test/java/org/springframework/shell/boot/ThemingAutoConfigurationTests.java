@@ -21,6 +21,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.shell.style.FigureSettings;
+import org.springframework.shell.style.StyleSettings;
 import org.springframework.shell.style.TemplateExecutor;
 import org.springframework.shell.style.Theme;
 import org.springframework.shell.style.ThemeRegistry;
@@ -79,5 +81,8 @@ public class ThemingAutoConfigurationTests {
 	}
 
 	static class MyThemeSettings extends ThemeSettings {
+		MyThemeSettings() {
+			super(StyleSettings.styleSettings(), FigureSettings.figureSettings());
+		}
 	}
 }

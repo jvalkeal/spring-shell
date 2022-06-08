@@ -55,7 +55,11 @@ public class ThemeResolver {
 	 * @return a style
 	 */
 	public String resolveTag(String tag) {
-		return theme.getSettings().resolveTag(tag);
+		return theme.getSettings().styles().resolveTag(tag);
+	}
+
+	public String resolveFigureTag(String tag) {
+		return theme.getSettings().figures().resolveTag(tag);
 	}
 
 	/**
