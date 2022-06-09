@@ -20,6 +20,10 @@ public abstract class ThemeSettings {
 	private StyleSettings styleSettings;
 	private FigureSettings figureSettings;
 
+	public ThemeSettings() {
+		this(StyleSettings.dump(), FigureSettings.dump());
+	}
+
 	public ThemeSettings(StyleSettings styleSettings, FigureSettings figureSettings) {
 		this.styleSettings = styleSettings;
 		this.figureSettings = figureSettings;
@@ -38,10 +42,15 @@ public abstract class ThemeSettings {
 	}
 
 	public static ThemeSettings dump() {
-		return new DefaultThemeSettings(StyleSettings.dump(), FigureSettings.dump());
+		return new DefaultThemeSettings();
 	}
 
 	private static class DefaultThemeSettings extends ThemeSettings {
+
+		DefaultThemeSettings() {
+			super();
+		}
+
 		DefaultThemeSettings(StyleSettings styleSettings, FigureSettings figureSettings) {
 			super(styleSettings, figureSettings);
 		}

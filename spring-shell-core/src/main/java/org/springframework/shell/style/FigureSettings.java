@@ -21,6 +21,15 @@ public abstract class FigureSettings {
 	public final static String TAG_INFO = "info";
 	public final static String TAG_WARNING = "warning";
 	public final static String TAG_CROSS = "cross";
+	public final static String TAG_CHECKBOX_OFF = "checkboxOff";
+	public final static String TAG_CHECKBOX_ON = "checkboxOn";
+	public final static String TAG_LEFTWARDS_ARROR = "leftwardsArrow";
+	public final static String TAG_UPWARDS_ARROR = "upwardsArrow";
+	public final static String TAG_RIGHTWARDS_ARROR = "righwardsArror";
+	public final static String TAG_DOWNWARDS_ARROR = "downwardsArror";
+	public final static String TAG_LEFT_POINTING_QUOTATION = "leftPointingQuotation";
+	public final static String TAG_RIGHT_POINTING_QUOTATION = "rightPointingQuotation";
+	public final static String TAG_QUESTION_MARK = "questionMark";
 
 	public String tick() {
 		return "✔"; // U+2714 Heavy Check Mark Emoji, tick, checkmark
@@ -38,13 +47,46 @@ public abstract class FigureSettings {
 		return "✖"; // U+2716 Heavy Multiplication X Emoji, cross
 	}
 
-	// ☒ U+2612 Ballot Box with X
-	// ☐ U+2610 Ballot Box
+	public String checkboxOff() {
+		// return "◯"; // U+25EF Large Circle
+		return "☐";
+	}
 
-	// ← U+2190 Leftwards Arrow
-	// ↑ U+2191 Upwards Arrow
-	// → U+2192 Rightwards Arrow
-	// ↓ U+2193 Downwards Arrow
+	public String checkboxOn() {
+		// return "◉"; // U+25C9 Fisheye
+		return "☒";
+	}
+
+	public String leftwardsArrow() {
+		return "←"; // U+2190 Leftwards Arrow
+	}
+
+	public String upwardsArrow() {
+		return "↑"; // U+2191 Upwards Arrow
+	}
+
+	public String righwardsArror() {
+		return "→"; // U+2192 Rightwards Arrow
+	}
+
+	public String downwardsArror() {
+		return "↓"; // U+2193 Downwards Arrow
+	}
+
+	public String leftPointingQuotation() {
+		return "❮"; // U+276E Heavy Left-Pointing Angle Quotation Mark Ornament
+	}
+
+	public String rightPointingQuotation() {
+		return "❯"; // U+276F Heavy Right-Pointing Angle Quotation Mark Ornament
+	}
+
+	public String questionMark() {
+		return "?"; // U+003F Question Mark
+	}
+
+	// ☐ U+2610 Ballot Box
+	// ☒ U+2612 Ballot Box with X
 	// ↔ U+2194 Left Right Arrow Emoji
 	// ↕ U+2195 Up Down Arrow Emoji
 
@@ -58,6 +100,24 @@ public abstract class FigureSettings {
 				return warning();
 			case TAG_CROSS:
 				return cross();
+			case TAG_CHECKBOX_OFF:
+				return checkboxOff();
+			case TAG_CHECKBOX_ON:
+				return checkboxOn();
+			case TAG_LEFTWARDS_ARROR:
+				return leftwardsArrow();
+			case TAG_UPWARDS_ARROR:
+				return upwardsArrow();
+			case TAG_RIGHTWARDS_ARROR:
+				return righwardsArror();
+			case TAG_DOWNWARDS_ARROR:
+				return downwardsArror();
+			case TAG_LEFT_POINTING_QUOTATION:
+				return leftPointingQuotation();
+			case TAG_RIGHT_POINTING_QUOTATION:
+				return rightPointingQuotation();
+			case TAG_QUESTION_MARK:
+				return questionMark();
 		}
 		throw new IllegalArgumentException(String.format("Unknown tag '%s'", tag));
 	}
@@ -75,7 +135,16 @@ public abstract class FigureSettings {
 				TAG_TICK,
 				TAG_INFO,
 				TAG_WARNING,
-				TAG_CROSS
+				TAG_CROSS,
+				TAG_CHECKBOX_OFF,
+				TAG_CHECKBOX_ON,
+				TAG_LEFTWARDS_ARROR,
+				TAG_UPWARDS_ARROR,
+				TAG_RIGHTWARDS_ARROR,
+				TAG_DOWNWARDS_ARROR,
+				TAG_LEFT_POINTING_QUOTATION,
+				TAG_RIGHT_POINTING_QUOTATION,
+				TAG_QUESTION_MARK
 		};
 	}
 
@@ -102,6 +171,38 @@ public abstract class FigureSettings {
 		@Override
 		public String cross() {
 			return "x";
+		}
+
+		public String checkboxOff() {
+			return "[ ]";
+		}
+
+		public String checkboxOn() {
+			return "[x]";
+		}
+
+		public String leftwardsArrow() {
+			return "<";
+		}
+
+		public String upwardsArrow() {
+			return "^";
+		}
+
+		public String righwardsArror() {
+			return ">";
+		}
+
+		public String downwardsArror() {
+			return "v";
+		}
+
+		public String leftPointingQuotation() {
+			return "<";
+		}
+
+		public String rightPointingQuotation() {
+			return ">";
 		}
 	}
 }
