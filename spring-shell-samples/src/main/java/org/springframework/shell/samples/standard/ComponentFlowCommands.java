@@ -23,10 +23,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.jline.terminal.impl.DumbTerminal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.shell.command.CommandExecution;
+import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
 import org.springframework.shell.command.CommandParser;
+import org.springframework.shell.command.CommandParser.CommandParserException;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.component.flow.ComponentFlow;
 import org.springframework.shell.component.flow.ComponentFlow.ComponentFlowResult;
@@ -171,7 +174,6 @@ public class ComponentFlowCommands extends AbstractShellComponent {
 					String path1 = ctx.getOptionValue("path1");
 					String single1 = ctx.getOptionValue("single1");
 					String asdf = ctx.getOptionValue("multi1");
-					// List<String> multi1 = ctx.getOptionValue("multi1") != null ? Arrays.asList(ctx.getOptionValue("multi1")) : new ArrayList<>();
 					List<String> multi1 = new ArrayList<>();
 					if (StringUtils.hasText(asdf)) {
 						multi1.add(asdf);
@@ -219,17 +221,8 @@ public class ComponentFlowCommands extends AbstractShellComponent {
 							.build();
 					ComponentFlowResult result = flow.run();
 
-					List<CommandParser.CommandParserException> xxx = new ArrayList<>();
-					result.getContext().stream().forEach(e -> {
-						if (e.getValue() == null) {
-							xxx.add(CommandParser.CommandParserException.of(e.getKey() + " must be defined"));
-						}
-					});
-					if (!result.getContext().containsKey("single1")) {
-						xxx.add(CommandParser.CommandParserException.of("single1 must be defined"));
-					}
-
-					if (xxx.isEmpty()) {
+					boolean hasTty = !((ctx.getTerminal() instanceof DumbTerminal) && ctx.getTerminal().getSize().getRows() == 0);
+					if (hasTty) {
 						StringBuilder buf = new StringBuilder();
 						result.getContext().stream().forEach(e -> {
 							buf.append(e.getKey());
@@ -241,9 +234,19 @@ public class ComponentFlowCommands extends AbstractShellComponent {
 						ctx.getTerminal().writer().flush();
 					}
 					else {
-						throw new CommandExecution.CommandParserExceptionsException("ddd", xxx);
+						List<CommandParser.CommandParserException> errors = new ArrayList<>();
+						result.getContext().stream().forEach(e -> {
+							if (e.getValue() == null) {
+								errors.add(CommandParserException.of(String.format("Missing option, longnames='%s'", e.getKey())));
+							}
+						});
+						if (!result.getContext().containsKey("single1")) {
+							errors.add(CommandParserException.of("Missing option, longnames='single'"));
+						}
+						if (!errors.isEmpty()) {
+							throw CommandParserExceptionsException.of("Missing options", errors);
+						}
 					}
-
 				})
 				.and()
 			.build();
