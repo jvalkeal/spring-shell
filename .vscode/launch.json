@@ -10,6 +10,14 @@
         },
         {
             "type": "java",
+            "name": "Sample flow",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "flow showcase3 --field1 xxx --field2 xxx --confirmation1 true --path1 xxx --multi1 value1 --single1 value1"
+        },
+        {
+            "type": "java",
             "name": "Sample help",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
