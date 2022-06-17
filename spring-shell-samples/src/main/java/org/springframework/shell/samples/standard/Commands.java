@@ -61,10 +61,10 @@ public class Commands {
 		System.out.println("You passed " + force);
 	}
 
-	@ShellMethod("Test completion of special values.")
-	public void quote(@ShellOption(valueProvider = FunnyValuesProvider.class) String text) {
-		System.out.println("You said " + text);
-	}
+	// @ShellMethod("Test completion of special values.")
+	// public void quote(@ShellOption(valueProvider = FunnyValuesProvider.class) String text) {
+	// 	System.out.println("You said " + text);
+	// }
 
 	@ShellMethod("Add numbers.")
 	public int add(int a, int b, int c) {
@@ -105,17 +105,17 @@ public class Commands {
  *
  * @author Eric Bottard
  */
-@Component
-class FunnyValuesProvider extends ValueProviderSupport {
+// @Component
+// class FunnyValuesProvider extends ValueProviderSupport {
 
-	private final static String[] VALUES = new String[] {
-		"hello world",
-		"I'm quoting \"The Daily Mail\"",
-		"10 \\ 3 = 3"
-	};
+// 	private final static String[] VALUES = new String[] {
+// 		"hello world",
+// 		"I'm quoting \"The Daily Mail\"",
+// 		"10 \\ 3 = 3"
+// 	};
 
-	@Override
-	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-		return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
-	}
-}
+// 	@Override
+// 	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
+// 		return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
+// 	}
+// }
