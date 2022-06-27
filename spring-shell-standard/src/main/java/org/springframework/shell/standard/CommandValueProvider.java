@@ -16,22 +16,20 @@
 
 package org.springframework.shell.standard;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.command.CommandCatalog;
-import org.springframework.shell.command.CommandOption;
 
 /**
  * A {@link ValueProvider} that can be used to auto-complete names of shell commands.
  *
  * @author Eric Bottard
+ * @author Janne Valkealahti
  */
-public class CommandValueProvider extends ValueProviderSupport {
+public class CommandValueProvider implements ValueProvider {
 
 	private final CommandCatalog commandRegistry;
 
@@ -39,15 +37,10 @@ public class CommandValueProvider extends ValueProviderSupport {
 		this.commandRegistry = commandRegistry;
 	}
 
-	// @Override
-	// public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-	// 	return commandRegistry.getRegistrations().keySet().stream()
-	// 		.map(CompletionProposal::new)
-	// 		.collect(Collectors.toList());
-	// }
-
 	@Override
-	public List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext) {
-		return new ArrayList<>();
+	public List<CompletionProposal> complete(CompletionContext completionContext) {
+		return commandRegistry.getRegistrations().keySet().stream()
+			.map(CompletionProposal::new)
+			.collect(Collectors.toList());
 	}
 }

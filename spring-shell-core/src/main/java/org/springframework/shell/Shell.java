@@ -295,7 +295,7 @@ public class Shell {
 				.flatMap(o -> {
 					Function<CompletionContext, List<CompletionProposal>> completion = o.getCompletion();
 					if (completion != null) {
-						List<CompletionProposal> apply = completion.apply(argsContext);
+						List<CompletionProposal> apply = completion.apply(argsContext.commandOption(o));
 						return apply.stream();
 					}
 					return Stream.empty();

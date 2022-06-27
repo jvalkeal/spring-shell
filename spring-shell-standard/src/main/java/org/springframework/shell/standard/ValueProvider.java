@@ -17,10 +17,8 @@ package org.springframework.shell.standard;
 
 import java.util.List;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
-import org.springframework.shell.command.CommandOption;
 
 /**
  * Beans implementing this interface are queried during TAB completion to gather possible values of a parameter.
@@ -30,9 +28,5 @@ import org.springframework.shell.command.CommandOption;
  */
 public interface ValueProvider {
 
-	boolean supports(CommandOption option, CompletionContext completionContext);
-	List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext);
-
-	// boolean supports(MethodParameter parameter, CompletionContext completionContext);
-	// List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints);
+	List<CompletionProposal> complete(CompletionContext completionContext);
 }

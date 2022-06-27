@@ -15,23 +15,21 @@
  */
 package org.springframework.shell.samples.standard;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
-import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.standard.EnumValueProvider;
+import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.shell.standard.ValueProviderSupport;
+import org.springframework.shell.standard.ValueProvider;
 
-@Configuration
+@ShellComponent
 public class CompleteCommands {
 
 	@Bean
@@ -70,7 +68,12 @@ public class CompleteCommands {
 		return "You said " + arg1;
 	}
 
-	static class FunnyValuesProvider extends ValueProviderSupport {
+	@Bean
+	FunnyValuesProvider funnyValuesProvider() {
+		return new FunnyValuesProvider();
+	}
+
+	static class FunnyValuesProvider implements ValueProvider {
 
 		private final static String[] VALUES = new String[] {
 			"hello world",
@@ -78,15 +81,19 @@ public class CompleteCommands {
 			"10 \\ 3 = 3"
 		};
 
-		// @Override
-		// public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-		// 	return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
-		// }
-
 		@Override
-		public List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext) {
-			return new ArrayList<>();
+		public List<CompletionProposal> complete(CompletionContext completionContext) {
+			return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
 		}
 	}
 
+
+	@ShellMethod(value = "complete sample4", key = "complete sample4")
+	public String completeCommandSample4(@ShellOption(valueProvider = EnumValueProvider.class) MyEnums arg1) {
+		return "You said " + arg1;
+	}
+
+	static enum MyEnums {
+		E1, E2, E3
+	}
 }

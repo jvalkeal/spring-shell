@@ -149,11 +149,12 @@ public class StandardMethodTargetRegistrar implements MethodTargetRegistrar, App
 								optionSpec.required();
 							}
 							if (!ClassUtils.isAssignable(NoValueProvider.class, so.valueProvider())) {
-								ValueProvider valueProviderBean = this.applicationContext.getBean(so.valueProvider());
 								Function<CompletionContext, List<CompletionProposal>> completionFunction = ctx -> {
-									return new ArrayList<>();
+									ValueProvider valueProviderBean = this.applicationContext.getBean(so.valueProvider());
+									List<CompletionProposal> complete = valueProviderBean.complete(ctx);
+									return complete;
 								};
-								// optionSpec.completion(completion);
+								optionSpec.completion(completionFunction);
 							}
 						}
 					}

@@ -20,18 +20,12 @@ import java.lang.annotation.ElementType;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.core.MethodParameter;
-import org.springframework.shell.CompletionContext;
-import org.springframework.shell.CompletionProposal;
+import javax.validation.constraints.Size;
+
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import org.springframework.shell.standard.ValueProviderSupport;
-import org.springframework.stereotype.Component;
-
-import javax.validation.constraints.Size;
 
 /**
  * Example commands for the Shell 2 Standard resolver.
