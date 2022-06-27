@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.samples.standard;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -35,7 +37,7 @@ public class CompleteCommands {
 	@Bean
 	CommandRegistration completeCommandRegistration1() {
 		return CommandRegistration.builder()
-			.command("complete", "command1")
+			.command("complete", "sample1")
 			.description("complete sample1")
 			.group("Complete Commands")
 			.withOption()
@@ -76,9 +78,14 @@ public class CompleteCommands {
 			"10 \\ 3 = 3"
 		};
 
+		// @Override
+		// public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
+		// 	return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
+		// }
+
 		@Override
-		public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-			return Arrays.stream(VALUES).map(CompletionProposal::new).collect(Collectors.toList());
+		public List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext) {
+			return new ArrayList<>();
 		}
 	}
 

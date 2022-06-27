@@ -54,27 +54,27 @@ public class CommandValueProviderTest {
 		MockitoAnnotations.openMocks(this);
 	}
 
-	@Test
-	public void testValues() {
-		CommandValueProvider valueProvider = new CommandValueProvider(catalog);
+	// @Test
+	// public void testValues() {
+	// 	CommandValueProvider valueProvider = new CommandValueProvider(catalog);
 
-		Method help = ReflectionUtils.findMethod(Command.class, "help", String.class);
-		MethodParameter methodParameter = Utils.createMethodParameter(help, 0);
-		CompletionContext completionContext = new CompletionContext(Arrays.asList("help", "m"), 0, 0);
-		boolean supports = valueProvider.supports(methodParameter, completionContext);
+	// 	Method help = ReflectionUtils.findMethod(Command.class, "help", String.class);
+	// 	MethodParameter methodParameter = Utils.createMethodParameter(help, 0);
+	// 	CompletionContext completionContext = new CompletionContext(Arrays.asList("help", "m"), 0, 0);
+	// 	boolean supports = valueProvider.supports(methodParameter, completionContext);
 
-		assertThat(supports).isEqualTo(true);
-		Map<String, CommandRegistration> registrations = new HashMap<>();
-		registrations.put("me", null);
-		registrations.put("meow", null);
-		registrations.put("yourself", null);
+	// 	assertThat(supports).isEqualTo(true);
+	// 	Map<String, CommandRegistration> registrations = new HashMap<>();
+	// 	registrations.put("me", null);
+	// 	registrations.put("meow", null);
+	// 	registrations.put("yourself", null);
 
-		when(catalog.getRegistrations()).thenReturn(registrations);
-		List<CompletionProposal> proposals = valueProvider.complete(methodParameter, completionContext, new String[0]);
+	// 	when(catalog.getRegistrations()).thenReturn(registrations);
+	// 	List<CompletionProposal> proposals = valueProvider.complete(methodParameter, completionContext, new String[0]);
 
-		assertThat(proposals).extracting("value", String.class)
-			.contains("me", "meow", "yourself");
-	}
+	// 	assertThat(proposals).extracting("value", String.class)
+	// 		.contains("me", "meow", "yourself");
+	// }
 
 
 	public static class Command {

@@ -30,9 +30,9 @@ import org.springframework.shell.command.CommandOption;
  */
 public interface ValueProvider {
 
-	// boolean supports(CommandOption option, CompletionContext completionContext);
-	// List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext);
+	boolean supports(CommandOption option, CompletionContext completionContext);
+	List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext);
 
-	boolean supports(MethodParameter parameter, CompletionContext completionContext);
-	List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints);
+	// boolean supports(MethodParameter parameter, CompletionContext completionContext);
+	// List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints);
 }

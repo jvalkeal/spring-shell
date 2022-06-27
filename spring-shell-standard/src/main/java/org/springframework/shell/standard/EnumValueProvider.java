@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
+import org.springframework.shell.command.CommandOption;
 
 /**
  * A {@link ValueProvider} that knows how to complete values for {@link Enum} typed parameters.
@@ -29,24 +30,34 @@ import org.springframework.shell.CompletionProposal;
  */
 public class EnumValueProvider implements ValueProvider {
 
+	// @Override
+	// public boolean supports(MethodParameter parameter, CompletionContext completionContext) {
+	// 	return Enum.class.isAssignableFrom(parameter.getParameterType());
+	// }
+
+	// @Override
+	// public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
+	// 	List<CompletionProposal> result = new ArrayList<>();
+	// 	for (Object v : parameter.getParameterType().getEnumConstants()) {
+	// 		Enum<?> e = (Enum<?>) v;
+	// 		String prefix = completionContext.currentWordUpToCursor();
+	// 		if (prefix == null) {
+	// 			prefix = "";
+	// 		}
+	// 		if (e.name().startsWith(prefix)) {
+	// 			result.add(new CompletionProposal(e.name()));
+	// 		}
+	// 	}
+	// 	return result;
+	// }
+
 	@Override
-	public boolean supports(MethodParameter parameter, CompletionContext completionContext) {
-		return Enum.class.isAssignableFrom(parameter.getParameterType());
+	public boolean supports(CommandOption option, CompletionContext completionContext) {
+		return false;
 	}
 
 	@Override
-	public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-		List<CompletionProposal> result = new ArrayList<>();
-		for (Object v : parameter.getParameterType().getEnumConstants()) {
-			Enum<?> e = (Enum<?>) v;
-			String prefix = completionContext.currentWordUpToCursor();
-			if (prefix == null) {
-				prefix = "";
-			}
-			if (e.name().startsWith(prefix)) {
-				result.add(new CompletionProposal(e.name()));
-			}
-		}
-		return result;
+	public List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext) {
+		return new ArrayList<>();
 	}
 }

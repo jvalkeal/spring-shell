@@ -18,6 +18,7 @@ package org.springframework.shell.standard;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
+import org.springframework.shell.command.CommandOption;
 
 /**
  * Base class for {@link ValueProvider} that match by type. Subclasses {@literal C} will be selected for parameters
@@ -27,12 +28,17 @@ import org.springframework.shell.CompletionContext;
  */
 public abstract class ValueProviderSupport implements ValueProvider {
 
+	// @Override
+	// public boolean supports(MethodParameter parameter, CompletionContext completionContext) {
+	// 	ShellOption annotation = parameter.getParameterAnnotation(ShellOption.class);
+	// 	if (annotation == null) {
+	// 		return false;
+	// 	}
+	// 	return annotation.valueProvider().isAssignableFrom(this.getClass());
+	// }
+
 	@Override
-	public boolean supports(MethodParameter parameter, CompletionContext completionContext) {
-		ShellOption annotation = parameter.getParameterAnnotation(ShellOption.class);
-		if (annotation == null) {
-			return false;
-		}
-		return annotation.valueProvider().isAssignableFrom(this.getClass());
+	public boolean supports(CommandOption option, CompletionContext completionContext) {
+		return false;
 	}
 }

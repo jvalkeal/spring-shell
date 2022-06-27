@@ -16,6 +16,7 @@
 
 package org.springframework.shell.standard;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 import org.springframework.core.MethodParameter;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
+import org.springframework.shell.command.CommandOption;
 
 /**
  * An example commands class.
@@ -50,7 +52,7 @@ public class Remote {
 	public void shutdown(@ShellOption Delay delay) {
 
 	}
-	
+
 	@ShellMethod(value = "a different prefix", prefix = "-")
 	public void prefixTest(@ShellOption String message) {
 
@@ -79,13 +81,18 @@ public class Remote {
 			this.values = values;
 		}
 
+		// @Override
+		// public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
+		// 	String prefix = completionContext.currentWord() != null ? completionContext.currentWord() : "";
+		// 	return Stream.of(values)
+		// 			.filter(n -> n.startsWith(prefix))
+		// 			.map(CompletionProposal::new)
+		// 			.collect(Collectors.toList());
+		// }
+
 		@Override
-		public List<CompletionProposal> complete(MethodParameter parameter, CompletionContext completionContext, String[] hints) {
-			String prefix = completionContext.currentWord() != null ? completionContext.currentWord() : "";
-			return Stream.of(values)
-					.filter(n -> n.startsWith(prefix))
-					.map(CompletionProposal::new)
-					.collect(Collectors.toList());
+		public List<CompletionProposal> complete(CommandOption option, CompletionContext completionContext) {
+			return new ArrayList<>();
 		}
 	}
 }
