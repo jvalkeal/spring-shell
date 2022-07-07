@@ -1,0 +1,9 @@
+plugins {
+	id 'java-library'
+}
+
+description = 'Spring Shell Samples'
+
+dependencies {
+	api('org.springframework:spring-core')
+}
