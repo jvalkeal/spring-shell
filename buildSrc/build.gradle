@@ -1,0 +1,21 @@
+repositories {
+	mavenCentral()
+	if (version.contains('-')) {
+		maven { url "https://repo.spring.io/milestone" }
+	}
+	if (version.endsWith('-SNAPSHOT')) {
+		maven { url "https://repo.spring.io/snapshot" }
+	}
+}
+
+ext {
+	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
+	propertiesFile.withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+	}
+}
+
+dependencies {
+	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
+}
