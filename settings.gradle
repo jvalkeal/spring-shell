@@ -8,7 +8,7 @@ pluginManagement {
 
 rootProject.name = 'spring-shell'
 
-// include 'spring-shell-autoconfigure'
+include 'spring-shell-autoconfigure'
 include 'spring-shell-core'
 include 'spring-shell-core-test-support'
 include 'spring-shell-dependencies'
