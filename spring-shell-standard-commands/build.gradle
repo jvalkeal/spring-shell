@@ -1,9 +1,0 @@
-plugins {
-	id 'java-library'
-}
-
-description = 'Spring Shell Standard Commands'
-
-dependencies {
-	api('org.springframework:spring-core')
-}
