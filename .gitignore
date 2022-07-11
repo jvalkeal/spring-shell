@@ -3,9 +3,10 @@
 .settings/
 
 target/
+build/
+bin/
 
 .gradle
-buildSrc/build/
 .idea/
 *.iml
 *.ipr

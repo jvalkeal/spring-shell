@@ -1,21 +1,25 @@
+plugins {
+	id "java-gradle-plugin"
+	id "java"
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+
 repositories {
+	gradlePluginPortal()
 	mavenCentral()
-	if (version.contains('-')) {
-		maven { url "https://repo.spring.io/milestone" }
-	}
-	if (version.endsWith('-SNAPSHOT')) {
-		maven { url "https://repo.spring.io/snapshot" }
-	}
+	maven { url 'https://repo.spring.io/plugins-release/' }
 }
 
-ext {
-	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
-	propertiesFile.withInputStream {
-		def properties = new Properties()
-		properties.load(it)
+gradlePlugin {
+	plugins {
+		managementConfiguration {
+			id = "org.springframework.shell.management-configuration"
+			implementationClass = "org.springframework.shell.gradle.ManagementConfigurationPlugin"
+		}
+		springModule {
+			id = "org.springframework.shell.spring-module"
+			implementationClass = "org.springframework.shell.gradle.SpringModulePlugin"
+		}
 	}
-}
-
-dependencies {
-	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
 }

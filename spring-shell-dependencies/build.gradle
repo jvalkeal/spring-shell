@@ -1,9 +1,0 @@
-plugins {
-	id 'java-library'
-}
-
-description = 'Spring Shell BOM'
-
-dependencies {
-	api('org.springframework:spring-core')
-}
