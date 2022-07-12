@@ -1,6 +1,5 @@
 plugins {
 	id 'org.springframework.shell.management-configuration'
-	// id 'org.springframework.shell.spring-module'
 	id 'org.springframework.shell.starter'
 }
 
@@ -8,6 +7,7 @@ description = 'Spring Shell Starter'
 
 dependencies {
 	management platform(project(":spring-shell-dependencies"))
+	api(project(":spring-shell-autoconfigure"))
 	api(project(":spring-shell-core"))
 	api(project(":spring-shell-standard"))
 	api(project(":spring-shell-standard-commands"))
