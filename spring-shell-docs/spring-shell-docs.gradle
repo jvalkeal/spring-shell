@@ -1,0 +1,24 @@
+plugins {
+	id 'org.springframework.shell.management-configuration'
+	id 'org.springframework.shell.spring-module'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+description = 'Spring Shell Documentation'
+
+dependencies {
+	management platform(project(":spring-shell-dependencies"))
+	implementation project(':spring-shell-starter')
+}
+
+// artifacts {
+// 	archives zip
+// }
+
+// publishing {
+// 	publications {
+// 		maven(MavenPublication) {
+// 			artifact zip
+// 		}
+// 	}
+// }
