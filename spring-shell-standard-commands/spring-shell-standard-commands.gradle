@@ -9,4 +9,5 @@ dependencies {
 	management platform(project(":spring-shell-dependencies"))
 	implementation project(':spring-shell-core')
 	implementation project(':spring-shell-standard')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
