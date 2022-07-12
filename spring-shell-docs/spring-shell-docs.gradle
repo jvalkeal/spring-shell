@@ -11,6 +11,10 @@ dependencies {
 	implementation project(':spring-shell-starter')
 }
 
+asciidoctor {
+	sourceDir 'src/main/asciidoc'
+}
+
 // artifacts {
 // 	archives zip
 // }
