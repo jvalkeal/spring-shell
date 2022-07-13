@@ -14,14 +14,10 @@ repositories {
 
 ext {
 	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
-	// println("XXX1")
-	// println(propertiesFile)
-	// println("XXX2")
 	propertiesFile.withInputStream {
 		def properties = new Properties()
 		properties.load(it)
 		set("springBootVersion", properties["springBootVersion"])
-		// println(properties)
 	}
 }
 
@@ -29,6 +25,7 @@ dependencies {
 	implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
 	// implementation(platform("org.springframework.boot:spring-boot-dependencies:3.0.0-SNAPSHOT"))
 	implementation("org.springframework:spring-core")
+	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.2'
 }
 
 gradlePlugin {
@@ -44,6 +41,10 @@ gradlePlugin {
 		starterPlugin {
 			id = "org.springframework.shell.starter"
 			implementationClass = "org.springframework.shell.gradle.StarterPlugin"
+		}
+		asciidoctorPlugin {
+			id = "org.springframework.shell.asciidoctor"
+			implementationClass = "org.springframework.shell.gradle.AsciidoctorPlugin"
 		}
 	}
 }
