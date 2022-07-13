@@ -37,7 +37,7 @@ public class AsciidoctorPlugin implements Plugin<Project> {
 			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
 				asciidoctorTask.dependsOn(unzipResources);
 				asciidoctorTask.dependsOn(snippetsResources);
-				configureExtensions(project, asciidoctorTask);
+				// configureExtensions(project, asciidoctorTask);
 				configureCommonAttributes(project, asciidoctorTask);
 				configureOptions(asciidoctorTask);
 				asciidoctorTask.sourceDir("src/main/asciidoc");
@@ -88,16 +88,16 @@ public class AsciidoctorPlugin implements Plugin<Project> {
 		// project.getExtensions().getByType(AsciidoctorJExtension.class).fatalWarnings(".*");
 	}
 
-	private void configureExtensions(Project project, AbstractAsciidoctorTask asciidoctorTask) {
-		Configuration extensionsConfiguration = project.getConfigurations().maybeCreate("asciidoctorExtensions");
-		extensionsConfiguration.defaultDependencies(new Action<DependencySet>() {
-			@Override
-			public void execute(DependencySet dependencies) {
-				dependencies.add(project.getDependencies().create("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.2.RELEASE"));
-			}
-		});
-		asciidoctorTask.configurations(extensionsConfiguration);
-	}
+	// private void configureExtensions(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+	// 	Configuration extensionsConfiguration = project.getConfigurations().maybeCreate("asciidoctorExtensions");
+	// 	extensionsConfiguration.defaultDependencies(new Action<DependencySet>() {
+	// 		@Override
+	// 		public void execute(DependencySet dependencies) {
+	// 			dependencies.add(project.getDependencies().create("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch:0.4.2.RELEASE"));
+	// 		}
+	// 	});
+	// 	asciidoctorTask.configurations(extensionsConfiguration);
+	// }
 
 	private Sync createSnippetsResourcesTask(Project project) {
 		Sync xxx = project.getTasks().create("snippetResources", Sync.class, sync -> {
@@ -145,6 +145,7 @@ public class AsciidoctorPlugin implements Plugin<Project> {
 
 	private void configureHtmlOnlyAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("toc", "left");
 		attributes.put("source-highlighter", "highlight.js");
 		attributes.put("highlightjsdir", "js/highlight");
 		attributes.put("highlightjs-theme", "github");
@@ -159,6 +160,7 @@ public class AsciidoctorPlugin implements Plugin<Project> {
 				Map<String, Object> attrs = new HashMap<>();
 				if (version != null && version.toString() != Project.DEFAULT_VERSION) {
 					attrs.put("revnumber", version);
+					attrs.put("projectVersion", version);
 				}
 				return attrs;
 			}
@@ -168,7 +170,7 @@ public class AsciidoctorPlugin implements Plugin<Project> {
 
 	private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
-		attributes.put("attribute-missing", "warn");
+		// attributes.put("attribute-missing", "warn");
 		attributes.put("icons", "font");
 		attributes.put("idprefix", "");
 		attributes.put("idseparator", "-");
