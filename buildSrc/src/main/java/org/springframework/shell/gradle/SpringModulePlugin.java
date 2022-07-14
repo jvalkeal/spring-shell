@@ -1,11 +1,14 @@
 package org.springframework.shell.gradle;
 
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 // import org.gradle.api.plugins.MavenPlugin;
 import org.gradle.api.plugins.PluginManager;
 // import org.springframework.gradle.classpath.CheckClasspathForProhibitedDependenciesPlugin;
 // import org.springframework.gradle.maven.SpringMavenPlugin;
+import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.external.javadoc.CoreJavadocOptions;
 
 /**
  * @author Rob Winch
@@ -26,6 +29,17 @@ class SpringModulePlugin extends AbstractSpringJavaPlugin {
 		// if (!Utils.isRelease(project)) {
 		// 	deployArtifacts.dependsOn project.tasks.artifactoryPublish
 		// }
+
+		project.getPlugins().withType(JavaBasePlugin.class, java -> {
+
+			project.getTasks().withType(Javadoc.class, (javadoc) -> {
+				CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
+				options.source("17");
+				options.encoding("UTF-8");
+				options.addStringOption("Xdoclint:none", "-quiet");
+			});
+
+		});
 	}
 
 }
