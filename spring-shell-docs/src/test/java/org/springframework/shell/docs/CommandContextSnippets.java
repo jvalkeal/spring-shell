@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.docs;
 
-import javax.validation.constraints.Null;
+import jakarta.validation.constraints.Null;
 
 import org.springframework.shell.command.CommandContext;
 

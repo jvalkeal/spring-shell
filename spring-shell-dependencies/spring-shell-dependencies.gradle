@@ -1,0 +1,23 @@
+plugins {
+	id 'java-platform'
+	id 'maven-publish'
+}
+
+javaPlatform {
+	allowDependencies()
+}
+
+description = 'Spring Shell BOM'
+
+dependencies {
+	api platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = 'spring-shell-dependencies'
+			from components.javaPlatform
+		}
+	}
+}
