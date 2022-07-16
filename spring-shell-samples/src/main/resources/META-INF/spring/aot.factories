@@ -1,2 +1,2 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
-org.springframework.shell.samples.config.SpringShellRuntimeHintsRegistrar
+org.springframework.shell.samples.config.SamplesRuntimeHints
