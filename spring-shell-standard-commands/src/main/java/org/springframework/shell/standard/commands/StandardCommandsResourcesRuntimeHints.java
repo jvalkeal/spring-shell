@@ -28,7 +28,7 @@ class StandardCommandsResourcesRuntimeHints implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		hints.resources()
-			.registerPattern("template/.*.st")
-			.registerPattern("template/.*.stg");
+			.registerPattern("template/*.st")
+			.registerPattern("template/*.stg");
 	}
 }

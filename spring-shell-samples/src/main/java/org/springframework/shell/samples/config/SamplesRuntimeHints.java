@@ -25,6 +25,7 @@ import org.springframework.aot.hint.ResourceHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
+import org.springframework.util.ClassUtils;
 
 public class SamplesRuntimeHints implements RuntimeHintsRegistrar {
 
@@ -33,13 +34,17 @@ public class SamplesRuntimeHints implements RuntimeHintsRegistrar {
 		ResourceHints resource = hints.resources();
 		ProxyHints proxy = hints.proxies();
 		ReflectionHints reflection = hints.reflection();
+		// should go graalvm-reachability-metadata
 		registerResources(resource);
+		// should go graalvm-reachability-metadata
 		registerProxies(proxy, "com.sun.jna.Library", "com.sun.jna.Callback",
 				"org.jline.terminal.impl.jna.win.Kernel32", "org.jline.terminal.impl.jna.linux.CLibrary");
+		// should go graalvm-reachability-metadata
 		registerForMostReflection(reflection, "com.sun.jna.CallbackReference", "com.sun.jna.Native",
 				"com.sun.jna.NativeLong", "com.sun.jna.Pointer", "com.sun.jna.Structure",
 				"com.sun.jna.ptr.IntByReference", "com.sun.jna.ptr.PointerByReference", "com.sun.jna.Klass",
 				"com.sun.jna.Structure$FFIType", "com.sun.jna.Structure$FFIType$size_t");
+		// should go graalvm-reachability-metadata
 		registerForMostReflection(reflection, "org.jline.terminal.impl.jna.win.Kernel32$CHAR_INFO",
 				"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_CURSOR_INFO",
 				"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_SCREEN_BUFFER_INFO",
@@ -53,6 +58,20 @@ public class SamplesRuntimeHints implements RuntimeHintsRegistrar {
 				"org.jline.terminal.impl.jna.win.Kernel32$FOCUS_EVENT_RECORD",
 				"org.jline.terminal.impl.jna.win.Kernel32$SMALL_RECT",
 				"org.jline.terminal.impl.jna.win.Kernel32$UnionChar");
+		// from spring-native sb-3.0.x branch
+		registerHibernateValidatorHints(hints, classLoader);
+	}
+
+	private void registerHibernateValidatorHints(RuntimeHints hints, ClassLoader classLoader) {
+		if (!ClassUtils.isPresent("org.hibernate.validator.HibernateValidator", classLoader)) {
+			return;
+		}
+		hints.reflection().registerType(TypeReference.of("org.hibernate.validator.internal.util.logging.Log_$logger"),
+			hint -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+		hints.reflection().registerType(
+			TypeReference.of("org.hibernate.validator.internal.util.logging.Messages_$bundle"),
+				hint -> hint.withField("INSTANCE", fieldHint -> {
+			}));
 	}
 
 	private void registerResources(ResourceHints resource) {
