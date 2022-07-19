@@ -3,7 +3,10 @@
 .settings/
 
 target/
+build/
+bin/
 
+.gradle
 .idea/
 *.iml
 *.ipr
