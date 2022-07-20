@@ -30,7 +30,7 @@ jobs:
           set-java-home: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
-          ./mvnw clean package -Pnative
+          ./mvnw clean package -Pnativex
       - uses: actions/upload-artifact@v2
         with:
           name: spring-shell-samples-${{ matrix.nickname }}
