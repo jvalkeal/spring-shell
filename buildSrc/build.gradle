@@ -1,0 +1,50 @@
+plugins {
+	id "java-gradle-plugin"
+	id "java"
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+
+repositories {
+	gradlePluginPortal()
+	mavenCentral()
+	maven { url 'https://repo.spring.io/plugins-release/' }
+	maven { url "https://repo.spring.io/snapshot" }
+}
+
+ext {
+	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
+	propertiesFile.withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		set("springBootVersion", properties["springBootVersion"])
+	}
+}
+
+dependencies {
+	implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
+	// implementation(platform("org.springframework.boot:spring-boot-dependencies:3.0.0-SNAPSHOT"))
+	implementation("org.springframework:spring-core")
+	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.2'
+}
+
+gradlePlugin {
+	plugins {
+		managementConfiguration {
+			id = "org.springframework.shell.management-configuration"
+			implementationClass = "org.springframework.shell.gradle.ManagementConfigurationPlugin"
+		}
+		springModule {
+			id = "org.springframework.shell.spring-module"
+			implementationClass = "org.springframework.shell.gradle.SpringModulePlugin"
+		}
+		starterPlugin {
+			id = "org.springframework.shell.starter"
+			implementationClass = "org.springframework.shell.gradle.StarterPlugin"
+		}
+		asciidoctorPlugin {
+			id = "org.springframework.shell.asciidoctor"
+			implementationClass = "org.springframework.shell.gradle.AsciidoctorPlugin"
+		}
+	}
+}

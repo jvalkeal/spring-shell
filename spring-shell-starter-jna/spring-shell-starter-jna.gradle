@@ -1,0 +1,12 @@
+plugins {
+	id 'org.springframework.shell.management-configuration'
+	id 'org.springframework.shell.starter'
+}
+
+description = 'Spring Shell Starter Jna'
+
+dependencies {
+	management platform(project(":spring-shell-dependencies"))
+	api(project(":spring-shell-starter"))
+	// implementation 'org.jline:jline-terminal-jna'
+}
