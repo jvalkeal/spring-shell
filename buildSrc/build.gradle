@@ -30,10 +30,10 @@ dependencies {
 
 gradlePlugin {
 	plugins {
-		managementConfiguration {
-			id = "org.springframework.shell.management-configuration"
-			implementationClass = "org.springframework.shell.gradle.ManagementConfigurationPlugin"
-		}
+		// managementConfiguration {
+		// 	id = "org.springframework.shell.management-configuration"
+		// 	implementationClass = "org.springframework.shell.gradle.ManagementConfigurationPlugin"
+		// }
 		springModule {
 			id = "org.springframework.shell.spring-module"
 			implementationClass = "org.springframework.shell.gradle.SpringModulePlugin"
@@ -46,5 +46,13 @@ gradlePlugin {
 			id = "org.springframework.shell.asciidoctor"
 			implementationClass = "org.springframework.shell.gradle.AsciidoctorPlugin"
 		}
+		// bomPlugin {
+		// 	id = "org.springframework.shell.docs"
+		// 	implementationClass = "org.springframework.shell.gradle.BomPlugin"
+		// }
+		// docsPlugin {
+		// 	id = "org.springframework.shell.docs"
+		// 	implementationClass = "org.springframework.shell.gradle.DocsPlugin"
+		// }
 	}
 }

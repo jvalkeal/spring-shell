@@ -11,7 +11,7 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.CoreJavadocOptions;
 
 /**
- * @author Rob Winch
+ * @author Janne Valkealahti
  */
 class SpringModulePlugin extends AbstractSpringJavaPlugin {
 

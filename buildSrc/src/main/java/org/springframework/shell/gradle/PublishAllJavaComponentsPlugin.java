@@ -30,4 +30,16 @@ public class PublishAllJavaComponentsPlugin implements Plugin<Project> {
 			});
 		});
 	}
+
+	// public void applyx(Project project) {
+	// 	PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
+	// 	publishing.getPublications().create("mavenJava", MavenPublication.class, maven -> {
+	// 		project.getPlugins().withType(JavaPlugin.class, plugin -> {
+	// 			maven.from(project.getComponents().getByName("java"));
+	// 		});
+	// 		project.getPlugins().withType(JavaPlatformPlugin.class, plugin -> {
+	// 			maven.from(project.getComponents().getByName("javaPlatform"));
+	// 		});
+	// 	});
+	// }
 }
