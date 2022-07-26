@@ -12,4 +12,5 @@ dependencies {
 	api(project(":spring-shell-standard"))
 	api(project(":spring-shell-standard-commands"))
 	api(project(":spring-shell-table"))
+	api 'org.springframework.boot:spring-boot-starter'
 }

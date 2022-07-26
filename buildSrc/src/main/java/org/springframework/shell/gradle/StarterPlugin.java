@@ -13,7 +13,10 @@ import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
+import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.tasks.bundling.Jar;
+
+import groovy.util.Node;
 
 public class StarterPlugin implements Plugin<Project> {
 
@@ -27,6 +30,7 @@ public class StarterPlugin implements Plugin<Project> {
 		// plugins.apply(DeployedPlugin.class);
 		plugins.apply(JavaLibraryPlugin.class);
 		// plugins.apply(ConventionsPlugin.class);
+		pluginManager.apply(SpringMavenPlugin.class);
 
 		// StarterMetadata starterMetadata = project.getTasks().create("starterMetadata", StarterMetadata.class);
 		// ConfigurationContainer configurations = project.getConfigurations();
@@ -43,6 +47,7 @@ public class StarterPlugin implements Plugin<Project> {
 
 		// configureJarManifest(project);
 	}
+
 
 	// private void createClasspathConflictsCheck(Configuration classpath, Project project) {
 	// 		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks().create(
