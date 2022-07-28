@@ -285,6 +285,16 @@ public class CommandParserTests extends AbstractCommandTests {
 	}
 
 	@Test
+	public void testShortLongOptionWithOne() {
+		CommandOption option = shortLongOption("arg", ResolvableType.forType(String.class));
+		List<CommandOption> options = Arrays.asList(option);
+		String[] args = new String[]{"-arg", "value"};
+
+		CommandParserResults results = parser.parse(options, args);
+		assertThat(results.results()).hasSize(1);
+	}
+
+	@Test
 	public void testLongOptionsWithArray() {
 		CommandOption option1 = longOption("arg1", ResolvableType.forType(int[].class));
 		List<CommandOption> options = Arrays.asList(option1);
@@ -326,7 +336,7 @@ public class CommandParserTests extends AbstractCommandTests {
 	@Test
 	public void testBooleanWithDefault() {
 		ResolvableType type = ResolvableType.forType(boolean.class);
-		CommandOption option1 = CommandOption.of(new String[] { "arg1" }, new Character[0], "description", type, false,
+		CommandOption option1 = CommandOption.of(new String[] { "arg1" }, new Character[0], null, "description", type, false,
 				"true", null, null, null, null, null);
 
 		List<CommandOption> options = Arrays.asList(option1);
@@ -358,7 +368,7 @@ public class CommandParserTests extends AbstractCommandTests {
 	}
 
 	private static CommandOption longOption(String name, ResolvableType type, boolean required, Integer position, Integer arityMin, Integer arityMax) {
-		return CommandOption.of(new String[] { name }, new Character[0], "desc", type, required, null, position,
+		return CommandOption.of(new String[] { name }, new Character[0], null, "desc", type, required, null, position,
 				arityMin, arityMax, null, null);
 	}
 
@@ -369,4 +379,10 @@ public class CommandParserTests extends AbstractCommandTests {
 	private static CommandOption shortOption(char name, ResolvableType type) {
 		return CommandOption.of(new String[0], new Character[] { name }, "desc", type);
 	}
+
+	private static CommandOption shortLongOption(String name, ResolvableType type) {
+		return CommandOption.of(new String[0], new Character[0], new String[] { name }, "desc", type, true, null, null,
+				null, null, null, null);
+	}
+
 }

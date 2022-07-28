@@ -39,6 +39,8 @@ public interface CommandOption {
 	 */
 	Character[] getShortNames();
 
+	String[] getShortLongNames();
+
 	/**
 	 * Gets a description of an option.
 	 *
@@ -111,7 +113,7 @@ public interface CommandOption {
 	 * @return default command option
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description) {
-		return of(longNames, shortNames, description, null, false, null, null, null, null, null, null);
+		return of(longNames, shortNames, null, description, null, false, null, null, null, null, null, null);
 	}
 
 	/**
@@ -125,7 +127,7 @@ public interface CommandOption {
 	 */
 	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
 			ResolvableType type) {
-		return of(longNames, shortNames, description, type, false, null, null, null, null, null, null);
+		return of(longNames, shortNames, null, description, type, false, null, null, null, null, null, null);
 	}
 
 	/**
@@ -133,6 +135,7 @@ public interface CommandOption {
 	 *
 	 * @param longNames the long names
 	 * @param shortNames the short names
+	 * @param shortLongNames the short long names
 	 * @param description the description
 	 * @param type the type
 	 * @param required the required flag
@@ -144,11 +147,11 @@ public interface CommandOption {
 	 * @param completion the completion
 	 * @return default command option
 	 */
-	public static CommandOption of(String[] longNames, Character[] shortNames, String description,
-			ResolvableType type, boolean required, String defaultValue, Integer position, Integer arityMin,
-			Integer arityMax, String label, CompletionResolver completion) {
-		return new DefaultCommandOption(longNames, shortNames, description, type, required, defaultValue, position,
-				arityMin, arityMax, label, completion);
+	public static CommandOption of(String[] longNames, Character[] shortNames, String[] shortLongNames,
+			String description, ResolvableType type, boolean required, String defaultValue, Integer position,
+			Integer arityMin, Integer arityMax, String label, CompletionResolver completion) {
+		return new DefaultCommandOption(longNames, shortNames, shortLongNames, description, type, required, defaultValue,
+				position, arityMin, arityMax, label, completion);
 	}
 
 	/**
@@ -158,6 +161,7 @@ public interface CommandOption {
 
 		private String[] longNames;
 		private Character[] shortNames;
+		private String[] shortLongNames;
 		private String description;
 		private ResolvableType type;
 		private boolean required;
@@ -168,12 +172,13 @@ public interface CommandOption {
 		private String label;
 		private CompletionResolver completion;
 
-		public DefaultCommandOption(String[] longNames, Character[] shortNames, String description,
-				ResolvableType type, boolean required, String defaultValue, Integer position,
-				Integer arityMin, Integer arityMax, String label,
+		public DefaultCommandOption(String[] longNames, Character[] shortNames, String[] shortLongNames,
+				String description, ResolvableType type, boolean required, String defaultValue,
+				Integer position, Integer arityMin, Integer arityMax, String label,
 				CompletionResolver completion) {
 			this.longNames = longNames != null ? longNames : new String[0];
 			this.shortNames = shortNames != null ? shortNames : new Character[0];
+			this.shortLongNames = shortLongNames != null ? shortLongNames : new String[0];
 			this.description = description;
 			this.type = type;
 			this.required = required;
@@ -193,6 +198,11 @@ public interface CommandOption {
 		@Override
 		public Character[] getShortNames() {
 			return shortNames;
+		}
+
+		@Override
+		public String[] getShortLongNames() {
+			return shortLongNames;
 		}
 
 		@Override

@@ -136,6 +136,8 @@ public interface CommandRegistration {
 		 */
 		OptionSpec shortNames(Character... names);
 
+		OptionSpec shortNames(String... names);
+
 		/**
 		 * Define a type for an option.
 		 *
@@ -529,6 +531,7 @@ public interface CommandRegistration {
 		private BaseBuilder builder;
 		private String[] longNames;
 		private Character[] shortNames;
+		private String[] shortLongNames;
 		private ResolvableType type;
 		private String description;
 		private boolean required;
@@ -552,6 +555,12 @@ public interface CommandRegistration {
 		@Override
 		public OptionSpec shortNames(Character... names) {
 			this.shortNames = names;
+			return this;
+		}
+
+		@Override
+		public OptionSpec shortNames(String... names) {
+			this.shortLongNames = names;
 			return this;
 		}
 
@@ -653,6 +662,10 @@ public interface CommandRegistration {
 
 		public Character[] getShortNames() {
 			return shortNames;
+		}
+
+		public String[] getShortLongNames() {
+			return shortLongNames;
 		}
 
 		public ResolvableType getType() {
@@ -858,8 +871,8 @@ public interface CommandRegistration {
 		@Override
 		public List<CommandOption> getOptions() {
 			return optionSpecs.stream()
-				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getDescription(), o.getType(),
-						o.isRequired(), o.getDefaultValue(), o.getPosition(), o.getArityMin(), o.getArityMax(),
+				.map(o -> CommandOption.of(o.getLongNames(), o.getShortNames(), o.getShortLongNames(), o.getDescription(),
+						o.getType(), o.isRequired(), o.getDefaultValue(), o.getPosition(), o.getArityMin(), o.getArityMax(),
 						o.getLabel(), o.getCompletion()))
 				.collect(Collectors.toList());
 		}
