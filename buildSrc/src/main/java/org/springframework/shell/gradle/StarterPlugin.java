@@ -23,7 +23,7 @@ import org.gradle.api.plugins.PluginManager;
 
 public class StarterPlugin implements Plugin<Project> {
 
-	private static final String JAR_TYPE = "dependencies-starter";
+	// private static final String JAR_TYPE = "dependencies-starter";
 
 	@Override
 	public void apply(Project project) {
