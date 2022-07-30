@@ -2,7 +2,6 @@ package org.springframework.shell.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-// import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginManager;
 // import org.gradle.plugins.ide.eclipse.EclipseWtpPlugin;
@@ -19,12 +18,6 @@ public abstract class AbstractSpringJavaPlugin implements Plugin<Project> {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(JavaPlugin.class);
 		pluginManager.apply(ManagementConfigurationPlugin.class);
-		// if (project.file("src/main/groovy").exists()
-		// 		|| project.file("src/test/groovy").exists()
-		// 		|| project.file("src/integration-test/groovy").exists()) {
-		// 	pluginManager.apply(GroovyPlugin.class);
-		// }
-		// pluginManager.apply("io.spring.convention.repository");
 		// pluginManager.apply(EclipseWtpPlugin);
 		// pluginManager.apply(IdeaPlugin);
 		// pluginManager.apply(PropDepsPlugin);

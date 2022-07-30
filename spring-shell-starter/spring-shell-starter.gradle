@@ -1,5 +1,4 @@
 plugins {
-	// id 'org.springframework.shell.management-configuration'
 	id 'org.springframework.shell.starter'
 }
 

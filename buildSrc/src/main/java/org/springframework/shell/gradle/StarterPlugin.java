@@ -16,8 +16,6 @@ import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.tasks.bundling.Jar;
 
-import groovy.util.Node;
-
 public class StarterPlugin implements Plugin<Project> {
 
 	private static final String JAR_TYPE = "dependencies-starter";

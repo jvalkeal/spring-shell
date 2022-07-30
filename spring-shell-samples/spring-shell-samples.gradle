@@ -1,5 +1,4 @@
 plugins {
-	// id 'org.springframework.shell.management-configuration'
 	id 'org.springframework.shell.spring-module'
 	id 'org.springframework.boot' version '3.0.0-SNAPSHOT'
 }
