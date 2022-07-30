@@ -4,17 +4,11 @@ plugins {
 
 description = 'Spring Shell'
 
-// sourceCompatibility = '17'
-
 repositories {
 	maven { url 'https://repo.spring.io/snapshot' }
 	maven { url 'https://repo.spring.io/milestone' }
 	maven { url 'https://repo.spring.io/release' }
 	mavenCentral()
-}
-
-ext {
-	// set('springShellVersion', '2.1.0-SNAPSHOT')
 }
 
 allprojects {

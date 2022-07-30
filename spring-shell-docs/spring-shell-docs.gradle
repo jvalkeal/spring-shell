@@ -1,8 +1,8 @@
 plugins {
-	id 'org.springframework.shell.spring-module'
+	id 'org.springframework.shell.module'
 	id 'org.asciidoctor.jvm.convert'
 	id 'org.springframework.shell.asciidoctor'
-	// id 'org.springframework.shell.docs'
+	id 'org.springframework.shell.docs'
 }
 
 description = 'Spring Shell Documentation'
