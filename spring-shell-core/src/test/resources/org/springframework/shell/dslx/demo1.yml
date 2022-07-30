@@ -1,0 +1,56 @@
+---
+type: shell.springframework.org/v1beta/options
+options:
+  orderType:
+    name: Delivery Type
+    description: Choose Delivery Type
+    type: singleSelect
+    default: xxx
+    items:
+      - name: Delivery
+        value: delivery
+      - name: Collection
+        value: collection
+  pizzaSize:
+    name: Size
+    description: Choose Pizza Size
+    type: singleSelect
+    items:
+      - name: Small
+        value: small
+      - name: Medium
+        value: medium
+      - name: Large
+        value: large
+  pizzaToppings:
+    name: Toppings
+    type: multiSelect
+    items:
+      - name: Mushrooms
+        value: mushroom
+      - name: Smoked Bacon
+        value: smokebacon
+  orderConfirmation:
+    name: Confirmation
+    type: yesno
+---
+type: shell.springframework.org/v1beta/flows
+flows:
+  pizzaFlow:
+    name: pizzaFlow
+    start: orderType
+    nodes:
+      - fromOption: orderType
+        toOption: orderConfirmation
+        if: xxx == yyy
+---
+type: shell.springframework.org/v1beta/commands
+commands:
+  pizza:
+    name: pizza
+    description: Pizza Order
+    options:
+      - orderType
+      - orderConfirmation
+    flow:
+      from: pizzaFlow
