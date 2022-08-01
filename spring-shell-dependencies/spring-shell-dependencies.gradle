@@ -1,7 +1,7 @@
 plugins {
 	id 'java-platform'
 	id 'maven-publish'
-	id 'org.springframework.shell.bom'
+	// id 'org.springframework.shell.bom'
 }
 
 javaPlatform {
@@ -17,11 +17,11 @@ dependencies {
 	api "com.google.jimfs:jimfs:$jimfsVersion"
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifactId = 'spring-shell-dependencies'
-			from components.javaPlatform
-		}
-	}
-}
+// publishing {
+// 	publications {
+// 		mavenJava(MavenPublication) {
+// 			artifactId = 'spring-shell-dependencies'
+// 			from components.javaPlatform
+// 		}
+// 	}
+// }
