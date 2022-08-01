@@ -12,6 +12,9 @@ description = 'Spring Shell BOM'
 
 dependencies {
 	api platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+	api "org.jline:jline:$jlineVersion"
+	api "org.antlr:ST4:$st4Version"
+	api "com.google.jimfs:jimfs:$jimfsVersion"
 }
 
 publishing {

@@ -10,6 +10,7 @@ description = 'Spring Shell Documentation'
 dependencies {
 	management platform(project(":spring-shell-dependencies"))
 	implementation project(':spring-shell-starter')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 asciidoctorj {

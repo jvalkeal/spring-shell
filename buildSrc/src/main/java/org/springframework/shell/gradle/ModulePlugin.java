@@ -22,6 +22,7 @@ import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
 
 /**
@@ -44,6 +45,10 @@ class ModulePlugin implements Plugin<Project> {
 				options.source("17");
 				options.encoding("UTF-8");
 				options.addStringOption("Xdoclint:none", "-quiet");
+			});
+
+			project.getTasks().withType(Test.class, test -> {
+				test.useJUnitPlatform();
 			});
 
 		});
