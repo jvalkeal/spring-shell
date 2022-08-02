@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.shell.module'
+	// id 'org.springframework.shell.module'
 	id 'org.asciidoctor.jvm.convert'
 	id 'org.springframework.shell.asciidoctor'
 	id 'org.springframework.shell.docs'

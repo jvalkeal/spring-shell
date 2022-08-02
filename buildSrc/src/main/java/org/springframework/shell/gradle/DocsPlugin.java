@@ -17,10 +17,18 @@ package org.springframework.shell.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.PluginManager;
 
 public class DocsPlugin implements Plugin<Project> {
 
 	@Override
-	public void apply(Project arg0) {
+	public void apply(Project project) {
+		PluginManager pluginManager = project.getPluginManager();
+		pluginManager.apply(JavaPlugin.class);
+		pluginManager.apply(JavaLibraryPlugin.class);
+		pluginManager.apply(ManagementConfigurationPlugin.class);
+		pluginManager.apply(SpringMavenPlugin.class);
 	}
 }
