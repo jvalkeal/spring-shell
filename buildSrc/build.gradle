@@ -29,17 +29,13 @@ dependencies {
 
 gradlePlugin {
 	plugins {
-		springModule {
+		modulePlugin {
 			id = "org.springframework.shell.module"
 			implementationClass = "org.springframework.shell.gradle.ModulePlugin"
 		}
 		starterPlugin {
 			id = "org.springframework.shell.starter"
 			implementationClass = "org.springframework.shell.gradle.StarterPlugin"
-		}
-		asciidoctorPlugin {
-			id = "org.springframework.shell.asciidoctor"
-			implementationClass = "org.springframework.shell.gradle.AsciidoctorPlugin"
 		}
 		bomPlugin {
 			id = "org.springframework.shell.bom"
