@@ -20,13 +20,15 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginManager;
 
-public class SamplePlugin implements Plugin<Project> {
+/**
+ * @author Janne Valkealahti
+ */
+class SamplePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(JavaPlugin.class);
 		pluginManager.apply(ManagementConfigurationPlugin.class);
-
 	}
 }

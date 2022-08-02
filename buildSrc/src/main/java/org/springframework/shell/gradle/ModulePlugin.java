@@ -39,7 +39,6 @@ class ModulePlugin implements Plugin<Project> {
 		pluginManager.apply(SpringMavenPlugin.class);
 
 		project.getPlugins().withType(JavaBasePlugin.class, java -> {
-
 			project.getTasks().withType(Javadoc.class, (javadoc) -> {
 				CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
 				options.source("17");
@@ -50,8 +49,6 @@ class ModulePlugin implements Plugin<Project> {
 			project.getTasks().withType(Test.class, test -> {
 				test.useJUnitPlatform();
 			});
-
 		});
-
 	}
 }

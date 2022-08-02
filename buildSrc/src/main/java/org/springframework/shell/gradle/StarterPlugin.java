@@ -21,7 +21,10 @@ import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 
-public class StarterPlugin implements Plugin<Project> {
+/**
+ * @author Janne Valkealahti
+ */
+class StarterPlugin implements Plugin<Project> {
 
 	// private static final String JAR_TYPE = "dependencies-starter";
 

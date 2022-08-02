@@ -42,7 +42,10 @@ import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.Sync;
 
-public class DocsPlugin implements Plugin<Project> {
+/**
+ * @author Janne Valkealahti
+ */
+class DocsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {

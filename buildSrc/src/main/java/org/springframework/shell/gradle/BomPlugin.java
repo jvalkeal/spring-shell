@@ -20,31 +20,22 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyConstraintHandler;
 import org.gradle.api.plugins.PluginManager;
 
-public class BomPlugin implements Plugin<Project> {
+/**
+ * @author Janne Valkealahti
+ */
+class BomPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(SpringMavenPlugin.class);
 
+		// bom should have main shell modules
 		DependencyConstraintHandler constraints = project.getDependencies().getConstraints();
 		project.getRootProject().getAllprojects().forEach(p -> {
 			p.getPlugins().withType(ModulePlugin.class, m -> {
 				constraints.add("api", p);
 			});
-			// constraints.add("api", p);
 		});
-
-
-		// dependencies {
-		// 	constraints {
-		// 		project.rootProject.allprojects { p ->
-		// 			p.plugins.withType(SpringModulePlugin) {
-		// 				api p
-		// 			}
-		// 		}
-		// 	}
-		// }
-
 	}
 }
