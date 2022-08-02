@@ -5,7 +5,7 @@ plugins {
 description = 'Spring Shell Starter Jna'
 
 dependencies {
-	management platform(project(":spring-shell-dependencies"))
+	management platform(project(":spring-shell-management"))
 	api(project(":spring-shell-starter"))
 	// implementation 'org.jline:jline-terminal-jna'
 }
