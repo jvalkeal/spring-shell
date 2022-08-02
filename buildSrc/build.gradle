@@ -49,5 +49,9 @@ gradlePlugin {
 			id = "org.springframework.shell.docs"
 			implementationClass = "org.springframework.shell.gradle.DocsPlugin"
 		}
+		samplePlugin {
+			id = "org.springframework.shell.sample"
+			implementationClass = "org.springframework.shell.gradle.SamplePlugin"
+		}
 	}
 }
