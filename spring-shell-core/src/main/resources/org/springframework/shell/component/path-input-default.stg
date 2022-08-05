@@ -26,10 +26,16 @@ result(model) ::= <<
 <question_name(model)> <model.resultValue; format="style-value">
 >>
 
+// debug
+debug(model) ::= <<
+<model.paths:{x|<x>}; separator="\n">
+>>
+
 // component is running
 running(model) ::= <<
 <question_name(model)> <info(model)>
 <message(model)>
+<debug(model)>
 >>
 
 // main

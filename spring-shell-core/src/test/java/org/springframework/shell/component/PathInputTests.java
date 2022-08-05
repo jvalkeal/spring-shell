@@ -129,4 +129,28 @@ public class PathInputTests extends AbstractShellTests {
 		assertThat(run1Context.getResultValue()).isNotNull();
 		assertThat(run1Context.getResultValue().toString()).contains("tmp");
 	}
+
+	void xxx() {
+
+	//	? Enter value
+
+	//	? Enter value /tm
+	//	! Path ok
+
+
+	//	? Enter value /tmp
+	//	! Directory exists
+
+	//	============================
+
+	//	? Enter value /tmp
+	//	> /tmp/foo
+	//	  /tmp/bar1
+	//	  /tmp/bar1
+	//	  /tmp/bar1
+	//	  /tmp/bar1
+
+
+
+	}
 }
