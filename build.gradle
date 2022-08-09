@@ -1,5 +1,6 @@
 plugins {
 	id "base"
+	id 'org.springframework.shell.dist'
 }
 
 description = 'Spring Shell'
@@ -26,7 +27,7 @@ allprojects {
 	}
 
 	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+		resolutionStrategy.cacheChangingModulesFor 1, 'hours'
 	}
 }
 
