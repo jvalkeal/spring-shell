@@ -33,13 +33,13 @@ public class SpringMavenPlugin implements Plugin<Project> {
 		pluginManager.apply(PublishAllJavaComponentsPlugin.class);
 
 		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
-				PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-				if (project.hasProperty("deploymentRepository")) {
-						publishing.getRepositories().maven((mavenRepository) -> {
-								mavenRepository.setUrl(project.property("deploymentRepository"));
-								mavenRepository.setName("deployment");
-						});
-				}
+				// PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
+				// if (project.hasProperty("deploymentRepository")) {
+				// 		publishing.getRepositories().maven((mavenRepository) -> {
+				// 				mavenRepository.setUrl(project.property("deploymentRepository"));
+				// 				mavenRepository.setName("deployment");
+				// 		});
+				// }
 				// publishing.getPublications().withType(MavenPublication.class)
 				// 				.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 				project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {

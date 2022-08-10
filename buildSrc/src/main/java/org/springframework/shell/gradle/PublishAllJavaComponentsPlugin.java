@@ -18,6 +18,7 @@ package org.springframework.shell.gradle;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.publish.PublishingExtension;
@@ -34,13 +35,20 @@ public class PublishAllJavaComponentsPlugin implements Plugin<Project> {
 				@Override
 				public void execute(MavenPublication maven) {
 					project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
+							// System.out.println("XXX1 " + project.getComponents().getByName("java"));
 							maven.from(project.getComponents().getByName("java"));
 					});
 					project.getPlugins().withType(JavaPlatformPlugin.class, (plugin) -> {
+							// SoftwareComponent xxx = project.getComponents().getByName("javaPlatform");
+							// System.out.println("XXX2 " + project.getComponents().getByName("javaPlatform"));
 							maven.from(project.getComponents().getByName("javaPlatform"));
 					});
 				}
 			});
+
+			// publishing.getPublications().all(pp -> {
+			// 	System.out.println("XXX3 " + pp.getName());
+			// });
 		});
 	}
 

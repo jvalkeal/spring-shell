@@ -18,6 +18,8 @@ package org.springframework.shell.gradle;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyConstraintHandler;
+import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.PluginManager;
 
 /**
@@ -29,6 +31,10 @@ class BomPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(SpringMavenPlugin.class);
+		pluginManager.apply(JavaPlatformPlugin.class);
+
+		// project.getConfigurations().create("archives");
+		// project.getArtifacts().
 
 		// bom should have main shell modules
 		DependencyConstraintHandler constraints = project.getDependencies().getConstraints();
