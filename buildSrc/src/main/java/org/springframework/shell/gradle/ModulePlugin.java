@@ -17,7 +17,6 @@ package org.springframework.shell.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -25,8 +24,6 @@ import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
-import org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin;
-import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask;
 
 /**
  * @author Janne Valkealahti
@@ -40,7 +37,6 @@ class ModulePlugin implements Plugin<Project> {
 		pluginManager.apply(ManagementConfigurationPlugin.class);
 		pluginManager.apply(JavaLibraryPlugin.class);
 		pluginManager.apply(SpringMavenPlugin.class);
-		// pluginManager.apply(ArtifactoryPlugin.class);
 		new ArtifactoryConventions().apply(project);
 
 		project.getPlugins().withType(JavaBasePlugin.class, java -> {
@@ -55,13 +51,5 @@ class ModulePlugin implements Plugin<Project> {
 				test.useJUnitPlatform();
 			});
 		});
-
-		// project.getPlugins().withType(ArtifactoryPlugin.class, artifactory -> {
-		// 	Task t = project.getTasks().findByName(ArtifactoryTask.ARTIFACTORY_PUBLISH_TASK_NAME);
-		// 	if (t != null) {
-		// 		ArtifactoryTask task = (ArtifactoryTask) t;
-		// 		task.setCiServerBuild();
-		// 	}
-		// });
 	}
 }

@@ -33,7 +33,7 @@ import org.gradle.external.javadoc.CoreJavadocOptions;
  *
  * @author Janne Valkealahti
  */
-class DistPlugin implements Plugin<Project> {
+class RootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
@@ -48,7 +48,12 @@ class DistPlugin implements Plugin<Project> {
 	private void createZipTask(Project project) {
 		Zip zipTask = project.getTasks().create("distZip", Zip.class, zip -> {
 			zip.setGroup("Distribution");
-			zip.from("spring-shell-docs/build/docs/asciidoc");
+			zip.from("spring-shell-docs/build/docs/asciidoc", copy -> {
+				copy.into("docs");
+			});
+			zip.from("build/api", copy -> {
+				copy.into("api");
+			});
 		});
 
 		project.getRootProject().getAllprojects().forEach(p -> {

@@ -52,31 +52,33 @@ public class ArtifactoryConventions {
 		pluginManager.apply(ArtifactoryPlugin.class);
 
 		project.getPlugins().withType(ArtifactoryPlugin.class, artifactory -> {
-			Task t = project.getTasks().findByName(ArtifactoryTask.ARTIFACTORY_PUBLISH_TASK_NAME);
-			if (t != null) {
-				ArtifactoryTask task = (ArtifactoryTask) t;
-				task.setCiServerBuild();
+			Task task = project.getTasks().findByName(ArtifactoryTask.ARTIFACTORY_PUBLISH_TASK_NAME);
+			if (task != null) {
+				ArtifactoryTask aTask = (ArtifactoryTask) task;
+				aTask.setCiServerBuild();
 				// bom is not a java project so plugin doesn't
 				// add defaults for publications.
-				task.publications("mavenJava");
-				task.publishConfigs("archives");
+				aTask.publications("mavenJava");
+				aTask.publishConfigs("archives");
 
-				t.doFirst(tt -> {
-					ArtifactoryTask ttt = (ArtifactoryTask) tt;
-					ArtifactSpecs artifactSpecs = ttt.getArtifactSpecs();
+				// plugin is difficult to work with, use this hack
+				// to set props before task does its real work
+				task.doFirst(t -> {
+					// this needs mods if we ever have zips other than
+					// docs zip having asciidoc/javadoc.
+					ArtifactoryTask at = (ArtifactoryTask) t;
+					ArtifactSpecs artifactSpecs = at.getArtifactSpecs();
 					Map<String, String> propsMap = new HashMap<>();
 					propsMap.put("zip.deployed", "false");
-					propsMap.put("zip.name", "spring-shell");
-					propsMap.put("zip.displayname", "Spring Shell");
-					propsMap.put("zip.type", "dist");
+					propsMap.put("zip.type", "docs");
 					ArtifactSpec spec = ArtifactSpec.builder()
 						.artifactNotation("*:*:*:*@zip")
+						// archives is manually set for zip in root plugin
 						.configuration("archives")
 						.properties(propsMap)
 						.build();
 					artifactSpecs.add(spec);
 				});
-
 			}
 		});
 	}
