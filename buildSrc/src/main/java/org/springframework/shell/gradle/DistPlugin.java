@@ -27,7 +27,6 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.CoreJavadocOptions;
-import org.gradle.external.javadoc.MinimalJavadocOptions;
 
 /**
  * Manages tasks creating zip file for docs and publishing it.
@@ -41,6 +40,7 @@ class DistPlugin implements Plugin<Project> {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(MavenPublishPlugin.class);
 		pluginManager.apply(PublishLocalPlugin.class);
+		new ArtifactoryConventions().apply(project);
 		createZipTask(project);
 		createApiTask(project);
 	}
@@ -58,6 +58,8 @@ class DistPlugin implements Plugin<Project> {
 				});;
 			});
 		});
+
+		project.getArtifacts().add("archives", zipTask);
 	}
 
 	private void createApiTask(Project project) {
@@ -84,5 +86,4 @@ class DistPlugin implements Plugin<Project> {
 			});
 		});
 	}
-
 }

@@ -31,3 +31,18 @@ allprojects {
 	}
 }
 
+// configure(rootProject) {
+// 	pluginManager.withPlugin('com.jfrog.artifactory') {
+// 		artifactory {
+// 			publish {
+// 				defaults {
+// 					properties {
+// 						archives '*:*:*:*@zip', 'zip.deployed': false, 'zip.name': 'spring-shell', 'zip.displayname': 'Spring Shell'
+// 						archives '*:*:*:docs@zip', 'zip.type': 'docs'
+// 						archives '*:*:*:dist@zip', 'zip.type': 'dist'
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
