@@ -5,6 +5,7 @@
 target/
 build/
 bin/
+.jfrog/
 
 .gradle
 .idea/

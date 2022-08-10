@@ -38,6 +38,8 @@ class StarterPlugin implements Plugin<Project> {
 		// plugins.apply(ConventionsPlugin.class);
 		pluginManager.apply(SpringMavenPlugin.class);
 
+		new ArtifactoryConventions().apply(project);
+
 		// StarterMetadata starterMetadata = project.getTasks().create("starterMetadata", StarterMetadata.class);
 		// ConfigurationContainer configurations = project.getConfigurations();
 		// Configuration runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);

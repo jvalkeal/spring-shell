@@ -15,35 +15,30 @@
  */
 package org.springframework.shell.gradle;
 
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.dsl.DependencyConstraintHandler;
-import org.gradle.api.plugins.JavaLibraryPlugin;
-import org.gradle.api.plugins.JavaPlatformPlugin;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.PluginManager;
+import org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin;
+import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask;
 
 /**
  * @author Janne Valkealahti
  */
-class BomPlugin implements Plugin<Project> {
+public class ArtifactoryConventions {
 
-	@Override
-	public void apply(Project project) {
+	void apply(Project project) {
 		PluginManager pluginManager = project.getPluginManager();
-		pluginManager.apply(SpringMavenPlugin.class);
-		pluginManager.apply(JavaPlatformPlugin.class);
+		pluginManager.apply(ArtifactoryPlugin.class);
 
-		new ArtifactoryConventions().apply(project);
-
-		// project.getConfigurations().create("archives");
-		// project.getArtifacts().
-
-		// bom should have main shell modules
-		DependencyConstraintHandler constraints = project.getDependencies().getConstraints();
-		project.getRootProject().getAllprojects().forEach(p -> {
-			p.getPlugins().withType(ModulePlugin.class, m -> {
-				constraints.add("api", p);
-			});
+		project.getPlugins().withType(ArtifactoryPlugin.class, artifactory -> {
+			Task t = project.getTasks().findByName(ArtifactoryTask.ARTIFACTORY_PUBLISH_TASK_NAME);
+			if (t != null) {
+				ArtifactoryTask task = (ArtifactoryTask) t;
+				task.setCiServerBuild();
+				// bom is not a java project so plugin doesn't
+				// add defaults for publications.
+				task.publications("mavenJava");
+			}
 		});
 	}
 }
