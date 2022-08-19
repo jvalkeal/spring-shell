@@ -30,33 +30,33 @@ public class SamplesRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		ResourceHints resource = hints.resources();
-		ProxyHints proxy = hints.proxies();
-		ReflectionHints reflection = hints.reflection();
-		// should go graalvm-reachability-metadata
-		registerResources(resource);
-		// should go graalvm-reachability-metadata
-		registerProxies(proxy, "com.sun.jna.Library", "com.sun.jna.Callback",
-				"org.jline.terminal.impl.jna.win.Kernel32", "org.jline.terminal.impl.jna.linux.CLibrary");
-		// should go graalvm-reachability-metadata
-		registerForMostReflection(reflection, "com.sun.jna.CallbackReference", "com.sun.jna.Native",
-				"com.sun.jna.NativeLong", "com.sun.jna.Pointer", "com.sun.jna.Structure",
-				"com.sun.jna.ptr.IntByReference", "com.sun.jna.ptr.PointerByReference", "com.sun.jna.Klass",
-				"com.sun.jna.Structure$FFIType", "com.sun.jna.Structure$FFIType$size_t");
-		// should go graalvm-reachability-metadata
-		registerForMostReflection(reflection, "org.jline.terminal.impl.jna.win.Kernel32$CHAR_INFO",
-				"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_CURSOR_INFO",
-				"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_SCREEN_BUFFER_INFO",
-				"org.jline.terminal.impl.jna.win.Kernel32$COORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$INPUT_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$INPUT_RECORD$EventUnion",
-				"org.jline.terminal.impl.jna.win.Kernel32$KEY_EVENT_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$MOUSE_EVENT_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$WINDOW_BUFFER_SIZE_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$MENU_EVENT_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$FOCUS_EVENT_RECORD",
-				"org.jline.terminal.impl.jna.win.Kernel32$SMALL_RECT",
-				"org.jline.terminal.impl.jna.win.Kernel32$UnionChar");
+		// ResourceHints resource = hints.resources();
+		// ProxyHints proxy = hints.proxies();
+		// ReflectionHints reflection = hints.reflection();
+		// // should go graalvm-reachability-metadata
+		// registerResources(resource);
+		// // should go graalvm-reachability-metadata
+		// registerProxies(proxy, "com.sun.jna.Library", "com.sun.jna.Callback",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32", "org.jline.terminal.impl.jna.linux.CLibrary");
+		// // should go graalvm-reachability-metadata
+		// registerForMostReflection(reflection, "com.sun.jna.CallbackReference", "com.sun.jna.Native",
+		// 		"com.sun.jna.NativeLong", "com.sun.jna.Pointer", "com.sun.jna.Structure",
+		// 		"com.sun.jna.ptr.IntByReference", "com.sun.jna.ptr.PointerByReference", "com.sun.jna.Klass",
+		// 		"com.sun.jna.Structure$FFIType", "com.sun.jna.Structure$FFIType$size_t");
+		// // should go graalvm-reachability-metadata
+		// registerForMostReflection(reflection, "org.jline.terminal.impl.jna.win.Kernel32$CHAR_INFO",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_CURSOR_INFO",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$CONSOLE_SCREEN_BUFFER_INFO",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$COORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$INPUT_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$INPUT_RECORD$EventUnion",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$KEY_EVENT_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$MOUSE_EVENT_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$WINDOW_BUFFER_SIZE_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$MENU_EVENT_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$FOCUS_EVENT_RECORD",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$SMALL_RECT",
+		// 		"org.jline.terminal.impl.jna.win.Kernel32$UnionChar");
 	}
 
 	private void registerResources(ResourceHints resource) {
