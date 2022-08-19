@@ -18,7 +18,8 @@ springBoot {
 
 graalvmNative {
 	metadataRepository {
-		version = "0.1.1"
+		// version = "0.1.1"
+		uri("https://github.com/jvalkeal/atest6/releases/download/v0.0.1/metadata2.zip")
 	}
 }
 
