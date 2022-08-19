@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SamplesRuntimeHintsTests {
 
-	@Test
+	// @Test
 	void test() {
 		String[] classNames = Arrays.asList("com.sun.jna.CallbackReference", "com.sun.jna.Native",
 				"com.sun.jna.NativeLong", "com.sun.jna.Pointer", "com.sun.jna.Structure",
