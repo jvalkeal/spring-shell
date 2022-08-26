@@ -1,4 +1,4 @@
-package org.springframework.shell;
+package org.springframework.shell.test;
 
 import java.io.IOException;
 

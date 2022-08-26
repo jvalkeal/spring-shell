@@ -1,0 +1,12 @@
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Test Autoconfigure'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
+	implementation 'org.springframework.boot:spring-boot-autoconfigure'
+	api('org.assertj:assertj-core')
+}

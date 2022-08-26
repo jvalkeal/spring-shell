@@ -1,0 +1,12 @@
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Test'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
+	api('org.assertj:assertj-core')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
