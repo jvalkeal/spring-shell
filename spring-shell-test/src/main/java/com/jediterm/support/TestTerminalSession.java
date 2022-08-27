@@ -1,4 +1,4 @@
-package com.jediterm.xxx;
+package com.jediterm.support;
 
 import java.io.IOException;
 
@@ -14,28 +14,28 @@ import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 
 import java.awt.*;
 
-public class TestSession {
+public class TestTerminalSession {
 
-	private final BackBufferTerminal myTerminal;
+	private final TestTerminal myTerminal;
 	private final TextProcessing myTextProcessing;
 	private final TerminalTextBuffer myTerminalTextBuffer;
 	private final TextStyle myDefaultStyle;
 
-	public TestSession(int width, int height) {
+	public TestTerminalSession(int width, int height) {
 	  StyleState state = new StyleState();
 	  myDefaultStyle = state.getCurrent();
 	  TextStyle hyperlinkTextStyle = new TextStyle(TerminalColor.awt(Color.BLUE), TerminalColor.WHITE);
 	  myTextProcessing = new TextProcessing(hyperlinkTextStyle, HyperlinkStyle.HighlightMode.ALWAYS);
 	  myTerminalTextBuffer = new TerminalTextBuffer(width, height, state, myTextProcessing);
 	  myTextProcessing.setTerminalTextBuffer(myTerminalTextBuffer);
-	  myTerminal = new BackBufferTerminal(myTerminalTextBuffer, state);
+	  myTerminal = new TestTerminal(myTerminalTextBuffer, state);
 	}
 
-	public BackBufferTerminal getTerminal() {
+	public TestTerminal getTerminal() {
 	  return myTerminal;
 	}
 
-	public BackBufferDisplay getDisplay() {
+	public TestTerminalDisplay getDisplay() {
 	  return myTerminal.getDisplay();
 	}
 

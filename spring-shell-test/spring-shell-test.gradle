@@ -8,5 +8,6 @@ dependencies {
 	management platform(project(":spring-shell-management"))
 	implementation project(':spring-shell-core')
 	api('org.assertj:assertj-core')
+	api('org.junit.jupiter:junit-jupiter-api')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
