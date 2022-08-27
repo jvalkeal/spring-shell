@@ -6,7 +6,10 @@ description = 'Spring Shell Test Autoconfigure'
 
 dependencies {
 	management platform(project(":spring-shell-management"))
-	implementation project(':spring-shell-core')
+	implementation project(':spring-shell-test')
+	implementation 'org.springframework:spring-test'
 	implementation 'org.springframework.boot:spring-boot-autoconfigure'
+	implementation 'org.springframework.boot:spring-boot-test-autoconfigure'
 	api('org.assertj:assertj-core')
+	api('org.junit.jupiter:junit-jupiter-api')
 }

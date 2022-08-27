@@ -1,4 +1,4 @@
-package com.jediterm.xxx;
+package com.jediterm.support;
 
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.RequestOrigin;
@@ -14,14 +14,14 @@ import java.awt.*;
 /**
  * @author traff
  */
-public class BackBufferDisplay implements TerminalDisplay {
+public class TestTerminalDisplay implements TerminalDisplay {
   private final TerminalTextBuffer myTerminalTextBuffer;
   private TerminalSelection mySelection = null;
   private String myWindowTitle;
   private  TerminalColor myForegroundColor;
   private  TerminalColor myBackgroundColor;
 
-  public BackBufferDisplay(TerminalTextBuffer terminalTextBuffer) {
+  public TestTerminalDisplay(TerminalTextBuffer terminalTextBuffer) {
     myTerminalTextBuffer = terminalTextBuffer;
   }
 

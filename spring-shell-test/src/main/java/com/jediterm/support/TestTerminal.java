@@ -1,4 +1,4 @@
-package com.jediterm.xxx;
+package com.jediterm.support;
 
 import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.model.TerminalTextBuffer;
@@ -13,19 +13,19 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author traff
  */
-public class BackBufferTerminal extends JediTerminal {
-  private final BackBufferDisplay myBufferDisplay;
+public class TestTerminal extends JediTerminal {
+  private final TestTerminalDisplay myBufferDisplay;
   private final TerminalTextBuffer myTextBuffer;
   private ByteArrayOutputStream myOutputStream;
 
-  public BackBufferTerminal(TerminalTextBuffer terminalTextBuffer,
+  public TestTerminal(TerminalTextBuffer terminalTextBuffer,
                             StyleState initialStyleState) {
-    this(new BackBufferDisplay(terminalTextBuffer), terminalTextBuffer, initialStyleState);
+    this(new TestTerminalDisplay(terminalTextBuffer), terminalTextBuffer, initialStyleState);
     myOutputStream = new ByteArrayOutputStream();
     setTerminalOutput(new TestOutputStream(myOutputStream));
   }
 
-  private BackBufferTerminal( BackBufferDisplay bufferDisplay,
+  private TestTerminal( TestTerminalDisplay bufferDisplay,
                               TerminalTextBuffer terminalTextBuffer,
                               StyleState initialStyleState) {
     super(bufferDisplay, terminalTextBuffer, initialStyleState);
@@ -33,7 +33,7 @@ public class BackBufferTerminal extends JediTerminal {
     myTextBuffer = terminalTextBuffer;
   }
 
-  public  BackBufferDisplay getDisplay() {
+  public  TestTerminalDisplay getDisplay() {
     return myBufferDisplay;
   }
 
