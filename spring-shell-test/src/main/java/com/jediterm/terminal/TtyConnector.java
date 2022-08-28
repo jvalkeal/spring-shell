@@ -7,37 +7,38 @@ import java.io.IOException;
  * Interface to tty.
  */
 public interface TtyConnector {
-  boolean init(Questioner q);
 
-  void close();
+	boolean init(Questioner q);
 
-  default void resize(Dimension termWinSize) {
-    // support old implementations not overriding this method
-    resize(termWinSize, new Dimension(0, 0));
-    // StackOverflowError is only possible if both resize(Dimension) and resize(Dimension,Dimension) are not overridden.
-  }
+	void close();
 
-  /**
-   * @deprecated use {@link #resize(Dimension)} instead
-   */
-  @SuppressWarnings("unused")
-  @Deprecated
-  default void resize(Dimension termWinSize, Dimension pixelSize) {
-    // support old code that calls this method on new implementations (not overriding this deprecated method)
-    resize(termWinSize);
-  }
+	default void resize(Dimension termWinSize) {
+		// support old implementations not overriding this method
+		resize(termWinSize, new Dimension(0, 0));
+		// StackOverflowError is only possible if both resize(Dimension) and resize(Dimension,Dimension) are not overridden.
+	}
 
-  String getName();
+	/**
+	 * @deprecated use {@link #resize(Dimension)} instead
+	 */
+	@SuppressWarnings("unused")
+	@Deprecated
+	default void resize(Dimension termWinSize, Dimension pixelSize) {
+		// support old code that calls this method on new implementations (not overriding this deprecated method)
+		resize(termWinSize);
+	}
 
-  int read(char[] buf, int offset, int length) throws IOException;
+	String getName();
 
-  void write(byte[] bytes) throws IOException;
+	int read(char[] buf, int offset, int length) throws IOException;
 
-  boolean isConnected();
+	void write(byte[] bytes) throws IOException;
 
-  void write(String string) throws IOException;
+	boolean isConnected();
 
-  int waitFor() throws InterruptedException;
+	void write(String string) throws IOException;
 
-  boolean ready() throws IOException;
+	int waitFor() throws InterruptedException;
+
+	boolean ready() throws IOException;
 }

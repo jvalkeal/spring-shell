@@ -14,6 +14,10 @@ import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 
 import java.awt.*;
 
+/**
+ *
+ * @author original jediterm authors
+ */
 public class TestTerminalSession {
 
 	private final TestTerminal myTerminal;
