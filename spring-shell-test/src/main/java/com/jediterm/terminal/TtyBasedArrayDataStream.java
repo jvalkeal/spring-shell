@@ -6,46 +6,37 @@ import java.io.IOException;
 
 /**
  * Takes data from and sends it back to TTY input and output streams via {@link TtyConnector}
+ *
+ * @author jediterm authors
  */
 public class TtyBasedArrayDataStream extends ArrayTerminalDataStream {
-	private final TtyConnector myTtyConnector;
+
+	private final TtyConnector ttyConnector;
 	private final Runnable myOnBeforeBlockingWait;
 
 	public TtyBasedArrayDataStream(final TtyConnector ttyConnector, final Runnable onBeforeBlockingWait) {
 		super(new char[1024], 0, 0);
-		myTtyConnector = ttyConnector;
+		this.ttyConnector = ttyConnector;
 		myOnBeforeBlockingWait = onBeforeBlockingWait;
 	}
 
 	public TtyBasedArrayDataStream(final TtyConnector ttyConnector) {
 		super(new char[1024], 0, 0);
-		myTtyConnector = ttyConnector;
+		this.ttyConnector = ttyConnector;
 		myOnBeforeBlockingWait = null;
 	}
 
-	private void fillBuf() throws IOException {
-		myOffset = 0;
-
-		if (!myTtyConnector.ready() && myOnBeforeBlockingWait != null) {
-			myOnBeforeBlockingWait.run();
-		}
-		myLength = myTtyConnector.read(myBuf, myOffset, myBuf.length);
-
-		if (myLength <= 0) {
-			myLength = 0;
-			throw new EOF();
-		}
-	}
-
+	@Override
 	public char getChar() throws IOException {
-		if (myLength == 0) {
+		if (length == 0) {
 			fillBuf();
 		}
 		return super.getChar();
 	}
 
+	@Override
 	public String readNonControlCharacters(int maxChars) throws IOException {
-		if (myLength == 0) {
+		if (length == 0) {
 			fillBuf();
 		}
 
@@ -54,6 +45,20 @@ public class TtyBasedArrayDataStream extends ArrayTerminalDataStream {
 
 	@Override
 	public String toString() {
-		return CharUtils.toHumanReadableText(new String(myBuf, myOffset, myLength));
+		return CharUtils.toHumanReadableText(new String(buf, offset, length));
+	}
+
+	private void fillBuf() throws IOException {
+		offset = 0;
+
+		if (!this.ttyConnector.ready() && myOnBeforeBlockingWait != null) {
+			myOnBeforeBlockingWait.run();
+		}
+		length = this.ttyConnector.read(buf, offset, buf.length);
+
+		if (length <= 0) {
+			length = 0;
+			throw new EOF();
+		}
 	}
 }

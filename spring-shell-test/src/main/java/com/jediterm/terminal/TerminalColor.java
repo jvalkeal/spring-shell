@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public class TerminalColor {
   public static final TerminalColor BLACK = index(0);

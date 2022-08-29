@@ -1,10 +1,56 @@
 package com.jediterm.terminal.ui;
 
-import com.jediterm.terminal.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+
+import com.jediterm.terminal.ProcessTtyConnector;
 import com.jediterm.terminal.SubstringFinder.FindResult;
 import com.jediterm.terminal.SubstringFinder.FindResult.FindItem;
+import com.jediterm.terminal.Terminal;
+import com.jediterm.terminal.TerminalDisplay;
+import com.jediterm.terminal.TerminalMode;
+import com.jediterm.terminal.TerminalStarter;
+import com.jediterm.terminal.TtyBasedArrayDataStream;
+import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.debug.DebugBufferType;
-import com.jediterm.terminal.model.*;
+import com.jediterm.terminal.model.JediTermDebouncerImpl;
+import com.jediterm.terminal.model.JediTermTypeAheadModel;
+import com.jediterm.terminal.model.JediTerminal;
+import com.jediterm.terminal.model.StyleState;
+import com.jediterm.terminal.model.TerminalTextBuffer;
 import com.jediterm.terminal.model.hyperlinks.HyperlinkFilter;
 import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 import com.jediterm.terminal.ui.settings.SettingsProvider;
@@ -12,18 +58,6 @@ import com.jediterm.typeahead.TerminalTypeAheadManager;
 import com.jediterm.typeahead.TypeAheadTerminalModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * JediTerm terminal widget with UI implemented in Swing.

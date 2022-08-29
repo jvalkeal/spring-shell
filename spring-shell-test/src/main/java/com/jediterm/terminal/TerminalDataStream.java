@@ -8,22 +8,23 @@ import java.io.IOException;
  * characters ({@link #readNonControlCharacters(int)} - for faster processing from buffer in the size <=<b>maxChars</b>).
  *
  *
- * @author traff
+ * @author jediterm authors
  */
 public interface TerminalDataStream {
-  char getChar() throws IOException;
 
-  void pushChar(char c) throws IOException;
+	char getChar() throws IOException;
 
-  String readNonControlCharacters(int maxChars) throws IOException;
+	void pushChar(char c) throws IOException;
 
-  void pushBackBuffer(char[] bytes, int length) throws IOException;
+	String readNonControlCharacters(int maxChars) throws IOException;
 
-  boolean isEmpty();
+	void pushBackBuffer(char[] bytes, int length) throws IOException;
 
-  class EOF extends IOException {
-    public EOF() {
-      super("EOF: There is no more data or connection is lost");
-    }
-  }
+	boolean isEmpty();
+
+	class EOF extends IOException {
+		public EOF() {
+			super("EOF: There is no more data or connection is lost");
+		}
+	}
 }

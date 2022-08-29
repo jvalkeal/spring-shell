@@ -3,7 +3,7 @@ package com.jediterm.terminal;
 /**
  *  Sends a response from the terminal emulator.
  *
- * @author traff
+ * @author jediterm authors
  */
 public interface TerminalOutputStream {
   /**

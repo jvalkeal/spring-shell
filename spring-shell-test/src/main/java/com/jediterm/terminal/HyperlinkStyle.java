@@ -3,7 +3,7 @@ package com.jediterm.terminal;
 import com.jediterm.terminal.model.hyperlinks.LinkInfo;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public class HyperlinkStyle extends TextStyle {
 

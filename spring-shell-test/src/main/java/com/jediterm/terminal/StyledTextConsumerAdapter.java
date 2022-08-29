@@ -2,6 +2,10 @@ package com.jediterm.terminal;
 
 import com.jediterm.terminal.model.CharBuffer;
 
+/**
+ *
+ * @author jediterm authors
+ */
 public class StyledTextConsumerAdapter implements StyledTextConsumer {
 
   public void consume(int x, int y, TextStyle style, CharBuffer characters, int startRow) {

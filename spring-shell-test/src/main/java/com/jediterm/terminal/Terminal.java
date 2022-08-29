@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Executes terminal commands interpreted by {@link com.jediterm.terminal.emulator.Emulator}, receives text
  *
- * @author traff
+ * @author jediterm authors
  */
 public interface Terminal {
   void resize(Dimension newTermSize, RequestOrigin origin);

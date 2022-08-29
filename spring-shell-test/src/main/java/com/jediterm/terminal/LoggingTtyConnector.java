@@ -3,7 +3,7 @@ package com.jediterm.terminal;
 import java.util.List;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public interface LoggingTtyConnector {
 	List<char[]> getChunks();

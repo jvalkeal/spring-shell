@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Implementation of substring search based on Rabin-Karp algorithm
  *
- * @author traff
+ * @author jediterm authors
  */
 public class SubstringFinder {
   private final String myPattern;
