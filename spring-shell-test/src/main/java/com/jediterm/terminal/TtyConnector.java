@@ -5,6 +5,8 @@ import java.io.IOException;
 
 /**
  * Interface to tty.
+ *
+ * @author jediterm authors
  */
 public interface TtyConnector {
 

@@ -5,6 +5,10 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
+/**
+ *
+ * @author jediterm authors
+ */
 public class TextStyle {
   private static final EnumSet<Option> NO_OPTIONS = EnumSet.noneOf(Option.class);
 

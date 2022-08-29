@@ -6,6 +6,10 @@ import com.jediterm.terminal.model.TerminalSelection;
 
 import java.awt.*;
 
+/**
+ *
+ * @author jediterm authors
+ */
 public interface TerminalDisplay {
   // Size information
   int getRowCount();

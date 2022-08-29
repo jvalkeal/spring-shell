@@ -1,5 +1,6 @@
 package com.jediterm.support;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import com.jediterm.terminal.ArrayTerminalDataStream;
@@ -12,11 +13,9 @@ import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 
-import java.awt.*;
-
 /**
  *
- * @author original jediterm authors
+ * @author jediterm authors
  */
 public class TestTerminalSession {
 

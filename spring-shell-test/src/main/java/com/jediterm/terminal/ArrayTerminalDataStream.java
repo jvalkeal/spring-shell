@@ -7,70 +7,75 @@ import java.io.IOException;
 /**
  * Takes data from underlying char array.
  *
- * @author traff
+ * @author jediterm authors
  */
 public class ArrayTerminalDataStream implements TerminalDataStream {
-  protected char[] myBuf;
-  protected int myOffset;
-  protected int myLength;
 
-  public ArrayTerminalDataStream(char[] buf, int offset, int length) {
-    myBuf = buf;
-    myOffset = offset;
-    myLength = length;
-  }
+	protected char[] buf;
+	protected int offset;
+	protected int length;
 
-  public ArrayTerminalDataStream(char[] buf) {
-    this(buf, 0, buf.length);
-  }
+	public ArrayTerminalDataStream(char[] buf, int offset, int length) {
+		this.buf = buf;
+		this.offset = offset;
+		this.length = length;
+	}
 
-  public char getChar() throws IOException {
-    if (myLength == 0) {
-      throw new EOF();
-    }
+	public ArrayTerminalDataStream(char[] buf) {
+		this(buf, 0, buf.length);
+	}
 
-    myLength--;
+	@Override
+	public char getChar() throws IOException {
+		if (this.length == 0) {
+			throw new EOF();
+		}
 
-    return myBuf[myOffset++];
-  }
+		this.length--;
 
-  public void pushChar(final char c) throws EOF {
-    if (myOffset == 0) {
-      // Pushed back too many... shift it up to the end.
+		return this.buf[this.offset++];
+	}
 
-      char[] newBuf;
-      if (myBuf.length - myLength == 0) {
-        newBuf = new char[myBuf.length + 1];
-      }
-      else {
-        newBuf = myBuf;
-      }
-      myOffset = newBuf.length - myLength;
-      System.arraycopy(myBuf, 0, newBuf, myOffset, myLength);
-      myBuf = newBuf;
-    }
+	@Override
+	public void pushChar(final char c) throws EOF {
+		if (this.offset == 0) {
+			// Pushed back too many... shift it up to the end.
 
-    myLength++;
-    myBuf[--myOffset] = c;
-  }
+			char[] newBuf;
+			if (this.buf.length - this.length == 0) {
+				newBuf = new char[this.buf.length + 1];
+			}
+			else {
+				newBuf = this.buf;
+			}
+			this.offset = newBuf.length - this.length;
+			System.arraycopy(this.buf, 0, newBuf, this.offset, this.length);
+			this.buf = newBuf;
+		}
 
-  public String readNonControlCharacters(int maxChars) throws IOException {
-    String nonControlCharacters = CharUtils.getNonControlCharacters(maxChars, myBuf, myOffset, myLength);
+		this.length++;
+		this.buf[--this.offset] = c;
+	}
 
-    myOffset += nonControlCharacters.length();
-    myLength -= nonControlCharacters.length();
+	@Override
+	public String readNonControlCharacters(int maxChars) throws IOException {
+		String nonControlCharacters = CharUtils.getNonControlCharacters(maxChars, this.buf, this.offset, this.length);
 
-    return nonControlCharacters;
-  }
+		this.offset += nonControlCharacters.length();
+		this.length -= nonControlCharacters.length();
 
-  public void pushBackBuffer(final char[] bytes, final int length) throws EOF {
-    for (int i = length - 1; i >= 0; i--) {
-      pushChar(bytes[i]);
-    }
-  }
+		return nonControlCharacters;
+	}
 
-  @Override
-  public boolean isEmpty() {
-    return myLength == 0;
-  }
+	@Override
+	public void pushBackBuffer(final char[] bytes, final int length) throws EOF {
+		for (int i = length - 1; i >= 0; i--) {
+			pushChar(bytes[i]);
+		}
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.length == 0;
+	}
 }

@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public abstract class ProcessTtyConnector implements TtyConnector {
 	protected final InputStream myInputStream;

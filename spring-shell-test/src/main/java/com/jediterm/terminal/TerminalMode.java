@@ -4,6 +4,10 @@ package com.jediterm.terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author jediterm authors
+ */
 public enum TerminalMode {
   Null,
   CursorKey {
@@ -65,22 +69,22 @@ public enum TerminalMode {
         terminal.restoreCursor();
       }
     }
-  }, 
+  },
   CursorBlinking {
     @Override
     public void setEnabled(Terminal terminal, boolean enabled) {
       terminal.setBlinkingCursor(enabled);
     }
-  }, 
-  AllowWideColumn, 
-  ReverseWrapAround, 
+  },
+  AllowWideColumn,
+  ReverseWrapAround,
   AutoNewLine {
     @Override
     public void setEnabled(Terminal terminal, boolean enabled) {
       terminal.setAutoNewLine(enabled);
     }
-  }, 
-  KeyboardAction, 
+  },
+  KeyboardAction,
   InsertMode,
   SendReceive,
   EightBitInput, //Interpret "meta" key, sets eighth bit. (enables the eightBitInput resource).
@@ -105,7 +109,7 @@ public enum TerminalMode {
   ;
 
   private static final Logger LOG = LoggerFactory.getLogger(TerminalMode.class);
-  
+
   public void setEnabled(Terminal terminal, boolean enabled) {
     LOG.warn("Mode " + name() + " is not implemented, setting to " + enabled);
   }
