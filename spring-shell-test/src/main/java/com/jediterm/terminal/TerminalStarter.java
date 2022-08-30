@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author jediterm authors
  */
 public class TerminalStarter implements TerminalOutputStream {
+
 	private static final Logger LOG = LoggerFactory.getLogger(TerminalStarter.class);
 
 	private final Emulator myEmulator;
@@ -86,12 +87,8 @@ public class TerminalStarter implements TerminalOutputStream {
 	/**
 	 * Resizes terminal and tty connector, should be called on a pooled thread.
 	 */
-	public static void resize(Emulator emulator,
-														Terminal terminal,
-														TtyConnector ttyConnector,
-														Dimension newTermSize,
-														RequestOrigin origin,
-														BiConsumer<Long, Runnable> taskScheduler) {
+	public static void resize(Emulator emulator, Terminal terminal, TtyConnector ttyConnector, Dimension newTermSize,
+			RequestOrigin origin, BiConsumer<Long, Runnable> taskScheduler) {
 		CompletableFuture<?> promptUpdated = ((JediEmulator)emulator).getPromptUpdatedAfterResizeFuture(taskScheduler);
 		terminal.resize(newTermSize, origin, promptUpdated);
 		ttyConnector.resize(newTermSize);

@@ -1,15 +1,15 @@
 package com.jediterm.support;
 
+import java.awt.Dimension;
+
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.RequestOrigin;
 import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TerminalDisplay;
-import com.jediterm.terminal.model.TerminalTextBuffer;
+import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.TerminalSelection;
-import com.jediterm.terminal.emulator.mouse.MouseMode;
-
-import java.awt.*;
+import com.jediterm.terminal.model.TerminalTextBuffer;
 
 /**
  * @author traff

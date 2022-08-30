@@ -19,44 +19,44 @@ import com.jediterm.terminal.model.hyperlinks.TextProcessing;
  */
 public class TestTerminalSession {
 
-	private final TestTerminal myTerminal;
-	private final TextProcessing myTextProcessing;
-	private final TerminalTextBuffer myTerminalTextBuffer;
-	private final TextStyle myDefaultStyle;
+	private final TestTerminal terminal;
+	private final TextProcessing textProcessing;
+	private final TerminalTextBuffer terminalTextBuffer;
+	private final TextStyle textStyle;
 
 	public TestTerminalSession(int width, int height) {
 	  StyleState state = new StyleState();
-	  myDefaultStyle = state.getCurrent();
+	  this.textStyle = state.getCurrent();
 	  TextStyle hyperlinkTextStyle = new TextStyle(TerminalColor.awt(Color.BLUE), TerminalColor.WHITE);
-	  myTextProcessing = new TextProcessing(hyperlinkTextStyle, HyperlinkStyle.HighlightMode.ALWAYS);
-	  myTerminalTextBuffer = new TerminalTextBuffer(width, height, state, myTextProcessing);
-	  myTextProcessing.setTerminalTextBuffer(myTerminalTextBuffer);
-	  myTerminal = new TestTerminal(myTerminalTextBuffer, state);
+	  this.textProcessing = new TextProcessing(hyperlinkTextStyle, HyperlinkStyle.HighlightMode.ALWAYS);
+	  this.terminalTextBuffer = new TerminalTextBuffer(width, height, state, this.textProcessing);
+	  this.textProcessing.setTerminalTextBuffer(this.terminalTextBuffer);
+	  this.terminal = new TestTerminal(this.terminalTextBuffer, state);
 	}
 
 	public TestTerminal getTerminal() {
-	  return myTerminal;
+	  return this.terminal;
 	}
 
 	public TestTerminalDisplay getDisplay() {
-	  return myTerminal.getDisplay();
+	  return this.terminal.getDisplay();
 	}
 
 	public TerminalTextBuffer getTerminalTextBuffer() {
-	  return myTerminalTextBuffer;
+	  return this.terminalTextBuffer;
 	}
 
 	public TextProcessing getTextProcessing() {
-	  return myTextProcessing;
+	  return this.textProcessing;
 	}
 
 	public TextStyle getDefaultStyle() {
-	  return myDefaultStyle;
+	  return this.textStyle;
 	}
 
 	public void process(String data) throws IOException {
 	  ArrayTerminalDataStream fileStream = new ArrayTerminalDataStream(data.toCharArray());
-	  Emulator emulator = new JediEmulator(fileStream, myTerminal);
+	  Emulator emulator = new JediEmulator(fileStream, this.terminal);
 
 	  while (emulator.hasNext()) {
 		emulator.next();
