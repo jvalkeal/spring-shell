@@ -1,55 +1,55 @@
 package com.jediterm.terminal;
 
+import java.awt.Dimension;
+
 import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.TerminalSelection;
-
-import java.awt.*;
 
 /**
  *
  * @author jediterm authors
  */
 public interface TerminalDisplay {
-  // Size information
-  int getRowCount();
 
-  int getColumnCount();
+	int getRowCount();
 
-  void setCursor(int x, int y);
+	int getColumnCount();
 
-  void setCursorShape(CursorShape shape);
+	void setCursor(int x, int y);
 
-  void beep();
+	void setCursorShape(CursorShape shape);
 
-  void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
-                     JediTerminal.ResizeHandler resizeHandler);
+	void beep();
 
-  void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy);
+	void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
+			JediTerminal.ResizeHandler resizeHandler);
 
-  void setCursorVisible(boolean shouldDrawCursor);
+	void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy);
 
-  void setScrollingEnabled(boolean enabled);
+	void setCursorVisible(boolean shouldDrawCursor);
 
-  void setBlinkingCursor(boolean enabled);
+	void setScrollingEnabled(boolean enabled);
 
-  String getWindowTitle();
+	void setBlinkingCursor(boolean enabled);
 
-  void setWindowTitle(String name);
+	String getWindowTitle();
 
-  void terminalMouseModeSet(MouseMode mode);
+	void setWindowTitle(String name);
 
-  TerminalSelection getSelection();
+	void terminalMouseModeSet(MouseMode mode);
 
-  boolean ambiguousCharsAreDoubleWidth();
+	TerminalSelection getSelection();
 
-  default void setBracketedPasteMode(boolean enabled) {}
+	boolean ambiguousCharsAreDoubleWidth();
 
-  default TerminalColor getWindowForeground() {
-    return null;
-  }
+	default void setBracketedPasteMode(boolean enabled) {}
 
-  default TerminalColor getWindowBackground() {
-    return null;
-  }
+	default TerminalColor getWindowForeground() {
+		return null;
+	}
+
+	default TerminalColor getWindowBackground() {
+		return null;
+	}
 }

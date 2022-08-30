@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class JediEmulator extends DataStreamIteratingEmulator {
+
 	private static final Logger LOG = LoggerFactory.getLogger(JediEmulator.class);
 
 	private static int logThrottlerCounter = 0;

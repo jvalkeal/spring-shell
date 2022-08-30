@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
  * @author traff
  */
 public class TestTerminal extends JediTerminal {
+
 	private final TestTerminalDisplay myBufferDisplay;
 	private final TerminalTextBuffer myTextBuffer;
 	private ByteArrayOutputStream myOutputStream;

@@ -21,6 +21,8 @@ import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.jediterm.support.TestTerminalSession;
+import com.jediterm.terminal.Questioner;
+import com.jediterm.terminal.TtyConnector;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.impl.DumbTerminal;
 
@@ -56,6 +58,64 @@ public class ShellAutoConfiguration {
 	@Bean
 	ShellClient shellClient(TestTerminalSession testTerminalSession) {
 		return ShellClient.builder().build();
+	}
+
+	private static class ExampleTtyConnector implements TtyConnector {
+
+		@Override
+		public boolean init(Questioner q) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public int read(char[] buf, int offset, int length) throws IOException {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void write(byte[] bytes) throws IOException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public boolean isConnected() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void write(String string) throws IOException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public int waitFor() throws InterruptedException {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public boolean ready() throws IOException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
 	}
 
 }
