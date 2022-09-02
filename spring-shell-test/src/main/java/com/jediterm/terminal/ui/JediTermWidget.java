@@ -63,11 +63,11 @@ import org.slf4j.LoggerFactory;
  * JediTerm terminal widget with UI implemented in Swing.
  * <p/>
  */
-public class JediTermWidget extends JPanel implements TerminalSession, TerminalWidget, TerminalActionProvider {
+public class JediTermWidget /*  extends JPanel */ implements TerminalSession, TerminalWidget, TerminalActionProvider {
 	private static final Logger LOG = LoggerFactory.getLogger(JediTermWidget.class);
 
 	protected final TerminalPanel myTerminalPanel;
-	protected final JScrollBar myScrollBar;
+	// protected final JScrollBar myScrollBar;
 	protected final JediTerminal myTerminal;
 	protected final AtomicBoolean mySessionRunning = new AtomicBoolean();
 	private final JediTermTypeAheadModel myTypeAheadTerminalModel;
@@ -92,7 +92,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 	}
 
 	public JediTermWidget(int columns, int lines, SettingsProvider settingsProvider) {
-		super(new BorderLayout());
+		// super(new BorderLayout());
 
 		mySettingsProvider = settingsProvider;
 
@@ -122,31 +122,31 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 
 		myPreConnectHandler = createPreConnectHandler(myTerminal);
 		myTerminalPanel.addCustomKeyListener(myPreConnectHandler);
-		myScrollBar = createScrollBar();
+		// myScrollBar = createScrollBar();
 
 		myInnerPanel = new JLayeredPane();
 		myInnerPanel.setFocusable(false);
-		setFocusable(false);
+		// setFocusable(false);
 
 		myInnerPanel.setLayout(new TerminalLayout());
 		myInnerPanel.add(myTerminalPanel, TerminalLayout.TERMINAL);
-		myInnerPanel.add(myScrollBar, TerminalLayout.SCROLL);
+		// myInnerPanel.add(myScrollBar, TerminalLayout.SCROLL);
 
-		add(myInnerPanel, BorderLayout.CENTER);
+		// add(myInnerPanel, BorderLayout.CENTER);
 
-		myScrollBar.setModel(myTerminalPanel.getVerticalScrollModel());
+		// myScrollBar.setModel(myTerminalPanel.getVerticalScrollModel());
 		mySessionRunning.set(false);
 
-		myTerminalPanel.init(myScrollBar);
+		// myTerminalPanel.init(myScrollBar);
 
 		myTerminalPanel.setVisible(true);
 	}
 
-	protected JScrollBar createScrollBar() {
-		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setUI(new FindResultScrollBarUI());
-		return scrollBar;
-	}
+	// protected JScrollBar createScrollBar() {
+	// 	JScrollBar scrollBar = new JScrollBar();
+	// 	scrollBar.setUI(new FindResultScrollBarUI());
+	// 	return scrollBar;
+	// }
 
 	protected StyleState createDefaultStyle() {
 		StyleState styleState = new StyleState();
@@ -241,20 +241,20 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 		return myTerminalPanel.getTerminalTextBuffer();
 	}
 
-	@Override
-	public boolean requestFocusInWindow() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				myTerminalPanel.requestFocusInWindow();
-			}
-		});
-		return super.requestFocusInWindow();
-	}
+	// @Override
+	// public boolean requestFocusInWindow() {
+	// 	SwingUtilities.invokeLater(new Runnable() {
+	// 		public void run() {
+	// 			myTerminalPanel.requestFocusInWindow();
+	// 		}
+	// 	});
+	// 	return super.requestFocusInWindow();
+	// }
 
-	@Override
-	public void requestFocus() {
-		myTerminalPanel.requestFocus();
-	}
+	// @Override
+	// public void requestFocus() {
+	// 	myTerminalPanel.requestFocus();
+	// }
 
 	public boolean canOpenSession() {
 		return !isSessionRunning();
@@ -276,10 +276,10 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 		return this;
 	}
 
-	@Override
-	public JComponent getComponent() {
-		return this;
-	}
+	// @Override
+	// public JComponent getComponent() {
+	// 	return this;
+	// }
 
 	@Override
 	public void close() {
@@ -390,7 +390,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 		FindResult results = myTerminal.searchInTerminalTextBuffer(text, ignoreCase);
 		myTerminalPanel.setFindResult(results);
 		myFindComponent.onResultUpdated(results);
-		myScrollBar.repaint();
+		// myScrollBar.repaint();
 	}
 
 	@Override
