@@ -13,17 +13,17 @@ import com.jediterm.terminal.TtyConnector;
 public interface TerminalWidget {
 	JediTermWidget createTerminalSession(TtyConnector ttyConnector);
 
-	JComponent getComponent();
+	// JComponent getComponent();
 
-	default JComponent getPreferredFocusableComponent() {
-		return getComponent();
-	}
+	// default JComponent getPreferredFocusableComponent() {
+	// 	return getComponent();
+	// }
 
 	boolean canOpenSession();
 
 	void setTerminalPanelListener(TerminalPanelListener terminalPanelListener);
 
-	Dimension getPreferredSize();
+	// Dimension getPreferredSize();
 
 	TerminalSession getCurrentSession();
 

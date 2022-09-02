@@ -699,7 +699,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 
 	public void setTerminalStarter(final TerminalStarter terminalStarter) {
 		myTerminalStarter = terminalStarter;
-		sizeTerminalFromComponent();
+		// sizeTerminalFromComponent();
 	}
 
 	public void addCustomKeyListener(KeyListener keyListener) {
