@@ -116,7 +116,7 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
 
-		myTerminalPanel.addTerminalMouseListener(myTerminal);
+		// myTerminalPanel.addTerminalMouseListener(myTerminal);
 		myTerminalPanel.setNextProvider(this);
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
@@ -129,7 +129,7 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		// setFocusable(false);
 
 		myInnerPanel.setLayout(new TerminalLayout());
-		myInnerPanel.add(myTerminalPanel, TerminalLayout.TERMINAL);
+		// myInnerPanel.add(myTerminalPanel, TerminalLayout.TERMINAL);
 		// myInnerPanel.add(myScrollBar, TerminalLayout.SCROLL);
 
 		// add(myInnerPanel, BorderLayout.CENTER);
@@ -139,7 +139,7 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 
 		// myTerminalPanel.init(myScrollBar);
 
-		myTerminalPanel.setVisible(true);
+		// myTerminalPanel.setVisible(true);
 	}
 
 	// protected JScrollBar createScrollBar() {
@@ -347,7 +347,7 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 						myInnerPanel.repaint();
 						myFindComponent = null;
 						myTerminalPanel.setFindResult(null);
-						myTerminalPanel.requestFocusInWindow();
+						// myTerminalPanel.requestFocusInWindow();
 					} else if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER || keyEvent.getKeyCode() == KeyEvent.VK_UP) {
 						myFindComponent.nextFindResultItem(myTerminalPanel.selectNextFindResultItem());
 					} else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {

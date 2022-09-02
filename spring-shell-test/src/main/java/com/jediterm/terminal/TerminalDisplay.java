@@ -22,8 +22,8 @@ public interface TerminalDisplay {
 
 	void beep();
 
-	void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
-			JediTerminal.ResizeHandler resizeHandler);
+	// void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
+	// 		JediTerminal.ResizeHandler resizeHandler);
 
 	void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy);
 

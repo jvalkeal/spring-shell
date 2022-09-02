@@ -1114,35 +1114,35 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
 
 	@Override
 	public void resize( Dimension newTermSize,  RequestOrigin origin,  CompletableFuture<?> promptUpdated) {
-		int oldHeight = myTerminalHeight;
-		ensureTermMinimumSize(newTermSize);
-		if (newTermSize.width == myTerminalWidth && newTermSize.height == myTerminalHeight) {
-			return;
-		}
-		if (newTermSize.width == myTerminalWidth) {
-			doResize(newTermSize, origin, oldHeight);
-		}
-		else {
-			myTerminalWidth = newTermSize.width;
-			myTerminalHeight = newTermSize.height;
-			promptUpdated.thenRun(() -> {
-				doResize(newTermSize, origin, oldHeight);
-			});
-		}
+		// int oldHeight = myTerminalHeight;
+		// ensureTermMinimumSize(newTermSize);
+		// if (newTermSize.width == myTerminalWidth && newTermSize.height == myTerminalHeight) {
+		// 	return;
+		// }
+		// if (newTermSize.width == myTerminalWidth) {
+		// 	doResize(newTermSize, origin, oldHeight);
+		// }
+		// else {
+		// 	myTerminalWidth = newTermSize.width;
+		// 	myTerminalHeight = newTermSize.height;
+		// 	promptUpdated.thenRun(() -> {
+		// 		doResize(newTermSize, origin, oldHeight);
+		// 	});
+		// }
 	}
 
-	private void doResize( Dimension newTermSize,  RequestOrigin origin, int oldHeight) {
-		myDisplay.requestResize(newTermSize, origin, myCursorX, myCursorY, (termWidth, termHeight, cursorX, cursorY) -> {
-			myTerminalWidth = termWidth;
-			myTerminalHeight = termHeight;
-			myCursorY = cursorY;
-			myCursorX = Math.min(cursorX, myTerminalWidth - 1);
-			myDisplay.setCursor(myCursorX, myCursorY);
+	// private void doResize( Dimension newTermSize,  RequestOrigin origin, int oldHeight) {
+	// 	myDisplay.requestResize(newTermSize, origin, myCursorX, myCursorY, (termWidth, termHeight, cursorX, cursorY) -> {
+	// 		myTerminalWidth = termWidth;
+	// 		myTerminalHeight = termHeight;
+	// 		myCursorY = cursorY;
+	// 		myCursorX = Math.min(cursorX, myTerminalWidth - 1);
+	// 		myDisplay.setCursor(myCursorX, myCursorY);
 
-			myTabulator.resize(myTerminalWidth);
-		});
-		myScrollRegionBottom += myTerminalHeight - oldHeight;
-	}
+	// 		myTabulator.resize(myTerminalWidth);
+	// 	});
+	// 	myScrollRegionBottom += myTerminalHeight - oldHeight;
+	// }
 
 	public static void ensureTermMinimumSize( Dimension termSize) {
 		termSize.setSize(Math.max(MIN_WIDTH, termSize.width), Math.max(MIN_HEIGHT, termSize.height));
