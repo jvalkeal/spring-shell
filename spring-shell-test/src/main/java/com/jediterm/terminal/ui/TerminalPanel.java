@@ -95,7 +95,7 @@ import com.jediterm.typeahead.TerminalTypeAheadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TerminalPanel extends JComponent implements TerminalDisplay, TerminalActionProvider {
+public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay, TerminalActionProvider {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TerminalPanel.class);
 	private static final long serialVersionUID = -1048763516632093014L;
@@ -158,7 +158,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 
 	private int myCursorType = Cursor.DEFAULT_CURSOR;
 	private final TerminalKeyHandler myTerminalKeyHandler = new TerminalKeyHandler();
-	private LinkInfo.HoverConsumer myLinkHoverConsumer;
+	// private LinkInfo.HoverConsumer myLinkHoverConsumer;
 	private TerminalTypeAheadManager myTypeAheadManager;
 	private volatile boolean myBracketedPasteMode;
 
@@ -173,11 +173,11 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 
 		updateScrolling(true);
 
-		enableEvents(AWTEvent.KEY_EVENT_MASK | AWTEvent.INPUT_METHOD_EVENT_MASK);
-		enableInputMethods(true);
+		// enableEvents(AWTEvent.KEY_EVENT_MASK | AWTEvent.INPUT_METHOD_EVENT_MASK);
+		// enableInputMethods(true);
 
-		terminalTextBuffer.addModelListener(this::repaint);
-		terminalTextBuffer.addTypeAheadModelListener(this::repaint);
+		// terminalTextBuffer.addModelListener(this::repaint);
+		// terminalTextBuffer.addTypeAheadModelListener(this::repaint);
 	}
 
 	void setTypeAheadManager(TerminalTypeAheadManager typeAheadManager) {
@@ -192,21 +192,21 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return myTerminalPanelListener;
 	}
 
-	@Override
-	public void repaint() {
-		needRepaint.set(true);
-	}
+	// @Override
+	// public void repaint() {
+	// 	needRepaint.set(true);
+	// }
 
-	private void doRepaint() {
-		super.repaint();
-	}
+	// private void doRepaint() {
+	// 	super.repaint();
+	// }
 
-	@Deprecated
-	protected void reinitFontAndResize() {
-		initFont();
+	// @Deprecated
+	// protected void reinitFontAndResize() {
+	// 	initFont();
 
-		sizeTerminalFromComponent();
-	}
+	// 	sizeTerminalFromComponent();
+	// }
 
 	protected void initFont() {
 		myNormalFont = createFont();
@@ -217,176 +217,176 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		establishFontMetrics();
 	}
 
-	public void init(JScrollBar scrollBar) {
-		initFont();
+	// public void init(JScrollBar scrollBar) {
+	// 	initFont();
 
-		setPreferredSize(new Dimension(getPixelWidth(), getPixelHeight()));
+	// 	setPreferredSize(new Dimension(getPixelWidth(), getPixelHeight()));
 
-		setFocusable(true);
-		enableInputMethods(true);
-		setDoubleBuffered(true);
+	// 	setFocusable(true);
+	// 	enableInputMethods(true);
+	// 	setDoubleBuffered(true);
 
-		setFocusTraversalKeysEnabled(false);
+	// 	setFocusTraversalKeysEnabled(false);
 
-		addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				handleHyperlinks(e.getPoint(), e.isControlDown());
-			}
+	// 	addMouseMotionListener(new MouseMotionAdapter() {
+	// 		@Override
+	// 		public void mouseMoved(MouseEvent e) {
+	// 			handleHyperlinks(e.getPoint(), e.isControlDown());
+	// 		}
 
-			@Override
-			public void mouseDragged(final MouseEvent e) {
-				if (!isLocalMouseAction(e)) {
-					return;
-				}
+	// 		@Override
+	// 		public void mouseDragged(final MouseEvent e) {
+	// 			if (!isLocalMouseAction(e)) {
+	// 				return;
+	// 			}
 
-				final Point charCoords = panelToCharCoords(e.getPoint());
+	// 			final Point charCoords = panelToCharCoords(e.getPoint());
 
-				if (mySelection == null) {
-					// prevent unlikely case where drag started outside terminal panel
-					if (mySelectionStartPoint == null) {
-						mySelectionStartPoint = charCoords;
-					}
-					mySelection = new TerminalSelection(new Point(mySelectionStartPoint));
-				}
-				repaint();
-				mySelection.updateEnd(charCoords);
-				if (mySettingsProvider.copyOnSelect()) {
-					handleCopyOnSelect();
-				}
+	// 			if (mySelection == null) {
+	// 				// prevent unlikely case where drag started outside terminal panel
+	// 				if (mySelectionStartPoint == null) {
+	// 					mySelectionStartPoint = charCoords;
+	// 				}
+	// 				mySelection = new TerminalSelection(new Point(mySelectionStartPoint));
+	// 			}
+	// 			repaint();
+	// 			mySelection.updateEnd(charCoords);
+	// 			if (mySettingsProvider.copyOnSelect()) {
+	// 				handleCopyOnSelect();
+	// 			}
 
-				if (e.getPoint().y < 0) {
-					moveScrollBar((int) ((e.getPoint().y) * SCROLL_SPEED));
-				}
-				if (e.getPoint().y > getPixelHeight()) {
-					moveScrollBar((int) ((e.getPoint().y - getPixelHeight()) * SCROLL_SPEED));
-				}
-			}
-		});
+	// 			if (e.getPoint().y < 0) {
+	// 				moveScrollBar((int) ((e.getPoint().y) * SCROLL_SPEED));
+	// 			}
+	// 			if (e.getPoint().y > getPixelHeight()) {
+	// 				moveScrollBar((int) ((e.getPoint().y - getPixelHeight()) * SCROLL_SPEED));
+	// 			}
+	// 		}
+	// 	});
 
-		addMouseWheelListener(e -> {
-			if (isLocalMouseAction(e)) {
-				handleMouseWheelEvent(e, scrollBar);
-			}
-		});
+	// 	addMouseWheelListener(e -> {
+	// 		if (isLocalMouseAction(e)) {
+	// 			handleMouseWheelEvent(e, scrollBar);
+	// 		}
+	// 	});
 
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseExited(MouseEvent e) {
-				if (myLinkHoverConsumer != null) {
-					myLinkHoverConsumer.onMouseExited();
-					myLinkHoverConsumer = null;
-				}
-			}
+	// 	addMouseListener(new MouseAdapter() {
+	// 		@Override
+	// 		public void mouseExited(MouseEvent e) {
+	// 			if (myLinkHoverConsumer != null) {
+	// 				myLinkHoverConsumer.onMouseExited();
+	// 				myLinkHoverConsumer = null;
+	// 			}
+	// 		}
 
-			@Override
-			public void mousePressed(final MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (e.getClickCount() == 1) {
-						mySelectionStartPoint = panelToCharCoords(e.getPoint());
-						mySelection = null;
-						repaint();
-					}
-				}
-			}
+	// 		@Override
+	// 		public void mousePressed(final MouseEvent e) {
+	// 			if (e.getButton() == MouseEvent.BUTTON1) {
+	// 				if (e.getClickCount() == 1) {
+	// 					mySelectionStartPoint = panelToCharCoords(e.getPoint());
+	// 					mySelection = null;
+	// 					repaint();
+	// 				}
+	// 			}
+	// 		}
 
-			@Override
-			public void mouseReleased(final MouseEvent e) {
-				requestFocusInWindow();
-				repaint();
-			}
+	// 		@Override
+	// 		public void mouseReleased(final MouseEvent e) {
+	// 			requestFocusInWindow();
+	// 			repaint();
+	// 		}
 
-			@Override
-			public void mouseClicked(final MouseEvent e) {
-				requestFocusInWindow();
-				HyperlinkStyle hyperlink = isFollowLinkEvent(e) ? findHyperlink(e.getPoint()) : null;
-				if (hyperlink != null) {
-					hyperlink.getLinkInfo().navigate();
-				} else if (e.getButton() == MouseEvent.BUTTON1 && isLocalMouseAction(e)) {
-					int count = e.getClickCount();
-					if (count == 1) {
-						// do nothing
-					} else if (count == 2) {
-						// select word
-						final Point charCoords = panelToCharCoords(e.getPoint());
-						Point start = SelectionUtil.getPreviousSeparator(charCoords, myTerminalTextBuffer);
-						Point stop = SelectionUtil.getNextSeparator(charCoords, myTerminalTextBuffer);
-						mySelection = new TerminalSelection(start);
-						mySelection.updateEnd(stop);
+	// 		@Override
+	// 		public void mouseClicked(final MouseEvent e) {
+	// 			requestFocusInWindow();
+	// 			HyperlinkStyle hyperlink = isFollowLinkEvent(e) ? findHyperlink(e.getPoint()) : null;
+	// 			if (hyperlink != null) {
+	// 				hyperlink.getLinkInfo().navigate();
+	// 			} else if (e.getButton() == MouseEvent.BUTTON1 && isLocalMouseAction(e)) {
+	// 				int count = e.getClickCount();
+	// 				if (count == 1) {
+	// 					// do nothing
+	// 				} else if (count == 2) {
+	// 					// select word
+	// 					final Point charCoords = panelToCharCoords(e.getPoint());
+	// 					Point start = SelectionUtil.getPreviousSeparator(charCoords, myTerminalTextBuffer);
+	// 					Point stop = SelectionUtil.getNextSeparator(charCoords, myTerminalTextBuffer);
+	// 					mySelection = new TerminalSelection(start);
+	// 					mySelection.updateEnd(stop);
 
-						if (mySettingsProvider.copyOnSelect()) {
-							handleCopyOnSelect();
-						}
-					} else if (count == 3) {
-						// select line
-						final Point charCoords = panelToCharCoords(e.getPoint());
-						int startLine = charCoords.y;
-						while (startLine > -getScrollBuffer().getLineCount()
-										&& myTerminalTextBuffer.getLine(startLine - 1).isWrapped()) {
-							startLine--;
-						}
-						int endLine = charCoords.y;
-						while (endLine < myTerminalTextBuffer.getHeight()
-										&& myTerminalTextBuffer.getLine(endLine).isWrapped()) {
-							endLine++;
-						}
-						mySelection = new TerminalSelection(new Point(0, startLine));
-						mySelection.updateEnd(new Point(myTermSize.width, endLine));
+	// 					if (mySettingsProvider.copyOnSelect()) {
+	// 						handleCopyOnSelect();
+	// 					}
+	// 				} else if (count == 3) {
+	// 					// select line
+	// 					final Point charCoords = panelToCharCoords(e.getPoint());
+	// 					int startLine = charCoords.y;
+	// 					while (startLine > -getScrollBuffer().getLineCount()
+	// 									&& myTerminalTextBuffer.getLine(startLine - 1).isWrapped()) {
+	// 						startLine--;
+	// 					}
+	// 					int endLine = charCoords.y;
+	// 					while (endLine < myTerminalTextBuffer.getHeight()
+	// 									&& myTerminalTextBuffer.getLine(endLine).isWrapped()) {
+	// 						endLine++;
+	// 					}
+	// 					mySelection = new TerminalSelection(new Point(0, startLine));
+	// 					mySelection.updateEnd(new Point(myTermSize.width, endLine));
 
-						if (mySettingsProvider.copyOnSelect()) {
-							handleCopyOnSelect();
-						}
-					}
-				} else if (e.getButton() == MouseEvent.BUTTON2 && mySettingsProvider.pasteOnMiddleMouseClick() && isLocalMouseAction(e)) {
-					handlePasteSelection();
-				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					HyperlinkStyle contextHyperlink = findHyperlink(e.getPoint());
-					JPopupMenu popup = createPopupMenu(contextHyperlink != null ? contextHyperlink.getLinkInfo() : null, e);
-					popup.show(e.getComponent(), e.getX(), e.getY());
-				}
-				repaint();
-			}
-		});
+	// 					if (mySettingsProvider.copyOnSelect()) {
+	// 						handleCopyOnSelect();
+	// 					}
+	// 				}
+	// 			} else if (e.getButton() == MouseEvent.BUTTON2 && mySettingsProvider.pasteOnMiddleMouseClick() && isLocalMouseAction(e)) {
+	// 				handlePasteSelection();
+	// 			} else if (e.getButton() == MouseEvent.BUTTON3) {
+	// 				HyperlinkStyle contextHyperlink = findHyperlink(e.getPoint());
+	// 				JPopupMenu popup = createPopupMenu(contextHyperlink != null ? contextHyperlink.getLinkInfo() : null, e);
+	// 				popup.show(e.getComponent(), e.getX(), e.getY());
+	// 			}
+	// 			repaint();
+	// 		}
+	// 	});
 
-		addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(final ComponentEvent e) {
-				sizeTerminalFromComponent();
-			}
-		});
+	// 	addComponentListener(new ComponentAdapter() {
+	// 		@Override
+	// 		public void componentResized(final ComponentEvent e) {
+	// 			sizeTerminalFromComponent();
+	// 		}
+	// 	});
 
-		addHierarchyListener(new HierarchyListener() {
-			@Override
-			public void hierarchyChanged(HierarchyEvent e) {
-				// replace with com.intellij.util.ui.update.UiNotifyConnector#doWhenFirstShown when merged with intellij
-				if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
-					SwingUtilities.invokeLater(() -> sizeTerminalFromComponent());
-					removeHierarchyListener(this);
-				}
-			}
-		});
+	// 	addHierarchyListener(new HierarchyListener() {
+	// 		@Override
+	// 		public void hierarchyChanged(HierarchyEvent e) {
+	// 			// replace with com.intellij.util.ui.update.UiNotifyConnector#doWhenFirstShown when merged with intellij
+	// 			if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+	// 				SwingUtilities.invokeLater(() -> sizeTerminalFromComponent());
+	// 				removeHierarchyListener(this);
+	// 			}
+	// 		}
+	// 	});
 
-		addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				myCursor.cursorChanged();
-			}
+	// 	addFocusListener(new FocusAdapter() {
+	// 		@Override
+	// 		public void focusGained(FocusEvent e) {
+	// 			myCursor.cursorChanged();
+	// 		}
 
-			@Override
-			public void focusLost(FocusEvent e) {
-				myCursor.cursorChanged();
+	// 		@Override
+	// 		public void focusLost(FocusEvent e) {
+	// 			myCursor.cursorChanged();
 
-				handleHyperlinks(e.getComponent(), false);
-			}
-		});
+	// 			handleHyperlinks(e.getComponent(), false);
+	// 		}
+	// 	});
 
-		myBoundedRangeModel.addChangeListener(e -> {
-			myClientScrollOrigin = myBoundedRangeModel.getValue();
-			repaint();
-		});
+	// 	myBoundedRangeModel.addChangeListener(e -> {
+	// 		myClientScrollOrigin = myBoundedRangeModel.getValue();
+	// 		repaint();
+	// 	});
 
-		createRepaintTimer();
-	}
+	// 	createRepaintTimer();
+	// }
 
 	private boolean isFollowLinkEvent(MouseEvent e) {
 		return myCursorType == Cursor.HAND_CURSOR && e.getButton() == MouseEvent.BUTTON1;
@@ -400,59 +400,59 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		e.consume();
 	}
 
-	private void handleHyperlinks(Point panelPoint, boolean isControlDown) {
-		Cell cell = panelPointToCell(panelPoint);
-		HyperlinkStyle linkStyle = findHyperlink(cell);
-		LinkInfo.HoverConsumer linkHoverConsumer = linkStyle != null ? linkStyle.getLinkInfo().getHoverConsumer() : null;
-		if (linkHoverConsumer != myLinkHoverConsumer) {
-			if (myLinkHoverConsumer != null) {
-				myLinkHoverConsumer.onMouseExited();
-			}
-			if (linkHoverConsumer != null) {
-				LineCellInterval lineCellInterval = findIntervalWithStyle(cell, linkStyle);
-				linkHoverConsumer.onMouseEntered(this, getBounds(lineCellInterval));
-			}
-		}
-		myLinkHoverConsumer = linkHoverConsumer;
-		if (linkStyle != null) {
-			if (linkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.ALWAYS || (linkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.HOVER && isControlDown)) {
-				updateCursor(Cursor.HAND_CURSOR);
-				myHoveredHyperlink = linkStyle.getLinkInfo();
-				return;
-			}
-		}
+	// private void handleHyperlinks(Point panelPoint, boolean isControlDown) {
+	// 	Cell cell = panelPointToCell(panelPoint);
+	// 	HyperlinkStyle linkStyle = findHyperlink(cell);
+	// 	LinkInfo.HoverConsumer linkHoverConsumer = linkStyle != null ? linkStyle.getLinkInfo().getHoverConsumer() : null;
+	// 	if (linkHoverConsumer != myLinkHoverConsumer) {
+	// 		if (myLinkHoverConsumer != null) {
+	// 			myLinkHoverConsumer.onMouseExited();
+	// 		}
+	// 		if (linkHoverConsumer != null) {
+	// 			LineCellInterval lineCellInterval = findIntervalWithStyle(cell, linkStyle);
+	// 			linkHoverConsumer.onMouseEntered(this, getBounds(lineCellInterval));
+	// 		}
+	// 	}
+	// 	myLinkHoverConsumer = linkHoverConsumer;
+	// 	if (linkStyle != null) {
+	// 		if (linkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.ALWAYS || (linkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.HOVER && isControlDown)) {
+	// 			updateCursor(Cursor.HAND_CURSOR);
+	// 			myHoveredHyperlink = linkStyle.getLinkInfo();
+	// 			return;
+	// 		}
+	// 	}
 
-		myHoveredHyperlink = null;
-		if (myCursorType != Cursor.DEFAULT_CURSOR) {
-			updateCursor(Cursor.DEFAULT_CURSOR);
-			repaint();
-		}
-	}
+	// 	myHoveredHyperlink = null;
+	// 	if (myCursorType != Cursor.DEFAULT_CURSOR) {
+	// 		updateCursor(Cursor.DEFAULT_CURSOR);
+	// 		repaint();
+	// 	}
+	// }
 
-	private LineCellInterval findIntervalWithStyle(Cell initialCell, HyperlinkStyle style) {
-		int startColumn = initialCell.getColumn();
-		while (startColumn > 0 && style == myTerminalTextBuffer.getStyleAt(startColumn - 1, initialCell.getLine())) {
-			startColumn--;
-		}
-		int endColumn = initialCell.getColumn();
-		while (endColumn < myTerminalTextBuffer.getWidth() - 1 && style == myTerminalTextBuffer.getStyleAt(endColumn + 1, initialCell.getLine())) {
-			endColumn++;
-		}
-		return new LineCellInterval(initialCell.getLine(), startColumn, endColumn);
-	}
+	// private LineCellInterval findIntervalWithStyle(Cell initialCell, HyperlinkStyle style) {
+	// 	int startColumn = initialCell.getColumn();
+	// 	while (startColumn > 0 && style == myTerminalTextBuffer.getStyleAt(startColumn - 1, initialCell.getLine())) {
+	// 		startColumn--;
+	// 	}
+	// 	int endColumn = initialCell.getColumn();
+	// 	while (endColumn < myTerminalTextBuffer.getWidth() - 1 && style == myTerminalTextBuffer.getStyleAt(endColumn + 1, initialCell.getLine())) {
+	// 		endColumn++;
+	// 	}
+	// 	return new LineCellInterval(initialCell.getLine(), startColumn, endColumn);
+	// }
 
-	private void handleHyperlinks(Component component, boolean controlDown) {
-		PointerInfo a = MouseInfo.getPointerInfo();
-		if (a != null) {
-			Point b = a.getLocation();
-			SwingUtilities.convertPointFromScreen(b, component);
-			handleHyperlinks(b, controlDown);
-		}
-	}
+	// private void handleHyperlinks(Component component, boolean controlDown) {
+	// 	PointerInfo a = MouseInfo.getPointerInfo();
+	// 	if (a != null) {
+	// 		Point b = a.getLocation();
+	// 		SwingUtilities.convertPointFromScreen(b, component);
+	// 		handleHyperlinks(b, controlDown);
+	// 	}
+	// }
 
-	private HyperlinkStyle findHyperlink(Point p) {
-		return findHyperlink(panelPointToCell(p));
-	}
+	// private HyperlinkStyle findHyperlink(Point p) {
+	// 	return findHyperlink(panelPointToCell(p));
+	// }
 
 	private HyperlinkStyle findHyperlink(Cell cell) {
 		if (cell != null && cell.getColumn() >= 0 && cell.getColumn() < myTerminalTextBuffer.getWidth() &&
@@ -465,21 +465,21 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return null;
 	}
 
-	private void updateCursor(int cursorType) {
-		if (cursorType != myCursorType) {
-			myCursorType = cursorType;
-			//noinspection MagicConstant
-			setCursor(new Cursor(myCursorType));
-		}
-	}
+	// private void updateCursor(int cursorType) {
+	// 	if (cursorType != myCursorType) {
+	// 		myCursorType = cursorType;
+	// 		//noinspection MagicConstant
+	// 		setCursor(new Cursor(myCursorType));
+	// 	}
+	// }
 
-	private void createRepaintTimer() {
-		if (myRepaintTimer != null) {
-			myRepaintTimer.stop();
-		}
-		myRepaintTimer = new Timer(1000 / myMaxFPS, new WeakRedrawTimer(this));
-		myRepaintTimer.start();
-	}
+	// private void createRepaintTimer() {
+	// 	if (myRepaintTimer != null) {
+	// 		myRepaintTimer.stop();
+	// 	}
+	// 	myRepaintTimer = new Timer(1000 / myMaxFPS, new WeakRedrawTimer(this));
+	// 	myRepaintTimer.start();
+	// }
 
 	public boolean isLocalMouseAction(MouseEvent e) {
 		return mySettingsProvider.forceActionOnMouseReporting() || (isMouseReporting() == e.isShiftDown());
@@ -503,7 +503,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 
 	public void setFindResult(SubstringFinder.FindResult findResult) {
 		myFindResult = findResult;
-		repaint();
+		// repaint();
 	}
 
 	public SubstringFinder.FindResult getFindResult() {
@@ -529,41 +529,41 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 				} else {
 					myBoundedRangeModel.setValue(0);
 				}
-				repaint();
+				// repaint();
 				return item;
 			}
 		}
 		return null;
 	}
 
-	static class WeakRedrawTimer implements ActionListener {
+	// static class WeakRedrawTimer implements ActionListener {
 
-		private WeakReference<TerminalPanel> ref;
+	// 	private WeakReference<TerminalPanel> ref;
 
-		public WeakRedrawTimer(TerminalPanel terminalPanel) {
-			this.ref = new WeakReference<TerminalPanel>(terminalPanel);
-		}
+	// 	public WeakRedrawTimer(TerminalPanel terminalPanel) {
+	// 		this.ref = new WeakReference<TerminalPanel>(terminalPanel);
+	// 	}
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			TerminalPanel terminalPanel = ref.get();
-			if (terminalPanel != null) {
-				terminalPanel.myCursor.changeStateIfNeeded();
-				terminalPanel.updateScrolling(false);
-				if (terminalPanel.needRepaint.getAndSet(false)) {
-					try {
-						terminalPanel.doRepaint();
-					} catch (Exception ex) {
-						LOG.error("Error while terminal panel redraw", ex);
-					}
-				}
-			} else { // terminalPanel was garbage collected
-				Timer timer = (Timer) e.getSource();
-				timer.removeActionListener(this);
-				timer.stop();
-			}
-		}
-	}
+	// 	@Override
+	// 	public void actionPerformed(ActionEvent e) {
+	// 		TerminalPanel terminalPanel = ref.get();
+	// 		if (terminalPanel != null) {
+	// 			terminalPanel.myCursor.changeStateIfNeeded();
+	// 			terminalPanel.updateScrolling(false);
+	// 			if (terminalPanel.needRepaint.getAndSet(false)) {
+	// 				try {
+	// 					terminalPanel.doRepaint();
+	// 				} catch (Exception ex) {
+	// 					LOG.error("Error while terminal panel redraw", ex);
+	// 				}
+	// 			}
+	// 		} else { // terminalPanel was garbage collected
+	// 			Timer timer = (Timer) e.getSource();
+	// 			timer.removeActionListener(this);
+	// 			timer.stop();
+	// 		}
+	// 	}
+	// }
 
 	@Override
 	public void terminalMouseModeSet(MouseMode mode) {
@@ -677,25 +677,25 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 						BufferedImage.TYPE_INT_RGB);
 	}
 
-	public Dimension getTerminalSizeFromComponent() {
-		int newWidth = (getWidth() - getInsetX()) / myCharSize.width;
-		int newHeight = getHeight() / myCharSize.height;
-		return newHeight > 0 && newWidth > 0 ? new Dimension(newWidth, newHeight) : null;
-	}
+	// public Dimension getTerminalSizeFromComponent() {
+	// 	int newWidth = (getWidth() - getInsetX()) / myCharSize.width;
+	// 	int newHeight = getHeight() / myCharSize.height;
+	// 	return newHeight > 0 && newWidth > 0 ? new Dimension(newWidth, newHeight) : null;
+	// }
 
-	private void sizeTerminalFromComponent() {
-		if (myTerminalStarter != null) {
-			Dimension newSize = getTerminalSizeFromComponent();
-			if (newSize != null) {
-				JediTerminal.ensureTermMinimumSize(newSize);
-				if (!myTermSize.equals(newSize) || !myInitialSizeSyncDone) {
-					myInitialSizeSyncDone = true;
-					myTypeAheadManager.onResize();
-					myTerminalStarter.postResize(newSize, RequestOrigin.User);
-				}
-			}
-		}
-	}
+	// private void sizeTerminalFromComponent() {
+	// 	if (myTerminalStarter != null) {
+	// 		Dimension newSize = getTerminalSizeFromComponent();
+	// 		if (newSize != null) {
+	// 			JediTerminal.ensureTermMinimumSize(newSize);
+	// 			if (!myTermSize.equals(newSize) || !myInitialSizeSyncDone) {
+	// 				myInitialSizeSyncDone = true;
+	// 				myTypeAheadManager.onResize();
+	// 				myTerminalStarter.postResize(newSize, RequestOrigin.User);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	public void setTerminalStarter(final TerminalStarter terminalStarter) {
 		myTerminalStarter = terminalStarter;
@@ -710,23 +710,23 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		myCustomKeyListeners.remove(keyListener);
 	}
 
-	public void requestResize(Dimension newSize,
-														final RequestOrigin origin,
-														int cursorX,
-														int cursorY,
-														JediTerminal.ResizeHandler resizeHandler) {
-		if (!newSize.equals(myTermSize)) {
-			myTerminalTextBuffer.resize(newSize, origin, cursorX, cursorY, resizeHandler, mySelection);
-			myTermSize = (Dimension)newSize.clone();
+	// public void requestResize(Dimension newSize,
+	// 													final RequestOrigin origin,
+	// 													int cursorX,
+	// 													int cursorY,
+	// 													JediTerminal.ResizeHandler resizeHandler) {
+	// 	if (!newSize.equals(myTermSize)) {
+	// 		myTerminalTextBuffer.resize(newSize, origin, cursorX, cursorY, resizeHandler, mySelection);
+	// 		myTermSize = (Dimension)newSize.clone();
 
-			Dimension pixelDimension = new Dimension(getPixelWidth(), getPixelHeight());
-			setPreferredSize(pixelDimension);
-			if (myTerminalPanelListener != null) {
-				SwingUtilities.invokeLater(() -> myTerminalPanelListener.onPanelResize(origin));
-			}
-			SwingUtilities.invokeLater(() -> updateScrolling(true));
-		}
-	}
+	// 		Dimension pixelDimension = new Dimension(getPixelWidth(), getPixelHeight());
+	// 		setPreferredSize(pixelDimension);
+	// 		if (myTerminalPanelListener != null) {
+	// 			SwingUtilities.invokeLater(() -> myTerminalPanelListener.onPanelResize(origin));
+	// 		}
+	// 		SwingUtilities.invokeLater(() -> updateScrolling(true));
+	// 	}
+	// }
 
 	public void setTerminalPanelListener(final TerminalPanelListener terminalPanelListener) {
 		myTerminalPanelListener = terminalPanelListener;
@@ -800,105 +800,105 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		}
 	}
 
-	@Override
-	public Color getBackground() {
-		return getPalette().getBackground(myStyleState.getBackground());
-	}
+	// @Override
+	// public Color getBackground() {
+	// 	return getPalette().getBackground(myStyleState.getBackground());
+	// }
 
-	@Override
-	public Color getForeground() {
-		return getPalette().getForeground(myStyleState.getForeground());
-	}
+	// @Override
+	// public Color getForeground() {
+	// 	return getPalette().getForeground(myStyleState.getForeground());
+	// }
 
-	@Override
-	public void paintComponent(final Graphics g) {
-		final Graphics2D gfx = (Graphics2D) g;
+	// @Override
+	// public void paintComponent(final Graphics g) {
+	// 	final Graphics2D gfx = (Graphics2D) g;
 
-		setupAntialiasing(gfx);
+	// 	setupAntialiasing(gfx);
 
-		gfx.setColor(getBackground());
+	// 	gfx.setColor(getBackground());
 
-		gfx.fillRect(0, 0, getWidth(), getHeight());
+	// 	gfx.fillRect(0, 0, getWidth(), getHeight());
 
-		try {
-			myTerminalTextBuffer.lock();
-			// update myClientScrollOrigin as scrollArea might have been invoked after last WeakRedrawTimer action
-			updateScrolling(false);
-			myTerminalTextBuffer.processHistoryAndScreenLines(myClientScrollOrigin, myTermSize.height, new StyledTextConsumer() {
-				final int columnCount = getColumnCount();
+	// 	try {
+	// 		myTerminalTextBuffer.lock();
+	// 		// update myClientScrollOrigin as scrollArea might have been invoked after last WeakRedrawTimer action
+	// 		updateScrolling(false);
+	// 		myTerminalTextBuffer.processHistoryAndScreenLines(myClientScrollOrigin, myTermSize.height, new StyledTextConsumer() {
+	// 			final int columnCount = getColumnCount();
 
-				@Override
-				public void consume(int x, int y, TextStyle style, CharBuffer characters, int startRow) {
-					int row = y - startRow;
-					drawCharacters(x, row, style, characters, gfx, false);
+	// 			@Override
+	// 			public void consume(int x, int y, TextStyle style, CharBuffer characters, int startRow) {
+	// 				int row = y - startRow;
+	// 				drawCharacters(x, row, style, characters, gfx, false);
 
-					if (myFindResult != null) {
-						List<Pair<Integer, Integer>> ranges = myFindResult.getRanges(characters);
-						if (ranges != null) {
-							for (Pair<Integer, Integer> range : ranges) {
-								TextStyle foundPatternStyle = getFoundPattern(style);
-								CharBuffer foundPatternChars = characters.subBuffer(range);
+	// 				if (myFindResult != null) {
+	// 					List<Pair<Integer, Integer>> ranges = myFindResult.getRanges(characters);
+	// 					if (ranges != null) {
+	// 						for (Pair<Integer, Integer> range : ranges) {
+	// 							TextStyle foundPatternStyle = getFoundPattern(style);
+	// 							CharBuffer foundPatternChars = characters.subBuffer(range);
 
-								drawCharacters(x + range.first, row, foundPatternStyle, foundPatternChars, gfx);
-							}
-						}
-					}
+	// 							drawCharacters(x + range.first, row, foundPatternStyle, foundPatternChars, gfx);
+	// 						}
+	// 					}
+	// 				}
 
-					if (mySelection != null) {
-						Pair<Integer, Integer> interval = mySelection.intersect(x, row + myClientScrollOrigin, characters.length());
-						if (interval != null) {
-							TextStyle selectionStyle = getSelectionStyle(style);
-							CharBuffer selectionChars = characters.subBuffer(interval.first - x, interval.second);
+	// 				if (mySelection != null) {
+	// 					Pair<Integer, Integer> interval = mySelection.intersect(x, row + myClientScrollOrigin, characters.length());
+	// 					if (interval != null) {
+	// 						TextStyle selectionStyle = getSelectionStyle(style);
+	// 						CharBuffer selectionChars = characters.subBuffer(interval.first - x, interval.second);
 
-							drawCharacters(interval.first, row, selectionStyle, selectionChars, gfx);
-						}
-					}
-				}
+	// 						drawCharacters(interval.first, row, selectionStyle, selectionChars, gfx);
+	// 					}
+	// 				}
+	// 			}
 
-				@Override
-				public void consumeNul(int x, int y, int nulIndex, TextStyle style, CharBuffer characters, int startRow) {
-					int row = y - startRow;
-					if (mySelection != null) {
-						// compute intersection with all NUL areas, non-breaking
-						Pair<Integer, Integer> interval = mySelection.intersect(nulIndex, row + myClientScrollOrigin, columnCount - nulIndex);
-						if (interval != null) {
-							TextStyle selectionStyle = getSelectionStyle(style);
-							drawCharacters(x, row, selectionStyle, characters, gfx);
-							return;
-						}
-					}
-					drawCharacters(x, row, style, characters, gfx);
-				}
+	// 			@Override
+	// 			public void consumeNul(int x, int y, int nulIndex, TextStyle style, CharBuffer characters, int startRow) {
+	// 				int row = y - startRow;
+	// 				if (mySelection != null) {
+	// 					// compute intersection with all NUL areas, non-breaking
+	// 					Pair<Integer, Integer> interval = mySelection.intersect(nulIndex, row + myClientScrollOrigin, columnCount - nulIndex);
+	// 					if (interval != null) {
+	// 						TextStyle selectionStyle = getSelectionStyle(style);
+	// 						drawCharacters(x, row, selectionStyle, characters, gfx);
+	// 						return;
+	// 					}
+	// 				}
+	// 				drawCharacters(x, row, style, characters, gfx);
+	// 			}
 
-				@Override
-				public void consumeQueue(int x, int y, int nulIndex, int startRow) {
-					if (x < columnCount) {
-						consumeNul(x, y, nulIndex, TextStyle.EMPTY, new CharBuffer(CharUtils.EMPTY_CHAR, columnCount - x), startRow);
-					}
-				}
-			});
+	// 			@Override
+	// 			public void consumeQueue(int x, int y, int nulIndex, int startRow) {
+	// 				if (x < columnCount) {
+	// 					consumeNul(x, y, nulIndex, TextStyle.EMPTY, new CharBuffer(CharUtils.EMPTY_CHAR, columnCount - x), startRow);
+	// 				}
+	// 			}
+	// 		});
 
-			int cursorY = myCursor.getCoordY();
-			if (cursorY < getRowCount() && !hasUncommittedChars()) {
-				int cursorX = myCursor.getCoordX();
-				Pair<Character, TextStyle> sc = myTerminalTextBuffer.getStyledCharAt(cursorX, cursorY);
-				String cursorChar = "" + sc.first;
-				if (Character.isHighSurrogate(sc.first)) {
-					cursorChar += myTerminalTextBuffer.getStyledCharAt(cursorX + 1, cursorY).first;
-				}
-				TextStyle normalStyle = sc.second != null ? sc.second : myStyleState.getCurrent();
-				TextStyle selectionStyle = getSelectionStyle(normalStyle);
-				boolean inSelection = inSelection(cursorX, cursorY);
-				myCursor.drawCursor(cursorChar, gfx, inSelection ? selectionStyle : normalStyle);
-			}
-		} finally {
-			myTerminalTextBuffer.unlock();
-		}
+	// 		int cursorY = myCursor.getCoordY();
+	// 		if (cursorY < getRowCount() && !hasUncommittedChars()) {
+	// 			int cursorX = myCursor.getCoordX();
+	// 			Pair<Character, TextStyle> sc = myTerminalTextBuffer.getStyledCharAt(cursorX, cursorY);
+	// 			String cursorChar = "" + sc.first;
+	// 			if (Character.isHighSurrogate(sc.first)) {
+	// 				cursorChar += myTerminalTextBuffer.getStyledCharAt(cursorX + 1, cursorY).first;
+	// 			}
+	// 			TextStyle normalStyle = sc.second != null ? sc.second : myStyleState.getCurrent();
+	// 			TextStyle selectionStyle = getSelectionStyle(normalStyle);
+	// 			boolean inSelection = inSelection(cursorX, cursorY);
+	// 			myCursor.drawCursor(cursorChar, gfx, inSelection ? selectionStyle : normalStyle);
+	// 		}
+	// 	} finally {
+	// 		myTerminalTextBuffer.unlock();
+	// 	}
 
-		drawInputMethodUncommitedChars(gfx);
+	// 	drawInputMethodUncommitedChars(gfx);
 
-		drawMargins(gfx, getWidth(), getHeight());
-	}
+	// 	drawMargins(gfx, getWidth(), getHeight());
+	// }
 
 	private TextStyle getSelectionStyle(TextStyle style) {
 		if (mySettingsProvider.useInverseSelectionColor()) {
@@ -922,31 +922,31 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return builder.build();
 	}
 
-	private void drawInputMethodUncommitedChars(Graphics2D gfx) {
-		if (hasUncommittedChars()) {
-			int xCoord = (myCursor.getCoordX() + 1) * myCharSize.width + getInsetX();
+	// private void drawInputMethodUncommitedChars(Graphics2D gfx) {
+	// 	if (hasUncommittedChars()) {
+	// 		int xCoord = (myCursor.getCoordX() + 1) * myCharSize.width + getInsetX();
 
-			int y = myCursor.getCoordY() + 1;
+	// 		int y = myCursor.getCoordY() + 1;
 
-			int yCoord = y * myCharSize.height - 3;
+	// 		int yCoord = y * myCharSize.height - 3;
 
-			int len = (myInputMethodUncommittedChars.length()) * myCharSize.width;
+	// 		int len = (myInputMethodUncommittedChars.length()) * myCharSize.width;
 
-			gfx.setColor(getBackground());
-			gfx.fillRect(xCoord, (y - 1) * myCharSize.height - 3, len, myCharSize.height);
+	// 		gfx.setColor(getBackground());
+	// 		gfx.fillRect(xCoord, (y - 1) * myCharSize.height - 3, len, myCharSize.height);
 
-			gfx.setColor(getForeground());
-			gfx.setFont(myNormalFont);
+	// 		gfx.setColor(getForeground());
+	// 		gfx.setFont(myNormalFont);
 
-			gfx.drawString(myInputMethodUncommittedChars, xCoord, yCoord);
-			Stroke saved = gfx.getStroke();
-			BasicStroke dotted = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{0, 2, 0, 2}, 0);
-			gfx.setStroke(dotted);
+	// 		gfx.drawString(myInputMethodUncommittedChars, xCoord, yCoord);
+	// 		Stroke saved = gfx.getStroke();
+	// 		BasicStroke dotted = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{0, 2, 0, 2}, 0);
+	// 		gfx.setStroke(dotted);
 
-			gfx.drawLine(xCoord, yCoord, xCoord + len, yCoord);
-			gfx.setStroke(saved);
-		}
-	}
+	// 		gfx.drawLine(xCoord, yCoord, xCoord + len, yCoord);
+	// 		gfx.setStroke(saved);
+	// 	}
+	// }
 
 	private boolean hasUncommittedChars() {
 		return myInputMethodUncommittedChars != null && myInputMethodUncommittedChars.length() > 0;
@@ -956,11 +956,11 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return mySelection != null && mySelection.contains(new Point(x, y));
 	}
 
-	@Override
-	public void processKeyEvent(final KeyEvent e) {
-		handleKeyEvent(e);
-		handleHyperlinks(e.getComponent(), e.isControlDown());
-	}
+	// @Override
+	// public void processKeyEvent(final KeyEvent e) {
+	// 	handleKeyEvent(e);
+	// 	handleHyperlinks(e.getComponent(), e.isControlDown());
+	// }
 
 	// also called from com.intellij.terminal.JBTerminalPanel
 	public void handleKeyEvent(KeyEvent e) {
@@ -996,69 +996,69 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return myWindowTitle;
 	}
 
-	@Override
-	public TerminalColor getWindowForeground() {
-		Color windowForeground = getForeground();
-		return new TerminalColor(windowForeground.getRed(), windowForeground.getGreen(), windowForeground.getBlue());
-	}
+	// @Override
+	// public TerminalColor getWindowForeground() {
+	// 	Color windowForeground = getForeground();
+	// 	return new TerminalColor(windowForeground.getRed(), windowForeground.getGreen(), windowForeground.getBlue());
+	// }
 
-	@Override
-	public TerminalColor getWindowBackground() {
-		Color windowBackground = getBackground();
+	// @Override
+	// public TerminalColor getWindowBackground() {
+	// 	Color windowBackground = getBackground();
 
-		// Return RGB color because we don't have palette information outside of TerminalPanel.
-		return new TerminalColor(windowBackground.getRed(), windowBackground.getGreen(), windowBackground.getBlue());
-	}
+	// 	// Return RGB color because we don't have palette information outside of TerminalPanel.
+	// 	return new TerminalColor(windowBackground.getRed(), windowBackground.getGreen(), windowBackground.getBlue());
+	// }
 
 	protected int getInsetX() {
 		return 4;
 	}
 
-	public void addTerminalMouseListener(final TerminalMouseListener listener) {
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
-					Point p = panelToCharCoords(e.getPoint());
-					listener.mousePressed(p.x, p.y, e);
-				}
-			}
+	// public void addTerminalMouseListener(final TerminalMouseListener listener) {
+	// 	addMouseListener(new MouseAdapter() {
+	// 		@Override
+	// 		public void mousePressed(MouseEvent e) {
+	// 			if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
+	// 				Point p = panelToCharCoords(e.getPoint());
+	// 				listener.mousePressed(p.x, p.y, e);
+	// 			}
+	// 		}
 
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
-					Point p = panelToCharCoords(e.getPoint());
-					listener.mouseReleased(p.x, p.y, e);
-				}
-			}
-		});
+	// 		@Override
+	// 		public void mouseReleased(MouseEvent e) {
+	// 			if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
+	// 				Point p = panelToCharCoords(e.getPoint());
+	// 				listener.mouseReleased(p.x, p.y, e);
+	// 			}
+	// 		}
+	// 	});
 
-		addMouseWheelListener(e -> {
-			if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
-				mySelection = null;
-				Point p = panelToCharCoords(e.getPoint());
-				listener.mouseWheelMoved(p.x, p.y, e);
-			}
-		});
+	// 	addMouseWheelListener(e -> {
+	// 		if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
+	// 			mySelection = null;
+	// 			Point p = panelToCharCoords(e.getPoint());
+	// 			listener.mouseWheelMoved(p.x, p.y, e);
+	// 		}
+	// 	});
 
-		addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
-					Point p = panelToCharCoords(e.getPoint());
-					listener.mouseMoved(p.x, p.y, e);
-				}
-			}
+	// 	addMouseMotionListener(new MouseMotionAdapter() {
+	// 		@Override
+	// 		public void mouseMoved(MouseEvent e) {
+	// 			if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
+	// 				Point p = panelToCharCoords(e.getPoint());
+	// 				listener.mouseMoved(p.x, p.y, e);
+	// 			}
+	// 		}
 
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
-					Point p = panelToCharCoords(e.getPoint());
-					listener.mouseDragged(p.x, p.y, e);
-				}
-			}
-		});
-	}
+	// 		@Override
+	// 		public void mouseDragged(MouseEvent e) {
+	// 			if (mySettingsProvider.enableMouseReporting() && isRemoteMouseAction(e)) {
+	// 				Point p = panelToCharCoords(e.getPoint());
+	// 				listener.mouseDragged(p.x, p.y, e);
+	// 			}
+	// 		}
+	// 	});
+	// }
 
 	KeyListener getTerminalKeyListener() {
 		return myTerminalKeyHandler;
@@ -1118,7 +1118,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		public void cursorChanged() {
 			myCursorHasChanged = true;
 			myLastCursorChange = System.currentTimeMillis();
-			repaint();
+			// repaint();
 		}
 
 		private boolean cursorShouldChangeBlinkState(long currentTime) {
@@ -1126,16 +1126,16 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		}
 
 		public void changeStateIfNeeded() {
-			if (!isFocusOwner()) {
-				return;
-			}
-			long currentTime = System.currentTimeMillis();
-			if (cursorShouldChangeBlinkState(currentTime)) {
-				myCursorIsShown = !myCursorIsShown;
-				myLastCursorChange = currentTime;
-				myCursorHasChanged = false;
-				repaint();
-			}
+			// if (!isFocusOwner()) {
+			// 	return;
+			// }
+			// long currentTime = System.currentTimeMillis();
+			// if (cursorShouldChangeBlinkState(currentTime)) {
+			// 	myCursorIsShown = !myCursorIsShown;
+			// 	myLastCursorChange = currentTime;
+			// 	myCursorHasChanged = false;
+			// 	repaint();
+			// }
 		}
 
 		private TerminalCursorState computeBlinkingState() {
@@ -1149,65 +1149,65 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 			if (!myShouldDrawCursor) {
 				return TerminalCursorState.HIDDEN;
 			}
-			if (!isFocusOwner()) {
-				return TerminalCursorState.NO_FOCUS;
-			}
+			// if (!isFocusOwner()) {
+			// 	return TerminalCursorState.NO_FOCUS;
+			// }
 			return computeBlinkingState();
 		}
 
-		void drawCursor(String c, Graphics2D gfx, TextStyle style) {
-			TerminalCursorState state = computeCursorState();
+		// void drawCursor(String c, Graphics2D gfx, TextStyle style) {
+		// 	TerminalCursorState state = computeCursorState();
 
-			// hidden: do nothing
-			if (state == TerminalCursorState.HIDDEN) {
-				return;
-			}
+		// 	// hidden: do nothing
+		// 	if (state == TerminalCursorState.HIDDEN) {
+		// 		return;
+		// 	}
 
-			final int x = getCoordX();
-			final int y = getCoordY();
-			// Outside bounds of window: do nothing
-			if (y < 0 || y >= myTermSize.height) {
-				return;
-			}
+		// 	final int x = getCoordX();
+		// 	final int y = getCoordY();
+		// 	// Outside bounds of window: do nothing
+		// 	if (y < 0 || y >= myTermSize.height) {
+		// 		return;
+		// 	}
 
-			CharBuffer buf = new CharBuffer(c);
-			int xCoord = x * myCharSize.width + getInsetX();
-			int yCoord = y * myCharSize.height;
-			int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart(), buf.length(), mySettingsProvider.ambiguousCharsAreDoubleWidth());
-			int height = Math.min(myCharSize.height, getHeight() - yCoord);
-			int width = Math.min(textLength * TerminalPanel.this.myCharSize.width, TerminalPanel.this.getWidth() - xCoord);
-			int lineStrokeSize = 2;
+		// 	CharBuffer buf = new CharBuffer(c);
+		// 	int xCoord = x * myCharSize.width + getInsetX();
+		// 	int yCoord = y * myCharSize.height;
+		// 	int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart(), buf.length(), mySettingsProvider.ambiguousCharsAreDoubleWidth());
+		// 	int height = Math.min(myCharSize.height, getHeight() - yCoord);
+		// 	int width = Math.min(textLength * TerminalPanel.this.myCharSize.width, TerminalPanel.this.getWidth() - xCoord);
+		// 	int lineStrokeSize = 2;
 
-			Color fgColor = getPalette().getForeground(myStyleState.getForeground(style.getForegroundForRun()));
-			TextStyle inversedStyle = getInversedStyle(style);
-			Color inverseBg = getPalette().getBackground(myStyleState.getBackground(inversedStyle.getBackgroundForRun()));
+		// 	Color fgColor = getPalette().getForeground(myStyleState.getForeground(style.getForegroundForRun()));
+		// 	TextStyle inversedStyle = getInversedStyle(style);
+		// 	Color inverseBg = getPalette().getBackground(myStyleState.getBackground(inversedStyle.getBackgroundForRun()));
 
-			switch (myShape) {
-				case BLINK_BLOCK:
-				case STEADY_BLOCK:
-					if (state == TerminalCursorState.SHOWING) {
-						gfx.setColor(inverseBg);
-						gfx.fillRect(xCoord, yCoord, width, height);
-						drawCharacters(x, y, inversedStyle, buf, gfx);
-					} else {
-						gfx.setColor(fgColor);
-						gfx.drawRect(xCoord, yCoord, width, height);
-					}
-					break;
+		// 	switch (myShape) {
+		// 		case BLINK_BLOCK:
+		// 		case STEADY_BLOCK:
+		// 			if (state == TerminalCursorState.SHOWING) {
+		// 				gfx.setColor(inverseBg);
+		// 				gfx.fillRect(xCoord, yCoord, width, height);
+		// 				drawCharacters(x, y, inversedStyle, buf, gfx);
+		// 			} else {
+		// 				gfx.setColor(fgColor);
+		// 				gfx.drawRect(xCoord, yCoord, width, height);
+		// 			}
+		// 			break;
 
-				case BLINK_UNDERLINE:
-				case STEADY_UNDERLINE:
-					gfx.setColor(fgColor);
-					gfx.fillRect(xCoord, yCoord + height, width, lineStrokeSize);
-					break;
+		// 		case BLINK_UNDERLINE:
+		// 		case STEADY_UNDERLINE:
+		// 			gfx.setColor(fgColor);
+		// 			gfx.fillRect(xCoord, yCoord + height, width, lineStrokeSize);
+		// 			break;
 
-				case BLINK_VERTICAL_BAR:
-				case STEADY_VERTICAL_BAR:
-					gfx.setColor(fgColor);
-					gfx.fillRect(xCoord, yCoord, lineStrokeSize, height);
-					break;
-			}
-		}
+		// 		case BLINK_VERTICAL_BAR:
+		// 		case STEADY_VERTICAL_BAR:
+		// 			gfx.setColor(fgColor);
+		// 			gfx.fillRect(xCoord, yCoord, lineStrokeSize, height);
+		// 			break;
+		// 	}
+		// }
 
 		void setShape(CursorShape shape) {
 			this.myShape = shape;
@@ -1237,55 +1237,55 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return builder.build();
 	}
 
-	private void drawCharacters(int x, int y, TextStyle style, CharBuffer buf, Graphics2D gfx) {
-		drawCharacters(x, y, style, buf, gfx, true);
-	}
+	// private void drawCharacters(int x, int y, TextStyle style, CharBuffer buf, Graphics2D gfx) {
+	// 	drawCharacters(x, y, style, buf, gfx, true);
+	// }
 
-	private void drawCharacters(int x, int y, TextStyle style, CharBuffer buf, Graphics2D gfx,
-															boolean includeSpaceBetweenLines) {
-		int xCoord = x * myCharSize.width + getInsetX();
-		int yCoord = y * myCharSize.height + (includeSpaceBetweenLines ? 0 : mySpaceBetweenLines / 2);
+	// private void drawCharacters(int x, int y, TextStyle style, CharBuffer buf, Graphics2D gfx,
+	// 														boolean includeSpaceBetweenLines) {
+	// 	int xCoord = x * myCharSize.width + getInsetX();
+	// 	int yCoord = y * myCharSize.height + (includeSpaceBetweenLines ? 0 : mySpaceBetweenLines / 2);
 
-		if (xCoord < 0 || xCoord > getWidth() || yCoord < 0 || yCoord > getHeight()) {
-			return;
-		}
+	// 	if (xCoord < 0 || xCoord > getWidth() || yCoord < 0 || yCoord > getHeight()) {
+	// 		return;
+	// 	}
 
-		int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart(), buf.length(), mySettingsProvider.ambiguousCharsAreDoubleWidth());
-		int height = Math.min(myCharSize.height - (includeSpaceBetweenLines ? 0 : mySpaceBetweenLines), getHeight() - yCoord);
-		int width = Math.min(textLength * TerminalPanel.this.myCharSize.width, TerminalPanel.this.getWidth() - xCoord);
+	// 	int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart(), buf.length(), mySettingsProvider.ambiguousCharsAreDoubleWidth());
+	// 	int height = Math.min(myCharSize.height - (includeSpaceBetweenLines ? 0 : mySpaceBetweenLines), getHeight() - yCoord);
+	// 	int width = Math.min(textLength * TerminalPanel.this.myCharSize.width, TerminalPanel.this.getWidth() - xCoord);
 
-		if (style instanceof HyperlinkStyle) {
-			HyperlinkStyle hyperlinkStyle = (HyperlinkStyle) style;
+	// 	if (style instanceof HyperlinkStyle) {
+	// 		HyperlinkStyle hyperlinkStyle = (HyperlinkStyle) style;
 
-			if (hyperlinkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.ALWAYS || (isHoveredHyperlink(hyperlinkStyle) && hyperlinkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.HOVER)) {
+	// 		if (hyperlinkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.ALWAYS || (isHoveredHyperlink(hyperlinkStyle) && hyperlinkStyle.getHighlightMode() == HyperlinkStyle.HighlightMode.HOVER)) {
 
-				// substitute text style with the hyperlink highlight style if applicable
-				style = hyperlinkStyle.getHighlightStyle();
-			}
-		}
+	// 			// substitute text style with the hyperlink highlight style if applicable
+	// 			style = hyperlinkStyle.getHighlightStyle();
+	// 		}
+	// 	}
 
-		Color backgroundColor = getPalette().getBackground(myStyleState.getBackground(style.getBackgroundForRun()));
-		gfx.setColor(backgroundColor);
-		gfx.fillRect(xCoord,
-						yCoord,
-						width,
-						height);
+	// 	Color backgroundColor = getPalette().getBackground(myStyleState.getBackground(style.getBackgroundForRun()));
+	// 	gfx.setColor(backgroundColor);
+	// 	gfx.fillRect(xCoord,
+	// 					yCoord,
+	// 					width,
+	// 					height);
 
-		if (buf.isNul()) {
-			return; // nothing more to do
-		}
+	// 	if (buf.isNul()) {
+	// 		return; // nothing more to do
+	// 	}
 
-		drawChars(x, y, buf, style, gfx);
+	// 	drawChars(x, y, buf, style, gfx);
 
-		gfx.setColor(getStyleForeground(style));
+	// 	gfx.setColor(getStyleForeground(style));
 
 
-		if (style.hasOption(TextStyle.Option.UNDERLINED)) {
-			int baseLine = (y + 1) * myCharSize.height - mySpaceBetweenLines / 2 - myDescent;
-			int lineY = baseLine + 3;
-			gfx.drawLine(xCoord, lineY, (x + textLength) * myCharSize.width + getInsetX(), lineY);
-		}
-	}
+	// 	if (style.hasOption(TextStyle.Option.UNDERLINED)) {
+	// 		int baseLine = (y + 1) * myCharSize.height - mySpaceBetweenLines / 2 - myDescent;
+	// 		int lineY = baseLine + 3;
+	// 		gfx.drawLine(xCoord, lineY, (x + textLength) * myCharSize.width + getInsetX(), lineY);
+	// 	}
+	// }
 
 	private boolean isHoveredHyperlink(HyperlinkStyle link) {
 		return myHoveredHyperlink == link.getLinkInfo();
@@ -1295,62 +1295,62 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 	 * Draw every char in separate terminal cell to guaranty equal width for different lines.
 	 * Nevertheless to improve kerning we draw word characters as one block for monospaced fonts.
 	 */
-	private void drawChars(int x, int y, CharBuffer buf, TextStyle style, Graphics2D gfx) {
-		int blockLen = 1;
-		int offset = 0;
-		int drawCharsOffset = 0;
+// 	private void drawChars(int x, int y, CharBuffer buf, TextStyle style, Graphics2D gfx) {
+// 		int blockLen = 1;
+// 		int offset = 0;
+// 		int drawCharsOffset = 0;
 
-		// workaround to fix Swing bad rendering of bold special chars on Linux
-		// TODO required for italic?
-		CharBuffer renderingBuffer;
-		if (mySettingsProvider.DECCompatibilityMode() && style.hasOption(TextStyle.Option.BOLD)) {
-			renderingBuffer = CharUtils.heavyDecCompatibleBuffer(buf);
-		} else {
-			renderingBuffer = buf;
-		}
+// 		// workaround to fix Swing bad rendering of bold special chars on Linux
+// 		// TODO required for italic?
+// 		CharBuffer renderingBuffer;
+// 		if (mySettingsProvider.DECCompatibilityMode() && style.hasOption(TextStyle.Option.BOLD)) {
+// 			renderingBuffer = CharUtils.heavyDecCompatibleBuffer(buf);
+// 		} else {
+// 			renderingBuffer = buf;
+// 		}
 
-		while (offset + blockLen <= buf.length()) {
-			if (renderingBuffer.getBuf()[buf.getStart() + offset] == CharUtils.DWC) {
-				offset += blockLen;
-				drawCharsOffset += blockLen;
-				continue; // dont' draw second part(fake one) of double width character
-			}
+// 		while (offset + blockLen <= buf.length()) {
+// 			if (renderingBuffer.getBuf()[buf.getStart() + offset] == CharUtils.DWC) {
+// 				offset += blockLen;
+// 				drawCharsOffset += blockLen;
+// 				continue; // dont' draw second part(fake one) of double width character
+// 			}
 
-			Font font = getFontToDisplay(buf.charAt(offset + blockLen - 1), style);
-//      while (myMonospaced && (offset + blockLen < buf.getLength()) && isWordCharacter(buf.charAt(offset + blockLen - 1))
-//              && (font == getFontToDisplay(buf.charAt(offset + blockLen - 1), style))) {
-//        blockLen++;
-//      }
+// 			Font font = getFontToDisplay(buf.charAt(offset + blockLen - 1), style);
+// //      while (myMonospaced && (offset + blockLen < buf.getLength()) && isWordCharacter(buf.charAt(offset + blockLen - 1))
+// //              && (font == getFontToDisplay(buf.charAt(offset + blockLen - 1), style))) {
+// //        blockLen++;
+// //      }
 
-			if (offset + 2 <= buf.length() && Character.isSurrogatePair(renderingBuffer.getBuf()[buf.getStart() + offset], renderingBuffer.getBuf()[buf.getStart() + offset + 1])) {
-				blockLen = 2;
-			}
+// 			if (offset + 2 <= buf.length() && Character.isSurrogatePair(renderingBuffer.getBuf()[buf.getStart() + offset], renderingBuffer.getBuf()[buf.getStart() + offset + 1])) {
+// 				blockLen = 2;
+// 			}
 
 
-			gfx.setFont(font);
+// 			gfx.setFont(font);
 
-			int descent = gfx.getFontMetrics(font).getDescent();
-			int baseLine = (y + 1) * myCharSize.height - mySpaceBetweenLines / 2 - descent;
-			int xCoord = (x + drawCharsOffset) * myCharSize.width + getInsetX();
-			int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart() + offset, blockLen, mySettingsProvider.ambiguousCharsAreDoubleWidth());
+// 			int descent = gfx.getFontMetrics(font).getDescent();
+// 			int baseLine = (y + 1) * myCharSize.height - mySpaceBetweenLines / 2 - descent;
+// 			int xCoord = (x + drawCharsOffset) * myCharSize.width + getInsetX();
+// 			int textLength = CharUtils.getTextLengthDoubleWidthAware(buf.getBuf(), buf.getStart() + offset, blockLen, mySettingsProvider.ambiguousCharsAreDoubleWidth());
 
-			int yCoord = y * myCharSize.height + mySpaceBetweenLines / 2;
+// 			int yCoord = y * myCharSize.height + mySpaceBetweenLines / 2;
 
-			gfx.setClip(xCoord,
-							yCoord,
-							getWidth() - xCoord,
-							getHeight() - yCoord);
+// 			gfx.setClip(xCoord,
+// 							yCoord,
+// 							getWidth() - xCoord,
+// 							getHeight() - yCoord);
 
-			gfx.setColor(getStyleForeground(style));
+// 			gfx.setColor(getStyleForeground(style));
 
-			gfx.drawChars(renderingBuffer.getBuf(), buf.getStart() + offset, blockLen, xCoord, baseLine);
+// 			gfx.drawChars(renderingBuffer.getBuf(), buf.getStart() + offset, blockLen, xCoord, baseLine);
 
-			drawCharsOffset += blockLen;
-			offset += blockLen;
-			blockLen = 1;
-		}
-		gfx.setClip(null);
-	}
+// 			drawCharsOffset += blockLen;
+// 			offset += blockLen;
+// 			blockLen = 1;
+// 		}
+// 		gfx.setClip(null);
+// 	}
 
 	private Color getStyleForeground(TextStyle style) {
 		Color foreground = getPalette().getForeground(myStyleState.getForeground(style.getForegroundForRun()));
@@ -1379,11 +1379,11 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return mySettingsProvider.getTerminalColorPalette();
 	}
 
-	private void drawMargins(Graphics2D gfx, int width, int height) {
-		gfx.setColor(getBackground());
-		gfx.fillRect(0, height, getWidth(), getHeight() - height);
-		gfx.fillRect(width, 0, getWidth() - width, getHeight());
-	}
+	// private void drawMargins(Graphics2D gfx, int width, int height) {
+	// 	gfx.setColor(getBackground());
+	// 	gfx.fillRect(0, height, getWidth(), getHeight() - height);
+	// 	gfx.fillRect(width, 0, getWidth() - width, getHeight());
+	// }
 
 	// Called in a background thread with myTerminalTextBuffer.lock() acquired
 	public void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy) {
@@ -1886,7 +1886,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 			copySelection(points.first, points.second, useSystemSelectionClipboardIfAvailable);
 			if (unselect) {
 				mySelection = null;
-				repaint();
+				// repaint();
 			}
 		}
 	}
@@ -1906,31 +1906,31 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 	 * InputMethod implementation
 	 * For details read http://docs.oracle.com/javase/7/docs/technotes/guides/imf/api-tutorial.html
 	 */
-	@Override
-	protected void processInputMethodEvent(InputMethodEvent e) {
-		int commitCount = e.getCommittedCharacterCount();
+	// @Override
+	// protected void processInputMethodEvent(InputMethodEvent e) {
+	// 	int commitCount = e.getCommittedCharacterCount();
 
-		if (commitCount > 0) {
-			myInputMethodUncommittedChars = null;
-			AttributedCharacterIterator text = e.getText();
-			if (text != null) {
-				StringBuilder sb = new StringBuilder();
+	// 	if (commitCount > 0) {
+	// 		myInputMethodUncommittedChars = null;
+	// 		AttributedCharacterIterator text = e.getText();
+	// 		if (text != null) {
+	// 			StringBuilder sb = new StringBuilder();
 
-				//noinspection ForLoopThatDoesntUseLoopVariable
-				for (char c = text.first(); commitCount > 0; c = text.next(), commitCount--) {
-					if (c >= 0x20 && c != 0x7F) { // Hack just like in javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction
-						sb.append(c);
-					}
-				}
+	// 			//noinspection ForLoopThatDoesntUseLoopVariable
+	// 			for (char c = text.first(); commitCount > 0; c = text.next(), commitCount--) {
+	// 				if (c >= 0x20 && c != 0x7F) { // Hack just like in javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction
+	// 					sb.append(c);
+	// 				}
+	// 			}
 
-				if (sb.length() > 0) {
-					myTerminalStarter.sendString(sb.toString(), true);
-				}
-			}
-		} else {
-			myInputMethodUncommittedChars = uncommittedChars(e.getText());
-		}
-	}
+	// 			if (sb.length() > 0) {
+	// 				myTerminalStarter.sendString(sb.toString(), true);
+	// 			}
+	// 		}
+	// 	} else {
+	// 		myInputMethodUncommittedChars = uncommittedChars(e.getText());
+	// 	}
+	// }
 
 	private static String uncommittedChars(AttributedCharacterIterator text) {
 		if (text == null) {
@@ -1948,52 +1948,52 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 		return sb.toString();
 	}
 
-	@Override
-	public InputMethodRequests getInputMethodRequests() {
-		return new MyInputMethodRequests();
-	}
+	// @Override
+	// public InputMethodRequests getInputMethodRequests() {
+	// 	return new MyInputMethodRequests();
+	// }
 
-	private class MyInputMethodRequests implements InputMethodRequests {
-		@Override
-		public Rectangle getTextLocation(TextHitInfo offset) {
-			Rectangle r = new Rectangle(myCursor.getCoordX() * myCharSize.width + getInsetX(), (myCursor.getCoordY() + 1) * myCharSize.height,
-							0, 0);
-			Point p = TerminalPanel.this.getLocationOnScreen();
-			r.translate(p.x, p.y);
-			return r;
-		}
+	// private class MyInputMethodRequests implements InputMethodRequests {
+	// 	@Override
+	// 	public Rectangle getTextLocation(TextHitInfo offset) {
+	// 		Rectangle r = new Rectangle(myCursor.getCoordX() * myCharSize.width + getInsetX(), (myCursor.getCoordY() + 1) * myCharSize.height,
+	// 						0, 0);
+	// 		Point p = TerminalPanel.this.getLocationOnScreen();
+	// 		r.translate(p.x, p.y);
+	// 		return r;
+	// 	}
 
-		@Override
-		public TextHitInfo getLocationOffset(int x, int y) {
-			return null;
-		}
+	// 	@Override
+	// 	public TextHitInfo getLocationOffset(int x, int y) {
+	// 		return null;
+	// 	}
 
-		@Override
-		public int getInsertPositionOffset() {
-			return 0;
-		}
+	// 	@Override
+	// 	public int getInsertPositionOffset() {
+	// 		return 0;
+	// 	}
 
-		@Override
-		public AttributedCharacterIterator getCommittedText(int beginIndex, int endIndex, AttributedCharacterIterator.Attribute[] attributes) {
-			return null;
-		}
+	// 	@Override
+	// 	public AttributedCharacterIterator getCommittedText(int beginIndex, int endIndex, AttributedCharacterIterator.Attribute[] attributes) {
+	// 		return null;
+	// 	}
 
-		@Override
-		public int getCommittedTextLength() {
-			return 0;
-		}
+	// 	@Override
+	// 	public int getCommittedTextLength() {
+	// 		return 0;
+	// 	}
 
-		@Override
-		public AttributedCharacterIterator cancelLatestCommittedText(AttributedCharacterIterator.Attribute[] attributes) {
-			return null;
-		}
+	// 	@Override
+	// 	public AttributedCharacterIterator cancelLatestCommittedText(AttributedCharacterIterator.Attribute[] attributes) {
+	// 		return null;
+	// 	}
 
-		@Override
-		public AttributedCharacterIterator getSelectedText(AttributedCharacterIterator.Attribute[] attributes) {
-			return null;
-		}
+	// 	@Override
+	// 	public AttributedCharacterIterator getSelectedText(AttributedCharacterIterator.Attribute[] attributes) {
+	// 		return null;
+	// 	}
 
-	}
+	// }
 
 	public void dispose() {
 		myRepaintTimer.stop();

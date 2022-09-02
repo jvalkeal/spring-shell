@@ -47,11 +47,11 @@ public class TestTerminalDisplay implements TerminalDisplay {
 	public void beep() {
 	}
 
-	@Override
-	public void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
-			JediTerminal.ResizeHandler resizeHandler) {
-		myTerminalTextBuffer.resize(newWinSize, origin, cursorX, cursorY, resizeHandler, mySelection);
-	}
+	// @Override
+	// public void requestResize(Dimension newWinSize, RequestOrigin origin, int cursorX, int cursorY,
+	// 		JediTerminal.ResizeHandler resizeHandler) {
+	// 	myTerminalTextBuffer.resize(newWinSize, origin, cursorX, cursorY, resizeHandler, mySelection);
+	// }
 
 	@Override
 	public void scrollArea(int scrollRegionTop, int scrollRegionSize, int dy) {
