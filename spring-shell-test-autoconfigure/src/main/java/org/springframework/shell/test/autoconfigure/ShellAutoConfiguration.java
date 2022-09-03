@@ -16,21 +16,29 @@
 package org.springframework.shell.test.autoconfigure;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import com.jediterm.support.TestTerminalSession;
 import com.jediterm.terminal.Questioner;
 import com.jediterm.terminal.TtyConnector;
+import com.jediterm.terminal.ui.JediTermWidget;
+import com.jediterm.terminal.ui.settings.DefaultSettingsProvider;
 import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.jline.terminal.impl.DumbTerminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.shell.test.ShellClient;
+import org.springframework.shell.boot.JLineShellAutoConfiguration;
 
-@AutoConfiguration
+@AutoConfiguration(before = JLineShellAutoConfiguration.class)
 public class ShellAutoConfiguration {
 
 	/*
@@ -38,84 +46,132 @@ public class ShellAutoConfiguration {
 	 * in tests to track what happens with interaction.
 	 */
 	@Bean
-	Terminal terminal(TestTerminalSession session) throws IOException {
-		PipedInputStream pipedInputStream = new PipedInputStream();
-		PipedOutputStream pipedOutputStream = new PipedOutputStream();
+	Terminal terminal(TerminalStreams terminalStreams) throws IOException {
+		Terminal terminal = TerminalBuilder.builder()
+			.streams(terminalStreams.input, terminalStreams.output)
+			.build();
+		// DumbTerminal terminal = new DumbTerminal("terminal", "ansi", terminalStreams.input,
+		// 		terminalStreams.output, StandardCharsets.UTF_8);
 
 
-		// TestTerminalSession session = new TestTerminalSession(30, 3);
-		DumbTerminal terminal = new DumbTerminal("terminal", "ansi", pipedInputStream, pipedOutputStream,
-				StandardCharsets.UTF_8);
 		return terminal;
 	}
 
 	@Bean
-	TestTerminalSession testTerminalSession() {
-		TestTerminalSession session = new TestTerminalSession(30, 3);
-		return session;
+	TerminalStreams terminalStreams() {
+		return new TerminalStreams();
 	}
 
 	@Bean
-	ShellClient shellClient(TestTerminalSession testTerminalSession) {
-		return ShellClient.builder().build();
+	TtyConnector ttyConnector(TerminalStreams terminalStreams) {
+		return new TestTtyConnector(terminalStreams.input, terminalStreams.output);
 	}
 
-	private static class ExampleTtyConnector implements TtyConnector {
+	@Bean
+	JediTermWidget jediTermWidget(TtyConnector ttyConnector) {
+		JediTermWidget widget = new JediTermWidget(80, 24, new DefaultSettingsProvider());
+		widget.setTtyConnector(ttyConnector);
+		widget.start();
+		return widget;
+	}
+
+	public static class TerminalStreams {
+		PipedInputStream input = new PipedInputStream();
+		PipedOutputStream output = new PipedOutputStream();
+	}
+
+	private static class TestTtyConnector implements TtyConnector {
+
+		private final static Logger log = LoggerFactory.getLogger(TestTtyConnector.class);
+
+		PipedInputStream input;
+		PipedOutputStream output;
+		InputStreamReader myReader;
+		// PipedOutputStream xxx;
+		PipedInputStream xxx;
+		PipedOutputStream ddd;
+		OutputStreamWriter myWriter;
+
+		TestTtyConnector(PipedInputStream input, PipedOutputStream output) {
+			this.input = input;
+			this.output = output;
+			try {
+				this.xxx = new PipedInputStream(output);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				this.ddd = new PipedOutputStream(input);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			this.myReader = new InputStreamReader(this.xxx);
+			this.myWriter = new OutputStreamWriter(this.ddd);
+			// this.xxx = new PipedOutputStream(arg0)
+		}
 
 		@Override
 		public boolean init(Questioner q) {
-			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 
 		@Override
 		public void close() {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public String getName() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public int read(char[] buf, int offset, int length) throws IOException {
-			// TODO Auto-generated method stub
-			return 0;
+			log.info("XXX read1");
+
+			int read = this.myReader.read(buf, offset, length);
+			log.info("XXX read2 {}", read);
+			return read;
+			// return this.myReader.read(buf, offset, length);
 		}
 
 		@Override
 		public void write(byte[] bytes) throws IOException {
-			// TODO Auto-generated method stub
-
+			log.info("XXX write1 {}", bytes);
+			// this.output.write(bytes);
+			// this.output.flush();
+			// this.ddd.write(bytes);
+			this.myWriter.write(new String(bytes));
+			log.info("XXX write2");
 		}
 
 		@Override
 		public boolean isConnected() {
-			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 
 		@Override
 		public void write(String string) throws IOException {
-			// TODO Auto-generated method stub
-
+			this.write(string.getBytes());
 		}
 
 		@Override
 		public int waitFor() throws InterruptedException {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
 		public boolean ready() throws IOException {
-			// TODO Auto-generated method stub
-			return false;
+			log.info("XXX ready1");
+			boolean ready = myReader.ready();
+			log.info("XXX ready2 {}", ready);
+			return ready;
+			// return myReader.ready();
+			// return true;
 		}
-
 	}
 
 }
