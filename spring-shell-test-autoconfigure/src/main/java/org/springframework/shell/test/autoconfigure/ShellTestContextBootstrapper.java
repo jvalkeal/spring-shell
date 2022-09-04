@@ -18,9 +18,10 @@ package org.springframework.shell.test.autoconfigure;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextBootstrapper;
 
 /**
- *
+ * {@link TestContextBootstrapper} for {@link ShellTest @ShellTest} support.
  *
  * @author Janne Valkealahti
  */

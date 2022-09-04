@@ -22,14 +22,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.test.autoconfigure.ShellAutoConfiguration.TerminalStreams;
-import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-@ShellTest
-@ContextConfiguration(classes = ExampleShellApplication.class)
+// @ShellTest
+// @ContextConfiguration(classes = ExampleShellApplication.class)
 public class ShellTestIntegrationTests {
 
 	@Autowired
@@ -38,7 +37,7 @@ public class ShellTestIntegrationTests {
 	@Autowired
 	TerminalStreams terminalStreams;
 
-	@Test
+	// @Test
 	void test() {
 		assertThat(widget).isNotNull();
 		widget.getTerminalStarter().sendString("help\r\n");
