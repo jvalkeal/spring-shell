@@ -15,40 +15,17 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
+import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
 
 /**
- *
+ * {@link TypeExcludeFilter} for {@link ShellTest @ShellTest}.
  *
  * @author Janne Valkealahti
  */
 public class ShellTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<ShellTest> {
 
-	// private static final String JACKSON_MODULE = "com.fasterxml.jackson.databind.Module";
-
-	private static final Set<Class<?>> DEFAULT_INCLUDES;
-
-	static {
-		Set<Class<?>> includes = new LinkedHashSet<>();
-		try {
-			// includes.add(ClassUtils.forName(JACKSON_MODULE, null));
-		}
-		catch (Exception ex) {
-		}
-		// includes.add(JsonComponent.class);
-		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
-	}
-
 	ShellTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
-	}
-
-	@Override
-	protected Set<Class<?>> getDefaultIncludes() {
-		return DEFAULT_INCLUDES;
 	}
 }
