@@ -62,8 +62,7 @@ public @interface ShellTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default only
-	 * {@code @JsonComponent} and {@code Module} beans are included.
+	 * {@link SpringBootApplication @SpringBootApplication}.
 	 *
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
