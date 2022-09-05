@@ -49,6 +49,8 @@ public class ShellAutoConfiguration {
 	Terminal terminal(TerminalStreams terminalStreams) throws IOException {
 		Terminal terminal = TerminalBuilder.builder()
 			.streams(terminalStreams.input, terminalStreams.output)
+			.jansi(false)
+			.jna(false)
 			.build();
 		// DumbTerminal terminal = new DumbTerminal("terminal", "ansi", terminalStreams.input,
 		// 		terminalStreams.output, StandardCharsets.UTF_8);
@@ -96,14 +98,14 @@ public class ShellAutoConfiguration {
 			this.input = input;
 			this.output = output;
 			try {
-				this.xxx = new PipedInputStream(output);
+				this.xxx = new PipedInputStream(this.output);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			try {
-				this.ddd = new PipedOutputStream(input);
+				this.ddd = new PipedOutputStream(this.input);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -133,7 +135,8 @@ public class ShellAutoConfiguration {
 			log.info("XXX read1");
 
 			int read = this.myReader.read(buf, offset, length);
-			log.info("XXX read2 {}", read);
+			log.info("XXX read2 {} {}", read, new String(buf));
+
 			return read;
 			// return this.myReader.read(buf, offset, length);
 		}
@@ -145,6 +148,7 @@ public class ShellAutoConfiguration {
 			// this.output.flush();
 			// this.ddd.write(bytes);
 			this.myWriter.write(new String(bytes));
+			this.myWriter.flush();
 			log.info("XXX write2");
 		}
 
