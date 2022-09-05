@@ -66,7 +66,8 @@ public class ShellAutoConfiguration {
 
 	@Bean
 	TtyConnector ttyConnector(TerminalStreams terminalStreams) {
-		return new TestTtyConnector(terminalStreams.input, terminalStreams.output);
+		// return new TestTtyConnector(terminalStreams.input, terminalStreams.output);
+		return new TestTtyConnector(terminalStreams.myReader, terminalStreams.myWriter);
 	}
 
 	@Bean
@@ -78,43 +79,61 @@ public class ShellAutoConfiguration {
 	}
 
 	public static class TerminalStreams {
-		PipedInputStream input = new PipedInputStream();
-		PipedOutputStream output = new PipedOutputStream();
+		PipedInputStream input;
+		PipedOutputStream output;
+		InputStreamReader myReader;
+		OutputStreamWriter myWriter;
+
+		public TerminalStreams() {
+			input = new PipedInputStream();
+			output = new PipedOutputStream();
+			try {
+				myReader = new InputStreamReader(new PipedInputStream(this.output));
+				myWriter = new OutputStreamWriter(new PipedOutputStream(this.input));
+			} catch (IOException e) {
+			}
+
+		}
 	}
 
 	private static class TestTtyConnector implements TtyConnector {
 
 		private final static Logger log = LoggerFactory.getLogger(TestTtyConnector.class);
 
-		PipedInputStream input;
-		PipedOutputStream output;
+		// PipedInputStream input;
+		// PipedOutputStream output;
 		InputStreamReader myReader;
 		// PipedOutputStream xxx;
-		PipedInputStream xxx;
-		PipedOutputStream ddd;
+		// PipedInputStream xxx;
+		// PipedOutputStream ddd;
 		OutputStreamWriter myWriter;
 
-		TestTtyConnector(PipedInputStream input, PipedOutputStream output) {
-			this.input = input;
-			this.output = output;
-			try {
-				this.xxx = new PipedInputStream(this.output);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
-				this.ddd = new PipedOutputStream(this.input);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			this.myReader = new InputStreamReader(this.xxx);
-			this.myWriter = new OutputStreamWriter(this.ddd);
-			// this.xxx = new PipedOutputStream(arg0)
+		TestTtyConnector(InputStreamReader myReader, OutputStreamWriter myWriter) {
+			this.myReader = myReader;
+			this.myWriter = myWriter;
 		}
+
+		// TestTtyConnector(PipedInputStream input, PipedOutputStream output) {
+		// 	this.input = input;
+		// 	this.output = output;
+		// 	try {
+		// 		this.xxx = new PipedInputStream(this.output);
+		// 	} catch (IOException e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+
+		// 	try {
+		// 		this.ddd = new PipedOutputStream(this.input);
+		// 	} catch (IOException e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+
+		// 	this.myReader = new InputStreamReader(this.xxx);
+		// 	this.myWriter = new OutputStreamWriter(this.ddd);
+		// 	// this.xxx = new PipedOutputStream(arg0)
+		// }
 
 		@Override
 		public boolean init(Questioner q) {
