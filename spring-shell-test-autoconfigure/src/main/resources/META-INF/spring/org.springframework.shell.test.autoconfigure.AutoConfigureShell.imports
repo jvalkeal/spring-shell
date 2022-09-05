@@ -1,4 +1,5 @@
 org.springframework.shell.test.autoconfigure.ShellAutoConfiguration
+org.springframework.shell.test.autoconfigure.ShellSessionAutoConfiguration
 org.springframework.shell.boot.CommandCatalogAutoConfiguration
 org.springframework.shell.boot.CompleterAutoConfiguration
 org.springframework.shell.boot.ExitCodeAutoConfiguration
