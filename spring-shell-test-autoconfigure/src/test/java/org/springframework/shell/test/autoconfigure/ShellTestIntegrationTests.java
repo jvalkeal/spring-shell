@@ -60,24 +60,19 @@ public class ShellTestIntegrationTests {
 	void test() throws Exception {
 		assertThat(widget).isNotNull();
 
-		Thread.sleep(1000);
-
 		runTask();
-
-		Thread.sleep(1000);
 
 		widget.getTerminalStarter().sendString("help\n");
 
 
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = widget.getTerminalTextBuffer().getScreenLines();
+			assertThat(screen).contains("AVAILABLE COMMANDS");
+		});
 
-		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-		// 	String screen = widget.getTerminalTextBuffer().getScreenLines();
-		// 	assertThat(screen).contains("AVAILABLE COMMANDS");
-		// });
-
-		String screen1 = widget.getTerminalTextBuffer().getScreenLines();
-		String screen2 = widget.getTerminalTextBuffer().getScreenLines();
-		String screen3 = widget.getTerminalTextBuffer().getScreenLines();
+		// String screen1 = widget.getTerminalTextBuffer().getScreenLines();
+		// String screen2 = widget.getTerminalTextBuffer().getScreenLines();
+		// String screen3 = widget.getTerminalTextBuffer().getScreenLines();
 
 		// widget.getTerminalStarter().sendString("help\n");
 
@@ -99,7 +94,7 @@ public class ShellTestIntegrationTests {
 					new DefaultShellContext());
 			try {
 				runner.run(new DefaultApplicationArguments());
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
