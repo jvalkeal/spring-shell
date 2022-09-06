@@ -429,6 +429,7 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		}
 	}
 
+	@Override
 	public TerminalStarter getTerminalStarter() {
 		return myTerminalStarter;
 	}

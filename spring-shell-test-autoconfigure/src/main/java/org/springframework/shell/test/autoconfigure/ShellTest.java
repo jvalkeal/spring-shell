@@ -49,6 +49,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(ShellTypeExcludeFilter.class)
 @AutoConfigureShell
+@AutoConfigureShellClient
 @ImportAutoConfiguration
 public @interface ShellTest {
 
