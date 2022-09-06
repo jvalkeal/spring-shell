@@ -15,10 +15,10 @@
  */
 package org.springframework.shell.test;
 
-import java.io.IOException;
-import java.util.List;
+import com.jediterm.terminal.ui.JediTermWidget;
+import com.jediterm.terminal.ui.TerminalSession;
 
-import com.jediterm.support.TestTerminalSession;
+import org.springframework.shell.ShellRunner;
 
 /**
  * Client for terminal session which can be used as a programmatic way
@@ -37,20 +37,25 @@ public interface ShellClient {
 		return new DefaultBuilder();
 	}
 
+	enum Mode {
+		INTERACTIVE,
+		NONINTERACTIVE
+	}
+
 	interface Builder {
 
-		Builder session(TestTerminalSession testTerminalSession);
+		Builder mode(Mode mode);
 
 		ShellClient build();
 	}
 
 	static class DefaultBuilder implements Builder {
 
-		private TestTerminalSession testTerminalSession;
+		private Mode mode;
 
 		@Override
-		public Builder session(TestTerminalSession testTerminalSession) {
-			this.testTerminalSession = testTerminalSession;
+		public Builder mode(Mode mode) {
+			this.mode = mode;
 			return this;
 		}
 
@@ -64,21 +69,30 @@ public interface ShellClient {
 
 	static class DefaultShellClient implements ShellClient {
 
-		private TestTerminalSession testTerminalSession;
+		private TerminalSession widget;
+		private ShellRunner shellRunner;
+
+		DefaultShellClient() {
+
+		}
 
 		@Override
 		public void write(String data) {
-			try {
-				this.testTerminalSession.process(data);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			widget.getTerminalStarter().sendString(data);
 		}
 
 		@Override
 		public String read() {
-			return this.testTerminalSession.getTerminal().getTextBuffer().getScreenLines();
+			String screen = widget.getTerminalTextBuffer().getScreenLines();
+			return screen;
+		}
+
+		public void start() {
+
+		}
+
+		public void stop() {
+
 		}
 	}
 

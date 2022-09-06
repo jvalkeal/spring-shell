@@ -1,6 +1,7 @@
 package com.jediterm.terminal.ui;
 
 import com.jediterm.terminal.Terminal;
+import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.debug.DebugBufferType;
 import com.jediterm.terminal.model.TerminalTextBuffer;
@@ -14,6 +15,8 @@ public interface TerminalSession {
 	String getBufferText(DebugBufferType type, int stateIndex);
 
 	TerminalTextBuffer getTerminalTextBuffer();
+
+	TerminalStarter getTerminalStarter();
 
 	Terminal getTerminal();
 

@@ -15,23 +15,25 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.shell.test.ShellClient;
+import org.springframework.shell.test.ShellClient.Builder;
 
 /**
  *
  * @author Janne Valkealahti
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@ImportAutoConfiguration
-public @interface AutoConfigureShellSession {
+@AutoConfiguration
+public class ShellClientAutoConfiguration {
+
+	@Bean
+	@Scope("prototype")
+	@ConditionalOnMissingBean
+	ShellClient.Builder shellClientBuilder() {
+		Builder builder = ShellClient.builder();
+		return builder;
+	}
 }
