@@ -48,21 +48,21 @@ public interface ShellClient {
 
 	interface Builder {
 
-		Builder xxx(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader);
+		Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader);
 
 		ShellClient build();
 	}
 
 	static class DefaultBuilder implements Builder {
 
-		private JediTermWidget widget;
+		private TerminalSession terminalSession;
 		private Shell shell;
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
 
 		@Override
-		public Builder xxx(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
-			this.widget = widget;
+		public Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+			this.terminalSession = terminalSession;
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
@@ -71,7 +71,7 @@ public interface ShellClient {
 
 		@Override
 		public ShellClient build() {
-			DefaultShellClient client = new DefaultShellClient(this.widget, this.shell, this.promptProvider,
+			DefaultShellClient client = new DefaultShellClient(this.terminalSession, this.shell, this.promptProvider,
 					this.lineReader);
 			return client;
 		}
@@ -80,15 +80,15 @@ public interface ShellClient {
 
 	static class DefaultShellClient implements ShellClient {
 
-		private TerminalSession widget;
+		private TerminalSession terminalSession;
 		private Shell shell;
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
 		private Thread runnerThread;
 
 
-		DefaultShellClient(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
-			this.widget = widget;
+		DefaultShellClient(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+			this.terminalSession = terminalSession;
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
@@ -96,18 +96,18 @@ public interface ShellClient {
 
 		@Override
 		public void write(String data) {
-			widget.getTerminalStarter().sendString(data);
+			terminalSession.getTerminalStarter().sendString(data);
 		}
 
 		@Override
 		public String read() {
-			String screen = widget.getTerminalTextBuffer().getScreenLines();
+			String screen = terminalSession.getTerminalTextBuffer().getScreenLines();
 			return screen;
 		}
 
 		@Override
 		public void start() {
-			this.widget.start();
+			this.terminalSession.start();
 			if (this.runnerThread == null) {
 				this.runnerThread = new Thread(new ShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
 				this.runnerThread.start();
@@ -119,7 +119,7 @@ public interface ShellClient {
 			if (this.runnerThread != null) {
 				this.runnerThread.interrupt();
 			}
-			this.widget.close();
+			this.terminalSession.close();
 		}
 	}
 
