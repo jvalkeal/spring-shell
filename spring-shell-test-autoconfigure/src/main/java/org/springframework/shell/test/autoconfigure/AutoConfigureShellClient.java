@@ -25,6 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 /**
+ * Annotation that can be applied to a test class to enable and configure
+ * auto-configuration of shell client.
  *
  * @author Janne Valkealahti
  */

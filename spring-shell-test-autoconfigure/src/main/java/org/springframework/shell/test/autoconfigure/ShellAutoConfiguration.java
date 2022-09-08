@@ -16,13 +16,10 @@
 package org.springframework.shell.test.autoconfigure;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.nio.charset.StandardCharsets;
 
 import com.jediterm.terminal.Questioner;
 import com.jediterm.terminal.TtyConnector;
@@ -30,7 +27,6 @@ import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.settings.DefaultSettingsProvider;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.terminal.impl.DumbTerminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +70,7 @@ public class ShellAutoConfiguration {
 	JediTermWidget jediTermWidget(TtyConnector ttyConnector) {
 		JediTermWidget widget = new JediTermWidget(80, 24, new DefaultSettingsProvider());
 		widget.setTtyConnector(ttyConnector);
-		widget.start();
+		// widget.start();
 		return widget;
 	}
 
@@ -99,41 +95,13 @@ public class ShellAutoConfiguration {
 	private static class TestTtyConnector implements TtyConnector {
 
 		private final static Logger log = LoggerFactory.getLogger(TestTtyConnector.class);
-
-		// PipedInputStream input;
-		// PipedOutputStream output;
 		InputStreamReader myReader;
-		// PipedOutputStream xxx;
-		// PipedInputStream xxx;
-		// PipedOutputStream ddd;
 		OutputStreamWriter myWriter;
 
 		TestTtyConnector(InputStreamReader myReader, OutputStreamWriter myWriter) {
 			this.myReader = myReader;
 			this.myWriter = myWriter;
 		}
-
-		// TestTtyConnector(PipedInputStream input, PipedOutputStream output) {
-		// 	this.input = input;
-		// 	this.output = output;
-		// 	try {
-		// 		this.xxx = new PipedInputStream(this.output);
-		// 	} catch (IOException e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-
-		// 	try {
-		// 		this.ddd = new PipedOutputStream(this.input);
-		// 	} catch (IOException e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-
-		// 	this.myReader = new InputStreamReader(this.xxx);
-		// 	this.myWriter = new OutputStreamWriter(this.ddd);
-		// 	// this.xxx = new PipedOutputStream(arg0)
-		// }
 
 		@Override
 		public boolean init(Questioner q) {
@@ -157,15 +125,11 @@ public class ShellAutoConfiguration {
 			log.info("XXX read2 {} {}", read, new String(buf));
 
 			return read;
-			// return this.myReader.read(buf, offset, length);
 		}
 
 		@Override
 		public void write(byte[] bytes) throws IOException {
 			log.info("XXX write1 {}", bytes);
-			// this.output.write(bytes);
-			// this.output.flush();
-			// this.ddd.write(bytes);
 			this.myWriter.write(new String(bytes));
 			this.myWriter.flush();
 			log.info("XXX write2");
@@ -192,8 +156,6 @@ public class ShellAutoConfiguration {
 			boolean ready = myReader.ready();
 			log.info("XXX ready2 {}", ready);
 			return ready;
-			// return myReader.ready();
-			// return true;
 		}
 	}
 
