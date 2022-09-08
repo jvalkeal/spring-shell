@@ -24,6 +24,7 @@ import java.io.PipedOutputStream;
 import com.jediterm.terminal.Questioner;
 import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.ui.JediTermWidget;
+import com.jediterm.terminal.ui.TerminalSession;
 import com.jediterm.terminal.ui.settings.DefaultSettingsProvider;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -37,10 +38,6 @@ import org.springframework.shell.boot.JLineShellAutoConfiguration;
 @AutoConfiguration(before = JLineShellAutoConfiguration.class)
 public class ShellAutoConfiguration {
 
-	/*
-	 * Configure terminal with input/output so that we have a control
-	 * in tests to track what happens with interaction.
-	 */
 	@Bean
 	Terminal terminal(TerminalStreams terminalStreams) throws IOException {
 		Terminal terminal = TerminalBuilder.builder()
@@ -48,10 +45,6 @@ public class ShellAutoConfiguration {
 			.jansi(false)
 			.jna(false)
 			.build();
-		// DumbTerminal terminal = new DumbTerminal("terminal", "ansi", terminalStreams.input,
-		// 		terminalStreams.output, StandardCharsets.UTF_8);
-
-
 		return terminal;
 	}
 
@@ -62,12 +55,11 @@ public class ShellAutoConfiguration {
 
 	@Bean
 	TtyConnector ttyConnector(TerminalStreams terminalStreams) {
-		// return new TestTtyConnector(terminalStreams.input, terminalStreams.output);
 		return new TestTtyConnector(terminalStreams.myReader, terminalStreams.myWriter);
 	}
 
 	@Bean
-	JediTermWidget jediTermWidget(TtyConnector ttyConnector) {
+	TerminalSession terminalSession(TtyConnector ttyConnector) {
 		JediTermWidget widget = new JediTermWidget(80, 24, new DefaultSettingsProvider());
 		widget.setTtyConnector(ttyConnector);
 		// widget.start();

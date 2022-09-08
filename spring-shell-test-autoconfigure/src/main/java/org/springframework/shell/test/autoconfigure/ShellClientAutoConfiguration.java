@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
-import com.jediterm.terminal.ui.JediTermWidget;
+import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.reader.LineReader;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -37,7 +37,7 @@ public class ShellClientAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	ShellClient.Builder shellClientBuilder(JediTermWidget widget, Shell shell, PromptProvider promptProvider,
+	ShellClient.Builder shellClientBuilder(TerminalSession widget, Shell shell, PromptProvider promptProvider,
 			LineReader lineReader) {
 		Builder builder = ShellClient.builder();
 		builder.xxx(widget, shell, promptProvider, lineReader);
