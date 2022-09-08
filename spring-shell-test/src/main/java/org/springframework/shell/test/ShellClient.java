@@ -17,13 +17,18 @@ package org.springframework.shell.test;
 
 import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.TerminalSession;
+import org.jline.reader.LineReader;
 
-import org.springframework.shell.ShellRunner;
+import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.shell.Shell;
+import org.springframework.shell.context.DefaultShellContext;
+import org.springframework.shell.jline.InteractiveShellRunner;
+import org.springframework.shell.jline.PromptProvider;
 
 /**
  * Client for terminal session which can be used as a programmatic way
  * to interact with a shell application. In a typical test it is required
- * to write into a shell are read what is visible in a shell.
+ * to write into a shell and read what is visible in a shell.
  *
  * @author Janne Valkealahti
  */
@@ -33,35 +38,41 @@ public interface ShellClient {
 
 	String read();
 
+	void start();
+
+	void stop();
+
 	public static Builder builder() {
 		return new DefaultBuilder();
 	}
 
-	enum Mode {
-		INTERACTIVE,
-		NONINTERACTIVE
-	}
-
 	interface Builder {
 
-		Builder mode(Mode mode);
+		Builder xxx(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader);
 
 		ShellClient build();
 	}
 
 	static class DefaultBuilder implements Builder {
 
-		private Mode mode;
+		private JediTermWidget widget;
+		private Shell shell;
+		private PromptProvider promptProvider;
+		private LineReader lineReader;
 
 		@Override
-		public Builder mode(Mode mode) {
-			this.mode = mode;
+		public Builder xxx(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+			this.widget = widget;
+			this.shell = shell;
+			this.promptProvider = promptProvider;
+			this.lineReader = lineReader;
 			return this;
 		}
 
 		@Override
 		public ShellClient build() {
-			DefaultShellClient client = new DefaultShellClient();
+			DefaultShellClient client = new DefaultShellClient(this.widget, this.shell, this.promptProvider,
+					this.lineReader);
 			return client;
 		}
 
@@ -70,10 +81,17 @@ public interface ShellClient {
 	static class DefaultShellClient implements ShellClient {
 
 		private TerminalSession widget;
-		private ShellRunner shellRunner;
+		private Shell shell;
+		private PromptProvider promptProvider;
+		private LineReader lineReader;
+		private Thread runnerThread;
 
-		DefaultShellClient() {
 
+		DefaultShellClient(JediTermWidget widget, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+			this.widget = widget;
+			this.shell = shell;
+			this.promptProvider = promptProvider;
+			this.lineReader = lineReader;
 		}
 
 		@Override
@@ -87,13 +105,47 @@ public interface ShellClient {
 			return screen;
 		}
 
+		@Override
 		public void start() {
-
+			this.widget.start();
+			if (this.runnerThread == null) {
+				this.runnerThread = new Thread(new ShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
+				this.runnerThread.start();
+			}
 		}
 
+		@Override
 		public void stop() {
-
+			if (this.runnerThread != null) {
+				this.runnerThread.interrupt();
+			}
+			this.widget.close();
 		}
 	}
+
+	static class ShellRunnerTask implements Runnable {
+
+		Shell shell;
+		PromptProvider promptProvider;
+		LineReader lineReader;
+
+		public ShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+			this.shell = shell;
+			this.promptProvider = promptProvider;
+			this.lineReader = lineReader;
+		}
+
+		@Override
+		public void run() {
+			InteractiveShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell,
+					new DefaultShellContext());
+			try {
+				runner.run(new DefaultApplicationArguments());
+			} catch (Throwable e) {
+			}
+		}
+
+	}
+
 
 }

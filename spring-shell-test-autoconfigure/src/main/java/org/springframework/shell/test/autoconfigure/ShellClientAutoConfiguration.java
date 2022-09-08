@@ -15,10 +15,15 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
+import com.jediterm.terminal.ui.JediTermWidget;
+import org.jline.reader.LineReader;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.shell.Shell;
+import org.springframework.shell.jline.PromptProvider;
 import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.ShellClient.Builder;
 
@@ -32,8 +37,10 @@ public class ShellClientAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	ShellClient.Builder shellClientBuilder() {
+	ShellClient.Builder shellClientBuilder(JediTermWidget widget, Shell shell, PromptProvider promptProvider,
+			LineReader lineReader) {
 		Builder builder = ShellClient.builder();
+		builder.xxx(widget, shell, promptProvider, lineReader);
 		return builder;
 	}
 }
