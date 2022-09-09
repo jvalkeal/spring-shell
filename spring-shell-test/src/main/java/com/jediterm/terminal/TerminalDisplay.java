@@ -1,9 +1,6 @@
 package com.jediterm.terminal;
 
-import java.awt.Dimension;
-
 import com.jediterm.terminal.emulator.mouse.MouseMode;
-import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.TerminalSelection;
 
 /**

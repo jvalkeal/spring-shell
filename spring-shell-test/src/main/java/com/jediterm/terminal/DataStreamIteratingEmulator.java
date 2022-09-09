@@ -1,8 +1,8 @@
 package com.jediterm.terminal;
 
-import com.jediterm.terminal.emulator.Emulator;
-
 import java.io.IOException;
+
+import com.jediterm.terminal.emulator.Emulator;
 
 /**
  * @author jediterm authors
