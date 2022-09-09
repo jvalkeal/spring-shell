@@ -61,6 +61,8 @@ public @interface ShellTest {
 	 */
 	String[] properties() default {};
 
+	Class<?>[] controllers() default {};
+
 	/**
 	 * Determines if default filtering should be used with
 	 * {@link SpringBootApplication @SpringBootApplication}.

@@ -6,6 +6,7 @@ description = 'Spring Shell Test Autoconfigure'
 
 dependencies {
 	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
 	implementation project(':spring-shell-test')
 	implementation project(':spring-shell-autoconfigure')
 	implementation 'org.springframework:spring-test'
