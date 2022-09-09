@@ -15,8 +15,13 @@
  */
 package org.springframework.shell.test;
 
+import java.io.Writer;
+
 import com.jediterm.terminal.ui.TerminalSession;
+import org.jline.keymap.KeyMap;
 import org.jline.reader.LineReader;
+import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
 
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
@@ -65,13 +70,45 @@ public interface ShellClient {
 	 */
 	void close();
 
+	/**
+	 * Get a write sequencer.
+	 *
+	 * @return a write sequencer
+	 */
+	WriteSequence writeSequence();
+
 	public static Builder builder() {
 		return new DefaultBuilder();
 	}
 
+	/**
+	 * Interface sequencing various things into terminal aware text types.
+	 */
+	interface WriteSequence {
+
+		/**
+		 * Sequence text.
+		 *
+		 * @param text the text
+		 * @return a text
+		 */
+		String text(String text);
+
+		/**
+		 * Sequence terminal key down.
+		 *
+		 * @return a key down
+		 */
+		String keyDown();
+	}
+
+	/**
+	 *
+	 */
 	interface Builder {
 
-		Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader);
+		Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader,
+				Terminal terminal);
 
 		/**
 		 * Build a shell client.
@@ -87,20 +124,23 @@ public interface ShellClient {
 		private Shell shell;
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
+		private Terminal terminal;
 
 		@Override
-		public Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+		public Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
+				LineReader lineReader, Terminal terminal) {
 			this.terminalSession = terminalSession;
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
+			this.terminal = terminal;
 			return this;
 		}
 
 		@Override
 		public ShellClient build() {
 			DefaultShellClient client = new DefaultShellClient(this.terminalSession, this.shell, this.promptProvider,
-					this.lineReader);
+					this.lineReader, this.terminal);
 			return client;
 		}
 
@@ -113,13 +153,15 @@ public interface ShellClient {
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
 		private Thread runnerThread;
+		private Terminal terminal;
 
-
-		DefaultShellClient(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+		DefaultShellClient(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
+				LineReader lineReader, Terminal terminal) {
 			this.terminalSession = terminalSession;
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
+			this.terminal = terminal;
 		}
 
 		@Override
@@ -157,6 +199,23 @@ public interface ShellClient {
 				this.runnerThread.interrupt();
 			}
 			this.terminalSession.close();
+		}
+
+		@Override
+		public WriteSequence writeSequence() {
+			return new WriteSequence() {
+
+				@Override
+				public String keyDown() {
+					return KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_down);
+				}
+
+				@Override
+				public String text(String text) {
+					return text;
+				}
+
+			};
 		}
 	}
 
