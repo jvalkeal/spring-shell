@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.test;
 
-import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.reader.LineReader;
 
@@ -23,6 +22,7 @@ import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
 import org.springframework.shell.context.DefaultShellContext;
 import org.springframework.shell.jline.InteractiveShellRunner;
+import org.springframework.shell.jline.NonInteractiveShellRunner;
 import org.springframework.shell.jline.PromptProvider;
 
 /**
@@ -34,13 +34,36 @@ import org.springframework.shell.jline.PromptProvider;
  */
 public interface ShellClient {
 
-	void write(String data);
+	/**
+	 * Write plain text into a shell.
+	 *
+	 * @param text the text
+	 */
+	void write(String text);
 
-	String read();
+	/**
+	 * Read screen text.
+	 *
+	 * @return the screen text
+	 */
+	String screen();
 
-	void start();
+	/**
+	 * Run interactive shell session.
+	 */
+	void shell();
 
-	void stop();
+	/**
+	 * Run non-interactive command session.
+	 *
+	 * @param args the command arguments
+	 */
+	void command(String... args);
+
+	/**
+	 * Close and release resources for previously run shell or command session.
+	 */
+	void close();
 
 	public static Builder builder() {
 		return new DefaultBuilder();
@@ -50,6 +73,11 @@ public interface ShellClient {
 
 		Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader);
 
+		/**
+		 * Build a shell client.
+		 *
+		 * @return a shell client
+		 */
 		ShellClient build();
 	}
 
@@ -100,22 +128,31 @@ public interface ShellClient {
 		}
 
 		@Override
-		public String read() {
+		public String screen() {
 			String screen = terminalSession.getTerminalTextBuffer().getScreenLines();
 			return screen;
 		}
 
 		@Override
-		public void start() {
+		public void shell() {
 			this.terminalSession.start();
 			if (this.runnerThread == null) {
-				this.runnerThread = new Thread(new ShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
+				this.runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
 				this.runnerThread.start();
 			}
 		}
 
 		@Override
-		public void stop() {
+		public void command(String... args) {
+			this.terminalSession.start();
+			if (this.runnerThread == null) {
+				this.runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
+				this.runnerThread.start();
+			}
+		}
+
+		@Override
+		public void close() {
 			if (this.runnerThread != null) {
 				this.runnerThread.interrupt();
 			}
@@ -123,13 +160,13 @@ public interface ShellClient {
 		}
 	}
 
-	static class ShellRunnerTask implements Runnable {
+	static class InteractiveShellRunnerTask implements Runnable {
 
 		Shell shell;
 		PromptProvider promptProvider;
 		LineReader lineReader;
 
-		public ShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+		public InteractiveShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
@@ -147,5 +184,24 @@ public interface ShellClient {
 
 	}
 
+	static class NonInteractiveShellRunnerTask implements Runnable {
+
+		private Shell shell;
+		private String[] args;
+
+		public NonInteractiveShellRunnerTask(Shell shell, String[] args) {
+			this.shell = shell;
+			this.args = args;
+		}
+
+		@Override
+		public void run() {
+			NonInteractiveShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
+			try {
+				runner.run(new DefaultApplicationArguments(this.args));
+			} catch (Throwable e) {
+			}
+		}
+	}
 
 }
