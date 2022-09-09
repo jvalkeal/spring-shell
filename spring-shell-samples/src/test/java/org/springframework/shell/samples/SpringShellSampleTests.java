@@ -17,24 +17,19 @@ package org.springframework.shell.samples;
 
 import java.util.concurrent.TimeUnit;
 
-import org.jline.keymap.KeyMap;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.shell.samples.standard.ResolvedCommands;
-import org.springframework.shell.samples.standard.TableCommands;
-import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.autoconfigure.ShellTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-// @ShellTest(includeFilters = { @Filter(ShellComponent.class) })
 @ShellTest
 @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
 public class SpringShellSampleTests {
@@ -55,9 +50,7 @@ public class SpringShellSampleTests {
 			assertThat(screen).contains("❯ key1");
 		});
 
-		// client.write("\u001b[1B");
-		client.write("\\x1B[1B");
-		// client.write(KeyMap.ctrl('E'));
+		client.write(client.writeSequence().keyDown());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			String screen = client.screen();

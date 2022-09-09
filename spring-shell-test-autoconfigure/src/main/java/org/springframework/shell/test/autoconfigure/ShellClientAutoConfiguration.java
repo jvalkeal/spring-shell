@@ -17,6 +17,7 @@ package org.springframework.shell.test.autoconfigure;
 
 import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.reader.LineReader;
+import org.jline.terminal.Terminal;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,9 +39,9 @@ public class ShellClientAutoConfiguration {
 	@Scope("prototype")
 	@ConditionalOnMissingBean
 	ShellClient.Builder shellClientBuilder(TerminalSession widget, Shell shell, PromptProvider promptProvider,
-			LineReader lineReader) {
+			LineReader lineReader, Terminal terminal) {
 		Builder builder = ShellClient.builder();
-		builder.xxx(widget, shell, promptProvider, lineReader);
+		builder.xxx(widget, shell, promptProvider, lineReader, terminal);
 		return builder;
 	}
 }
