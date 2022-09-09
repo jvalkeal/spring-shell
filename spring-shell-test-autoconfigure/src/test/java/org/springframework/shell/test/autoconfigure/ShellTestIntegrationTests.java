@@ -35,13 +35,24 @@ public class ShellTestIntegrationTests {
 	ShellClient.Builder builder;
 
 	@Test
-	void test() throws Exception {
+	void testInteractive() throws Exception {
 		ShellClient client = builder.build();
-		client.start();
+		client.shell();
 		client.write("help\n");
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.read();
+			String screen = client.screen();
+			assertThat(screen).contains("AVAILABLE COMMANDS");
+		});
+	}
+
+	@Test
+	void testNonInteractive() throws Exception {
+		ShellClient client = builder.build();
+		client.command("help");
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = client.screen();
 			assertThat(screen).contains("AVAILABLE COMMANDS");
 		});
 	}
