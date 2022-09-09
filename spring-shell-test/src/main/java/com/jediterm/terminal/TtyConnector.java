@@ -1,6 +1,6 @@
 package com.jediterm.terminal;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 
 /**
