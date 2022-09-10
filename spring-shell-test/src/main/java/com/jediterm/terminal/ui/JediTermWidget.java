@@ -62,7 +62,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
 	protected final SettingsProvider mySettingsProvider;
-	private TerminalActionProvider myNextActionProvider;
+	// private TerminalActionProvider myNextActionProvider;
 	private JLayeredPane myInnerPanel;
 	private final TextProcessing myTextProcessing;
 
@@ -98,7 +98,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
 
-		myTerminalPanel.setNextProvider(this);
+		// myTerminalPanel.setNextProvider(this);
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
 		myInnerPanel = new JLayeredPane();
@@ -216,14 +216,14 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 		myTerminalPanel.dispose();
 	}
 
-	@Override
-	public List<TerminalAction> getActions() {
-		return List.of(new TerminalAction(mySettingsProvider.getFindActionPresentation(),
-			keyEvent -> {
-				showFindText();
-				return true;
-			}).withMnemonicKey(KeyEvent.VK_F));
-	}
+	// @Override
+	// public List<TerminalAction> getActions() {
+	// 	return List.of(new TerminalAction(mySettingsProvider.getFindActionPresentation(),
+	// 		keyEvent -> {
+	// 			showFindText();
+	// 			return true;
+	// 		}).withMnemonicKey(KeyEvent.VK_F));
+	// }
 
 	private void showFindText() {
 		if (myFindComponent == null) {
@@ -317,14 +317,14 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 		myFindComponent.onResultUpdated(results);
 	}
 
-	@Override
-	public TerminalActionProvider getNextProvider() {
-		return myNextActionProvider;
-	}
+	// @Override
+	// public TerminalActionProvider getNextProvider() {
+	// 	return myNextActionProvider;
+	// }
 
-	public void setNextProvider(TerminalActionProvider actionProvider) {
-		this.myNextActionProvider = actionProvider;
-	}
+	// public void setNextProvider(TerminalActionProvider actionProvider) {
+	// 	this.myNextActionProvider = actionProvider;
+	// }
 
 	class EmulatorTask implements Runnable {
 		public void run() {
