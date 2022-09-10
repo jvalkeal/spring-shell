@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
