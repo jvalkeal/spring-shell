@@ -18,8 +18,6 @@ package org.springframework.shell.samples;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -34,8 +32,6 @@ import static org.awaitility.Awaitility.await;
 @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
 public class SpringShellSampleTests {
 
-	private final static Logger log = LoggerFactory.getLogger(SpringShellSampleTests.class);
-
 	@Autowired
 	ShellClient.Builder builder;
 
@@ -43,19 +39,18 @@ public class SpringShellSampleTests {
 	void test() {
 		ShellClient client = builder.build();
 		client.shell();
-		client.write("component single\n");
+		client.write(client.writeSequence().text("component single").cr().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			String screen = client.screen();
 			assertThat(screen).contains("❯ key1");
 		});
 
-		client.write(client.writeSequence().keyDown());
+		client.write(client.writeSequence().keyDown().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			String screen = client.screen();
 			assertThat(screen).contains("❯ key2");
 		});
-
 	}
 }
