@@ -17,7 +17,4 @@ public interface TerminalWidget {
 	TerminalSession getCurrentSession();
 
 	TerminalDisplay getTerminalDisplay();
-
-	void addListener(TerminalWidgetListener listener);
-	void removeListener(TerminalWidgetListener listener);
 }

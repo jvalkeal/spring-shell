@@ -1,13 +1,10 @@
 package com.jediterm.terminal.ui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -16,8 +13,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
@@ -31,7 +26,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import com.jediterm.terminal.ProcessTtyConnector;
 import com.jediterm.terminal.SubstringFinder.FindResult;
@@ -73,7 +67,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 	private TerminalActionProvider myNextActionProvider;
 	private JLayeredPane myInnerPanel;
 	private final TextProcessing myTextProcessing;
-	private final List<TerminalWidgetListener> myListeners = new CopyOnWriteArrayList<>();
 
 	public JediTermWidget(SettingsProvider settingsProvider) {
 		this(80, 24, settingsProvider);
@@ -366,9 +359,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 				} catch (Exception e) {
 				}
 				mySessionRunning.set(false);
-				for (TerminalWidgetListener listener : myListeners) {
-					listener.allSessionsClosed(JediTermWidget.this);
-				}
 				myTerminalPanel.addCustomKeyListener(myPreConnectHandler);
 				myTerminalPanel.removeCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
 			}
@@ -611,15 +601,5 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 
 	public void addHyperlinkFilter(HyperlinkFilter filter) {
 		myTextProcessing.addHyperlinkFilter(filter);
-	}
-
-	@Override
-	public void addListener(TerminalWidgetListener listener) {
-		myListeners.add(listener);
-	}
-
-	@Override
-	public void removeListener(TerminalWidgetListener listener) {
-		myListeners.remove(listener);
 	}
 }
