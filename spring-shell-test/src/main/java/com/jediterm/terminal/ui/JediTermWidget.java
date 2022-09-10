@@ -27,7 +27,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 
-import com.jediterm.terminal.ProcessTtyConnector;
 import com.jediterm.terminal.SubstringFinder.FindResult;
 import com.jediterm.terminal.SubstringFinder.FindResult.FindItem;
 import com.jediterm.terminal.Terminal;
@@ -142,13 +141,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 	public void setTtyConnector(TtyConnector ttyConnector) {
 		myTtyConnector = ttyConnector;
 
-		TypeAheadTerminalModel.ShellType shellType;
-		if (ttyConnector instanceof ProcessTtyConnector) {
-			List<String> commandLine = ((ProcessTtyConnector) myTtyConnector).getCommandLine();
-			shellType = TypeAheadTerminalModel.commandLineToShellType(commandLine);
-		} else {
-			shellType = TypeAheadTerminalModel.ShellType.Unknown;
-		}
+		TypeAheadTerminalModel.ShellType shellType = TypeAheadTerminalModel.ShellType.Unknown;
 		myTypeAheadTerminalModel.setShellType(shellType);
 		myTerminalStarter = createTerminalStarter(myTerminal, myTtyConnector);
 		myTerminalPanel.setTerminalStarter(myTerminalStarter);
