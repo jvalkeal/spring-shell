@@ -87,19 +87,61 @@ public interface ShellClient {
 	interface WriteSequence {
 
 		/**
+		 * Sequence terminal clear screen.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence clearScreen();
+
+		/**
+		 * Sequence terminal carriage return.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence cr();
+
+		/**
 		 * Sequence text.
 		 *
 		 * @param text the text
 		 * @return a text
 		 */
-		String text(String text);
+		WriteSequence text(String text);
 
 		/**
 		 * Sequence terminal key down.
 		 *
-		 * @return a key down
+		 * @return a sequence for chaining
 		 */
-		String keyDown();
+		WriteSequence keyDown();
+
+		/**
+		 * Sequence terminal key left.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence keyLeft();
+
+		/**
+		 * Sequence terminal key right.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence keyRight();
+
+		/**
+		 * Sequence terminal key up.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence keyUp();
+
+		/**
+		 * Build the result.
+		 *
+		 * @return the result
+		 */
+		String build();
 	}
 
 	/**
@@ -205,16 +247,54 @@ public interface ShellClient {
 		public WriteSequence writeSequence() {
 			return new WriteSequence() {
 
+				private StringBuilder buf = new StringBuilder();
+
 				@Override
-				public String keyDown() {
-					return KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_down);
+				public WriteSequence keyUp() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_up));
+					return this;
 				}
 
 				@Override
-				public String text(String text) {
-					return text;
+				public WriteSequence keyDown() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_down));
+					return this;
 				}
 
+				@Override
+				public WriteSequence keyLeft() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_left));
+					return this;
+				}
+
+				@Override
+				public WriteSequence keyRight() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_right));
+					return this;
+				}
+
+				@Override
+				public WriteSequence text(String text) {
+					this.buf.append(text);
+					return this;
+				}
+
+				@Override
+				public WriteSequence clearScreen() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.clear_screen));
+					return this;
+				}
+
+				@Override
+				public WriteSequence cr() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.carriage_return));
+					return this;
+				}
+
+				@Override
+				public String build() {
+					return buf.toString();
+				}
 			};
 		}
 	}
