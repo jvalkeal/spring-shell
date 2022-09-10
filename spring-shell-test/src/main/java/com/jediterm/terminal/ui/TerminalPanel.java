@@ -62,7 +62,7 @@ import com.jediterm.typeahead.TerminalTypeAheadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay, TerminalActionProvider {
+public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TerminalPanel.class);
 	private static final long serialVersionUID = -1048763516632093014L;
@@ -108,7 +108,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 
 	private String myWindowTitle = "Terminal";
 
-	private TerminalActionProvider myNextActionProvider;
 	private String myInputMethodUncommittedChars;
 
 	private Timer myRepaintTimer;
@@ -463,7 +462,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 	public class TerminalCursor {
 
 		// cursor state
-		private boolean myCursorIsShown; // blinking state
 		protected Point myCursorCoordinates = new Point();
 		private CursorShape myShape = CursorShape.BLINK_BLOCK;
 
@@ -513,38 +511,7 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 			// repaint();
 		}
 
-		private boolean cursorShouldChangeBlinkState(long currentTime) {
-			return currentTime - myLastCursorChange > getBlinkingPeriod();
-		}
-
 		public void changeStateIfNeeded() {
-			// if (!isFocusOwner()) {
-			// 	return;
-			// }
-			// long currentTime = System.currentTimeMillis();
-			// if (cursorShouldChangeBlinkState(currentTime)) {
-			// 	myCursorIsShown = !myCursorIsShown;
-			// 	myLastCursorChange = currentTime;
-			// 	myCursorHasChanged = false;
-			// 	repaint();
-			// }
-		}
-
-		private TerminalCursorState computeBlinkingState() {
-			if (!isBlinking() || myCursorHasChanged || myCursorIsShown) {
-				return TerminalCursorState.SHOWING;
-			}
-			return TerminalCursorState.HIDDEN;
-		}
-
-		private TerminalCursorState computeCursorState() {
-			if (!myShouldDrawCursor) {
-				return TerminalCursorState.HIDDEN;
-			}
-			// if (!isFocusOwner()) {
-			// 	return TerminalCursorState.NO_FOCUS;
-			// }
-			return computeBlinkingState();
 		}
 
 		void setShape(CursorShape shape) {
@@ -739,33 +706,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		myCursor.setShouldDrawCursor(shouldDrawCursor);
 	}
 
-	// protected JPopupMenu createPopupMenu(LinkInfo linkInfo, MouseEvent e) {
-	// 	JPopupMenu popup = new JPopupMenu();
-	// 	LinkInfo.PopupMenuGroupProvider popupMenuGroupProvider = linkInfo != null ? linkInfo.getPopupMenuGroupProvider() : null;
-	// 	if (popupMenuGroupProvider != null) {
-	// 		TerminalAction.addToMenu(popup, new TerminalActionProvider() {
-	// 			@Override
-	// 			public List<TerminalAction> getActions() {
-	// 				return popupMenuGroupProvider.getPopupMenuGroup(e);
-	// 			}
-
-	// 			@Override
-	// 			public TerminalActionProvider getNextProvider() {
-	// 				return TerminalPanel.this;
-	// 			}
-
-	// 			@Override
-	// 			public void setNextProvider(TerminalActionProvider provider) {
-	// 			}
-	// 		});
-	// 	}
-	// 	else {
-	// 		TerminalAction.addToMenu(popup, this);
-	// 	}
-
-	// 	return popup;
-	// }
-
 	public void setScrollingEnabled(boolean scrollingEnabled) {
 		myScrollingEnabled = scrollingEnabled;
 
@@ -793,66 +733,9 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		}
 	}
 
-	// @Override
-	// public List<TerminalAction> getActions() {
-	// 	return List.of(
-	// 					new TerminalAction(mySettingsProvider.getOpenUrlActionPresentation(), input -> {
-	// 						return openSelectionAsURL();
-	// 					}).withEnabledSupplier(this::selectionTextIsUrl),
-	// 					new TerminalAction(mySettingsProvider.getCopyActionPresentation(), this::handleCopy) {
-	// 						@Override
-	// 						public boolean isEnabled(KeyEvent e) {
-	// 							return e != null || mySelection != null;
-	// 						}
-	// 					}.withMnemonicKey(KeyEvent.VK_C),
-	// 					new TerminalAction(mySettingsProvider.getPasteActionPresentation(), input -> {
-	// 						handlePaste();
-	// 						return true;
-	// 					}).withMnemonicKey(KeyEvent.VK_P).withEnabledSupplier(() -> getClipboardString() != null),
-	// 					new TerminalAction(mySettingsProvider.getSelectAllActionPresentation(), input -> {
-	// 						selectAll();
-	// 						return true;
-	// 					}),
-	// 					new TerminalAction(mySettingsProvider.getClearBufferActionPresentation(), input -> {
-	// 						clearBuffer();
-	// 						return true;
-	// 					}).withMnemonicKey(KeyEvent.VK_K).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-	// 					new TerminalAction(mySettingsProvider.getPageUpActionPresentation(), input -> {
-	// 						pageUp();
-	// 						return true;
-	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-	// 					new TerminalAction(mySettingsProvider.getPageDownActionPresentation(), input -> {
-	// 						pageDown();
-	// 						return true;
-	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()),
-	// 					new TerminalAction(mySettingsProvider.getLineUpActionPresentation(), input -> {
-	// 						scrollUp();
-	// 						return true;
-	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-	// 					new TerminalAction(mySettingsProvider.getLineDownActionPresentation(), input -> {
-	// 						scrollDown();
-	// 						return true;
-	// 					}));
-	// }
-
 	public void selectAll() {
 		mySelection = new TerminalSelection(new Point(0, -myTerminalTextBuffer.getHistoryLinesCount()),
 			new Point(myTermSize.width, myTerminalTextBuffer.getScreenLinesCount()));
-	}
-
-	private Boolean selectionTextIsUrl() {
-		String selectionText = getSelectionText();
-		if (selectionText != null) {
-			try {
-				URI uri = new URI(selectionText);
-				//noinspection ResultOfMethodCallIgnored
-				uri.toURL();
-				return true;
-			} catch (Exception e) {
-				//pass
-			}
-		}
-		return false;
 	}
 
 	private String getSelectionText() {
@@ -922,69 +805,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		}
 	}
 
-	// @Override
-	// public TerminalActionProvider getNextProvider() {
-	// 	return myNextActionProvider;
-	// }
-
-	// @Override
-	// public void setNextProvider(TerminalActionProvider provider) {
-	// 	myNextActionProvider = provider;
-	// }
-
-	private boolean processTerminalKeyPressed(KeyEvent e) {
-		if (hasUncommittedChars()) {
-			return false;
-		}
-
-		try {
-			final int keycode = e.getKeyCode();
-			final char keychar = e.getKeyChar();
-
-			// numLock does not change the code sent by keypad VK_DELETE
-			// although it send the char '.'
-			if (keycode == KeyEvent.VK_DELETE && keychar == '.') {
-				myTerminalStarter.sendBytes(new byte[]{'.'}, true);
-				return true;
-			}
-			// CTRL + Space is not handled in KeyEvent; handle it manually
-			if (keychar == ' ' && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
-				myTerminalStarter.sendBytes(new byte[]{Ascii.NUL}, true);
-				return true;
-			}
-
-			final byte[] code = myTerminalStarter.getCode(keycode, e.getModifiers());
-			if (code != null) {
-				myTerminalStarter.sendBytes(code, true);
-				if (mySettingsProvider.scrollToBottomOnTyping() && isCodeThatScrolls(keycode)) {
-					scrollToBottom();
-				}
-				return true;
-			}
-			if (isAltPressedOnly(e) && Character.isDefined(keychar) && mySettingsProvider.altSendsEscape()) {
-				// Cannot use e.getKeyChar() on macOS:
-				//  Option+f produces e.getKeyChar()='ƒ' (402), but 'f' (102) is needed.
-				//  Option+b produces e.getKeyChar()='∫' (8747), but 'b' (98) is needed.
-				myTerminalStarter.sendString(new String(new char[]{Ascii.ESC, simpleMapKeyCodeToChar(e)}), true);
-				return true;
-			}
-			if (Character.isISOControl(keychar)) { // keys filtered out here will be processed in processTerminalKeyTyped
-				return processCharacter(e);
-			}
-		}
-		catch (Exception ex) {
-			LOG.error("Error sending pressed key to emulator", ex);
-		}
-		return false;
-	}
-
-	private static char simpleMapKeyCodeToChar(KeyEvent e) {
-		// zsh requires proper case of letter
-		if ((e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) {
-			return Character.toUpperCase((char) e.getKeyCode());
-		}
-		return Character.toLowerCase((char) e.getKeyCode());
-	}
 
 	private static boolean isAltPressedOnly(KeyEvent e) {
 		int modifiersEx = e.getModifiersEx();
@@ -1015,21 +835,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		return true;
 	}
 
-	private static boolean isCodeThatScrolls(int keycode) {
-		return keycode == KeyEvent.VK_UP
-						|| keycode == KeyEvent.VK_DOWN
-						|| keycode == KeyEvent.VK_LEFT
-						|| keycode == KeyEvent.VK_RIGHT
-						|| keycode == KeyEvent.VK_BACK_SPACE
-						|| keycode == KeyEvent.VK_INSERT
-						|| keycode == KeyEvent.VK_DELETE
-						|| keycode == KeyEvent.VK_ENTER
-						|| keycode == KeyEvent.VK_HOME
-						|| keycode == KeyEvent.VK_END
-						|| keycode == KeyEvent.VK_PAGE_UP
-						|| keycode == KeyEvent.VK_PAGE_DOWN;
-	}
-
 	private boolean processTerminalKeyTyped(KeyEvent e) {
 		if (hasUncommittedChars()) {
 			return false;
@@ -1055,10 +860,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 
 		public void keyPressed(KeyEvent e) {
 			myIgnoreNextKeyTypedEvent = false;
-			if (TerminalAction.processEvent(TerminalPanel.this, e) || processTerminalKeyPressed(e)) {
-				e.consume();
-				myIgnoreNextKeyTypedEvent = true;
-			}
 		}
 
 		public void keyTyped(KeyEvent e) {
@@ -1067,134 +868,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 			}
 		}
 	}
-
-	private void handlePaste() {
-		pasteFromClipboard(false);
-	}
-
-	private void handlePasteSelection() {
-		pasteFromClipboard(true);
-	}
-
-	/**
-	 * Copies selected text to clipboard.
-	 * @param unselect true to unselect currently selected text
-	 * @param useSystemSelectionClipboardIfAvailable true to use {@link Toolkit#getSystemSelection()} if available
-	 */
-	private void handleCopy(boolean unselect, boolean useSystemSelectionClipboardIfAvailable) {
-		if (mySelection != null) {
-			Pair<Point, Point> points = mySelection.pointsForRun(myTermSize.width);
-			copySelection(points.first, points.second, useSystemSelectionClipboardIfAvailable);
-			if (unselect) {
-				mySelection = null;
-				// repaint();
-			}
-		}
-	}
-
-	private boolean handleCopy(KeyEvent e) {
-		boolean ctrlC = e != null && e.getKeyCode() == KeyEvent.VK_C && e.getModifiersEx() == InputEvent.CTRL_DOWN_MASK;
-		boolean sendCtrlC = ctrlC && mySelection == null;
-		handleCopy(ctrlC, false);
-		return !sendCtrlC;
-	}
-
-	private void handleCopyOnSelect() {
-		handleCopy(false, true);
-	}
-
-	/**
-	 * InputMethod implementation
-	 * For details read http://docs.oracle.com/javase/7/docs/technotes/guides/imf/api-tutorial.html
-	 */
-	// @Override
-	// protected void processInputMethodEvent(InputMethodEvent e) {
-	// 	int commitCount = e.getCommittedCharacterCount();
-
-	// 	if (commitCount > 0) {
-	// 		myInputMethodUncommittedChars = null;
-	// 		AttributedCharacterIterator text = e.getText();
-	// 		if (text != null) {
-	// 			StringBuilder sb = new StringBuilder();
-
-	// 			//noinspection ForLoopThatDoesntUseLoopVariable
-	// 			for (char c = text.first(); commitCount > 0; c = text.next(), commitCount--) {
-	// 				if (c >= 0x20 && c != 0x7F) { // Hack just like in javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction
-	// 					sb.append(c);
-	// 				}
-	// 			}
-
-	// 			if (sb.length() > 0) {
-	// 				myTerminalStarter.sendString(sb.toString(), true);
-	// 			}
-	// 		}
-	// 	} else {
-	// 		myInputMethodUncommittedChars = uncommittedChars(e.getText());
-	// 	}
-	// }
-
-	private static String uncommittedChars(AttributedCharacterIterator text) {
-		if (text == null) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		for (char c = text.first(); c != CharacterIterator.DONE; c = text.next()) {
-			if (c >= 0x20 && c != 0x7F) { // Hack just like in javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction
-				sb.append(c);
-			}
-		}
-
-		return sb.toString();
-	}
-
-	// @Override
-	// public InputMethodRequests getInputMethodRequests() {
-	// 	return new MyInputMethodRequests();
-	// }
-
-	// private class MyInputMethodRequests implements InputMethodRequests {
-	// 	@Override
-	// 	public Rectangle getTextLocation(TextHitInfo offset) {
-	// 		Rectangle r = new Rectangle(myCursor.getCoordX() * myCharSize.width + getInsetX(), (myCursor.getCoordY() + 1) * myCharSize.height,
-	// 						0, 0);
-	// 		Point p = TerminalPanel.this.getLocationOnScreen();
-	// 		r.translate(p.x, p.y);
-	// 		return r;
-	// 	}
-
-	// 	@Override
-	// 	public TextHitInfo getLocationOffset(int x, int y) {
-	// 		return null;
-	// 	}
-
-	// 	@Override
-	// 	public int getInsertPositionOffset() {
-	// 		return 0;
-	// 	}
-
-	// 	@Override
-	// 	public AttributedCharacterIterator getCommittedText(int beginIndex, int endIndex, AttributedCharacterIterator.Attribute[] attributes) {
-	// 		return null;
-	// 	}
-
-	// 	@Override
-	// 	public int getCommittedTextLength() {
-	// 		return 0;
-	// 	}
-
-	// 	@Override
-	// 	public AttributedCharacterIterator cancelLatestCommittedText(AttributedCharacterIterator.Attribute[] attributes) {
-	// 		return null;
-	// 	}
-
-	// 	@Override
-	// 	public AttributedCharacterIterator getSelectedText(AttributedCharacterIterator.Attribute[] attributes) {
-	// 		return null;
-	// 	}
-
-	// }
 
 	public void dispose() {
 		myRepaintTimer.stop();
