@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.test;
 
-import java.io.Writer;
-
 import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.LineReader;
