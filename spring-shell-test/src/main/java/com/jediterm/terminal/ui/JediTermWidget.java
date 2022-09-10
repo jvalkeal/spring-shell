@@ -55,15 +55,11 @@ import com.jediterm.typeahead.TypeAheadTerminalModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * JediTerm terminal widget with UI implemented in Swing.
- * <p/>
- */
-public class JediTermWidget /*  extends JPanel */ implements TerminalSession, TerminalWidget, TerminalActionProvider {
+public class JediTermWidget implements TerminalSession, TerminalWidget, TerminalActionProvider {
+
 	private static final Logger LOG = LoggerFactory.getLogger(JediTermWidget.class);
 
 	protected final TerminalPanel myTerminalPanel;
-	// protected final JScrollBar myScrollBar;
 	protected final JediTerminal myTerminal;
 	protected final AtomicBoolean mySessionRunning = new AtomicBoolean();
 	private final JediTermTypeAheadModel myTypeAheadTerminalModel;
@@ -88,8 +84,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 	}
 
 	public JediTermWidget(int columns, int lines, SettingsProvider settingsProvider) {
-		// super(new BorderLayout());
-
 		mySettingsProvider = settingsProvider;
 
 		StyleState styleState = createDefaultStyle();
@@ -97,7 +91,8 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		myTextProcessing = new TextProcessing(settingsProvider.getHyperlinkColor(),
 			settingsProvider.getHyperlinkHighlightingMode());
 
-		TerminalTextBuffer terminalTextBuffer = new TerminalTextBuffer(columns, lines, styleState, settingsProvider.getBufferMaxLinesCount(), myTextProcessing);
+		TerminalTextBuffer terminalTextBuffer = new TerminalTextBuffer(columns, lines, styleState,
+				settingsProvider.getBufferMaxLinesCount(), myTextProcessing);
 		myTextProcessing.setTerminalTextBuffer(terminalTextBuffer);
 
 		myTerminalPanel = createTerminalPanel(mySettingsProvider, styleState, terminalTextBuffer);
@@ -112,37 +107,18 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
 
-		// myTerminalPanel.addTerminalMouseListener(myTerminal);
 		myTerminalPanel.setNextProvider(this);
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
 		myPreConnectHandler = createPreConnectHandler(myTerminal);
 		myTerminalPanel.addCustomKeyListener(myPreConnectHandler);
-		// myScrollBar = createScrollBar();
 
 		myInnerPanel = new JLayeredPane();
 		myInnerPanel.setFocusable(false);
-		// setFocusable(false);
 
 		myInnerPanel.setLayout(new TerminalLayout());
-		// myInnerPanel.add(myTerminalPanel, TerminalLayout.TERMINAL);
-		// myInnerPanel.add(myScrollBar, TerminalLayout.SCROLL);
-
-		// add(myInnerPanel, BorderLayout.CENTER);
-
-		// myScrollBar.setModel(myTerminalPanel.getVerticalScrollModel());
 		mySessionRunning.set(false);
-
-		// myTerminalPanel.init(myScrollBar);
-
-		// myTerminalPanel.setVisible(true);
 	}
-
-	// protected JScrollBar createScrollBar() {
-	// 	JScrollBar scrollBar = new JScrollBar();
-	// 	scrollBar.setUI(new FindResultScrollBarUI());
-	// 	return scrollBar;
-	// }
 
 	protected StyleState createDefaultStyle() {
 		StyleState styleState = new StyleState();
@@ -233,21 +209,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		return myTerminalPanel.getTerminalTextBuffer();
 	}
 
-	// @Override
-	// public boolean requestFocusInWindow() {
-	// 	SwingUtilities.invokeLater(new Runnable() {
-	// 		public void run() {
-	// 			myTerminalPanel.requestFocusInWindow();
-	// 		}
-	// 	});
-	// 	return super.requestFocusInWindow();
-	// }
-
-	// @Override
-	// public void requestFocus() {
-	// 	myTerminalPanel.requestFocus();
-	// }
-
 	public boolean canOpenSession() {
 		return !isSessionRunning();
 	}
@@ -267,11 +228,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		setTtyConnector(ttyConnector);
 		return this;
 	}
-
-	// @Override
-	// public JComponent getComponent() {
-	// 	return this;
-	// }
 
 	@Override
 	public void close() {
@@ -339,7 +295,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 						myInnerPanel.repaint();
 						myFindComponent = null;
 						myTerminalPanel.setFindResult(null);
-						// myTerminalPanel.requestFocusInWindow();
 					} else if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER || keyEvent.getKeyCode() == KeyEvent.VK_UP) {
 						myFindComponent.nextFindResultItem(myTerminalPanel.selectNextFindResultItem());
 					} else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -382,7 +337,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		FindResult results = myTerminal.searchInTerminalTextBuffer(text, ignoreCase);
 		myTerminalPanel.setFindResult(results);
 		myFindComponent.onResultUpdated(results);
-		// myScrollBar.repaint();
 	}
 
 	@Override
@@ -528,28 +482,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 		@Override
 		public void addIgnoreCaseListener(ItemListener listener) {
 			ignoreCaseCheckBox.addItemListener(listener);
-		}
-
-	}
-
-	private class FindResultScrollBarUI extends BasicScrollBarUI {
-
-		protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-			super.paintTrack(g, c, trackBounds);
-
-			FindResult result = myTerminalPanel.getFindResult();
-			if (result != null) {
-				int modelHeight = scrollbar.getModel().getMaximum() - scrollbar.getModel().getMinimum();
-				int anchorHeight = Math.max(2, trackBounds.height / modelHeight);
-
-				Color color = mySettingsProvider.getTerminalColorPalette()
-					.getBackground(Objects.requireNonNull(mySettingsProvider.getFoundPatternColor().getBackground()));
-				g.setColor(color);
-				for (FindItem r : result.getItems()) {
-					int where = trackBounds.height * r.getStart().y / modelHeight;
-					g.fillRect(trackBounds.x, trackBounds.y + where, trackBounds.width, anchorHeight);
-				}
-			}
 		}
 
 	}
