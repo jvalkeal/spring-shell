@@ -48,7 +48,7 @@ import com.jediterm.typeahead.TypeAheadTerminalModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JediTermWidget implements TerminalSession, TerminalWidget, TerminalActionProvider {
+public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JediTermWidget.class);
 
@@ -62,7 +62,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
 	protected final SettingsProvider mySettingsProvider;
-	// private TerminalActionProvider myNextActionProvider;
 	private JLayeredPane myInnerPanel;
 	private final TextProcessing myTextProcessing;
 
@@ -98,7 +97,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
 
-		// myTerminalPanel.setNextProvider(this);
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
 		myInnerPanel = new JLayeredPane();
@@ -216,77 +214,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 		myTerminalPanel.dispose();
 	}
 
-	// @Override
-	// public List<TerminalAction> getActions() {
-	// 	return List.of(new TerminalAction(mySettingsProvider.getFindActionPresentation(),
-	// 		keyEvent -> {
-	// 			showFindText();
-	// 			return true;
-	// 		}).withMnemonicKey(KeyEvent.VK_F));
-	// }
-
-	private void showFindText() {
-		if (myFindComponent == null) {
-			myFindComponent = createSearchComponent();
-
-			final JComponent component = myFindComponent.getComponent();
-			myInnerPanel.add(component, TerminalLayout.FIND);
-			myInnerPanel.moveToFront(component);
-			myInnerPanel.revalidate();
-			myInnerPanel.repaint();
-			component.requestFocus();
-
-			myFindComponent.addDocumentChangeListener(new DocumentListener() {
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					textUpdated();
-				}
-
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					textUpdated();
-				}
-
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					textUpdated();
-				}
-
-				private void textUpdated() {
-					findText(myFindComponent.getText(), myFindComponent.ignoreCase());
-				}
-			});
-
-			myFindComponent.addIgnoreCaseListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					findText(myFindComponent.getText(), myFindComponent.ignoreCase());
-				}
-			});
-
-			myFindComponent.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent keyEvent) {
-					if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						myInnerPanel.remove(component);
-						myInnerPanel.revalidate();
-						myInnerPanel.repaint();
-						myFindComponent = null;
-						myTerminalPanel.setFindResult(null);
-					} else if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER || keyEvent.getKeyCode() == KeyEvent.VK_UP) {
-						myFindComponent.nextFindResultItem(myTerminalPanel.selectNextFindResultItem());
-					} else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
-						myFindComponent.prevFindResultItem(myTerminalPanel.selectPrevFindResultItem());
-					} else {
-						super.keyPressed(keyEvent);
-					}
-				}
-			});
-		} else {
-			myFindComponent.getComponent().requestFocusInWindow();
-		}
-	}
-
 	protected SearchComponent createSearchComponent() {
 		return new SearchPanel();
 	}
@@ -310,21 +237,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget, Terminal
 
 		void prevFindResultItem(FindItem selectedItem);
 	}
-
-	private void findText(String text, boolean ignoreCase) {
-		FindResult results = myTerminal.searchInTerminalTextBuffer(text, ignoreCase);
-		myTerminalPanel.setFindResult(results);
-		myFindComponent.onResultUpdated(results);
-	}
-
-	// @Override
-	// public TerminalActionProvider getNextProvider() {
-	// 	return myNextActionProvider;
-	// }
-
-	// public void setNextProvider(TerminalActionProvider actionProvider) {
-	// 	this.myNextActionProvider = actionProvider;
-	// }
 
 	class EmulatorTask implements Runnable {
 		public void run() {

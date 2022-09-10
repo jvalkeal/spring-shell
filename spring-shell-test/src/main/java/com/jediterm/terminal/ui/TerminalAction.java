@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 /**
@@ -51,46 +50,6 @@ public class TerminalAction {
 
   public boolean actionPerformed(KeyEvent e) {
     return myRunnable.test(e);
-  }
-
-  public static boolean processEvent(TerminalActionProvider actionProvider, KeyEvent e) {
-    // for (TerminalAction a : actionProvider.getActions()) {
-    //   if (a.matches(e)) {
-    //     return a.isEnabled(e) && a.actionPerformed(e);
-    //   }
-    // }
-
-    // if (actionProvider.getNextProvider() != null) {
-    //   return processEvent(actionProvider.getNextProvider(), e);
-    // }
-
-    return false;
-  }
-
-  public static boolean addToMenu(JPopupMenu menu, TerminalActionProvider actionProvider) {
-    boolean added = false;
-    // if (actionProvider.getNextProvider() != null) {
-    //   added = addToMenu(menu, actionProvider.getNextProvider());
-    // }
-    // boolean addSeparator = added;
-    // for (final TerminalAction a : actionProvider.getActions()) {
-    //   if (a.isHidden()) {
-    //     continue;
-    //   }
-    //   if (!addSeparator) {
-    //     addSeparator = a.isSeparated();
-    //   }
-    //   if (addSeparator) {
-    //     menu.addSeparator();
-    //     addSeparator = false;
-    //   }
-
-    //   menu.add(a.toMenuItem());
-
-    //   added = true;
-    // }
-
-    return added;
   }
 
   public int getKeyCode() {
