@@ -57,10 +57,9 @@ import com.jediterm.typeahead.TerminalTypeAheadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay {
+public class TerminalPanel implements TerminalDisplay {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TerminalPanel.class);
-	private static final long serialVersionUID = -1048763516632093014L;
 
 	public static final double SCROLL_SPEED = 0.05;
 
@@ -70,16 +69,13 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay 
 	private Font myBoldFont;
 	private Font myBoldItalicFont;
 	private int myDescent = 0;
-	private int mySpaceBetweenLines = 0;
 	protected Dimension myCharSize = new Dimension();
 	private boolean myMonospaced;
 	protected Dimension myTermSize = new Dimension(80, 24);
-	private boolean myInitialSizeSyncDone = false;
 
 	private TerminalStarter myTerminalStarter = null;
 
 	private MouseMode myMouseMode = MouseMode.MOUSE_REPORTING_NONE;
-	private Point mySelectionStartPoint = null;
 	private TerminalSelection mySelection = null;
 
 	private final TerminalCopyPasteHandler myCopyPasteHandler;
@@ -235,78 +231,12 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay 
 		}
 	}
 
-	private void pageUp() {
-		moveScrollBar(-myTermSize.height);
-	}
-
-	private void pageDown() {
-		moveScrollBar(myTermSize.height);
-	}
-
-	private void scrollUp() {
-		moveScrollBar(-1);
-	}
-
-	private void scrollDown() {
-		moveScrollBar(1);
-	}
-
 	private void moveScrollBar(int k) {
 		myBoundedRangeModel.setValue(myBoundedRangeModel.getValue() + k);
 	}
 
 	protected Font createFont() {
 		return mySettingsProvider.getTerminalFont();
-	}
-
-	private Cell panelPointToCell(Point p) {
-		int x = Math.min((p.x - getInsetX()) / myCharSize.width, getColumnCount() - 1);
-		x = Math.max(0, x);
-		int y = Math.min(p.y / myCharSize.height, getRowCount() - 1) + myClientScrollOrigin;
-		return new Cell(y, x);
-	}
-
-	private void copySelection(Point selectionStart,
-														 Point selectionEnd,
-														 boolean useSystemSelectionClipboardIfAvailable) {
-		if (selectionStart == null || selectionEnd == null) {
-			return;
-		}
-		String selectionText = SelectionUtil.getSelectionText(selectionStart, selectionEnd, myTerminalTextBuffer);
-		if (selectionText.length() != 0) {
-			myCopyPasteHandler.setContents(selectionText, useSystemSelectionClipboardIfAvailable);
-		}
-	}
-
-	private void pasteFromClipboard(boolean useSystemSelectionClipboardIfAvailable) {
-		String text = myCopyPasteHandler.getContents(useSystemSelectionClipboardIfAvailable);
-
-		if (text == null) {
-			return;
-		}
-
-		try {
-			// Sanitize clipboard text to use CR as the line separator.
-			// See https://github.com/JetBrains/jediterm/issues/136.
-			if (!UIUtil.isWindows) {
-				// On Windows, Java automatically does this CRLF->LF sanitization, but
-				// other terminals on Unix typically also do this sanitization, so
-				// maybe JediTerm also should.
-				text = text.replace("\r\n", "\n");
-			}
-			text = text.replace('\n', '\r');
-
-			if (myBracketedPasteMode) {
-				text = "\u001b[200~" + text + "\u001b[201~";
-			}
-			myTerminalStarter.sendString(text, true);
-		} catch (RuntimeException e) {
-			LOG.info("", e);
-		}
-	}
-
-	private String getClipboardString() {
-		return myCopyPasteHandler.getContents(false);
 	}
 
 	protected void drawImage(Graphics2D gfx, BufferedImage image, int x, int y, ImageObserver observer) {
@@ -347,7 +277,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay 
 		myCharSize.width = fo.charWidth('W');
 		int fontMetricsHeight = fo.getHeight();
 		myCharSize.height = (int)Math.ceil(fontMetricsHeight * lineSpacing);
-		mySpaceBetweenLines = Math.max(0, ((myCharSize.height - fontMetricsHeight) / 2) * 2);
 		myDescent = fo.getDescent();
 		if (LOG.isDebugEnabled()) {
 			// The magic +2 here is to give lines a tiny bit of extra height to avoid clipping when rendering some Apple
@@ -523,18 +452,6 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay 
 
 	protected void drawImage(Graphics2D g, BufferedImage image, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2) {
 		g.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
-	}
-
-	private TextStyle getInversedStyle(TextStyle style) {
-		TextStyle.Builder builder = new TextStyle.Builder(style);
-		builder.setOption(Option.INVERSE, !style.hasOption(Option.INVERSE));
-		if (style.getForeground() == null) {
-			builder.setForeground(myStyleState.getForeground());
-		}
-		if (style.getBackground() == null) {
-			builder.setBackground(myStyleState.getBackground());
-		}
-		return builder.build();
 	}
 
 	protected Font getFontToDisplay(char c, TextStyle style) {
