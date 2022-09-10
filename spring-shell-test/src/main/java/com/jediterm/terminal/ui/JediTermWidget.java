@@ -1,6 +1,5 @@
 package com.jediterm.terminal.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -27,10 +26,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -45,7 +42,6 @@ import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TtyBasedArrayDataStream;
 import com.jediterm.terminal.TtyConnector;
-import com.jediterm.terminal.debug.DebugBufferType;
 import com.jediterm.terminal.model.JediTermDebouncerImpl;
 import com.jediterm.terminal.model.JediTermTypeAheadModel;
 import com.jediterm.terminal.model.JediTerminal;
@@ -230,10 +226,6 @@ public class JediTermWidget /*  extends JPanel */ implements TerminalSession, Te
 
 	public boolean isSessionRunning() {
 		return mySessionRunning.get();
-	}
-
-	public String getBufferText(DebugBufferType type, int stateIndex) {
-		return type.getValue(this, stateIndex);
 	}
 
 	@Override
