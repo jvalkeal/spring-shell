@@ -1,11 +1,11 @@
 package com.jediterm.terminal.ui.settings;
 
+import java.awt.Font;
+
 import com.jediterm.terminal.HyperlinkStyle;
 import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.emulator.ColorPalette;
 import com.jediterm.terminal.model.TerminalTypeAheadSettings;
-
-import java.awt.*;
 
 public interface UserSettingsProvider {
   ColorPalette getTerminalColorPalette();
