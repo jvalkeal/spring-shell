@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public interface TtyConnector {
 
-	boolean init(Questioner q);
+	boolean init();
 
 	void close();
 

@@ -21,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import com.jediterm.terminal.Questioner;
 import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.TerminalSession;
@@ -96,7 +95,7 @@ public class ShellAutoConfiguration {
 		}
 
 		@Override
-		public boolean init(Questioner q) {
+		public boolean init() {
 			return true;
 		}
 
