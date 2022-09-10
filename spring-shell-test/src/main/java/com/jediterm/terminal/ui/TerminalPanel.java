@@ -739,32 +739,32 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		myCursor.setShouldDrawCursor(shouldDrawCursor);
 	}
 
-	protected JPopupMenu createPopupMenu(LinkInfo linkInfo, MouseEvent e) {
-		JPopupMenu popup = new JPopupMenu();
-		LinkInfo.PopupMenuGroupProvider popupMenuGroupProvider = linkInfo != null ? linkInfo.getPopupMenuGroupProvider() : null;
-		if (popupMenuGroupProvider != null) {
-			TerminalAction.addToMenu(popup, new TerminalActionProvider() {
-				@Override
-				public List<TerminalAction> getActions() {
-					return popupMenuGroupProvider.getPopupMenuGroup(e);
-				}
+	// protected JPopupMenu createPopupMenu(LinkInfo linkInfo, MouseEvent e) {
+	// 	JPopupMenu popup = new JPopupMenu();
+	// 	LinkInfo.PopupMenuGroupProvider popupMenuGroupProvider = linkInfo != null ? linkInfo.getPopupMenuGroupProvider() : null;
+	// 	if (popupMenuGroupProvider != null) {
+	// 		TerminalAction.addToMenu(popup, new TerminalActionProvider() {
+	// 			@Override
+	// 			public List<TerminalAction> getActions() {
+	// 				return popupMenuGroupProvider.getPopupMenuGroup(e);
+	// 			}
 
-				@Override
-				public TerminalActionProvider getNextProvider() {
-					return TerminalPanel.this;
-				}
+	// 			@Override
+	// 			public TerminalActionProvider getNextProvider() {
+	// 				return TerminalPanel.this;
+	// 			}
 
-				@Override
-				public void setNextProvider(TerminalActionProvider provider) {
-				}
-			});
-		}
-		else {
-			TerminalAction.addToMenu(popup, this);
-		}
+	// 			@Override
+	// 			public void setNextProvider(TerminalActionProvider provider) {
+	// 			}
+	// 		});
+	// 	}
+	// 	else {
+	// 		TerminalAction.addToMenu(popup, this);
+	// 	}
 
-		return popup;
-	}
+	// 	return popup;
+	// }
 
 	public void setScrollingEnabled(boolean scrollingEnabled) {
 		myScrollingEnabled = scrollingEnabled;
@@ -793,47 +793,47 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		}
 	}
 
-	@Override
-	public List<TerminalAction> getActions() {
-		return List.of(
-						new TerminalAction(mySettingsProvider.getOpenUrlActionPresentation(), input -> {
-							return openSelectionAsURL();
-						}).withEnabledSupplier(this::selectionTextIsUrl),
-						new TerminalAction(mySettingsProvider.getCopyActionPresentation(), this::handleCopy) {
-							@Override
-							public boolean isEnabled(KeyEvent e) {
-								return e != null || mySelection != null;
-							}
-						}.withMnemonicKey(KeyEvent.VK_C),
-						new TerminalAction(mySettingsProvider.getPasteActionPresentation(), input -> {
-							handlePaste();
-							return true;
-						}).withMnemonicKey(KeyEvent.VK_P).withEnabledSupplier(() -> getClipboardString() != null),
-						new TerminalAction(mySettingsProvider.getSelectAllActionPresentation(), input -> {
-							selectAll();
-							return true;
-						}),
-						new TerminalAction(mySettingsProvider.getClearBufferActionPresentation(), input -> {
-							clearBuffer();
-							return true;
-						}).withMnemonicKey(KeyEvent.VK_K).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-						new TerminalAction(mySettingsProvider.getPageUpActionPresentation(), input -> {
-							pageUp();
-							return true;
-						}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-						new TerminalAction(mySettingsProvider.getPageDownActionPresentation(), input -> {
-							pageDown();
-							return true;
-						}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()),
-						new TerminalAction(mySettingsProvider.getLineUpActionPresentation(), input -> {
-							scrollUp();
-							return true;
-						}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
-						new TerminalAction(mySettingsProvider.getLineDownActionPresentation(), input -> {
-							scrollDown();
-							return true;
-						}));
-	}
+	// @Override
+	// public List<TerminalAction> getActions() {
+	// 	return List.of(
+	// 					new TerminalAction(mySettingsProvider.getOpenUrlActionPresentation(), input -> {
+	// 						return openSelectionAsURL();
+	// 					}).withEnabledSupplier(this::selectionTextIsUrl),
+	// 					new TerminalAction(mySettingsProvider.getCopyActionPresentation(), this::handleCopy) {
+	// 						@Override
+	// 						public boolean isEnabled(KeyEvent e) {
+	// 							return e != null || mySelection != null;
+	// 						}
+	// 					}.withMnemonicKey(KeyEvent.VK_C),
+	// 					new TerminalAction(mySettingsProvider.getPasteActionPresentation(), input -> {
+	// 						handlePaste();
+	// 						return true;
+	// 					}).withMnemonicKey(KeyEvent.VK_P).withEnabledSupplier(() -> getClipboardString() != null),
+	// 					new TerminalAction(mySettingsProvider.getSelectAllActionPresentation(), input -> {
+	// 						selectAll();
+	// 						return true;
+	// 					}),
+	// 					new TerminalAction(mySettingsProvider.getClearBufferActionPresentation(), input -> {
+	// 						clearBuffer();
+	// 						return true;
+	// 					}).withMnemonicKey(KeyEvent.VK_K).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
+	// 					new TerminalAction(mySettingsProvider.getPageUpActionPresentation(), input -> {
+	// 						pageUp();
+	// 						return true;
+	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
+	// 					new TerminalAction(mySettingsProvider.getPageDownActionPresentation(), input -> {
+	// 						pageDown();
+	// 						return true;
+	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()),
+	// 					new TerminalAction(mySettingsProvider.getLineUpActionPresentation(), input -> {
+	// 						scrollUp();
+	// 						return true;
+	// 					}).withEnabledSupplier(() -> !myTerminalTextBuffer.isUsingAlternateBuffer()).separatorBefore(true),
+	// 					new TerminalAction(mySettingsProvider.getLineDownActionPresentation(), input -> {
+	// 						scrollDown();
+	// 						return true;
+	// 					}));
+	// }
 
 	public void selectAll() {
 		mySelection = new TerminalSelection(new Point(0, -myTerminalTextBuffer.getHistoryLinesCount()),
@@ -922,15 +922,15 @@ public class TerminalPanel /*  extends JComponent */ implements TerminalDisplay,
 		}
 	}
 
-	@Override
-	public TerminalActionProvider getNextProvider() {
-		return myNextActionProvider;
-	}
+	// @Override
+	// public TerminalActionProvider getNextProvider() {
+	// 	return myNextActionProvider;
+	// }
 
-	@Override
-	public void setNextProvider(TerminalActionProvider provider) {
-		myNextActionProvider = provider;
-	}
+	// @Override
+	// public void setNextProvider(TerminalActionProvider provider) {
+	// 	myNextActionProvider = provider;
+	// }
 
 	private boolean processTerminalKeyPressed(KeyEvent e) {
 		if (hasUncommittedChars()) {

@@ -1,9 +1,12 @@
 package com.jediterm.terminal.ui;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 
 /**
  * @author traff
@@ -51,41 +54,41 @@ public class TerminalAction {
   }
 
   public static boolean processEvent(TerminalActionProvider actionProvider, KeyEvent e) {
-    for (TerminalAction a : actionProvider.getActions()) {
-      if (a.matches(e)) {
-        return a.isEnabled(e) && a.actionPerformed(e);
-      }
-    }
+    // for (TerminalAction a : actionProvider.getActions()) {
+    //   if (a.matches(e)) {
+    //     return a.isEnabled(e) && a.actionPerformed(e);
+    //   }
+    // }
 
-    if (actionProvider.getNextProvider() != null) {
-      return processEvent(actionProvider.getNextProvider(), e);
-    }
+    // if (actionProvider.getNextProvider() != null) {
+    //   return processEvent(actionProvider.getNextProvider(), e);
+    // }
 
     return false;
   }
 
   public static boolean addToMenu(JPopupMenu menu, TerminalActionProvider actionProvider) {
     boolean added = false;
-    if (actionProvider.getNextProvider() != null) {
-      added = addToMenu(menu, actionProvider.getNextProvider());
-    }
-    boolean addSeparator = added;
-    for (final TerminalAction a : actionProvider.getActions()) {
-      if (a.isHidden()) {
-        continue;
-      }
-      if (!addSeparator) {
-        addSeparator = a.isSeparated();
-      }
-      if (addSeparator) {
-        menu.addSeparator();
-        addSeparator = false;
-      }
+    // if (actionProvider.getNextProvider() != null) {
+    //   added = addToMenu(menu, actionProvider.getNextProvider());
+    // }
+    // boolean addSeparator = added;
+    // for (final TerminalAction a : actionProvider.getActions()) {
+    //   if (a.isHidden()) {
+    //     continue;
+    //   }
+    //   if (!addSeparator) {
+    //     addSeparator = a.isSeparated();
+    //   }
+    //   if (addSeparator) {
+    //     menu.addSeparator();
+    //     addSeparator = false;
+    //   }
 
-      menu.add(a.toMenuItem());
+    //   menu.add(a.toMenuItem());
 
-      added = true;
-    }
+    //   added = true;
+    // }
 
     return added;
   }
