@@ -13,95 +13,95 @@ import java.util.List;
  */
 final class SystemCommandSequence {
 
-  private static final char ST = 0x9c;
+	private static final char ST = 0x9c;
 
-  private final List<Object> myArgs = new ArrayList<>();
-  private final StringBuilder mySequence = new StringBuilder();
+	private final List<Object> myArgs = new ArrayList<>();
+	private final StringBuilder mySequence = new StringBuilder();
 
-  public SystemCommandSequence( TerminalDataStream stream) throws IOException {
-    StringBuilder argBuilder = new StringBuilder();
-    boolean end = false;
-    while (!end) {
-      char ch = stream.getChar();
-      mySequence.append(ch);
-      end = isEnd();
-      if (ch == ';' || end) {
-        if (end && isTwoBytesEnd()) {
-          argBuilder.deleteCharAt(argBuilder.length() - 1);
-        }
-        myArgs.add(parseArg(argBuilder.toString()));
-        argBuilder.setLength(0);
-      }
-      else {
-        argBuilder.append(ch);
-      }
-    }
-  }
+	public SystemCommandSequence( TerminalDataStream stream) throws IOException {
+		StringBuilder argBuilder = new StringBuilder();
+		boolean end = false;
+		while (!end) {
+			char ch = stream.getChar();
+			mySequence.append(ch);
+			end = isEnd();
+			if (ch == ';' || end) {
+				if (end && isTwoBytesEnd()) {
+					argBuilder.deleteCharAt(argBuilder.length() - 1);
+				}
+				myArgs.add(parseArg(argBuilder.toString()));
+				argBuilder.setLength(0);
+			}
+			else {
+				argBuilder.append(ch);
+			}
+		}
+	}
 
-  private  Object parseArg( String arg) {
-    if (arg.length() > 0 && Character.isDigit(arg.charAt(arg.length() - 1))) {
-      // check isDigit to reduce amount of expensive NumberFormatException
-      try {
-        return Integer.parseInt(arg);
-      }
-      catch (NumberFormatException ignored) {
-      }
-    }
-    return arg;
-  }
+	private  Object parseArg( String arg) {
+		if (arg.length() > 0 && Character.isDigit(arg.charAt(arg.length() - 1))) {
+			// check isDigit to reduce amount of expensive NumberFormatException
+			try {
+				return Integer.parseInt(arg);
+			}
+			catch (NumberFormatException ignored) {
+			}
+		}
+		return arg;
+	}
 
-  private boolean isEnd() {
-    int len = mySequence.length();
-    if (len > 0) {
-      char ch = mySequence.charAt(len - 1);
-      return ch == Ascii.BEL || ch == ST || isTwoBytesEnd();
-    }
-    return false;
-  }
+	private boolean isEnd() {
+		int len = mySequence.length();
+		if (len > 0) {
+			char ch = mySequence.charAt(len - 1);
+			return ch == Ascii.BEL || ch == ST || isTwoBytesEnd();
+		}
+		return false;
+	}
 
-  private boolean isTwoBytesEnd() {
-    int len = mySequence.length();
-    return len > 1 && mySequence.charAt(len - 2) == Ascii.ESC && mySequence.charAt(len - 1) == '\\';
-  }
+	private boolean isTwoBytesEnd() {
+		int len = mySequence.length();
+		return len > 1 && mySequence.charAt(len - 2) == Ascii.ESC && mySequence.charAt(len - 1) == '\\';
+	}
 
-  public  String getStringAt(int i) {
-    if (i>=myArgs.size()) {
-      return null;
-    }
-    Object val = myArgs.get(i);
-    return val instanceof String ? (String)val : null;
-  }
+	public  String getStringAt(int i) {
+		if (i>=myArgs.size()) {
+			return null;
+		}
+		Object val = myArgs.get(i);
+		return val instanceof String ? (String)val : null;
+	}
 
-  public int getIntAt(int position, int defaultValue) {
-    if (position < myArgs.size()) {
-      Object val = myArgs.get(position);
-      if (val instanceof Integer) {
-        return (Integer) val;
-      }
-    }
-    return defaultValue;
-  }
+	public int getIntAt(int position, int defaultValue) {
+		if (position < myArgs.size()) {
+			Object val = myArgs.get(position);
+			if (val instanceof Integer) {
+				return (Integer) val;
+			}
+		}
+		return defaultValue;
+	}
 
-  public  String format( String body) {
-    return (char)Ascii.ESC + "]" + body + getTerminator();
-  }
+	public  String format( String body) {
+		return (char)Ascii.ESC + "]" + body + getTerminator();
+	}
 
-  @Override
-  public String toString() {
-    return CharUtils.toHumanReadableText(mySequence.toString());
-  }
+	@Override
+	public String toString() {
+		return CharUtils.toHumanReadableText(mySequence.toString());
+	}
 
-  /**
-   * <a href="https://invisible-island.net/xterm/ctlseqs/ctlseqs.html">
-   * XTerm accepts either BEL or ST for terminating OSC
-   * sequences, and when returning information, uses the same
-   * terminator used in a query. </a>
-   */
-  private  String getTerminator() {
-    int len = mySequence.length();
-    if (isTwoBytesEnd()) {
-      return mySequence.substring(len - 2);
-    }
-    return mySequence.substring(len - 1);
-  }
+	/**
+	 * <a href="https://invisible-island.net/xterm/ctlseqs/ctlseqs.html">
+	 * XTerm accepts either BEL or ST for terminating OSC
+	 * sequences, and when returning information, uses the same
+	 * terminator used in a query. </a>
+	 */
+	private  String getTerminator() {
+		int len = mySequence.length();
+		if (isTwoBytesEnd()) {
+			return mySequence.substring(len - 2);
+		}
+		return mySequence.substring(len - 1);
+	}
 }
