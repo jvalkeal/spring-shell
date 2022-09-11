@@ -15,7 +15,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.net.URI;
@@ -25,22 +24,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.DefaultTerminalCopyPasteHandler;
 import com.jediterm.terminal.SubstringFinder;
-import com.jediterm.terminal.SubstringFinder.FindResult.FindItem;
 import com.jediterm.terminal.TerminalCopyPasteHandler;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TextStyle;
-import com.jediterm.terminal.TextStyle.Option;
 import com.jediterm.terminal.emulator.charset.CharacterSets;
 import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.LinesBuffer;
@@ -48,7 +42,6 @@ import com.jediterm.terminal.model.SelectionUtil;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalLine;
 import com.jediterm.terminal.model.TerminalLineIntervalHighlighting;
-import com.jediterm.terminal.model.TerminalModelListener;
 import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 import com.jediterm.terminal.ui.settings.SettingsProvider;
@@ -90,9 +83,6 @@ public class TerminalPanel implements TerminalDisplay {
 	/*scroll and cursor*/
 	final private TerminalCursor myCursor = new TerminalCursor();
 
-	//we scroll a window [0, terminal_height] in the range [-history_lines_count, terminal_height]
-	private final BoundedRangeModel myBoundedRangeModel = new DefaultBoundedRangeModel(0, 80, 0, 80);
-
 	private boolean myScrollingEnabled = true;
 	protected int myClientScrollOrigin;
 	private final List<KeyListener> myCustomKeyListeners = new CopyOnWriteArrayList<>();
@@ -121,7 +111,7 @@ public class TerminalPanel implements TerminalDisplay {
 		myTermSize.height = terminalTextBuffer.getHeight();
 		myCopyPasteHandler = createCopyPasteHandler();
 
-		updateScrolling(true);
+		// updateScrolling(true);
 	}
 
 	void setTypeAheadManager(TerminalTypeAheadManager typeAheadManager) {
@@ -145,14 +135,6 @@ public class TerminalPanel implements TerminalDisplay {
 		establishFontMetrics();
 	}
 
-	protected void handleMouseWheelEvent(MouseWheelEvent e, JScrollBar scrollBar) {
-		if (e.isShiftDown() || e.getUnitsToScroll() == 0 || Math.abs(e.getPreciseWheelRotation()) < 0.01) {
-			return;
-		}
-		moveScrollBar(e.getUnitsToScroll());
-		e.consume();
-	}
-
 	public boolean isLocalMouseAction(MouseEvent e) {
 		return mySettingsProvider.forceActionOnMouseReporting() || (isMouseReporting() == e.isShiftDown());
 	}
@@ -173,41 +155,6 @@ public class TerminalPanel implements TerminalDisplay {
 		myCoordsAccessor = coordAccessor;
 	}
 
-	public void setFindResult(SubstringFinder.FindResult findResult) {
-		myFindResult = findResult;
-		// repaint();
-	}
-
-	public SubstringFinder.FindResult getFindResult() {
-		return myFindResult;
-	}
-
-	public FindItem selectPrevFindResultItem() {
-		return selectPrevOrNextFindResultItem(false);
-	}
-
-	public FindItem selectNextFindResultItem() {
-		return selectPrevOrNextFindResultItem(true);
-	}
-
-	protected FindItem selectPrevOrNextFindResultItem(boolean next) {
-		if (myFindResult != null) {
-			SubstringFinder.FindResult.FindItem item = next ? myFindResult.nextFindItem() : myFindResult.prevFindItem();
-			if (item != null) {
-				mySelection = new TerminalSelection(new Point(item.getStart().x, item.getStart().y - myTerminalTextBuffer.getHistoryLinesCount()),
-								new Point(item.getEnd().x, item.getEnd().y - myTerminalTextBuffer.getHistoryLinesCount()));
-				if (mySelection.getStart().y < getTerminalTextBuffer().getHeight() / 2) {
-					myBoundedRangeModel.setValue(mySelection.getStart().y - getTerminalTextBuffer().getHeight() / 2);
-				} else {
-					myBoundedRangeModel.setValue(0);
-				}
-				// repaint();
-				return item;
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public void terminalMouseModeSet(MouseMode mode) {
 		myMouseMode = mode;
@@ -215,24 +162,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private boolean isMouseReporting() {
 		return myMouseMode != MouseMode.MOUSE_REPORTING_NONE;
-	}
-
-	/**
-	 * Scroll to bottom to ensure the cursor will be visible.
-	 */
-	private void scrollToBottom() {
-		// Scroll to bottom even if the cursor is on the last line, i.e. it's currently visible.
-		// This will address the cases when the scroll is fixed to show some history lines, Enter is hit and after
-		// Enter processing, the cursor will be pushed out of visible area unless scroll is reset to screen buffer.
-		int delta = 1;
-		int zeroBasedCursorY = myCursor.myCursorCoordinates.y - 1;
-		if (zeroBasedCursorY + delta >= myBoundedRangeModel.getValue() + myBoundedRangeModel.getExtent()) {
-			myBoundedRangeModel.setValue(0);
-		}
-	}
-
-	private void moveScrollBar(int k) {
-		myBoundedRangeModel.setValue(myBoundedRangeModel.getValue() + k);
 	}
 
 	protected Font createFont() {
@@ -471,71 +400,6 @@ public class TerminalPanel implements TerminalDisplay {
 		mySelection = null;
 	}
 
-	// should be called on EDT
-	public void scrollToShowAllOutput() {
-		myTerminalTextBuffer.lock();
-		try {
-			int historyLines = myTerminalTextBuffer.getHistoryLinesCount();
-			if (historyLines > 0) {
-				int termHeight = myTermSize.height;
-				myBoundedRangeModel.setRangeProperties(-historyLines, historyLines + termHeight, -historyLines,
-						termHeight, false);
-				TerminalModelListener modelListener = new TerminalModelListener() {
-					@Override
-					public void modelChanged() {
-						int zeroBasedCursorY = myCursor.myCursorCoordinates.y - 1;
-						if (zeroBasedCursorY + historyLines >= termHeight) {
-							myTerminalTextBuffer.removeModelListener(this);
-							SwingUtilities.invokeLater(() -> {
-								myTerminalTextBuffer.lock();
-								try {
-									myBoundedRangeModel.setRangeProperties(0, myTermSize.height,
-											-myTerminalTextBuffer.getHistoryLinesCount(), myTermSize.height, false);
-								} finally {
-									myTerminalTextBuffer.unlock();
-								}
-							});
-						}
-					}
-				};
-				myTerminalTextBuffer.addModelListener(modelListener);
-				myBoundedRangeModel.addChangeListener(new ChangeListener() {
-					@Override
-					public void stateChanged(ChangeEvent e) {
-						myBoundedRangeModel.removeChangeListener(this);
-						myTerminalTextBuffer.removeModelListener(modelListener);
-					}
-				});
-			}
-		} finally {
-			myTerminalTextBuffer.unlock();
-		}
-	}
-
-	private void updateScrolling(boolean forceUpdate) {
-		int dy = scrollDy.getAndSet(0);
-		if (dy == 0 && !forceUpdate) {
-			return;
-		}
-		if (myScrollingEnabled) {
-			int value = myBoundedRangeModel.getValue();
-			int historyLineCount = myTerminalTextBuffer.getHistoryLinesCount();
-			if (value == 0) {
-				myBoundedRangeModel
-								.setRangeProperties(0, myTermSize.height, -historyLineCount, myTermSize.height, false);
-			} else {
-				// if scrolled to a specific area, update scroll to keep showing this area
-				myBoundedRangeModel.setRangeProperties(
-								Math.min(Math.max(value + dy, -historyLineCount), myTermSize.height),
-								myTermSize.height,
-								-historyLineCount,
-								myTermSize.height, false);
-			}
-		} else {
-			myBoundedRangeModel.setRangeProperties(0, myTermSize.height, 0, myTermSize.height, false);
-		}
-	}
-
 	public void setCursor(final int x, final int y) {
 		myCursor.setX(x);
 		myCursor.setY(y);
@@ -579,18 +443,6 @@ public class TerminalPanel implements TerminalDisplay {
 		return new Rectangle(topLeft, new Dimension(myCharSize.width * cellInterval.getCellCount(), myCharSize.height));
 	}
 
-	/**
-	 * @deprecated use {@link #getVerticalScrollModel()} instead
-	 */
-	@Deprecated
-	public BoundedRangeModel getBoundedRangeModel() {
-		return myBoundedRangeModel;
-	}
-
-	public BoundedRangeModel getVerticalScrollModel() {
-		return myBoundedRangeModel;
-	}
-
 	public TerminalTextBuffer getTerminalTextBuffer() {
 		return myTerminalTextBuffer;
 	}
@@ -616,12 +468,6 @@ public class TerminalPanel implements TerminalDisplay {
 	@Override
 	public void setCursorVisible(boolean shouldDrawCursor) {
 		myCursor.setShouldDrawCursor(shouldDrawCursor);
-	}
-
-	public void setScrollingEnabled(boolean scrollingEnabled) {
-		myScrollingEnabled = scrollingEnabled;
-
-		SwingUtilities.invokeLater(() -> updateScrolling(true));
 	}
 
 	@Override
@@ -710,10 +556,10 @@ public class TerminalPanel implements TerminalDisplay {
 				}
 			}
 
-			myBoundedRangeModel.setValue(0);
-			updateScrolling(true);
+			// myBoundedRangeModel.setValue(0);
+			// updateScrolling(true);
 
-			myClientScrollOrigin = myBoundedRangeModel.getValue();
+			// myClientScrollOrigin = myBoundedRangeModel.getValue();
 		}
 	}
 
@@ -741,9 +587,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 		myTerminalStarter.sendString(new String(obuffer), true);
 
-		if (mySettingsProvider.scrollToBottomOnTyping()) {
-			scrollToBottom();
-		}
 		return true;
 	}
 

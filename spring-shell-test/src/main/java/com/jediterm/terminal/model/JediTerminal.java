@@ -406,7 +406,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
 	@Override
 	public void useAlternateBuffer(boolean enabled) {
 		myTerminalTextBuffer.useAlternateBuffer(enabled);
-		myDisplay.setScrollingEnabled(!enabled);
+		// myDisplay.setScrollingEnabled(!enabled);
 	}
 
 	@Override
@@ -797,7 +797,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
 
 		myTerminalTextBuffer.clearAll();
 
-		myDisplay.setScrollingEnabled(true);
+		// myDisplay.setScrollingEnabled(true);
 
 		initModes();
 
