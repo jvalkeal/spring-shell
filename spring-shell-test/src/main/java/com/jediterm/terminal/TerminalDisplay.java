@@ -26,7 +26,7 @@ public interface TerminalDisplay {
 
 	void setCursorVisible(boolean shouldDrawCursor);
 
-	void setScrollingEnabled(boolean enabled);
+	// void setScrollingEnabled(boolean enabled);
 
 	void setBlinkingCursor(boolean enabled);
 
