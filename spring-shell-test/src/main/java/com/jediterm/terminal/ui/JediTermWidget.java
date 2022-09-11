@@ -1,24 +1,8 @@
 package com.jediterm.terminal.ui;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicArrowButton;
-
-import com.jediterm.terminal.SubstringFinder.FindResult;
-import com.jediterm.terminal.SubstringFinder.FindResult.FindItem;
 import com.jediterm.terminal.Terminal;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalMode;
@@ -47,7 +31,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	protected final AtomicBoolean mySessionRunning = new AtomicBoolean();
 	private final JediTermTypeAheadModel myTypeAheadTerminalModel;
 	private final TerminalTypeAheadManager myTypeAheadManager;
-	private SearchComponent myFindComponent;
 	private TtyConnector myTtyConnector;
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
@@ -199,30 +182,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 		myTerminalPanel.dispose();
 	}
 
-	protected SearchComponent createSearchComponent() {
-		return new SearchPanel();
-	}
-
-	protected interface SearchComponent {
-		String getText();
-
-		boolean ignoreCase();
-
-		JComponent getComponent();
-
-		void addDocumentChangeListener(DocumentListener listener);
-
-		void addKeyListener(KeyListener listener);
-
-		void addIgnoreCaseListener(ItemListener listener);
-
-		void onResultUpdated(FindResult results);
-
-		void nextFindResultItem(FindItem selectedItem);
-
-		void prevFindResultItem(FindItem selectedItem);
-	}
-
 	class EmulatorTask implements Runnable {
 		public void run() {
 			try {
@@ -250,111 +209,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 		return myTerminalStarter;
 	}
 
-	public class SearchPanel extends JPanel implements SearchComponent {
-
-		private final JTextField myTextField = new JTextField();
-		private final JLabel label = new JLabel();
-		private final JButton prev;
-		private final JButton next;
-		private final JCheckBox ignoreCaseCheckBox = new JCheckBox("Ignore Case", true);
-
-		public SearchPanel() {
-			next = createNextButton();
-			next.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					nextFindResultItem(myTerminalPanel.selectNextFindResultItem());
-				}
-			});
-
-			prev = createPrevButton();
-			prev.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					prevFindResultItem(myTerminalPanel.selectPrevFindResultItem());
-				}
-			});
-
-			myTextField.setPreferredSize(new Dimension(
-				myTerminalPanel.myCharSize.width * 30,
-				myTerminalPanel.myCharSize.height + 3));
-			myTextField.setEditable(true);
-
-			updateLabel(null);
-
-			add(myTextField);
-			add(ignoreCaseCheckBox);
-			add(label);
-			add(next);
-			add(prev);
-
-			setOpaque(true);
-		}
-
-		protected JButton createNextButton() {
-			return new BasicArrowButton(SwingConstants.NORTH);
-		}
-
-		protected JButton createPrevButton() {
-			return new BasicArrowButton(SwingConstants.SOUTH);
-		}
-
-		@Override
-		public void nextFindResultItem(FindItem selectedItem) {
-			updateLabel(selectedItem);
-		}
-
-		@Override
-		public void prevFindResultItem(FindItem selectedItem) {
-			updateLabel(selectedItem);
-		}
-
-		private void updateLabel(FindItem selectedItem) {
-			FindResult result = myTerminalPanel.getFindResult();
-			label.setText(((selectedItem != null) ? selectedItem.getIndex() : 0)
-				+ " of " + ((result != null) ? result.getItems().size() : 0));
-		}
-
-		@Override
-		public void onResultUpdated(FindResult results) {
-			updateLabel(null);
-		}
-
-		@Override
-		public String getText() {
-			return myTextField.getText();
-		}
-
-		@Override
-		public boolean ignoreCase() {
-			return ignoreCaseCheckBox.isSelected();
-		}
-
-		@Override
-		public JComponent getComponent() {
-			return this;
-		}
-
-		public void requestFocus() {
-			myTextField.requestFocus();
-		}
-
-		@Override
-		public void addDocumentChangeListener(DocumentListener listener) {
-			myTextField.getDocument().addDocumentListener(listener);
-		}
-
-		@Override
-		public void addKeyListener(KeyListener listener) {
-			myTextField.addKeyListener(listener);
-		}
-
-		@Override
-		public void addIgnoreCaseListener(ItemListener listener) {
-			ignoreCaseCheckBox.addItemListener(listener);
-		}
-
-	}
 
 	public void addHyperlinkFilter(HyperlinkFilter filter) {
 		myTextProcessing.addHyperlinkFilter(filter);
