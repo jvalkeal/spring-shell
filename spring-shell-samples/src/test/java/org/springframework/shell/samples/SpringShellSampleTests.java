@@ -39,7 +39,10 @@ public class SpringShellSampleTests {
 	void test() {
 		ShellClient client = builder.build();
 		client.shell();
-		client.write(client.writeSequence().text("component single").cr().build());
+		client.write(client.writeSequence()
+				.text("component single")
+				.carriageReturn()
+				.build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			String screen = client.screen();
