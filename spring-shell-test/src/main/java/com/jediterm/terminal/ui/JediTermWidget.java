@@ -1,10 +1,6 @@
 package com.jediterm.terminal.ui;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -15,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -57,7 +52,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
 	protected final SettingsProvider mySettingsProvider;
-	private JLayeredPane myInnerPanel;
 	private final TextProcessing myTextProcessing;
 
 	public JediTermWidget(SettingsProvider settingsProvider) {
@@ -94,10 +88,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
-		myInnerPanel = new JLayeredPane();
-		myInnerPanel.setFocusable(false);
-
-		myInnerPanel.setLayout(new TerminalLayout());
 		mySessionRunning.set(false);
 	}
 
@@ -364,129 +354,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 			ignoreCaseCheckBox.addItemListener(listener);
 		}
 
-	}
-
-	private static class TerminalLayout implements LayoutManager {
-		public static final String TERMINAL = "TERMINAL";
-		public static final String SCROLL = "SCROLL";
-		public static final String FIND = "FIND";
-
-		private Component terminal;
-		private Component scroll;
-		private Component find;
-
-		@Override
-		public void addLayoutComponent(String name, Component comp) {
-			if (TERMINAL.equals(name)) {
-				terminal = comp;
-			} else if (FIND.equals(name)) {
-				find = comp;
-			} else if (SCROLL.equals(name)) {
-				scroll = comp;
-			} else throw new IllegalArgumentException("unknown component name " + name);
-		}
-
-		@Override
-		public void removeLayoutComponent(Component comp) {
-			if (comp == terminal) {
-				terminal = null;
-			}
-			if (comp == scroll) {
-				scroll = null;
-			}
-			if (comp == find) {
-				find = comp;
-			}
-		}
-
-		@Override
-		public Dimension preferredLayoutSize(Container target) {
-			synchronized (target.getTreeLock()) {
-				Dimension dim = new Dimension(0, 0);
-
-				if (terminal != null) {
-					Dimension d = terminal.getPreferredSize();
-					dim.width = Math.max(d.width, dim.width);
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				if (scroll != null) {
-					Dimension d = scroll.getPreferredSize();
-					dim.width += d.width;
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				if (find != null) {
-					Dimension d = find.getPreferredSize();
-					dim.width = Math.max(d.width, dim.width);
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				Insets insets = target.getInsets();
-				dim.width += insets.left + insets.right;
-				dim.height += insets.top + insets.bottom;
-
-				return dim;
-			}
-		}
-
-		@Override
-		public Dimension minimumLayoutSize(Container target) {
-			synchronized (target.getTreeLock()) {
-				Dimension dim = new Dimension(0, 0);
-
-				if (terminal != null) {
-					Dimension d = terminal.getMinimumSize();
-					dim.width = Math.max(d.width, dim.width);
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				if (scroll != null) {
-					Dimension d = scroll.getPreferredSize();
-					dim.width += d.width;
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				if (find != null) {
-					Dimension d = find.getMinimumSize();
-					dim.width = Math.max(d.width, dim.width);
-					dim.height = Math.max(d.height, dim.height);
-				}
-
-				Insets insets = target.getInsets();
-				dim.width += insets.left + insets.right;
-				dim.height += insets.top + insets.bottom;
-
-				return dim;
-			}
-		}
-
-		@Override
-		public void layoutContainer(Container target) {
-			synchronized (target.getTreeLock()) {
-				Insets insets = target.getInsets();
-				int top = insets.top;
-				int bottom = target.getHeight() - insets.bottom;
-				int left = insets.left;
-				int right = target.getWidth() - insets.right;
-
-				Dimension scrollDim = new Dimension(0, 0);
-				if (scroll != null) {
-					scrollDim = scroll.getPreferredSize();
-					scroll.setBounds(right - scrollDim.width, top, scrollDim.width, bottom - top);
-				}
-
-				if (terminal != null) {
-					terminal.setBounds(left, top, right - left - scrollDim.width, bottom - top);
-				}
-
-				if (find != null) {
-					Dimension d = find.getPreferredSize();
-					find.setBounds(right - d.width - scrollDim.width, top, d.width, d.height);
-				}
-			}
-
-		}
 	}
 
 	public void addHyperlinkFilter(HyperlinkFilter filter) {
