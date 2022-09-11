@@ -96,6 +96,14 @@ public interface ShellClient {
 		 *
 		 * @return a sequence for chaining
 		 */
+		WriteSequence carriageReturn();
+
+		/**
+		 * Sequence terminal carriage return. Alias for {@link #carriageReturn}
+		 *
+		 * @return a sequence for chaining
+		 * @see #carriageReturn()
+		 */
 		WriteSequence cr();
 
 		/**
@@ -284,9 +292,14 @@ public interface ShellClient {
 				}
 
 				@Override
-				public WriteSequence cr() {
+				public WriteSequence carriageReturn() {
 					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.carriage_return));
 					return this;
+				}
+
+				@Override
+				public WriteSequence cr() {
+					return carriageReturn();
 				}
 
 				@Override
