@@ -9,7 +9,6 @@ import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TtyBasedArrayDataStream;
 import com.jediterm.terminal.TtyConnector;
-import com.jediterm.terminal.model.JediTermDebouncerImpl;
 import com.jediterm.terminal.model.JediTermTypeAheadModel;
 import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.StyleState;
@@ -62,9 +61,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 		myTypeAheadTerminalModel = new JediTermTypeAheadModel(myTerminal, terminalTextBuffer, settingsProvider);
 		myTypeAheadManager = new TerminalTypeAheadManager(myTypeAheadTerminalModel);
-		JediTermDebouncerImpl typeAheadDebouncer =
-			new JediTermDebouncerImpl(myTypeAheadManager::debounce, TerminalTypeAheadManager.MAX_TERMINAL_DELAY);
-		myTypeAheadManager.setClearPredictionsDebouncer(typeAheadDebouncer);
 		myTerminalPanel.setTypeAheadManager(myTypeAheadManager);
 
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());

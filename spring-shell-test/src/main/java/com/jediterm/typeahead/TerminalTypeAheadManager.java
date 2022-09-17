@@ -20,7 +20,6 @@ public class TerminalTypeAheadManager {
 	private static final Logger LOG = LoggerFactory.getLogger(TerminalTypeAheadManager.class);
 
 	private final TypeAheadTerminalModel myTerminalModel;
-	private Debouncer myClearPredictionsDebouncer;
 	private final List<TypeAheadPrediction> myPredictions = new ArrayList<>();
 	private final LatencyStatistics myLatencyStatistics = new LatencyStatistics();
 
@@ -51,9 +50,6 @@ public class TerminalTypeAheadManager {
 
 			if (!myPredictions.isEmpty()) {
 				updateLeftMostCursorPosition(lineWithCursorX.myCursorX);
-				if (myClearPredictionsDebouncer != null) {
-					myClearPredictionsDebouncer.call();
-				}
 			}
 
 			if (myLastSuccessfulPrediction != null && lineWithCursorX.equals(myLastSuccessfulPrediction.myPredictedLineWithCursorX)) {
@@ -119,9 +115,6 @@ public class TerminalTypeAheadManager {
 
 			updateLeftMostCursorPosition(lineWithCursorX.myCursorX);
 
-			if (myPredictions.isEmpty() && myClearPredictionsDebouncer != null) {
-				myClearPredictionsDebouncer.call(); // start a timer that will clear predictions
-			}
 			TypeAheadPrediction prediction = createPrediction(lineWithCursorX, keyEvent);
 			myPredictions.add(prediction);
 			applyPredictions();
@@ -172,10 +165,6 @@ public class TerminalTypeAheadManager {
 		} finally {
 			myTerminalModel.unlock();
 		}
-	}
-
-	public void setClearPredictionsDebouncer(Debouncer clearPredictionsDebouncer) {
-		myClearPredictionsDebouncer = clearPredictionsDebouncer;
 	}
 
 	public static class TypeAheadEvent {
@@ -396,9 +385,6 @@ public class TerminalTypeAheadManager {
 		myLeftMostCursorPosition = null;
 		myLastSuccessfulPrediction = null;
 		myIsNotPasswordPrompt = false;
-		if (myClearPredictionsDebouncer != null) {
-			myClearPredictionsDebouncer.terminateCall();
-		}
 	}
 
 	private void reevaluatePredictorState(boolean hasTypedRecently) {
