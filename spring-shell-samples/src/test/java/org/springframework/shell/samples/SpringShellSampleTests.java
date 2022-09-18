@@ -49,13 +49,11 @@ public class SpringShellSampleTests {
 		});
 
 		client.write(client.writeSequence().keyDown().build());
-
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("❯ key2");
 		});
 
 		client.write(client.writeSequence().cr().build());
-
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("Got value value2");
 		});
@@ -75,13 +73,11 @@ public class SpringShellSampleTests {
 		});
 
 		client.write(client.writeSequence().space().build());
-
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("❯ ☒  key1");
 		});
 
 		client.write(client.writeSequence().cr().build());
-
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("Got value value1,value2");
 		});
