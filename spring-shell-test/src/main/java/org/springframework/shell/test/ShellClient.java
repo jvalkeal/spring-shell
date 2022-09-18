@@ -143,6 +143,13 @@ public interface ShellClient {
 		WriteSequence keyUp();
 
 		/**
+		 * Sequence terminal space.
+		 *
+		 * @return a sequence for chaining
+		 */
+		WriteSequence space();
+
+		/**
 		 * Build the result.
 		 *
 		 * @return the result
@@ -300,6 +307,11 @@ public interface ShellClient {
 				@Override
 				public WriteSequence cr() {
 					return carriageReturn();
+				}
+
+				@Override
+				public WriteSequence space() {
+					return this.text(" ");
 				}
 
 				@Override
