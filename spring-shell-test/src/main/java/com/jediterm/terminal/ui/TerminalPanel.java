@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.Timer;
-
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.DefaultTerminalCopyPasteHandler;
 import com.jediterm.terminal.TerminalCopyPasteHandler;
@@ -83,7 +81,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private String myInputMethodUncommittedChars;
 
-	private Timer myRepaintTimer;
 	private AtomicInteger scrollDy = new AtomicInteger(0);
 
 	private int myBlinkingPeriod = 500;
@@ -590,6 +587,5 @@ public class TerminalPanel implements TerminalDisplay {
 	}
 
 	public void dispose() {
-		myRepaintTimer.stop();
 	}
 }
