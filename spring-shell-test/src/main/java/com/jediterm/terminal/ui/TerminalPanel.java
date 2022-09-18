@@ -14,7 +14,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.net.URI;
@@ -32,7 +31,6 @@ import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.emulator.charset.CharacterSets;
-import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.LinesBuffer;
 import com.jediterm.terminal.model.SelectionUtil;
 import com.jediterm.terminal.model.StyleState;
@@ -63,7 +61,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private TerminalStarter myTerminalStarter = null;
 
-	private MouseMode myMouseMode = MouseMode.MOUSE_REPORTING_NONE;
 	private TerminalSelection mySelection = null;
 
 	private final TerminalCopyPasteHandler myCopyPasteHandler;
@@ -123,14 +120,6 @@ public class TerminalPanel implements TerminalDisplay {
 		establishFontMetrics();
 	}
 
-	public boolean isLocalMouseAction(MouseEvent e) {
-		return mySettingsProvider.forceActionOnMouseReporting() || (isMouseReporting() == e.isShiftDown());
-	}
-
-	public boolean isRemoteMouseAction(MouseEvent e) {
-		return isMouseReporting() && !e.isShiftDown();
-	}
-
 	protected boolean isRetina() {
 		return UIUtil.isRetina();
 	}
@@ -141,15 +130,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	public void setCoordAccessor(TerminalCoordinates coordAccessor) {
 		myCoordsAccessor = coordAccessor;
-	}
-
-	@Override
-	public void terminalMouseModeSet(MouseMode mode) {
-		myMouseMode = mode;
-	}
-
-	private boolean isMouseReporting() {
-		return myMouseMode != MouseMode.MOUSE_REPORTING_NONE;
 	}
 
 	protected Font createFont() {

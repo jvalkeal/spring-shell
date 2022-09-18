@@ -15,8 +15,6 @@ import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TerminalDataStream;
 import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TextStyle;
-import com.jediterm.terminal.emulator.mouse.MouseFormat;
-import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.util.CharUtils;
 import com.jediterm.typeahead.Ascii;
 import org.slf4j.Logger;
@@ -601,55 +599,55 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 					setModeEnabled(TerminalMode.StoreCursor, enabled);
 					setModeEnabled(TerminalMode.AlternateBuffer, enabled);
 					return true;
-				case 1000:
-					if (enabled) {
-						setMouseMode(MouseMode.MOUSE_REPORTING_NORMAL);
-					} else {
-						setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
-					}
-					return true;
-				case 1001:
-					if (enabled) {
-						setMouseMode(MouseMode.MOUSE_REPORTING_HILITE);
-					} else {
-						setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
-					}
-					return true;
-				case 1002:
-					if (enabled) {
-						setMouseMode(MouseMode.MOUSE_REPORTING_BUTTON_MOTION);
-					} else {
-						setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
-					}
-					return true;
-				case 1003:
-					if (enabled) {
-						setMouseMode(MouseMode.MOUSE_REPORTING_ALL_MOTION);
-					} else {
-						setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
-					}
-					return true;
-				case 1005:
-					if (enabled) {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM_EXT);
-					} else {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
-					}
-					return true;
-				case 1006:
-					if (enabled) {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_SGR);
-					} else {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
-					}
-					return true;
-				case 1015:
-					if (enabled) {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_URXVT);
-					} else {
-						myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
-					}
-					return true;
+				// case 1000:
+				// 	if (enabled) {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_NORMAL);
+				// 	} else {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
+				// 	}
+				// 	return true;
+				// case 1001:
+				// 	if (enabled) {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_HILITE);
+				// 	} else {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
+				// 	}
+				// 	return true;
+				// case 1002:
+				// 	if (enabled) {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_BUTTON_MOTION);
+				// 	} else {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
+				// 	}
+				// 	return true;
+				// case 1003:
+				// 	if (enabled) {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_ALL_MOTION);
+				// 	} else {
+				// 		setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
+				// 	}
+				// 	return true;
+				// case 1005:
+				// 	if (enabled) {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM_EXT);
+				// 	} else {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
+				// 	}
+				// 	return true;
+				// case 1006:
+				// 	if (enabled) {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_SGR);
+				// 	} else {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
+				// 	}
+				// 	return true;
+				// case 1015:
+				// 	if (enabled) {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_URXVT);
+				// 	} else {
+				// 		myTerminal.setMouseFormat(MouseFormat.MOUSE_FORMAT_XTERM);
+				// 	}
+				// 	return true;
 				case 1034:
 					setModeEnabled(TerminalMode.EightBitInput, enabled);
 					return true;
@@ -1085,10 +1083,6 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 			LOG.info("Setting mode " + mode + " enabled = " + enabled);
 		}
 		myTerminal.setModeEnabled(mode, enabled);
-	}
-
-	public void setMouseMode(MouseMode mouseMode) {
-		myTerminal.setMouseMode(mouseMode);
 	}
 
 	public  CompletableFuture<?> getPromptUpdatedAfterResizeFuture( BiConsumer<Long, Runnable> taskScheduler) {
