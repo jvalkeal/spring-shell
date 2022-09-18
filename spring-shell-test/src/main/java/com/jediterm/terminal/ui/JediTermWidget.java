@@ -9,15 +9,12 @@ import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TtyBasedArrayDataStream;
 import com.jediterm.terminal.TtyConnector;
-import com.jediterm.terminal.model.JediTermTypeAheadModel;
 import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 import com.jediterm.terminal.model.hyperlinks.HyperlinkFilter;
 import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 import com.jediterm.terminal.ui.settings.SettingsProvider;
-import com.jediterm.typeahead.TerminalTypeAheadManager;
-import com.jediterm.typeahead.TypeAheadTerminalModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +25,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	protected final TerminalPanel myTerminalPanel;
 	protected final JediTerminal myTerminal;
 	protected final AtomicBoolean mySessionRunning = new AtomicBoolean();
-	private final JediTermTypeAheadModel myTypeAheadTerminalModel;
-	private final TerminalTypeAheadManager myTypeAheadManager;
 	private TtyConnector myTtyConnector;
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
@@ -59,10 +54,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 		myTerminalPanel = createTerminalPanel(mySettingsProvider, styleState, terminalTextBuffer);
 		myTerminal = new JediTerminal(myTerminalPanel, terminalTextBuffer, styleState);
 
-		myTypeAheadTerminalModel = new JediTermTypeAheadModel(myTerminal, terminalTextBuffer, settingsProvider);
-		myTypeAheadManager = new TerminalTypeAheadManager(myTypeAheadTerminalModel);
-		myTerminalPanel.setTypeAheadManager(myTypeAheadManager);
-
 		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
 
 		myTerminalPanel.setCoordAccessor(myTerminal);
@@ -88,22 +79,16 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 		return myTerminalPanel;
 	}
 
-	public TerminalTypeAheadManager getTypeAheadManager() {
-		return myTypeAheadManager;
-	}
-
 	public void setTtyConnector(TtyConnector ttyConnector) {
 		myTtyConnector = ttyConnector;
 
-		TypeAheadTerminalModel.ShellType shellType = TypeAheadTerminalModel.ShellType.Unknown;
-		myTypeAheadTerminalModel.setShellType(shellType);
 		myTerminalStarter = createTerminalStarter(myTerminal, myTtyConnector);
 		myTerminalPanel.setTerminalStarter(myTerminalStarter);
 	}
 
 	protected TerminalStarter createTerminalStarter(JediTerminal terminal, TtyConnector connector) {
 		return new TerminalStarter(terminal, connector,
-			new TtyBasedArrayDataStream(connector, myTypeAheadManager::onTerminalStateChanged), myTypeAheadManager);
+			new TtyBasedArrayDataStream(connector));
 	}
 
 	@Override
