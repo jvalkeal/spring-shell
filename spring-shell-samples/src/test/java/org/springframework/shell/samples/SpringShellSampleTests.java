@@ -40,27 +40,24 @@ public class SpringShellSampleTests {
 		ShellClient client = builder.build();
 		client.shell();
 		client.write(client.writeSequence()
-				.text("component single")
-				.carriageReturn()
-				.build());
+			.text("component single")
+			.carriageReturn()
+			.build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("❯ key1");
+			assertThat(client.screen()).contains("❯ key1");
 		});
 
 		client.write(client.writeSequence().keyDown().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("❯ key2");
+			assertThat(client.screen()).contains("❯ key2");
 		});
 
 		client.write(client.writeSequence().cr().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("Got value value2");
+			assertThat(client.screen()).contains("Got value value2");
 		});
 	}
 
@@ -69,27 +66,24 @@ public class SpringShellSampleTests {
 		ShellClient client = builder.build();
 		client.shell();
 		client.write(client.writeSequence()
-				.text("component multi")
-				.carriageReturn()
-				.build());
+			.text("component multi")
+			.carriageReturn()
+			.build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("❯ ☐  key1");
+			assertThat(client.screen()).contains("❯ ☐  key1");
 		});
 
 		client.write(client.writeSequence().space().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("❯ ☒  key1");
+			assertThat(client.screen()).contains("❯ ☒  key1");
 		});
 
 		client.write(client.writeSequence().cr().build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			String screen = client.screen();
-			assertThat(screen).contains("Got value value1,value2");
+			assertThat(client.screen()).contains("Got value value1,value2");
 		});
 	}
 }
