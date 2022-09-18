@@ -75,8 +75,19 @@ public interface ShellClient {
 	 */
 	WriteSequence writeSequence();
 
-	public static Builder builder() {
-		return new DefaultBuilder();
+	/**
+	 * Get an instance of a builder.
+	 *
+	 * @param terminalSession the terminal session
+	 * @param shell the shell
+	 * @param promptProvider the prompt provider
+	 * @param lineReader the line reader
+	 * @param terminal the terminal
+	 * @return a Builder
+	 */
+	public static Builder builder(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
+			LineReader lineReader, Terminal terminal) {
+		return new DefaultBuilder(terminalSession, shell, promptProvider, lineReader, terminal);
 	}
 
 	/**
@@ -170,9 +181,6 @@ public interface ShellClient {
 	 */
 	interface Builder {
 
-		Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider, LineReader lineReader,
-				Terminal terminal);
-
 		/**
 		 * Build a shell client.
 		 *
@@ -189,15 +197,13 @@ public interface ShellClient {
 		private LineReader lineReader;
 		private Terminal terminal;
 
-		@Override
-		public Builder xxx(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
+		DefaultBuilder(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
 				LineReader lineReader, Terminal terminal) {
 			this.terminalSession = terminalSession;
 			this.shell = shell;
 			this.promptProvider = promptProvider;
 			this.lineReader = lineReader;
 			this.terminal = terminal;
-			return this;
 		}
 
 		@Override

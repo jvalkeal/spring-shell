@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.shell.Shell;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.shell.test.ShellClient;
-import org.springframework.shell.test.ShellClient.Builder;
 
 /**
  *
@@ -40,8 +39,6 @@ public class ShellClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	ShellClient.Builder shellClientBuilder(TerminalSession widget, Shell shell, PromptProvider promptProvider,
 			LineReader lineReader, Terminal terminal) {
-		Builder builder = ShellClient.builder();
-		builder.xxx(widget, shell, promptProvider, lineReader, terminal);
-		return builder;
+		return ShellClient.builder(widget, shell, promptProvider, lineReader, terminal);
 	}
 }
