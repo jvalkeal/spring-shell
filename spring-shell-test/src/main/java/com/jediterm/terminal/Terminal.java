@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CompletableFuture;
 
-import com.jediterm.terminal.emulator.mouse.MouseFormat;
-import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.StyleState;
 
 /**
@@ -143,10 +141,6 @@ public interface Terminal {
 	void writeUnwrappedString(String string);
 
 	void setTerminalOutput(TerminalOutputStream terminalOutput);
-
-	void setMouseMode(MouseMode mode);
-
-	void setMouseFormat(MouseFormat mouseFormat);
 
 	void setAltSendsEscape(boolean enabled);
 

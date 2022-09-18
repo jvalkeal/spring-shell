@@ -1,6 +1,5 @@
 package com.jediterm.terminal;
 
-import com.jediterm.terminal.emulator.mouse.MouseMode;
 import com.jediterm.terminal.model.TerminalSelection;
 
 /**
@@ -33,8 +32,6 @@ public interface TerminalDisplay {
 	String getWindowTitle();
 
 	void setWindowTitle(String name);
-
-	void terminalMouseModeSet(MouseMode mode);
 
 	TerminalSelection getSelection();
 
