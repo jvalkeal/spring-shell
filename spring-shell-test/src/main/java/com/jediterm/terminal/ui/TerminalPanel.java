@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import com.jediterm.terminal.CursorShape;
@@ -46,7 +43,6 @@ import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 import com.jediterm.terminal.ui.settings.SettingsProvider;
 import com.jediterm.terminal.util.Pair;
-import com.jediterm.typeahead.TerminalTypeAheadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +96,6 @@ public class TerminalPanel implements TerminalDisplay {
 	private SubstringFinder.FindResult myFindResult;
 
 	private final TerminalKeyHandler myTerminalKeyHandler = new TerminalKeyHandler();
-	private TerminalTypeAheadManager myTypeAheadManager;
 	private volatile boolean myBracketedPasteMode;
 
 	public TerminalPanel(SettingsProvider settingsProvider, TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
@@ -112,10 +107,6 @@ public class TerminalPanel implements TerminalDisplay {
 		myCopyPasteHandler = createCopyPasteHandler();
 
 		// updateScrolling(true);
-	}
-
-	void setTypeAheadManager(TerminalTypeAheadManager typeAheadManager) {
-		myTypeAheadManager = typeAheadManager;
 	}
 
 	protected TerminalCopyPasteHandler createCopyPasteHandler() {
@@ -336,9 +327,6 @@ public class TerminalPanel implements TerminalDisplay {
 		}
 
 		public int getCoordX() {
-			if (myTypeAheadManager != null) {
-				return myTypeAheadManager.getCursorX() - 1;
-			}
 			return myCursorCoordinates.x;
 		}
 

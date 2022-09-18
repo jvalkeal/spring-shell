@@ -11,7 +11,6 @@ import java.util.function.BiConsumer;
 
 import com.jediterm.terminal.emulator.Emulator;
 import com.jediterm.terminal.emulator.JediEmulator;
-import com.jediterm.typeahead.TerminalTypeAheadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +30,13 @@ public class TerminalStarter implements TerminalOutputStream {
 
 	private final TtyConnector myTtyConnector;
 
-	private final TerminalTypeAheadManager myTypeAheadManager;
-
 	private final ScheduledExecutorService myEmulatorExecutor = Executors.newSingleThreadScheduledExecutor();
 
-	public TerminalStarter(final Terminal terminal, final TtyConnector ttyConnector, TerminalDataStream dataStream,
-			TerminalTypeAheadManager typeAheadManager) {
+	public TerminalStarter(final Terminal terminal, final TtyConnector ttyConnector, TerminalDataStream dataStream) {
 		myTtyConnector = ttyConnector;
 		myTerminal = terminal;
 		myTerminal.setTerminalOutput(this);
 		myEmulator = createEmulator(dataStream, terminal);
-		myTypeAheadManager = typeAheadManager;
 	}
 
 	protected JediEmulator createEmulator(TerminalDataStream dataStream, Terminal terminal) {
@@ -103,9 +98,6 @@ public class TerminalStarter implements TerminalOutputStream {
 	public void sendBytes(final byte[] bytes, boolean userInput) {
 		execute(() -> {
 			try {
-				if (userInput) {
-					TerminalTypeAheadManager.TypeAheadEvent.fromByteArray(bytes).forEach(myTypeAheadManager::onKeyEvent);
-				}
 				myTtyConnector.write(bytes);
 			}
 			catch (IOException e) {
@@ -123,9 +115,6 @@ public class TerminalStarter implements TerminalOutputStream {
 	public void sendString(final String string, boolean userInput) {
 		execute(() -> {
 			try {
-				if (userInput) {
-					TerminalTypeAheadManager.TypeAheadEvent.fromString(string).forEach(myTypeAheadManager::onKeyEvent);
-				}
 
 				myTtyConnector.write(string);
 			}
