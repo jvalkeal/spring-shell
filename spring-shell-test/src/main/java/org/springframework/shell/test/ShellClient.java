@@ -99,6 +99,14 @@ public interface ShellClient {
 		WriteSequence carriageReturn();
 
 		/**
+		 * Sequence from command with expected {@code carriage return}.
+		 *
+		 * @param command the command
+		 * @return a sequence for chaining
+		 */
+		WriteSequence command(String command);
+
+		/**
 		 * Sequence terminal carriage return. Alias for {@link #carriageReturn}
 		 *
 		 * @return a sequence for chaining
@@ -110,7 +118,7 @@ public interface ShellClient {
 		 * Sequence text.
 		 *
 		 * @param text the text
-		 * @return a text
+		 * @return a sequence for chaining
 		 */
 		WriteSequence text(String text);
 
@@ -263,6 +271,29 @@ public interface ShellClient {
 				private StringBuilder buf = new StringBuilder();
 
 				@Override
+				public WriteSequence carriageReturn() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.carriage_return));
+					return this;
+				}
+
+				@Override
+				public WriteSequence clearScreen() {
+					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.clear_screen));
+					return this;
+				}
+
+				@Override
+				public WriteSequence command(String command) {
+					this.text(command);
+					return carriageReturn();
+				}
+
+				@Override
+				public WriteSequence cr() {
+					return carriageReturn();
+				}
+
+				@Override
 				public WriteSequence keyUp() {
 					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_up));
 					return this;
@@ -290,23 +321,6 @@ public interface ShellClient {
 				public WriteSequence text(String text) {
 					this.buf.append(text);
 					return this;
-				}
-
-				@Override
-				public WriteSequence clearScreen() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.clear_screen));
-					return this;
-				}
-
-				@Override
-				public WriteSequence carriageReturn() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.carriage_return));
-					return this;
-				}
-
-				@Override
-				public WriteSequence cr() {
-					return carriageReturn();
 				}
 
 				@Override

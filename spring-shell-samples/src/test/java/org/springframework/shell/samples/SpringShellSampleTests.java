@@ -39,10 +39,7 @@ public class SpringShellSampleTests {
 	void componentSingle() {
 		ShellClient client = builder.build();
 		client.shell();
-		client.write(client.writeSequence()
-			.text("component single")
-			.carriageReturn()
-			.build());
+		client.write(client.writeSequence().command("component single").build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("❯ key1");
@@ -63,10 +60,7 @@ public class SpringShellSampleTests {
 	void componentMulti() {
 		ShellClient client = builder.build();
 		client.shell();
-		client.write(client.writeSequence()
-			.text("component multi")
-			.carriageReturn()
-			.build());
+		client.write(client.writeSequence().command("component multi").build());
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("❯ ☐  key1");
