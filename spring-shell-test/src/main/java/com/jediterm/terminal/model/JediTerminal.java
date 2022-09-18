@@ -1,10 +1,8 @@
 package com.jediterm.terminal.model;
 
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -14,7 +12,6 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 
 import com.jediterm.terminal.CursorShape;
-import com.jediterm.terminal.HyperlinkStyle;
 import com.jediterm.terminal.RequestOrigin;
 import com.jediterm.terminal.Terminal;
 import com.jediterm.terminal.TerminalColor;
@@ -26,7 +23,6 @@ import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.emulator.charset.CharacterSet;
 import com.jediterm.terminal.emulator.charset.GraphicSet;
 import com.jediterm.terminal.emulator.charset.GraphicSetState;
-import com.jediterm.terminal.model.hyperlinks.LinkInfo;
 import com.jediterm.terminal.ui.TerminalCoordinates;
 import com.jediterm.terminal.util.CharUtils;
 import org.slf4j.Logger;
@@ -827,28 +823,6 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	public void deviceAttributes(byte[] response) {
 		if (myTerminalOutput != null) {
 			myTerminalOutput.sendBytes(response, false);
-		}
-	}
-
-	@Override
-	public void setLinkUriStarted( String uri) {
-		TextStyle style = myStyleState.getCurrent();
-		myStyleState.setCurrent(new HyperlinkStyle(style, new LinkInfo(() -> {
-			try {
-				Desktop.getDesktop().browse(new URI(uri));
-			} catch (Exception ignored) {
-			}
-		})));
-	}
-
-	@Override
-	public void setLinkUriFinished() {
-		TextStyle current = myStyleState.getCurrent();
-		if (current instanceof HyperlinkStyle) {
-			TextStyle prevTextStyle = ((HyperlinkStyle) current).getPrevTextStyle();
-			if (prevTextStyle != null) {
-				myStyleState.setCurrent(prevTextStyle);
-			}
 		}
 	}
 

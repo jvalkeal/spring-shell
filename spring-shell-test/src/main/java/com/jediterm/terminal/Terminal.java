@@ -148,10 +148,6 @@ public interface Terminal {
 
 	void deviceAttributes(byte[] response);
 
-	void setLinkUriStarted(String uri);
-
-	void setLinkUriFinished();
-
 	void setBracketedPasteMode(boolean enabled);
 
 	TerminalColor getWindowForeground();
