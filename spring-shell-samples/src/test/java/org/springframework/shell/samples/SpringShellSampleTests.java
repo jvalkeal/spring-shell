@@ -36,7 +36,7 @@ public class SpringShellSampleTests {
 	ShellClient.Builder builder;
 
 	@Test
-	void test() {
+	void componentSingle() {
 		ShellClient client = builder.build();
 		client.shell();
 		client.write(client.writeSequence()
@@ -54,6 +54,42 @@ public class SpringShellSampleTests {
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			String screen = client.screen();
 			assertThat(screen).contains("❯ key2");
+		});
+
+		client.write(client.writeSequence().cr().build());
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = client.screen();
+			assertThat(screen).contains("Got value value2");
+		});
+	}
+
+	@Test
+	void componentMulti() {
+		ShellClient client = builder.build();
+		client.shell();
+		client.write(client.writeSequence()
+				.text("component multi")
+				.carriageReturn()
+				.build());
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = client.screen();
+			assertThat(screen).contains("❯ ☐  key1");
+		});
+
+		client.write(client.writeSequence().space().build());
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = client.screen();
+			assertThat(screen).contains("❯ ☒  key1");
+		});
+
+		client.write(client.writeSequence().cr().build());
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			String screen = client.screen();
+			assertThat(screen).contains("Got value value1,value2");
 		});
 	}
 }
