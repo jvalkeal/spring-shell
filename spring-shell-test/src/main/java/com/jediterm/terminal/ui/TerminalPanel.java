@@ -26,7 +26,6 @@ import javax.swing.Timer;
 
 import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.DefaultTerminalCopyPasteHandler;
-import com.jediterm.terminal.SubstringFinder;
 import com.jediterm.terminal.TerminalCopyPasteHandler;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalOutputStream;
@@ -92,8 +91,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private int myBlinkingPeriod = 500;
 	private TerminalCoordinates myCoordsAccessor;
-
-	private SubstringFinder.FindResult myFindResult;
 
 	private final TerminalKeyHandler myTerminalKeyHandler = new TerminalKeyHandler();
 	private volatile boolean myBracketedPasteMode;
