@@ -117,10 +117,6 @@ public class TerminalPanel implements TerminalDisplay {
 		establishFontMetrics();
 	}
 
-	protected boolean isRetina() {
-		return UIUtil.isRetina();
-	}
-
 	public void setBlinkingPeriod(int blinkingPeriod) {
 		myBlinkingPeriod = blinkingPeriod;
 	}
