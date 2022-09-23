@@ -34,7 +34,6 @@ import org.springframework.shell.component.PathSearch;
 import org.springframework.shell.component.PathInput.PathInputContext;
 import org.springframework.shell.component.PathSearch.PathSearchConfig;
 import org.springframework.shell.component.PathSearch.PathSearchContext;
-import org.springframework.shell.component.PathSearch.PathSearchConfig.Mode;
 import org.springframework.shell.component.SingleItemSelector;
 import org.springframework.shell.component.SingleItemSelector.SingleItemSelectorContext;
 import org.springframework.shell.component.StringInput;
@@ -72,7 +71,6 @@ public class ComponentCommands extends AbstractShellComponent {
 	@ShellMethod(key = "component path search", value = "Path search", group = "Components")
 	public String pathSearch() {
 		PathSearchConfig config = new PathSearch.PathSearchConfig();
-		config.setMode(Mode.FUZZY);
 		PathSearch component = new PathSearch(getTerminal(), "Enter value", config);
 		component.setResourceLoader(getResourceLoader());
 		component.setTemplateExecutor(getTemplateExecutor());

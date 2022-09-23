@@ -21,7 +21,7 @@ package org.springframework.shell.support.search;
  *
  * @author Janne Valkealahti
  */
-abstract class AbstractSearchMatchAlgorithm {
+abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm{
 
 	public static final int SCORE_MATCH = 16;
 	public static final int SCORE_GAP_START = -3;
@@ -53,8 +53,6 @@ abstract class AbstractSearchMatchAlgorithm {
 			this.pos = pos;
 		}
 	}
-
-	abstract SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos);
 
 	static int indexAt(int index, int max, boolean forward) {
 		if (forward) {

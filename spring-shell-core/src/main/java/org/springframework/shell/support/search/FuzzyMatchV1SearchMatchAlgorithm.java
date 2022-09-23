@@ -27,7 +27,7 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 	private int eidx = -1;
 
 	@Override
-	SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
+	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
 			boolean withPos) {
 		int lenRunes = text.length();
 		int lenPattern = pattern.length();

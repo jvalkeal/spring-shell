@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.PathSearch.PathSearchContext;
-import org.springframework.shell.component.PathSearch.PathSearchConfig.Mode;
 import org.springframework.shell.component.PathSearch.PathSearchContext.PathViewItem;
 import org.springframework.shell.component.context.ComponentContext;
 import org.springframework.shell.component.support.AbstractTextComponent;
@@ -152,14 +151,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				checkPath(input, context);
 				break;
 			case OPERATION_EXIT:
-				if (this.config.mode == Mode.DEFAULT) {
-					if (StringUtils.hasText(context.getInput())) {
-						context.setResultValue(Paths.get(context.getInput()));
-					}
-				}
-				else if (this.config.mode == Mode.FUZZY) {
-					context.setResultValue(this.paths.get(this.viewStart.get() + this.viewPosition.get()));
-				}
+				context.setResultValue(this.paths.get(this.viewStart.get() + this.viewPosition.get()));
 				return true;
 			case OPERATION_UP:
 				if (viewStart.get() > 0 && viewPosition.get() == 0) {
@@ -229,10 +221,8 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			context.setMessage("Path ok", MessageLevel.INFO);
 		}
 
-		if (this.config.mode == Mode.FUZZY) {
-			updatePaths(path, context);
-			updatePathView(context);
-		}
+		updatePaths(path, context);
+		updatePathView(context);
 	}
 
 	private void updatePaths(String path, PathSearchContext context) {
@@ -265,19 +255,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	 */
 	public static class PathSearchConfig {
 
-		private Mode mode = Mode.DEFAULT;
 		private int maxPathsShow = 5;
 		private int maxPathsSearch = 20;
 		private Supplier<BiFunction<String, PathSearchContext, List<Path>>> pathScanner = () -> DefaultPathScanner.of();
-
-		public void setMode(Mode mode) {
-			Assert.notNull(mode, "mode cannot be null");
-			this.mode = mode;
-		}
-
-		public Mode getMode() {
-			return this.mode;
-		}
 
 		public void setMaxPaths(int maxPathsShow, int maxPathsSearch) {
 			Assert.state(maxPathsShow > 0 || maxPathsShow < 33, "maxPathsShow has to be between 1 and 32");
@@ -299,28 +279,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			this.pathScanner = pathScanner;
 		}
 
-		/**
-		 * {@code PathSearch} has many modes it can operate on.
-		 */
-		public static enum Mode {
-
-			/**
-			 * Original operating mode where input checks if path exists and gives context
-			 * indication of it.
-			 */
-			DEFAULT,
-
-			/**
-			 * Fuzzy selection mode searching files recursively and allows user to select
-			 * path from a given single selector list.
-			 */
-			FUZZY;
-		}
-
 		@Override
 		public String toString() {
-			return "PathSearchConfig [maxPathsSearch=" + maxPathsSearch + ", maxPathsShow=" + maxPathsShow + ", mode="
-					+ mode + "]";
+			return "PathSearchConfig [maxPathsSearch=" + maxPathsSearch + ", maxPathsShow=" + maxPathsShow + ", mode=" + "]";
 		}
 	}
 
@@ -343,8 +304,18 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		 */
 		void setPathViewItems(List<PathViewItem> items);
 
+		/**
+		 * Get path search config.
+		 *
+		 * @return a path search config
+		 */
 		PathSearchConfig getPathSearchConfig();
 
+		/**
+		 * Sets a path search config.
+		 *
+		 * @param config a path search config
+		 */
 		void setPathSearchConfig(PathSearchConfig config);
 
 		/**
