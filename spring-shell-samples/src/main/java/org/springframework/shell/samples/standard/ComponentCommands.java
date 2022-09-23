@@ -30,7 +30,11 @@ import org.springframework.shell.component.ConfirmationInput.ConfirmationInputCo
 import org.springframework.shell.component.MultiItemSelector;
 import org.springframework.shell.component.MultiItemSelector.MultiItemSelectorContext;
 import org.springframework.shell.component.PathInput;
+import org.springframework.shell.component.PathSearch;
 import org.springframework.shell.component.PathInput.PathInputContext;
+import org.springframework.shell.component.PathSearch.PathSearchConfig;
+import org.springframework.shell.component.PathSearch.PathSearchContext;
+import org.springframework.shell.component.PathSearch.PathSearchConfig.Mode;
 import org.springframework.shell.component.SingleItemSelector;
 import org.springframework.shell.component.SingleItemSelector.SingleItemSelectorContext;
 import org.springframework.shell.component.StringInput;
@@ -56,12 +60,23 @@ public class ComponentCommands extends AbstractShellComponent {
 		return "Got value " + context.getResultValue();
 	}
 
-	@ShellMethod(key = "component path", value = "Path input", group = "Components")
+	@ShellMethod(key = "component path input", value = "Path input", group = "Components")
 	public String pathInput() {
 		PathInput component = new PathInput(getTerminal(), "Enter value");
 		component.setResourceLoader(getResourceLoader());
 		component.setTemplateExecutor(getTemplateExecutor());
 		PathInputContext context = component.run(PathInputContext.empty());
+		return "Got value " + context.getResultValue();
+	}
+
+	@ShellMethod(key = "component path search", value = "Path search", group = "Components")
+	public String pathSearch() {
+		PathSearchConfig config = new PathSearch.PathSearchConfig();
+		config.setMode(Mode.FUZZY);
+		PathSearch component = new PathSearch(getTerminal(), "Enter value", config);
+		component.setResourceLoader(getResourceLoader());
+		component.setTemplateExecutor(getTemplateExecutor());
+		PathSearchContext context = component.run(PathSearchContext.empty());
 		return "Got value " + context.getResultValue();
 	}
 

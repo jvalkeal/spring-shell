@@ -129,4 +129,9 @@ public class PathInputTests extends AbstractShellTests {
 		assertThat(run1Context.getResultValue()).isNotNull();
 		assertThat(run1Context.getResultValue().toString()).contains("tmp");
 	}
+
+	void xxx() {
+
+
+	}
 }
