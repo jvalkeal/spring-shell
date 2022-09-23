@@ -21,7 +21,7 @@ package org.springframework.shell.support.search;
  *
  * @author Janne Valkealahti
  */
-abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm{
+abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
 	public static final int SCORE_MATCH = 16;
 	public static final int SCORE_GAP_START = -3;

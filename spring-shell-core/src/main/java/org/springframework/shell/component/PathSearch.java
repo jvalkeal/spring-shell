@@ -61,6 +61,9 @@ import static org.jline.keymap.KeyMap.key;
 /**
  * Component resolving {@link Path} based on base path and optional search term.
  *
+ * Based on algorithms i.e. from https://github.com/junegunn/fzf and other
+ * sources.
+ *
  * @author Janne Valkealahti
  */
 public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
@@ -69,7 +72,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private final PathSearchConfig config;
 	private PathSearchContext currentContext;
 	private Function<String, Path> pathProvider = (path) -> Paths.get(path);
-
 	private List<Path> paths = new ArrayList<>();
 	private List<PathViewItem> pathViews = new ArrayList<>();
 	private AtomicInteger viewStart = new AtomicInteger(0);
