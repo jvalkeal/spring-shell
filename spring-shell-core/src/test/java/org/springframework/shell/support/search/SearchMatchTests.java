@@ -23,8 +23,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_CAMEL123;
-import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_START;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_CONSECUTIVE;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_EXTENSION;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_START;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_MATCH;
 
 public class SearchMatchTests {
@@ -41,6 +42,27 @@ public class SearchMatchTests {
 	@MethodSource
 	void test(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos,
 			int start, int end, int score) {
+		SearchMatch searchMatch = SearchMatch.builder()
+				.caseSensitive(caseSensitive)
+				.normalize(normalize)
+				.forward(forward)
+				.build();
+		SearchMatchResult result = searchMatch.match(text, pattern);
+		assertThat(result.getStart()).isEqualTo(start);
+		assertThat(result.getEnd()).isEqualTo(end);
+		assertThat(result.getScore()).isEqualTo(score);
+	}
+
+	static Stream<Arguments> testExactMatch() {
+		return Stream.of(
+			Arguments.of(false, false, true, "fooBarbaz", "'oBA", false, 2, 5,
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + BONUS_CONSECUTIVE));
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void testExactMatch(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
+			boolean withPos, int start, int end, int score) {
 		SearchMatch searchMatch = SearchMatch.builder()
 				.caseSensitive(caseSensitive)
 				.normalize(normalize)

@@ -69,6 +69,7 @@ import static org.jline.keymap.KeyMap.key;
 public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 	private final static Logger log = LoggerFactory.getLogger(PathSearch.class);
+	private final static String DEFAULT_TEMPLATE_LOCATION = "classpath:org/springframework/shell/component/path-search-default.stg";
 	private final PathSearchConfig config;
 	private PathSearchContext currentContext;
 	private Function<String, Path> pathProvider = (path) -> Paths.get(path);
@@ -96,7 +97,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	public PathSearch(Terminal terminal, String name, Function<PathSearchContext, List<AttributedString>> renderer, PathSearchConfig config) {
 		super(terminal, name, null);
 		setRenderer(renderer != null ? renderer : new DefaultRenderer());
-		setTemplateLocation("classpath:org/springframework/shell/component/path-search-default.stg");
+		setTemplateLocation(DEFAULT_TEMPLATE_LOCATION);
 		this.config = config != null ? config : new PathSearchConfig();
 	}
 
@@ -435,7 +436,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				SearchMatch searchMatch = SearchMatch.builder()
 					.caseSensitive(false)
 					.normalize(false)
-					.forward(false)
+					.forward(true)
 					.build();
 				SearchMatchResult result = searchMatch.match(p.toString(), input);
 				treeSet.add(ScoredPath.of(result.getScore(), p));

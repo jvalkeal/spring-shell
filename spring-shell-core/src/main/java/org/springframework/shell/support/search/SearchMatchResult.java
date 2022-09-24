@@ -63,6 +63,14 @@ public interface SearchMatchResult {
 		return new DefaultResult(start, end, score, positions);
 	}
 
+	public static SearchMatchResult ofZeros() {
+		return of(0, 0, 0, new int[0]);
+	}
+
+	public static SearchMatchResult ofMinus() {
+		return of(-1, -1, 0, new int[0]);
+	}
+
 	static class DefaultResult implements SearchMatchResult {
 
 		int start;

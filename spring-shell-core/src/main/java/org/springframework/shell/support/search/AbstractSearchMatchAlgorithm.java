@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.support.search;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Base class for common search algorithms mostly based on {@code fzf}
  * algorithms.
@@ -71,17 +73,10 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		else if (c >= '0' && c <= '9') {
 			return CharClass.NUMBER;
 		}
-
-		// Character.isWhitespace(arg0)
 		else if (Character.isWhitespace(c)) {
 			return CharClass.WHITE;
 		}
-
-		// else if strings.IndexRune(whiteChars, char) >= 0 {
-		// 	return charWhite
-		// }
-
-
+		// TODO: os and other delimited checks
 		// else if strings.IndexRune(delimiterChars, char) >= 0 {
 		// 	return charDelimiter
 		// }
@@ -111,6 +106,14 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			return BONUS_BOUNDARY_WHITE;
 		}
 		return 0;
+	}
+
+	static int bonusAt(String input, int idx) {
+		if (idx == 0) {
+			return BONUS_BOUNDARY_WHITE;
+		}
+		return bonusFor(CharClass.values()[idx - 1], CharClass.values()[idx]);
+		// return bonusFor(charClassOf(input.Get(idx-1)), charClassOf(input.Get(idx)))
 	}
 
 	static CalculateScore calculateScore(boolean caseSensitive, boolean normalize, String text, String pattern,
@@ -183,4 +186,93 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		}
 		return new CalculateScore(score, pos);
 	}
+
+	static int trySkip(String input, boolean caseSensitive, char b, int from) {
+		String byteArray = input.substring(from);
+		int idx = byteArray.indexOf(b);
+		// idx := bytes.IndexByte(byteArray, b)
+
+		if (idx == 0) {
+			return from;
+		}
+		// if idx == 0 {
+		// 	// Can't skip any further
+		// 	return from
+		// }
+		// // We may need to search for the uppercase letter again. We don't have to
+		// // consider normalization as we can be sure that this is an ASCII string.
+
+		if (!caseSensitive && b >= 'a' && b <= 'z') {
+			if (idx > 0) {
+				byteArray = byteArray.substring(idx);
+			}
+			int uidx = byteArray.indexOf(b - 32);
+			if (uidx >= 0) {
+				idx = uidx;
+			}
+		}
+		if (idx < 0) {
+			return -1;
+		}
+		return from + idx;
+		// if !caseSensitive && b >= 'a' && b <= 'z' {
+		// 	if idx > 0 {
+		// 		byteArray = byteArray[:idx]
+		// 	}
+		// 	uidx := bytes.IndexByte(byteArray, b-32)
+		// 	if uidx >= 0 {
+		// 		idx = uidx
+		// 	}
+		// }
+		// if idx < 0 {
+		// 	return -1
+		// }
+		// return from + idx
+
+	}
+
+	static int asciiFuzzyIndex(String input, String pattern, boolean caseSensitive) {
+
+		if (!StringUtils.hasText(input)) {
+			return 0;
+		}
+	// 	// Can't determine
+	// 	if !input.IsBytes() {
+	// 		return 0
+	// 	}
+
+	// 	// Not possible
+	// 	if !isAscii(pattern) {
+	// 		return -1
+	// 	}
+
+		int firstIndex = 0;
+		int idx = 0;
+	// 	firstIdx, idx := 0, 0
+		for (int pidx = 0; pidx < pattern.length(); pidx++) {
+			idx = trySkip(input, caseSensitive, pattern.charAt(pidx), idx);
+			if (idx < 0) {
+				return -1;
+			}
+			if (pidx == 0 && idx > 0) {
+				firstIndex = idx - 1;
+			}
+			idx++;
+		}
+	// 	for pidx := 0; pidx < len(pattern); pidx++ {
+	// 		idx = trySkip(input, caseSensitive, byte(pattern[pidx]), idx)
+	// 		if idx < 0 {
+	// 			return -1
+	// 		}
+	// 		if pidx == 0 && idx > 0 {
+	// 			// Step back to find the right bonus point
+	// 			firstIdx = idx - 1
+	// 		}
+	// 		idx++
+	// 	}
+		return firstIndex;
+	// 	return firstIdx
+	// }
+	}
+
 }

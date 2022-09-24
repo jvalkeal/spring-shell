@@ -124,7 +124,16 @@ public interface SearchMatch {
 		@Override
 		public SearchMatchResult match(String text, String pattern) {
 			// pick algorithm based on pattern
-			FuzzyMatchV1SearchMatchAlgorithm algo = new FuzzyMatchV1SearchMatchAlgorithm();
+			SearchMatchAlgorithm algo;
+			if (pattern.startsWith("'")) {
+				// exact match starting with "'"
+				algo = new ExactMatchNaiveSearchMatchAlgorithm();
+				pattern = pattern.substring(1);
+			}
+			else {
+				// then for any other use fuzzy match
+				algo = new FuzzyMatchV1SearchMatchAlgorithm();
+			}
 			return algo.match(caseSensitive, normalize, forward, text, pattern, withPos);
 		}
 	}

@@ -58,7 +58,6 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					break;
 				}
 			}
-
 		}
 
 		if (sidx >= 0 && eidx >= 0) {
