@@ -60,9 +60,13 @@ import static org.jline.keymap.KeyMap.key;
 
 /**
  * Component resolving {@link Path} based on base path and optional search term.
+ * User is expected to type a base path and then delimited by space and a search
+ * term.
  *
  * Based on algorithms i.e. from https://github.com/junegunn/fzf and other
  * sources.
+ *
+ *
  *
  * @author Janne Valkealahti
  */
@@ -330,11 +334,41 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			return new DefaultPathSearchContext();
 		}
 
-		public static class PathViewItem {
+		/**
+		 * When showing list of names we know which parts of it was matched. This class
+		 * is used in an array so that a template can choose how to show matched parts.
+		 */
+		public static class NameMatchPart {
+			private String part;
+			private boolean match;
 
-			private String name;
+			public NameMatchPart(String part, boolean match) {
+				this.part = part;
+				this.match = match;
+			}
+
+			public static NameMatchPart of(String part, boolean match) {
+				return new NameMatchPart(part, match);
+			}
+
+			public String getPart() {
+				return this.part;
+			}
+
+			public boolean getMatch() {
+				return this.match;
+			}
+		}
+
+		/**
+		 * Domain class for path view item. Having its index, name(path), ref to cursor
+		 * row index and list of name match parts.
+		 */
+		public static class PathViewItem {
 			private Integer index;
+			private String name;
 			private AtomicInteger cursorRowRef;
+			private List<NameMatchPart> nameMatchParts = new ArrayList<>();
 
 			public String getName() {
 				return name;
@@ -344,6 +378,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				return cursorRowRef.get() == index.intValue();
 			}
 
+			public List<NameMatchPart> getNameMatchParts() {
+				return nameMatchParts;
+			}
 		}
 	}
 

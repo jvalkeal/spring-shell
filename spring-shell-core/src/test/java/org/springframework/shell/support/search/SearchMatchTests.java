@@ -30,17 +30,18 @@ import static org.springframework.shell.support.search.AbstractSearchMatchAlgori
 
 public class SearchMatchTests {
 
-	static Stream<Arguments> test() {
+	static Stream<Arguments> testFuzzyMatch() {
 		return Stream.of(
-			Arguments.of(false, false, true, "fooBarbaz1", "obz", false, 2, 9,
-				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
+			// Arguments.of(false, false, true, "fooBarbaz1", "obz", false, 2, 9,
+			// 	SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
 			Arguments.of(true, false, true, "fooBarbaz", "oBz", false, 2, 9,
-				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3));
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3)
+			);
 	}
 
 	@ParameterizedTest
 	@MethodSource
-	void test(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos,
+	void testFuzzyMatch(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos,
 			int start, int end, int score) {
 		SearchMatch searchMatch = SearchMatch.builder()
 				.caseSensitive(caseSensitive)
@@ -56,7 +57,8 @@ public class SearchMatchTests {
 	static Stream<Arguments> testExactMatch() {
 		return Stream.of(
 			Arguments.of(false, false, true, "fooBarbaz", "'oBA", false, 2, 5,
-				SCORE_MATCH * 3 + BONUS_CAMEL123 + BONUS_CONSECUTIVE));
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + BONUS_CONSECUTIVE)
+			);
 	}
 
 	@ParameterizedTest

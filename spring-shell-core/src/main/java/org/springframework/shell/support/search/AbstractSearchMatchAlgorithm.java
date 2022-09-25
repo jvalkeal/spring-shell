@@ -15,6 +15,10 @@
  */
 package org.springframework.shell.support.search;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -113,7 +117,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			return BONUS_BOUNDARY_WHITE;
 		}
 		return bonusFor(CharClass.values()[idx - 1], CharClass.values()[idx]);
-		// return bonusFor(charClassOf(input.Get(idx-1)), charClassOf(input.Get(idx)))
 	}
 
 	static CalculateScore calculateScore(boolean caseSensitive, boolean normalize, String text, String pattern,
@@ -123,7 +126,8 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		boolean inGap = false;
 		int consecutive = 0;
 		int firstBonus = 0;
-		int[] pos = withPos ? new int[pattern.length()] : new int[0];
+		// int[] pos = withPos ? new int[pattern.length()] : new int[0];
+		List<Integer> positions = new ArrayList<>();
 
 		CharClass prevClass = CharClass.WHITE;
 		if (sidx > 0) {
@@ -146,9 +150,11 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
 			// if (pattern.length() < pidx && c == pattern.charAt(pidx)) {
 			if (c == pattern.charAt(pidx)) {
-				if (withPos) {
-					// *pos = append(*pos, idx)
-				}
+				positions.add(idx);
+				// if (withPos) {
+				// 	positions.add(idx);
+				// 	// *pos = append(*pos, idx)
+				// }
 				score += SCORE_MATCH;
 				int bonus = bonusFor(prevClass, clazz);
 				if (consecutive == 0) {
@@ -184,7 +190,8 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			prevClass = clazz;
 
 		}
-		return new CalculateScore(score, pos);
+		// positions.stream().mapToInt(Integer::intValue).toArray();
+		return new CalculateScore(score, positions.stream().mapToInt(Integer::intValue).toArray());
 	}
 
 	static int trySkip(String input, boolean caseSensitive, char b, int from) {
@@ -274,5 +281,4 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 	// 	return firstIdx
 	// }
 	}
-
 }

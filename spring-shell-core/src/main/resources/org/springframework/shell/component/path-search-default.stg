@@ -26,19 +26,7 @@ result(model) ::= <<
 <question_name(model)> <model.resultValue; format="style-value">
 >>
 
-// path_item(item) ::= <%
-// <if(item.selected)>
-// <({<figures.rightPointingQuotation> }); format="style-item-selector"><item.name; format="style-item-selector">
-// <else>
-// <("  ")><item.name>
-// <endif>
-// %>
-
-// paths
-// paths(model) ::= <<
-// <model.scannedPaths:{x|<path_item(x)>}; separator="\n">
-// >>
-
+// render path item
 path_item(item) ::= <%
 <if(item.selected)>
 <({<figures.rightPointingQuotation> }); format="style-item-selector"><item.name; format="style-item-selector">
@@ -47,6 +35,7 @@ path_item(item) ::= <%
 <endif>
 %>
 
+// render paths
 paths(model) ::= <<
 <model.pathViewItems:{x|<path_item(x)>}; separator="\n">
 >>
