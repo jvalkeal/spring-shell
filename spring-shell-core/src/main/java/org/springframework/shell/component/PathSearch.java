@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.PathSearch.PathSearchContext;
+import org.springframework.shell.component.PathSearch.PathSearchContext.NameMatchPart;
 import org.springframework.shell.component.PathSearch.PathSearchContext.PathViewItem;
 import org.springframework.shell.component.context.ComponentContext;
 import org.springframework.shell.component.support.AbstractTextComponent;
@@ -77,7 +78,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private final PathSearchConfig config;
 	private PathSearchContext currentContext;
 	private Function<String, Path> pathProvider = (path) -> Paths.get(path);
-	private List<Path> paths = new ArrayList<>();
+	private List<ScoredPath> paths = new ArrayList<>();
 	private List<PathViewItem> pathViews = new ArrayList<>();
 	private AtomicInteger viewStart = new AtomicInteger(0);
 	private AtomicInteger viewPosition = new AtomicInteger(0);
@@ -158,7 +159,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				checkPath(input, context);
 				break;
 			case OPERATION_EXIT:
-				context.setResultValue(this.paths.get(this.viewStart.get() + this.viewPosition.get()));
+				ScoredPath scoredPath = this.paths.get(this.viewStart.get() + this.viewPosition.get());
+				context.setResultValue(scoredPath.getPath());
+				// context.setResultValue(this.paths.get(this.viewStart.get() + this.viewPosition.get()));
 				return true;
 			case OPERATION_UP:
 				if (viewStart.get() > 0 && viewPosition.get() == 0) {
@@ -242,15 +245,21 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	private List<PathViewItem> buildPathView() {
-		List<Path> view = this.paths.subList(this.viewStart.get(),
+		List<ScoredPath> view = this.paths.subList(this.viewStart.get(),
 				Math.min(this.paths.size(), this.viewStart.get() + this.config.maxPathsShow));
 		log.debug("Build path view, start {} items {}", this.viewStart.get(), view);
 		List<PathViewItem> pathViews = IntStream.range(0, view.size())
 			.mapToObj(i -> {
+				ScoredPath scoredPath = view.get(i);
 				PathViewItem item = new PathViewItem();
-				item.name = view.get(i).toString();
+				// item.name = view.get(i).toString();
+				item.name = scoredPath.getPath().toString();
 				item.cursorRowRef = viewPosition;
 				item.index = i;
+				List<NameMatchPart> nameMatchParts = new ArrayList<>();
+				int[] positions = scoredPath.getResult().getPositions();
+				// NameMatchPart.of("part", true);
+				item.nameMatchParts = nameMatchParts;
 				return item;
 			})
 			.collect(Collectors.toList());
@@ -264,7 +273,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		private int maxPathsShow = 5;
 		private int maxPathsSearch = 20;
-		private Supplier<BiFunction<String, PathSearchContext, List<Path>>> pathScanner = () -> DefaultPathScanner.of();
+		private Supplier<BiFunction<String, PathSearchContext, List<ScoredPath>>> pathScanner = () -> DefaultPathScanner.of();
 
 		public void setMaxPaths(int maxPathsShow, int maxPathsSearch) {
 			Assert.state(maxPathsShow > 0 || maxPathsShow < 33, "maxPathsShow has to be between 1 and 32");
@@ -281,7 +290,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			return this.maxPathsSearch;
 		}
 
-		public void setPathScanner(Supplier<BiFunction<String, PathSearchContext, List<Path>>> pathScanner) {
+		public void setPathScanner(Supplier<BiFunction<String, PathSearchContext, List<ScoredPath>>> pathScanner) {
 			Assert.notNull(pathScanner, "pathScanner supplier cannot be null");
 			this.pathScanner = pathScanner;
 		}
@@ -382,6 +391,137 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				return nameMatchParts;
 			}
 		}
+
+		public static List<NameMatchPart> ofNameMatchParts2(String text, int[] positions) {
+			List<NameMatchPart> parts = new ArrayList<>();
+			if (positions.length == 0) {
+				parts.addAll(xxx(text, -1));
+			}
+			else if (positions.length == 1 && positions[0] == text.length()) {
+				parts.addAll(xxx(text, text.length() - 1));
+			}
+			else {
+				int sidx = 0;
+				int eidx = 0;
+				for (int i = 0; i < positions.length; i++) {
+					eidx = positions[i];
+					if (sidx < text.length()) {
+						String partText = text.substring(sidx, eidx + 1);
+						parts.addAll(xxx(partText, eidx - sidx));
+					}
+					else {
+						parts.addAll(xxx(String.valueOf(text.charAt(text.length() - 1)), 0));
+					}
+					sidx = eidx + 1;
+				}
+				if (sidx < text.length()) {
+					String partText = text.substring(sidx, text.length());
+					parts.addAll(xxx(partText, -1));
+				}
+			}
+			return parts;
+		}
+
+		static List<NameMatchPart> xxx(String text, int position) {
+			List<NameMatchPart> parts = new ArrayList<>();
+			if (position < 0) {
+				parts.add(NameMatchPart.of(text, false));
+			}
+			else {
+				if (position == 0) {
+					if (text.length() == 1) {
+						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
+					}
+					else {
+						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
+						parts.add(NameMatchPart.of(text.substring(1, text.length()), false));
+					}
+				}
+				else if (position == text.length() - 1) {
+					parts.add(NameMatchPart.of(text.substring(0, text.length() - 1), false));
+					parts.add(NameMatchPart.of(String.valueOf(text.charAt(text.length() - 1)), true));
+				}
+				else {
+					parts.add(NameMatchPart.of(text.substring(0, position), false));
+					parts.add(NameMatchPart.of(String.valueOf(text.charAt(position)), true));
+					parts.add(NameMatchPart.of(text.substring(position + 1, text.length()), false));
+				}
+			}
+			return parts;
+		}
+
+		/**
+		 * Split given text into {@link NameMatchPart}'s by given positions.
+		 *
+		 * @param text the text to split
+		 * @param positions the positions array, expected to be ordered and no duplicates
+		 * @return
+		 */
+		public static List<NameMatchPart> ofNameMatchParts(String text, int[] positions) {
+			List<NameMatchPart> parts = new ArrayList<>();
+			if (positions.length == 0) {
+				parts.add(NameMatchPart.of(text, false));
+			}
+			else if (positions.length == 1) {
+				if (positions[0] == 0) {
+					if (text.length() == 1) {
+						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
+					}
+					else {
+						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
+						parts.add(NameMatchPart.of(text.substring(1, text.length()), false));
+					}
+				}
+				else if (positions[0] == text.length()) {
+					parts.add(NameMatchPart.of(text.substring(0, text.length() - 1), false));
+					parts.add(NameMatchPart.of(String.valueOf(text.length() - 1), true));
+				}
+				else {
+					parts.add(NameMatchPart.of(text.substring(0, positions[0]), false));
+					parts.add(NameMatchPart.of(String.valueOf(text.charAt(positions[0])), true));
+					parts.add(NameMatchPart.of(text.substring(positions[0] + 1, text.length()), false));
+				}
+			}
+			else if (positions.length == text.length()) {
+				for (int i = 0; i < text.length(); i++) {
+					parts.add(NameMatchPart.of(String.valueOf(text.charAt(i)), true));
+				}
+			}
+			else {
+				int sidx = -1;
+				int eidx = -1;
+				for (int i = 0; i < positions.length; i++) {
+					eidx = positions[i];
+					if (sidx < 0) {
+						if (eidx == 0) {
+							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
+						}
+						else if (eidx == text.length()) {
+							parts.add(NameMatchPart.of(text.substring(0, eidx - 1), false));
+							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx - 1)), true));
+						}
+						else {
+							parts.add(NameMatchPart.of(text.substring(0, eidx), false));
+							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
+						}
+					}
+					else {
+						if (sidx < eidx) {
+							parts.add(NameMatchPart.of(text.substring(sidx + 1, eidx), false));
+							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
+						}
+						else {
+							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
+						}
+					}
+					sidx = eidx;
+				}
+				if (sidx + 1 <= text.length()) {
+					parts.add(NameMatchPart.of(text.substring(sidx + 1, text.length()), false));
+				}
+			}
+			return parts;
+		}
 	}
 
 	private static class DefaultPathSearchContext extends BaseTextComponentContext<Path, PathSearchContext>
@@ -428,31 +568,41 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		}
 	}
 
-	private static class ScoredPath implements Comparable<ScoredPath>{
-		int score;
-		Path path;
-		ScoredPath(int score, Path path) {
-			this.score = score;
+	public static class ScoredPath implements Comparable<ScoredPath> {
+		private final Path path;
+		private final SearchMatchResult result;
+
+		ScoredPath(Path path, SearchMatchResult result) {
 			this.path = path;
+			this.result = result;
 		}
-		static ScoredPath of(int score, Path path) {
-			return new ScoredPath(score, path);
+
+		public Path getPath() {
+			return this.path;
+		}
+
+		public SearchMatchResult getResult() {
+			return this.result;
+		}
+
+		static ScoredPath of(Path path, SearchMatchResult result) {
+			return new ScoredPath(path, result);
 		}
 
 		@Override
 		public int compareTo(ScoredPath other) {
-			return Integer.compare(other.score, this.score);
+			return Integer.compare(other.result.getScore(), this.result.getScore());
 		}
 	}
 
-	private static class DefaultPathScanner implements BiFunction<String, PathSearchContext, List<Path>> {
+	private static class DefaultPathScanner implements BiFunction<String, PathSearchContext, List<ScoredPath>> {
 
 		static DefaultPathScanner of() {
 			return new DefaultPathScanner();
 		}
 
 		@Override
-		public List<Path> apply(String input, PathSearchContext context) {
+		public List<ScoredPath> apply(String input, PathSearchContext context) {
 
 			PathSearchPathVisitor visitor = new PathSearchPathVisitor(context.getPathSearchConfig().getMaxPathsSearch());
 			try {
@@ -476,10 +626,10 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 					.forward(true)
 					.build();
 				SearchMatchResult result = searchMatch.match(p.toString(), input);
-				treeSet.add(ScoredPath.of(result.getScore(), p));
+				treeSet.add(ScoredPath.of(p, result));
 			});
 			return treeSet.stream()
-				.map(sp -> sp.path)
+				// .map(sp -> sp.path)
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
 				.collect(Collectors.toList());
 		}
