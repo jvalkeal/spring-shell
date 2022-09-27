@@ -55,7 +55,7 @@ public class PathSearchTests {
 					NameMatchPart.of("0", false),
 					NameMatchPart.of("1", true),
 					NameMatchPart.of("23456789", false))),
-			Arguments.of("0123456789", new int[] { 10 },
+			Arguments.of("0123456789", new int[] { 9 },
 				Arrays.asList(
 					NameMatchPart.of("012345678", false),
 					NameMatchPart.of("9", true))),
@@ -72,11 +72,11 @@ public class PathSearchTests {
 					NameMatchPart.of("2", true),
 					NameMatchPart.of("3", true),
 					NameMatchPart.of("456789", false))),
-			Arguments.of("0123456789", new int[] { 9, 10 },
+			Arguments.of("0123456789", new int[] { 8, 9 },
 				Arrays.asList(
-					NameMatchPart.of("012345678", false),
-					NameMatchPart.of("9", true),
-					NameMatchPart.of("10", true)))
+					NameMatchPart.of("01234567", false),
+					NameMatchPart.of("8", true),
+					NameMatchPart.of("9", true)))
 			);
 	}
 
