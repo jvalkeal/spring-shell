@@ -140,6 +140,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		}
 		String input;
 		switch (operation) {
+			case OPERATION_SPACE:
 			case OPERATION_CHAR:
 				String lastBinding = bindingReader.getLastBinding();
 				input = context.getInput();
@@ -606,10 +607,17 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		@Override
 		public List<ScoredPath> apply(String input, PathSearchContext context) {
 
+			String[] split = input.split(" ", 2);
+			String match = split.length == 2 ? split[1] : null;
+
 			PathSearchPathVisitor visitor = new PathSearchPathVisitor(context.getPathSearchConfig().getMaxPathsSearch());
 			try {
+				Path path = Path.of(split[0]);
+				// if (split.length == 2) {
+				// 	match = split[1];
+				// }
 				// Path path = StringUtils.hasText(input) ? Path.of(input) : Path.of("");
-				Path path = Path.of("");
+				// Path path = Path.of("");
 				log.debug("Walking input {} for path {}", input, path);
 				Files.walkFileTree(path, visitor);
 				log.debug("walked files {} dirs {}", visitor.getPathCounters().getFileCounter().get(),
@@ -619,16 +627,28 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			}
 
 
-			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
+ 			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
 			// TreeSet<ScoredPath> treeSet = new TreeSet<ScoredPath>();
 
 			visitor.getFileList().forEach(p -> {
-				SearchMatch searchMatch = SearchMatch.builder()
-					.caseSensitive(false)
-					.normalize(false)
-					.forward(true)
-					.build();
-				SearchMatchResult result = searchMatch.match(p.toString(), input);
+				SearchMatchResult result;
+				if (StringUtils.hasText(match)) {
+					SearchMatch searchMatch = SearchMatch.builder()
+						.caseSensitive(false)
+						.normalize(false)
+						.forward(true)
+						.build();
+					result = searchMatch.match(p.toString(), match);
+				}
+				else {
+					result = SearchMatchResult.ofMinus();
+				}
+				// SearchMatch searchMatch = SearchMatch.builder()
+				// 	.caseSensitive(false)
+				// 	.normalize(false)
+				// 	.forward(true)
+				// 	.build();
+				// SearchMatchResult result = searchMatch.match(p.toString(), input);
 				treeSet.add(ScoredPath.of(p, result));
 			});
 			return treeSet.stream()
