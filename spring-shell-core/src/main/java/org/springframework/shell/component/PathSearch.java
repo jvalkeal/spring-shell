@@ -256,8 +256,8 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				item.name = scoredPath.getPath().toString();
 				item.cursorRowRef = viewPosition;
 				item.index = i;
-				List<NameMatchPart> nameMatchParts = new ArrayList<>();
 				int[] positions = scoredPath.getResult().getPositions();
+				List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts2(item.name, positions);
 				// NameMatchPart.of("part", true);
 				item.nameMatchParts = nameMatchParts;
 				return item;
