@@ -23,8 +23,10 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -617,7 +619,8 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			}
 
 
-			TreeSet<ScoredPath> treeSet = new TreeSet<ScoredPath>();
+			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
+			// TreeSet<ScoredPath> treeSet = new TreeSet<ScoredPath>();
 
 			visitor.getFileList().forEach(p -> {
 				SearchMatch searchMatch = SearchMatch.builder()
@@ -630,6 +633,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			});
 			return treeSet.stream()
 				// .map(sp -> sp.path)
+				.sorted()
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
 				.collect(Collectors.toList());
 		}
