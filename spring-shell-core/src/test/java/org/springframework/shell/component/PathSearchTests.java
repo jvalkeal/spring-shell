@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathSearchTests {
 
-	static Stream<Arguments> test() {
+	static Stream<Arguments> testOfNameMatchParts() {
 		return Stream.of(
 			Arguments.of("0", new int[] { 0 },
 				Arrays.asList(NameMatchPart.of("0", true))),
@@ -82,13 +81,12 @@ public class PathSearchTests {
 
 	@ParameterizedTest
 	@MethodSource
-	void test(String text, int[] positions, List<NameMatchPart> parts) {
-		List<NameMatchPart> res = PathSearchContext.ofNameMatchParts2(text, positions);
+	void testOfNameMatchParts(String text, int[] positions, List<NameMatchPart> parts) {
+		List<NameMatchPart> res = PathSearchContext.ofNameMatchParts(text, positions);
 		assertThat(res).hasSize(parts.size());
 		for (int i = 0; i < parts.size(); i++) {
 			assertThat(res.get(i).getPart()).isEqualTo(parts.get(i).getPart());
 			assertThat(res.get(i).getMatch()).isEqualTo(parts.get(i).getMatch());
 		}
 	}
-
 }

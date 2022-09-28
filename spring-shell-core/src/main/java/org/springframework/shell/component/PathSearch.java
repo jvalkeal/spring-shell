@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -260,7 +259,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				item.cursorRowRef = viewPosition;
 				item.index = i;
 				int[] positions = scoredPath.getResult().getPositions();
-				List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts2(item.name, positions);
+				List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts(item.name, positions);
 				// NameMatchPart.of("part", true);
 				item.nameMatchParts = nameMatchParts;
 				return item;
@@ -395,13 +394,20 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			}
 		}
 
-		public static List<NameMatchPart> ofNameMatchParts2(String text, int[] positions) {
+		/**
+		 * Split given text into {@link NameMatchPart}'s by given positions.
+		 *
+		 * @param text the text to split
+		 * @param positions the positions array, expected to be ordered and no duplicates
+		 * @return
+		 */
+		public static List<NameMatchPart> ofNameMatchParts(String text, int[] positions) {
 			List<NameMatchPart> parts = new ArrayList<>();
 			if (positions.length == 0) {
-				parts.addAll(xxx(text, -1));
+				parts.addAll(nameMatchParts(text, -1));
 			}
 			else if (positions.length == 1 && positions[0] == text.length()) {
-				parts.addAll(xxx(text, text.length() - 1));
+				parts.addAll(nameMatchParts(text, text.length() - 1));
 			}
 			else {
 				int sidx = 0;
@@ -410,22 +416,22 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 					eidx = positions[i];
 					if (sidx < text.length()) {
 						String partText = text.substring(sidx, eidx + 1);
-						parts.addAll(xxx(partText, eidx - sidx));
+						parts.addAll(nameMatchParts(partText, eidx - sidx));
 					}
 					else {
-						parts.addAll(xxx(String.valueOf(text.charAt(text.length() - 1)), 0));
+						parts.addAll(nameMatchParts(String.valueOf(text.charAt(text.length() - 1)), 0));
 					}
 					sidx = eidx + 1;
 				}
 				if (sidx < text.length()) {
 					String partText = text.substring(sidx, text.length());
-					parts.addAll(xxx(partText, -1));
+					parts.addAll(nameMatchParts(partText, -1));
 				}
 			}
 			return parts;
 		}
 
-		static List<NameMatchPart> xxx(String text, int position) {
+		static List<NameMatchPart> nameMatchParts(String text, int position) {
 			List<NameMatchPart> parts = new ArrayList<>();
 			if (position < 0) {
 				parts.add(NameMatchPart.of(text, false));
@@ -448,79 +454,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 					parts.add(NameMatchPart.of(text.substring(0, position), false));
 					parts.add(NameMatchPart.of(String.valueOf(text.charAt(position)), true));
 					parts.add(NameMatchPart.of(text.substring(position + 1, text.length()), false));
-				}
-			}
-			return parts;
-		}
-
-		/**
-		 * Split given text into {@link NameMatchPart}'s by given positions.
-		 *
-		 * @param text the text to split
-		 * @param positions the positions array, expected to be ordered and no duplicates
-		 * @return
-		 */
-		public static List<NameMatchPart> ofNameMatchParts(String text, int[] positions) {
-			List<NameMatchPart> parts = new ArrayList<>();
-			if (positions.length == 0) {
-				parts.add(NameMatchPart.of(text, false));
-			}
-			else if (positions.length == 1) {
-				if (positions[0] == 0) {
-					if (text.length() == 1) {
-						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
-					}
-					else {
-						parts.add(NameMatchPart.of(String.valueOf(text.charAt(0)), true));
-						parts.add(NameMatchPart.of(text.substring(1, text.length()), false));
-					}
-				}
-				else if (positions[0] == text.length()) {
-					parts.add(NameMatchPart.of(text.substring(0, text.length() - 1), false));
-					parts.add(NameMatchPart.of(String.valueOf(text.length() - 1), true));
-				}
-				else {
-					parts.add(NameMatchPart.of(text.substring(0, positions[0]), false));
-					parts.add(NameMatchPart.of(String.valueOf(text.charAt(positions[0])), true));
-					parts.add(NameMatchPart.of(text.substring(positions[0] + 1, text.length()), false));
-				}
-			}
-			else if (positions.length == text.length()) {
-				for (int i = 0; i < text.length(); i++) {
-					parts.add(NameMatchPart.of(String.valueOf(text.charAt(i)), true));
-				}
-			}
-			else {
-				int sidx = -1;
-				int eidx = -1;
-				for (int i = 0; i < positions.length; i++) {
-					eidx = positions[i];
-					if (sidx < 0) {
-						if (eidx == 0) {
-							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
-						}
-						else if (eidx == text.length()) {
-							parts.add(NameMatchPart.of(text.substring(0, eidx - 1), false));
-							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx - 1)), true));
-						}
-						else {
-							parts.add(NameMatchPart.of(text.substring(0, eidx), false));
-							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
-						}
-					}
-					else {
-						if (sidx < eidx) {
-							parts.add(NameMatchPart.of(text.substring(sidx + 1, eidx), false));
-							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
-						}
-						else {
-							parts.add(NameMatchPart.of(String.valueOf(text.charAt(eidx)), true));
-						}
-					}
-					sidx = eidx;
-				}
-				if (sidx + 1 <= text.length()) {
-					parts.add(NameMatchPart.of(text.substring(sidx + 1, text.length()), false));
 				}
 			}
 			return parts;
@@ -572,6 +505,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	public static class ScoredPath implements Comparable<ScoredPath> {
+
 		private final Path path;
 		private final SearchMatchResult result;
 
@@ -606,18 +540,12 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		@Override
 		public List<ScoredPath> apply(String input, PathSearchContext context) {
-
 			String[] split = input.split(" ", 2);
 			String match = split.length == 2 ? split[1] : null;
 
 			PathSearchPathVisitor visitor = new PathSearchPathVisitor(context.getPathSearchConfig().getMaxPathsSearch());
 			try {
 				Path path = Path.of(split[0]);
-				// if (split.length == 2) {
-				// 	match = split[1];
-				// }
-				// Path path = StringUtils.hasText(input) ? Path.of(input) : Path.of("");
-				// Path path = Path.of("");
 				log.debug("Walking input {} for path {}", input, path);
 				Files.walkFileTree(path, visitor);
 				log.debug("walked files {} dirs {}", visitor.getPathCounters().getFileCounter().get(),
@@ -628,7 +556,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 
  			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
-			// TreeSet<ScoredPath> treeSet = new TreeSet<ScoredPath>();
 
 			visitor.getFileList().forEach(p -> {
 				SearchMatchResult result;
@@ -643,16 +570,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				else {
 					result = SearchMatchResult.ofMinus();
 				}
-				// SearchMatch searchMatch = SearchMatch.builder()
-				// 	.caseSensitive(false)
-				// 	.normalize(false)
-				// 	.forward(true)
-				// 	.build();
-				// SearchMatchResult result = searchMatch.match(p.toString(), input);
 				treeSet.add(ScoredPath.of(p, result));
 			});
 			return treeSet.stream()
-				// .map(sp -> sp.path)
 				.sorted()
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
 				.collect(Collectors.toList());

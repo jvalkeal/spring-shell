@@ -26,21 +26,21 @@ result(model) ::= <<
 <question_name(model)> <model.resultValue; format="style-value">
 >>
 
-name_match_part_text(part) ::= <%
-<if(part.match)>
-<part.part; format="style-level-warn">
+// render nameMatchPart item
+name_match_part_text(item) ::= <%
+<if(item.match)>
+<item.part; format="style-level-warn">
 <else>
-<part.part; format="style-item-selector">
+<item.part; format="style-item-selector">
 <endif>
 %>
 
-// <model.pathViewItems:{x|<path_item(x)>}; separator="\n">
+// render nameMatchParts string
 name_match_parts_text(parts) ::= <%
 <parts:{x|<name_match_part_text(x)>}>
 %>
 
 // render path item
-// <({<figures.rightPointingQuotation> }); format="style-item-selector"><item.name; format="style-item-selector">
 path_item(item) ::= <%
 <if(item.selected)>
 <({<figures.rightPointingQuotation> }); format="style-item-selector"><name_match_parts_text(item.nameMatchParts)>
