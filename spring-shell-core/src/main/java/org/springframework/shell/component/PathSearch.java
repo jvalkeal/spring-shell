@@ -166,31 +166,42 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				// context.setResultValue(this.paths.get(this.viewStart.get() + this.viewPosition.get()));
 				return true;
 			case OPERATION_UP:
-				if (viewStart.get() > 0 && viewPosition.get() == 0) {
+			log.info("XXXU1 {} {}", viewStart.get(), viewPosition.get());
+			if (viewStart.get() > 0 && viewPosition.get() == 0) {
 					viewStart.decrementAndGet();
+					log.info("XXXU2 {} {}", viewStart.get(), viewPosition.get());
 				}
 				else if (viewStart.get() + viewPosition.get() >= pathViews.size()) {
 					viewPosition.decrementAndGet();
+					log.info("XXXU3 {} {}", viewStart.get(), viewPosition.get());
 				}
 				else if (viewStart.get() + viewPosition.get() <= 0) {
-					viewStart.set(this.paths.size() - this.config.getMaxPathsShow());
+					// viewStart.set(this.paths.size() - this.config.getMaxPathsShow());
+					viewStart.set(this.paths.size() - Math.min(this.paths.size(), this.config.getMaxPathsShow()));
 					viewPosition.set(pathViews.size() - 1);
+					log.info("XXXU4 {} {}", viewStart.get(), viewPosition.get());
 				}
 				else {
 					viewPosition.decrementAndGet();
+					log.info("XXXU5 {} {}", viewStart.get(), viewPosition.get());
 				}
 				updatePathView(context);
 				break;
 			case OPERATION_DOWN:
-				if (viewStart.get() + viewPosition.get() + 1 < this.config.getMaxPathsShow()) {
-					viewPosition.incrementAndGet();
+				log.info("XXXD1 {} {}", viewStart.get(), viewPosition.get());
+				// if (viewStart.get() + viewPosition.get() + 1 < this.config.getMaxPathsShow()) {
+				if (viewStart.get() + viewPosition.get() + 1 < Math.min(this.paths.size(), this.config.getMaxPathsShow())) {
+						viewPosition.incrementAndGet();
+					log.info("XXXD2 {} {}", viewStart.get(), viewPosition.get());
 				}
 				else if (viewStart.get() + viewPosition.get() + 1 >= this.paths.size()) {
 					viewStart.set(0);
 					viewPosition.set(0);
+					log.info("XXXD3 {} {}", viewStart.get(), viewPosition.get());
 				}
 				else {
 					viewStart.incrementAndGet();
+					log.info("XXXD4 {} {}", viewStart.get(), viewPosition.get());
 				}
 				updatePathView(context);
 				break;
@@ -247,20 +258,21 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	private List<PathViewItem> buildPathView() {
+		// List<ScoredPath> view = this.paths.subList(this.viewStart.get(),
+		// 		Math.min(this.paths.size(), this.viewStart.get() + this.config.maxPathsShow));
 		List<ScoredPath> view = this.paths.subList(this.viewStart.get(),
-				Math.min(this.paths.size(), this.viewStart.get() + this.config.maxPathsShow));
+				Math.min(this.paths.size(), this.viewStart.get() + Math.min(this.paths.size(), this.config.getMaxPathsShow())));
+				// Math.min(this.paths.size(), this.config.getMaxPathsShow())
 		log.debug("Build path view, start {} items {}", this.viewStart.get(), view);
 		List<PathViewItem> pathViews = IntStream.range(0, view.size())
 			.mapToObj(i -> {
 				ScoredPath scoredPath = view.get(i);
 				PathViewItem item = new PathViewItem();
-				// item.name = view.get(i).toString();
 				item.name = scoredPath.getPath().toString();
 				item.cursorRowRef = viewPosition;
 				item.index = i;
 				int[] positions = scoredPath.getResult().getPositions();
 				List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts(item.name, positions);
-				// NameMatchPart.of("part", true);
 				item.nameMatchParts = nameMatchParts;
 				return item;
 			})
