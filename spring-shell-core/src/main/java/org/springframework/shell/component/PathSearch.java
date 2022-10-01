@@ -81,8 +81,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private Function<String, Path> pathProvider = (path) -> Paths.get(path);
 	private List<ScoredPath> paths = new ArrayList<>();
 	private List<PathViewItem> pathViews = new ArrayList<>();
-	// private AtomicInteger viewStart = new AtomicInteger(0);
-	// private AtomicInteger viewPosition = new AtomicInteger(0);
 	private final SelectorList<PathViewItem> selectorList;
 
 	public PathSearch(Terminal terminal) {
@@ -163,49 +161,14 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				checkPath(input, context);
 				break;
 			case OPERATION_EXIT:
-				// ScoredPath scoredPath = this.paths.get(this.viewStart.get() + this.viewPosition.get());
-				// context.setResultValue(scoredPath.getPath());
 				context.setResultValue(selectorList.getSelected().getPath());
 				return true;
 			case OPERATION_UP:
 				selectorList.scrollUp();
-				// log.info("XXXU1 {} {}", viewStart.get(), viewPosition.get());
-				// if (viewStart.get() > 0 && viewPosition.get() == 0) {
-				// 	viewStart.decrementAndGet();
-				// 	log.info("XXXU2 {} {}", viewStart.get(), viewPosition.get());
-				// }
-				// else if (viewStart.get() + viewPosition.get() >= pathViews.size()) {
-				// 	viewPosition.decrementAndGet();
-				// 	log.info("XXXU3 {} {}", viewStart.get(), viewPosition.get());
-				// }
-				// else if (viewStart.get() + viewPosition.get() <= 0) {
-				// 	// viewStart.set(this.paths.size() - this.config.getMaxPathsShow());
-				// 	viewStart.set(this.paths.size() - Math.min(this.paths.size(), this.config.getMaxPathsShow()));
-				// 	viewPosition.set(pathViews.size() - 1);
-				// 	log.info("XXXU4 {} {}", viewStart.get(), viewPosition.get());
-				// }
-				// else {
-				// 	viewPosition.decrementAndGet();
-				// 	log.info("XXXU5 {} {}", viewStart.get(), viewPosition.get());
-				// }
 				updatePathView(context);
 				break;
 			case OPERATION_DOWN:
 				selectorList.scrollDown();
-				// log.info("XXXD1 {} {}", viewStart.get(), viewPosition.get());
-				// if (viewStart.get() + viewPosition.get() + 1 < Math.min(this.paths.size(), this.config.getMaxPathsShow())) {
-				// 		viewPosition.incrementAndGet();
-				// 	log.info("XXXD2 {} {}", viewStart.get(), viewPosition.get());
-				// }
-				// else if (viewStart.get() + viewPosition.get() + 1 >= this.paths.size()) {
-				// 	viewStart.set(0);
-				// 	viewPosition.set(0);
-				// 	log.info("XXXD3 {} {}", viewStart.get(), viewPosition.get());
-				// }
-				// else {
-				// 	viewStart.incrementAndGet();
-				// 	log.info("XXXD4 {} {}", viewStart.get(), viewPosition.get());
-				// }
 				updatePathView(context);
 				break;
 			default:
@@ -278,26 +241,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				return new PathViewItem(i.getItem().getPath(), i.getItem().getNameMatchParts(), i.isSelected());
 			})
 			.collect(Collectors.toList());
-		// List<ScoredPath> view = this.paths.subList(this.viewStart.get(),
-  		// 		Math.min(this.paths.size(), this.viewStart.get() + Math.min(this.paths.size(), this.config.getMaxPathsShow())));
-		// log.debug("Build path view, start {} items {}", this.viewStart.get(), view);
-		// List<PathViewItem> pathViews = IntStream.range(0, view.size())
-		// 	.mapToObj(i -> {
-		// 		ScoredPath scoredPath = view.get(i);
-		// 		int[] positions = scoredPath.getResult().getPositions();
-		// 		List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts(scoredPath.getPath().toString(), positions);
-		// 		PathViewItem item = new PathViewItem(scoredPath.getPath(), nameMatchParts);
-
-		// 		// PathViewItem item = new PathViewItem();
-		// 		// item.name = scoredPath.getPath().toString();
-		// 		// item.cursorRowRef = viewPosition;
-		// 		// item.index = i;
-		// 		// int[] positions = scoredPath.getResult().getPositions();
-		// 		// List<NameMatchPart> nameMatchParts = PathSearchContext.ofNameMatchParts(item.name, positions);
-		// 		// item.nameMatchParts = nameMatchParts;
-		// 		return item;
-		// 	})
-		// 	.collect(Collectors.toList());
 		return pathViews;
 	}
 
@@ -404,6 +347,10 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			}
 		}
 
+		/**
+		 * Domain class for path view item. Having its index, name(path), ref to cursor
+		 * row index and list of name match parts.
+		 */
 		public static class PathViewItem implements Nameable {
 
 			private Path path;
@@ -429,38 +376,11 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				return selected;
 			}
 
-		// 	public Boolean getSelected() {
-		// 		return cursorRowRef.get() == index.intValue();
-		// 	}
-
 			public List<NameMatchPart> getNameMatchParts() {
 				return nameMatchParts;
 			}
 
 		}
-
-		/**
-		 * Domain class for path view item. Having its index, name(path), ref to cursor
-		 * row index and list of name match parts.
-		 */
-		// public static class PathViewItem {
-		// 	private Integer index;
-		// 	private String name;
-		// 	private AtomicInteger cursorRowRef;
-		// 	private List<NameMatchPart> nameMatchParts = new ArrayList<>();
-
-		// 	public String getName() {
-		// 		return name;
-		// 	}
-
-		// 	public Boolean getSelected() {
-		// 		return cursorRowRef.get() == index.intValue();
-		// 	}
-
-		// 	public List<NameMatchPart> getNameMatchParts() {
-		// 		return nameMatchParts;
-		// 	}
-		// }
 
 		/**
 		 * Split given text into {@link NameMatchPart}'s by given positions.

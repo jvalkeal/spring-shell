@@ -17,6 +17,11 @@ package org.springframework.shell.support.search;
 
 import org.springframework.util.StringUtils;
 
+/**
+ * Port of {@code fzf} {@code ExactMatchNaive} algorithm.
+ *
+ * @author Janne Valkealahti
+ */
 class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 
 	@Override
