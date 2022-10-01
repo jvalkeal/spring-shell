@@ -79,8 +79,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private final PathSearchConfig config;
 	private PathSearchContext currentContext;
 	private Function<String, Path> pathProvider = (path) -> Paths.get(path);
-	private List<ScoredPath> paths = new ArrayList<>();
-	private List<PathViewItem> pathViews = new ArrayList<>();
 	private final SelectorList<PathViewItem> selectorList;
 
 	public PathSearch(Terminal terminal) {
@@ -215,9 +213,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	private void updatePaths(String path, PathSearchContext context) {
-		this.paths = this.config.pathScanner.get().apply(path, context);
-
-		List<PathViewItem> items = this.paths.stream()
+		List<PathViewItem> items = this.config.pathScanner.get().apply(path, context).stream()
 			.map(scoredPath -> {
 					int[] positions = scoredPath.getResult().getPositions();
 					List<NameMatchPart> nameMatchParts = PathSearchContext
@@ -231,8 +227,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	private void updatePathView(PathSearchContext context) {
-		pathViews = buildPathView();
-		context.setPathViewItems(pathViews);
+		context.setPathViewItems(buildPathView());
 	}
 
 	private List<PathViewItem> buildPathView() {
