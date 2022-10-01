@@ -123,6 +123,8 @@ public interface SearchMatch {
 
 		@Override
 		public SearchMatchResult match(String text, String pattern) {
+			// algos are currently expecting to pass patter as lower case if
+			// case sensitivity is not enabled.
 			if (!caseSensitive && pattern != null) {
 				pattern = pattern.toLowerCase();
 			}

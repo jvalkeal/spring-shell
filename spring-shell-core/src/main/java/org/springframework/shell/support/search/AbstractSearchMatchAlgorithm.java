@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
+	// points given to matches
 	public static final int SCORE_MATCH = 16;
 	public static final int SCORE_GAP_START = -3;
 	public static final int SCORE_GAP_EXTENSION = -1;
@@ -39,6 +40,9 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 	public static final int BONUS_BOUNDARY_WHITE = BONUS_BOUNDARY;
 	public static final int BONUS_BOUNDARY_DELIMITER = BONUS_BOUNDARY + 1;
 
+	/**
+	 * Enumeration of matched characters.
+	 */
 	static enum CharClass {
 		WHITE,
 		NONWORD,
@@ -125,7 +129,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		boolean inGap = false;
 		int consecutive = 0;
 		int firstBonus = 0;
-		// int[] pos = withPos ? new int[pattern.length()] : new int[0];
 		List<Integer> positions = new ArrayList<>();
 
 		CharClass prevClass = CharClass.WHITE;
@@ -147,13 +150,8 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 				// c = normilizeRune(c);
 			}
 
-			// if (pattern.length() < pidx && c == pattern.charAt(pidx)) {
 			if (c == pattern.charAt(pidx)) {
 				positions.add(idx);
-				// if (withPos) {
-				// 	positions.add(idx);
-				// 	// *pos = append(*pos, idx)
-				// }
 				score += SCORE_MATCH;
 				int bonus = bonusFor(prevClass, clazz);
 				if (consecutive == 0) {
@@ -189,35 +187,17 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			prevClass = clazz;
 
 		}
-		// positions.stream().mapToInt(Integer::intValue).toArray();
 		return new CalculateScore(score, positions.stream().mapToInt(Integer::intValue).toArray());
 	}
 
 	static int trySkip(String input, boolean caseSensitive, char b, int from) {
 		String byteArray = input.substring(from);
-
-		// idx := bytes.IndexByte(byteArray, b)
 		int idx = byteArray.indexOf(b);
 
-		// if idx == 0 {
-		// 	// Can't skip any further
-		// 	return from
-		// }
 		if (idx == 0) {
 			return from;
 		}
-		// // We may need to search for the uppercase letter again. We don't have to
-		// // consider normalization as we can be sure that this is an ASCII string.
 
-		// if !caseSensitive && b >= 'a' && b <= 'z' {
-		// 	if idx > 0 {
-		// 		byteArray = byteArray[:idx]
-		// 	}
-		// 	uidx := bytes.IndexByte(byteArray, b-32)
-		// 	if uidx >= 0 {
-		// 		idx = uidx
-		// 	}
-		// }
 		if (!caseSensitive && b >= 'a' && b <= 'z') {
 			if (idx > 0) {
 				byteArray = byteArray.substring(idx);
@@ -228,47 +208,21 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			}
 		}
 
-		// if idx < 0 {
-		// 	return -1
-		// }
 		if (idx < 0) {
 			return -1;
 		}
 
-		// return from + idx
 		return from + idx;
 	}
 
 	static int asciiFuzzyIndex(String input, String pattern, boolean caseSensitive) {
-
-		// 	// Can't determine
-		// 	if !input.IsBytes() {
-		// 		return 0
-		// 	}
 		if (!StringUtils.hasText(input)) {
 			return 0;
 		}
 
-		// 	// Not possible
-		// 	if !isAscii(pattern) {
-		// 		return -1
-		// 	}
-
-		// 	firstIdx, idx := 0, 0
 		int firstIndex = 0;
 		int idx = 0;
 
-		// 	for pidx := 0; pidx < len(pattern); pidx++ {
-		// 		idx = trySkip(input, caseSensitive, byte(pattern[pidx]), idx)
-		// 		if idx < 0 {
-		// 			return -1
-		// 		}
-		// 		if pidx == 0 && idx > 0 {
-		// 			// Step back to find the right bonus point
-		// 			firstIdx = idx - 1
-		// 		}
-		// 		idx++
-		// 	}
 		for (int pidx = 0; pidx < pattern.length(); pidx++) {
 			idx = trySkip(input, caseSensitive, pattern.charAt(pidx), idx);
 			if (idx < 0) {
@@ -280,7 +234,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			idx++;
 		}
 
-		// 	return firstIdx
 		return firstIndex;
 	}
 }
