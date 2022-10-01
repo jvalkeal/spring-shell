@@ -17,9 +17,6 @@ package org.springframework.shell.component.support;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.springframework.shell.component.support.SelectorList.ProjectionItem;
 
 public interface SelectorList<T extends Nameable> {
 
@@ -52,6 +49,8 @@ public interface SelectorList<T extends Nameable> {
 		public void reset(List<T> items) {
 			this.items.clear();
 			this.items.addAll(items);
+			this.start = 0;
+			this.position = 0;
 		}
 
 		@Override
@@ -66,9 +65,6 @@ public interface SelectorList<T extends Nameable> {
 			if (start > 0 && position == 0) {
 				start--;
 			}
-			// else if (start + position >= items.size()) {
-			// 	position--;
-			// }
 			// at highest position, can't go furter, start over from bottom
 			else if (start + position <= 0) {
 				// start = 0;

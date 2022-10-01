@@ -236,8 +236,12 @@ class SelectorListTests {
 	}
 
 	@SuppressWarnings("rawtypes")
-	InstanceOfAssertFactory<SelectorList, SelectorListAssert> SELECTOR_LIST = new InstanceOfAssertFactory<>(
-			SelectorList.class, SelectorListAssertions::assertThat);
+	InstanceOfAssertFactory<SelectorList, SelectorListAssert<TestItem>> SELECTOR_LIST = selectorList(TestItem.class);
+
+	@SuppressWarnings("rawtypes")
+	static <RESULT extends Nameable> InstanceOfAssertFactory<SelectorList, SelectorListAssert<RESULT>> selectorList(Class<RESULT> resultType) {
+		return new InstanceOfAssertFactory<>(SelectorList.class, SelectorListAssertions::<RESULT> assertThat);
+	}
 
 	static class SelectorListAssertions {
 
