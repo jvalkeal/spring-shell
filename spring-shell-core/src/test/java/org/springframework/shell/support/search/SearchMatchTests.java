@@ -32,9 +32,9 @@ public class SearchMatchTests {
 
 	static Stream<Arguments> testFuzzyMatch() {
 		return Stream.of(
-			// Arguments.of(false, false, true, "fooBarbaz1", "obz", false, 2, 9,
-			// 	SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
-			Arguments.of(true, false, true, "fooBarbaz", "oBz", false, 2, 9,
+			Arguments.of(false, false, true, "fooBarbaz1", "obz", false, 2, 9, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
+			Arguments.of(true, false, true, "fooBarbaz", "oBz", false, 2, 9, new int[] { 2, 3, 8 },
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3)
 			);
 	}
@@ -42,7 +42,7 @@ public class SearchMatchTests {
 	@ParameterizedTest
 	@MethodSource
 	void testFuzzyMatch(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos,
-			int start, int end, int score) {
+			int start, int end, int[] positions, int score) {
 		SearchMatch searchMatch = SearchMatch.builder()
 				.caseSensitive(caseSensitive)
 				.normalize(normalize)
@@ -52,19 +52,26 @@ public class SearchMatchTests {
 		assertThat(result.getStart()).isEqualTo(start);
 		assertThat(result.getEnd()).isEqualTo(end);
 		assertThat(result.getScore()).isEqualTo(score);
+		assertThat(result.getPositions()).containsExactly(positions);
 	}
 
 	static Stream<Arguments> testExactMatch() {
 		return Stream.of(
-			Arguments.of(false, false, true, "fooBarbaz", "'oBA", false, 2, 5,
-				SCORE_MATCH * 3 + BONUS_CAMEL123 + BONUS_CONSECUTIVE)
+			Arguments.of(true, false, true, "fooBarbaz", "'oBA", false, -1, -1, new int[] {},
+				0),
+			Arguments.of(false, false, true, "fooBarbaz", "'oBA", false, 2, 5, new int[] { 2, 3, 4 },
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + BONUS_CONSECUTIVE),
+			Arguments.of(false, false, true, "fooBarbaz", "'o", false, 1, 2, new int[] { 1 },
+				SCORE_MATCH * 1),
+			Arguments.of(false, false, true, "/tmp/test/11/file11.txt", "'e", false, 6, 7, new int[] { 6 },
+				SCORE_MATCH * 1)
 			);
 	}
 
-	// @ParameterizedTest
-	// @MethodSource
+	@ParameterizedTest
+	@MethodSource
 	void testExactMatch(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
-			boolean withPos, int start, int end, int score) {
+			boolean withPos, int start, int end, int[] positions, int score) {
 		SearchMatch searchMatch = SearchMatch.builder()
 				.caseSensitive(caseSensitive)
 				.normalize(normalize)
@@ -74,5 +81,6 @@ public class SearchMatchTests {
 		assertThat(result.getStart()).isEqualTo(start);
 		assertThat(result.getEnd()).isEqualTo(end);
 		assertThat(result.getScore()).isEqualTo(score);
+		assertThat(result.getPositions()).containsExactly(positions);
 	}
 }

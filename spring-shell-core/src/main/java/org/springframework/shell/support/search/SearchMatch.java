@@ -123,6 +123,9 @@ public interface SearchMatch {
 
 		@Override
 		public SearchMatchResult match(String text, String pattern) {
+			if (!caseSensitive && pattern != null) {
+				pattern = pattern.toLowerCase();
+			}
 			// pick algorithm based on pattern
 			SearchMatchAlgorithm algo;
 			if (pattern.startsWith("'")) {

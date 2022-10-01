@@ -115,7 +115,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		if (idx == 0) {
 			return BONUS_BOUNDARY_WHITE;
 		}
-		return bonusFor(CharClass.values()[idx - 1], CharClass.values()[idx]);
+		return bonusFor(charClassOfAscii(input.charAt(idx - 1)), charClassOfAscii(input.charAt(idx)));
 	}
 
 	static CalculateScore calculateScore(boolean caseSensitive, boolean normalize, String text, String pattern,
@@ -195,32 +195,20 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
 	static int trySkip(String input, boolean caseSensitive, char b, int from) {
 		String byteArray = input.substring(from);
-		int idx = byteArray.indexOf(b);
-		// idx := bytes.IndexByte(byteArray, b)
 
-		if (idx == 0) {
-			return from;
-		}
+		// idx := bytes.IndexByte(byteArray, b)
+		int idx = byteArray.indexOf(b);
+
 		// if idx == 0 {
 		// 	// Can't skip any further
 		// 	return from
 		// }
+		if (idx == 0) {
+			return from;
+		}
 		// // We may need to search for the uppercase letter again. We don't have to
 		// // consider normalization as we can be sure that this is an ASCII string.
 
-		if (!caseSensitive && b >= 'a' && b <= 'z') {
-			if (idx > 0) {
-				byteArray = byteArray.substring(idx);
-			}
-			int uidx = byteArray.indexOf(b - 32);
-			if (uidx >= 0) {
-				idx = uidx;
-			}
-		}
-		if (idx < 0) {
-			return -1;
-		}
-		return from + idx;
 		// if !caseSensitive && b >= 'a' && b <= 'z' {
 		// 	if idx > 0 {
 		// 		byteArray = byteArray[:idx]
@@ -230,31 +218,57 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		// 		idx = uidx
 		// 	}
 		// }
+		if (!caseSensitive && b >= 'a' && b <= 'z') {
+			if (idx > 0) {
+				byteArray = byteArray.substring(idx);
+			}
+			int uidx = byteArray.indexOf(b - 32);
+			if (uidx >= 0) {
+				idx = uidx;
+			}
+		}
+
 		// if idx < 0 {
 		// 	return -1
 		// }
-		// return from + idx
+		if (idx < 0) {
+			return -1;
+		}
 
+		// return from + idx
+		return from + idx;
 	}
 
 	static int asciiFuzzyIndex(String input, String pattern, boolean caseSensitive) {
 
+		// 	// Can't determine
+		// 	if !input.IsBytes() {
+		// 		return 0
+		// 	}
 		if (!StringUtils.hasText(input)) {
 			return 0;
 		}
-	// 	// Can't determine
-	// 	if !input.IsBytes() {
-	// 		return 0
-	// 	}
 
-	// 	// Not possible
-	// 	if !isAscii(pattern) {
-	// 		return -1
-	// 	}
+		// 	// Not possible
+		// 	if !isAscii(pattern) {
+		// 		return -1
+		// 	}
 
+		// 	firstIdx, idx := 0, 0
 		int firstIndex = 0;
 		int idx = 0;
-	// 	firstIdx, idx := 0, 0
+
+		// 	for pidx := 0; pidx < len(pattern); pidx++ {
+		// 		idx = trySkip(input, caseSensitive, byte(pattern[pidx]), idx)
+		// 		if idx < 0 {
+		// 			return -1
+		// 		}
+		// 		if pidx == 0 && idx > 0 {
+		// 			// Step back to find the right bonus point
+		// 			firstIdx = idx - 1
+		// 		}
+		// 		idx++
+		// 	}
 		for (int pidx = 0; pidx < pattern.length(); pidx++) {
 			idx = trySkip(input, caseSensitive, pattern.charAt(pidx), idx);
 			if (idx < 0) {
@@ -265,19 +279,8 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			}
 			idx++;
 		}
-	// 	for pidx := 0; pidx < len(pattern); pidx++ {
-	// 		idx = trySkip(input, caseSensitive, byte(pattern[pidx]), idx)
-	// 		if idx < 0 {
-	// 			return -1
-	// 		}
-	// 		if pidx == 0 && idx > 0 {
-	// 			// Step back to find the right bonus point
-	// 			firstIdx = idx - 1
-	// 		}
-	// 		idx++
-	// 	}
+
+		// 	return firstIdx
 		return firstIndex;
-	// 	return firstIdx
-	// }
 	}
 }
