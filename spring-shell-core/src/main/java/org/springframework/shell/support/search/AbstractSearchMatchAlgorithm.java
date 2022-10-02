@@ -70,7 +70,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		return max - index - 1;
 	}
 
-	private static CharClass charClassOfAscii(char c) {
+	static CharClass charClassOfAscii(char c) {
 		if (c >= 'a' && c <= 'z') {
 			return CharClass.CHARLOWER;
 		}
@@ -90,7 +90,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		return CharClass.NONWORD;
 	}
 
-	private static int bonusFor(CharClass prevClass, CharClass clazz) {
+	static int bonusFor(CharClass prevClass, CharClass clazz) {
 		if (clazz.ordinal() > CharClass.NONWORD.ordinal()) {
 			if (prevClass == CharClass.WHITE) {
 				return BONUS_BOUNDARY_WHITE;
