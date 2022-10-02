@@ -21,11 +21,6 @@ question_name(model) ::= <<
 <({<figures.questionMark>}); format="style-list-value"> <model.name; format="style-title">
 >>
 
-// component result
-result(model) ::= <<
-<question_name(model)> <model.resultValue; format="style-value">
->>
-
 // render nameMatchPart item
 name_match_part_text(item) ::= <%
 <if(item.match)>
@@ -52,6 +47,11 @@ path_item(item) ::= <%
 // render paths
 paths(model) ::= <<
 <model.pathViewItems:{x|<path_item(x)>}; separator="\n">
+>>
+
+// component result
+result(model) ::= <<
+<question_name(model)> <model.resultValue; format="style-value">
 >>
 
 // component is running

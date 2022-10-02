@@ -42,6 +42,7 @@ import org.springframework.shell.component.support.SelectorItem;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 import org.springframework.util.StringUtils;
 
 @ShellComponent
@@ -69,8 +70,17 @@ public class ComponentCommands extends AbstractShellComponent {
 	}
 
 	@ShellMethod(key = "component path search", value = "Path search", group = "Components")
-	public String pathSearch() {
+	public String pathSearch(
+		@ShellOption(defaultValue = ShellOption.NULL) Integer maxPathsShow,
+		@ShellOption(defaultValue = ShellOption.NULL) Integer maxPathsSearch
+	) {
 		PathSearchConfig config = new PathSearch.PathSearchConfig();
+		if (maxPathsShow != null) {
+			config.setMaxPathsShow(maxPathsShow);
+		}
+		if (maxPathsSearch != null) {
+			config.setMaxPathsSearch(maxPathsSearch);
+		}
 		PathSearch component = new PathSearch(getTerminal(), "Enter value", config);
 		component.setResourceLoader(getResourceLoader());
 		component.setTemplateExecutor(getTemplateExecutor());

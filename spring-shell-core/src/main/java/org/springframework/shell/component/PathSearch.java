@@ -86,18 +86,15 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	public PathSearch(Terminal terminal, String name) {
-		this(terminal, name, null, null);
+		this(terminal, name, null);
 	}
 
 	public PathSearch(Terminal terminal, String name, PathSearchConfig config) {
-		this(terminal, name, null, config);
+		this(terminal, name, config, null);
 	}
 
-	public PathSearch(Terminal terminal, String name, Function<PathSearchContext, List<AttributedString>> renderer) {
-		this(terminal, name, renderer, null);
-	}
-
-	public PathSearch(Terminal terminal, String name, Function<PathSearchContext, List<AttributedString>> renderer, PathSearchConfig config) {
+	public PathSearch(Terminal terminal, String name, PathSearchConfig config,
+			Function<PathSearchContext, List<AttributedString>> renderer) {
 		super(terminal, name, null);
 		setRenderer(renderer != null ? renderer : new DefaultRenderer());
 		setTemplateLocation(DEFAULT_TEMPLATE_LOCATION);
@@ -137,7 +134,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		}
 		String input;
 		switch (operation) {
-			case OPERATION_SPACE:
 			case OPERATION_CHAR:
 				String lastBinding = bindingReader.getLastBinding();
 				input = context.getInput();
@@ -199,14 +195,16 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			context.setMessage(null);
 			return;
 		}
-		Path p = resolvePath(path);
-		boolean isDirectory = Files.isDirectory(p);
-		if (isDirectory) {
-			context.setMessage("Directory exists", MessageLevel.ERROR);
-		}
-		else {
-			context.setMessage("Path ok", MessageLevel.INFO);
-		}
+		// Path p = resolvePath(path);
+		// boolean isDirectory = Files.isDirectory(p);
+		// if (isDirectory) {
+		// 	context.setMessage("Directory exists", MessageLevel.ERROR);
+		// }
+		// else {
+		// 	context.setMessage("Path ok", MessageLevel.INFO);
+		// }
+
+		// context.setMessage("Type '<path> <pattern>' to search", MessageLevel.INFO);
 
 		updatePaths(path, context);
 		updatePathView(context);
@@ -221,8 +219,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 					PathViewItem item = new PathViewItem(scoredPath.getPath(), nameMatchParts, false);
 					return item;
 				})
-			.collect(Collectors.toList())
-			;
+			.collect(Collectors.toList());
 		selectorList.reset(items);
 	}
 
@@ -248,29 +245,27 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		private int maxPathsSearch = 20;
 		private Supplier<BiFunction<String, PathSearchContext, List<ScoredPath>>> pathScanner = () -> DefaultPathScanner.of();
 
-		public void setMaxPaths(int maxPathsShow, int maxPathsSearch) {
-			Assert.state(maxPathsShow > 0 || maxPathsShow < 33, "maxPathsShow has to be between 1 and 32");
-			Assert.state(maxPathsSearch > 0 || maxPathsSearch < 33, "maxPathsSearch has to be between 1 and 32");
-			Assert.state(maxPathsSearch >= maxPathsShow, "maxPathsShow cannot be bigger than maxPathsSearch");
-			this.maxPathsShow = maxPathsShow;
-		}
-
 		public int getMaxPathsShow() {
 			return this.maxPathsShow;
+		}
+
+		public void setMaxPathsShow(int maxPathsShow) {
+			Assert.state(maxPathsShow > 0 || maxPathsShow < 33, "maxPathsShow has to be between 1 and 32");
+			this.maxPathsShow = maxPathsShow;
 		}
 
 		public int getMaxPathsSearch() {
 			return this.maxPathsSearch;
 		}
 
+		public void setMaxPathsSearch(int maxPathsSearch) {
+			Assert.state(maxPathsSearch > 0, "maxPathsSearch has to be more than 0");
+			this.maxPathsSearch = maxPathsSearch;
+		}
+
 		public void setPathScanner(Supplier<BiFunction<String, PathSearchContext, List<ScoredPath>>> pathScanner) {
 			Assert.notNull(pathScanner, "pathScanner supplier cannot be null");
 			this.pathScanner = pathScanner;
-		}
-
-		@Override
-		public String toString() {
-			return "PathSearchConfig [maxPathsSearch=" + maxPathsSearch + ", maxPathsShow=" + maxPathsShow + ", mode=" + "]";
 		}
 	}
 
@@ -487,6 +482,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		}
 	}
 
+	/**
+	 * Holder class keeping {@link Path} and {@link SearchMatchResult}.
+	 */
 	public static class ScoredPath implements Comparable<ScoredPath> {
 
 		private final Path path;
@@ -497,16 +495,16 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			this.result = result;
 		}
 
+		public static ScoredPath of(Path path, SearchMatchResult result) {
+			return new ScoredPath(path, result);
+		}
+
 		public Path getPath() {
 			return this.path;
 		}
 
 		public SearchMatchResult getResult() {
 			return this.result;
-		}
-
-		static ScoredPath of(Path path, SearchMatchResult result) {
-			return new ScoredPath(path, result);
 		}
 
 		@Override
@@ -523,9 +521,12 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		@Override
 		public List<ScoredPath> apply(String input, PathSearchContext context) {
+
+			// input format <path> <pattern>
 			String[] split = input.split(" ", 2);
 			String match = split.length == 2 ? split[1] : null;
 
+			// walk files to find candidates
 			PathSearchPathVisitor visitor = new PathSearchPathVisitor(context.getPathSearchConfig().getMaxPathsSearch());
 			try {
 				Path path = Path.of(split[0]);
@@ -537,9 +538,8 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				log.debug("PathSearchPathVisitor caused exception", e);
 			}
 
-
+			// match and score candidates
  			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
-
 			visitor.getFileList().forEach(p -> {
 				SearchMatchResult result;
 				if (StringUtils.hasText(match)) {
@@ -555,6 +555,8 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				}
 				treeSet.add(ScoredPath.of(p, result));
 			});
+
+			// sort and limit
 			return treeSet.stream()
 				.sorted()
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())

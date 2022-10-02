@@ -58,7 +58,6 @@ public abstract class AbstractComponent<T extends ComponentContext<T>> implement
 
 	private final static Logger log = LoggerFactory.getLogger(AbstractComponent.class);
 	public final static String OPERATION_EXIT = "EXIT";
-	public final static String OPERATION_SPACE = "SPACE";
 	public final static String OPERATION_BACKSPACE = "BACKSPACE";
 	public final static String OPERATION_CHAR = "CHAR";
 	public final static String OPERATION_SELECT = "SELECT";
