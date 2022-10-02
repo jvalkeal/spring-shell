@@ -205,7 +205,15 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	}
 
 	private void updateSelectorList(String path, PathSearchContext context) {
-		List<PathViewItem> items = this.config.pathScanner.get().apply(path, context).getScoredPaths().stream()
+		PathScannerResult result = this.config.pathScanner.get().apply(path, context);
+
+		if (result.getFileCount() > -1) {
+			String message = String.format("Type '<path> <pattern>' to search, dirs %s files %s", result.getDirCount(),
+					result.getFileCount());
+			context.setMessage("Type '<path> <pattern>' to search " + message, MessageLevel.INFO);
+		}
+
+		List<PathViewItem> items = result.getScoredPaths().stream()
 			.map(scoredPath -> {
 					int[] positions = scoredPath.getResult().getPositions();
 					List<NameMatchPart> nameMatchParts = PathSearchContext
@@ -214,6 +222,16 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 					return item;
 				})
 			.collect(Collectors.toList());
+
+		// List<PathViewItem> items = this.config.pathScanner.get().apply(path, context).getScoredPaths().stream()
+		// 	.map(scoredPath -> {
+		// 			int[] positions = scoredPath.getResult().getPositions();
+		// 			List<NameMatchPart> nameMatchParts = PathSearchContext
+		// 					.ofNameMatchParts(scoredPath.getPath().toString(), positions);
+		// 			PathViewItem item = new PathViewItem(scoredPath.getPath(), nameMatchParts, false);
+		// 			return item;
+		// 		})
+		// 	.collect(Collectors.toList());
 		selectorList.reset(items);
 	}
 
@@ -256,18 +274,34 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	public static class PathScannerResult {
 
 		private final List<ScoredPath> scoredPaths;
+		private long dirCount = -1;
+		private long fileCount = -1;
 
-		PathScannerResult(List<ScoredPath> scoredPaths) {
+		PathScannerResult(List<ScoredPath> scoredPaths, long dirCount, long fileCount) {
 			Assert.notNull(scoredPaths, "Scored paths cannot be null");
 			this.scoredPaths = scoredPaths;
+			this.dirCount = dirCount;
+			this.fileCount = fileCount;
 		}
 
 		public static PathScannerResult of(List<ScoredPath> scoredPaths) {
-			return new PathScannerResult(scoredPaths);
+			return new PathScannerResult(scoredPaths, -1, -1);
+		}
+
+		public static PathScannerResult of(List<ScoredPath> scoredPaths, long dirCount, long fileCount) {
+			return new PathScannerResult(scoredPaths, dirCount, fileCount);
 		}
 
 		public List<ScoredPath> getScoredPaths() {
 			return scoredPaths;
+		}
+
+		public long getDirCount() {
+			return dirCount;
+		}
+
+		public long getFileCount() {
+			return fileCount;
 		}
 	}
 
@@ -562,7 +596,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			return treeSet.stream()
 				.sorted()
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
-				.collect(Collectors.collectingAndThen(Collectors.toList(), PathScannerResult::of));
+				.collect(Collectors.collectingAndThen(Collectors.toList(),
+						list -> PathScannerResult.of(list, visitor.getPathCounters().getDirectoryCounter().get(),
+								visitor.getPathCounters().getFileCounter().get())));
 		}
 	}
 
