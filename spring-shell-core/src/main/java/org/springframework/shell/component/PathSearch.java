@@ -31,9 +31,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.file.AccumulatorPathVisitor;
 import org.apache.commons.io.file.Counters;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
@@ -208,7 +213,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		PathScannerResult result = this.config.pathScanner.get().apply(path, context);
 
 		if (result.getFileCount() > -1) {
-			String message = String.format("Type '<path> <pattern>' to search, dirs %s files %s", result.getDirCount(),
+			String message = String.format(", dirs %s files %s", result.getDirCount(),
 					result.getFileCount());
 			context.setMessage("Type '<path> <pattern>' to search " + message, MessageLevel.INFO);
 		}
@@ -545,7 +550,12 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		@Override
 		public int compareTo(ScoredPath other) {
-			return Integer.compare(other.result.getScore(), this.result.getScore());
+			int scoreCompare = Integer.compare(other.result.getScore(), this.result.getScore());
+			if (scoreCompare == 0) {
+				// secondary sort by path length
+				return -Integer.compare(other.getPath().toString().length(), this.getPath().toString().length());
+			}
+			return scoreCompare;
 		}
 	}
 
@@ -565,7 +575,11 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 			// walk files to find candidates
 			PathSearchPathVisitor visitor = new PathSearchPathVisitor(context.getPathSearchConfig().getMaxPathsSearch());
 			try {
-				Path path = Path.of(split[0]);
+				String p = split[0];
+				if (".".equals(p)) {
+					p = "";
+				}
+				Path path = Path.of(p);
 				log.debug("Walking input {} for path {}", input, path);
 				Files.walkFileTree(path, visitor);
 				log.debug("walked files {} dirs {}", visitor.getPathCounters().getFileCounter().get(),
@@ -576,7 +590,7 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 			// match and score candidates
  			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
-			visitor.getFileList().forEach(p -> {
+			Stream.concat(visitor.getFileList().stream(), visitor.getDirList().stream()).forEach(p -> {
 				SearchMatchResult result;
 				if (StringUtils.hasText(match)) {
 					SearchMatch searchMatch = SearchMatch.builder()
@@ -591,10 +605,26 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				}
 				treeSet.add(ScoredPath.of(p, result));
 			});
+			// visitor.getFileList().forEach(p -> {
+			// 	SearchMatchResult result;
+			// 	if (StringUtils.hasText(match)) {
+			// 		SearchMatch searchMatch = SearchMatch.builder()
+			// 			.caseSensitive(false)
+			// 			.normalize(false)
+			// 			.forward(true)
+			// 			.build();
+			// 		result = searchMatch.match(p.toString(), match);
+			// 	}
+			// 	else {
+			// 		result = SearchMatchResult.ofMinus();
+			// 	}
+			// 	treeSet.add(ScoredPath.of(p, result));
+			// });
 
 			// sort and limit
 			return treeSet.stream()
 				.sorted()
+				.filter(sp -> StringUtils.hasText(sp.getPath().toString()))
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
 				.collect(Collectors.collectingAndThen(Collectors.toList(),
 						list -> PathScannerResult.of(list, visitor.getPathCounters().getDirectoryCounter().get(),
@@ -609,9 +639,15 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private static class PathSearchPathVisitor extends AccumulatorPathVisitor {
 
 		private final int limitFiles;
+		// private final static IOFileFilter FILTER = new AndFileFilter(new WildcardFileFilter("*"),
+		// 		HiddenFileFilter.VISIBLE);
+		// private final static IOFileFilter WFILTER = new WildcardFileFilter("*");
+		// private final static IOFileFilter DFILTER = new WildcardFileFilter(".*");
+		private final static IOFileFilter DNFILTER = new NotFileFilter(new WildcardFileFilter(".*"));
+		// private final static IOFileFilter FILTER = new AndFileFilter(WFILTER, DFILTER);
 
 		PathSearchPathVisitor(int limitFiles) {
-			super(Counters.longPathCounters(), new WildcardFileFilter("*"), new WildcardFileFilter("*"));
+			super(Counters.longPathCounters(), DNFILTER, DNFILTER);
 			this.limitFiles = limitFiles;
 		}
 
