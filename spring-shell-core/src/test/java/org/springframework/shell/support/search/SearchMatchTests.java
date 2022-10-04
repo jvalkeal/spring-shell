@@ -23,21 +23,70 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_BOUNDARY;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_BOUNDARY_DELIMITER;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_BOUNDARY_WHITE;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_CAMEL123;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_CONSECUTIVE;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_FIRST_CHAR_MULTIPLIER;
+import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.BONUS_NON_WORD;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_EXTENSION;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_START;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_MATCH;
 
 public class SearchMatchTests {
 
-	@Test
-	void testv2() {
+	static Stream<Arguments> testv2() {
+		return Stream.of(
+			Arguments.of(false, false, true, "fooBarbaz1", "oBZ", true, 2, 9, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
+			Arguments.of(false, false, true, "foo bar baz", "fbb", true, 0, 9, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE * 2 +
+				2 * SCORE_GAP_START + 4 * SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, true, "/AutomatorDocument.icns", "rdoc", true, 9, 13, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 4 + BONUS_CAMEL123 + BONUS_CONSECUTIVE * 2),
+			Arguments.of(false, false, true, "/man1/zshcompctl.1", "zshc", true, 6, 10, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 4 + BONUS_BOUNDARY_DELIMITER * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_DELIMITER * 3),
+			Arguments.of(false, false, true, "/.oh-my-zsh/cache", "zshc", true, 8, 13, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 4 + BONUS_BOUNDARY * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY * 2 + SCORE_GAP_START * 2 + BONUS_BOUNDARY_DELIMITER),
+			Arguments.of(false, false, true, "ab0123 456", "12356", true, 3, 10, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 5 + BONUS_CONSECUTIVE * 3 + SCORE_GAP_START + SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, true, "abc123 456", "12356", true, 3, 10, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 5 + BONUS_CAMEL123 + BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + BONUS_CONSECUTIVE + SCORE_GAP_START + SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, true, "foo/bar/baz", "fbb", true, 0, 9, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_DELIMITER * 2 + SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 4),
+			Arguments.of(false, false, true, "fooBarBaz", "fbb", true, 0, 7, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, true, "foo barbaz", "fbb", true, 0, 8, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER +  SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 3),
+			Arguments.of(false, false, true, "fooBar Baz", "foob", true, 0, 4, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE * 3),
+			Arguments.of(false, false, true, "xFoo-Bar Baz", "foo-b", true, 1, 6, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 5 + BONUS_CAMEL123 * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + BONUS_NON_WORD + BONUS_BOUNDARY),
+
+			Arguments.of(true, false, true, "fooBarbaz", "oBz", true, 2, 9, new int[] { 2, 3, 8 },
+				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3)
+			);
+	}
+
+	/*
+			assertMatch(t, fn, false, forward, "xFoo-Bar Baz", "foo-b", 1, 6,
+				scoreMatch*5+bonusCamel123*bonusFirstCharMultiplier+bonusCamel123*2+
+					bonusNonWord+bonusBoundary)
+	*/
+
+	@ParameterizedTest
+	@MethodSource
+	void testv2(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern, boolean withPos,
+			int start, int end, int[] positions, int score) {
+		if (!caseSensitive) {
+			pattern = pattern.toLowerCase();
+		}
 		FuzzyMatchV2SearchMatchAlgorithm algo = new FuzzyMatchV2SearchMatchAlgorithm();
-		SearchMatchResult match = algo.match(false, false, true, "fooBarbaz1", "obz", true);
-		assertThat(match.getStart()).isEqualTo(2);
-		assertThat(match.getEnd()).isEqualTo(9);
-		// assertThat(match.getScore()).isEqualTo(SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3);
+		SearchMatchResult match = algo.match(caseSensitive, normalize, forward, text, pattern, withPos);
+		assertThat(match.getStart()).isEqualTo(start);
+		assertThat(match.getEnd()).isEqualTo(end);
+		assertThat(match.getScore()).isEqualTo(score);
 	}
 
 	static Stream<Arguments> testFuzzyMatch() {
@@ -48,6 +97,7 @@ public class SearchMatchTests {
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3)
 			);
 	}
+
 
 	@ParameterizedTest
 	@MethodSource

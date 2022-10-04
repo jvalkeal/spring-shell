@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.support.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,7 +55,8 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 		return FuzzyMatchV1(caseSensitive, normalize, forward, input, pattern, withPos, slab)
 		// 	}
 
-		// 	// Phase 1. Optimized search for ASCII string
+		// Phase 1. Optimized search for ASCII string
+
 		// 	idx := asciiFuzzyIndex(input, pattern, caseSensitive)
 		// 	if idx < 0 {
 		// 		return Result{-1, -1, 0}, nil
@@ -64,22 +68,23 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 	offset32 := 0
 		// 	offset16, H0 := alloc16(offset16, slab, N)
 		// 	offset16, C0 := alloc16(offset16, slab, N)
-		int[] H0 = new int[N];
-		int[] C0 = new int[N];
+		List<Integer> H0 = create(N);
+		List<Integer> C0 = create(N);
 
 		// 	// Bonus point for each position
 		// 	offset16, B := alloc16(offset16, slab, N)
 		// 	// The first occurrence of each character in the pattern
 		// 	offset32, F := alloc32(offset32, slab, M)
-		int[] B = new int[N];
-		int[] F = new int[M];
+		List<Integer> B = create(N);
+		List<Integer> F = create(M);
 
 		// 	// Rune array
 		// 	_, T := alloc32(offset32, slab, N)
 		// 	input.CopyRunes(T)
 		String T = text;
 
-		// 	// Phase 2. Calculate bonus for each point
+		// Phase 2. Calculate bonus for each point
+
 		// 	maxScore, maxScorePos := int16(0), 0
 		// 	pidx, lastIdx := 0, 0
 		int maxScore = 0;
@@ -98,9 +103,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		String Tsub = T.substring(idx);
 
 		// 	H0sub, C0sub, Bsub := H0[idx:][:len(Tsub)], C0[idx:][:len(Tsub)], B[idx:][:len(Tsub)]
-		int[] H0sub = slice(H0, idx, Tsub.length());
-		int[] C0sub = slice(C0, idx, Tsub.length());
-		int[] Bsub = slice(B, idx, Tsub.length());
+		List<Integer> H0sub = slicex(H0, idx, Tsub.length());
+		List<Integer> C0sub = slicex(C0, idx, Tsub.length());
+		List<Integer> Bsub = slicex(B, idx, Tsub.length());
 
 		// 	for off, char := range Tsub {
 		for (int off = 0; off < Tsub.length(); off++) {
@@ -135,7 +140,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// 		prevClass = class
 			Tsub = Tsub.substring(0, off) + c + Tsub.substring(off + 1);
 			int bonus = bonusFor(prevClass, clazz);
-			Bsub[off] = bonus;
+			Bsub.set(off, bonus);
 			prevClass = clazz;
 
 			// 		if char == pchar {
@@ -148,7 +153,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// 		}
 			if (c == pchar) {
 				if (pidx < M) {
-					F[pidx] = idx + off;
+					F.set(pidx, idx + off);
 					pidx++;
 					pchar = pattern.charAt(Math.min(pidx, M - 1));
 				}
@@ -168,8 +173,8 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// 			inGap = false
 			if (c == pchar0) {
 				int score = SCORE_MATCH + bonus * BONUS_FIRST_CHAR_MULTIPLIER;
-				H0sub[off] = score;
-				C0sub[off] = 1;
+				H0sub.set(off, score);
+				C0sub.set(off, 1);
 				if (M == 1 && (forward && score > maxScore || !forward && score >= maxScore)) {
 					maxScore = score;
 					maxScorePos = idx + off;
@@ -192,15 +197,15 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// 	}
 			else {
 				if (inGap) {
-					H0sub[off] = Math.max(prevH0 + SCORE_GAP_EXTENSION, 0);
+					H0sub.set(off, Math.max(prevH0 + SCORE_GAP_EXTENSION, 0));
 				}
 				else {
-					H0sub[off] = Math.max(prevH0 + SCORE_GAP_START, 0);
+					H0sub.set(off, Math.max(prevH0 + SCORE_GAP_START, 0));
 				}
-				C0sub[off] = 0;
+				C0sub.set(off, 0);
 				inGap = true;
 			}
-			prevH0 = H0sub[off];
+			prevH0 = H0sub.get(off);
 		}
 		// 	if pidx != M {
 		// 		return Result{-1, -1, 0}, nil
@@ -219,38 +224,36 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		if (M == 1) {
 			return SearchMatchResult.of(maxScorePos, maxScorePos + 1, maxScore, new int[] { maxScorePos });
 		}
-		// 	// Phase 3. Fill in score matrix (H)
+
+		// Phase 3. Fill in score matrix (H)
+
 		// 	// Unlike the original algorithm, we do not allow omission.
 		// 	f0 := int(F[0])
 		// 	width := lastIdx - f0 + 1
 		// 	offset16, H := alloc16(offset16, slab, width*M)
 		// 	copy(H, H0[f0:lastIdx+1])
-		int f0 = F[0];
+		// int f0 = F[0];
+		int f0 = F.get(0);
 		int width = lastIdx - f0 + 1;
-		int[] H = new int[width * M];
-		// System.arraycopy(H0, f0, H, 0, lastIdx + 1 - f0);
-		// System.arraycopy(H0, f0, H, 0, lastIdx + 1 - f0);
+		List<Integer> H = create(width * M);
 		copy(H, H0, f0, lastIdx + 1);
 
 		// 	// Possible length of consecutive chunk at each position.
 		// 	_, C := alloc16(offset16, slab, width*M)
 		// 	copy(C, C0[f0:lastIdx+1])
-		int[] C = new int[width * M];
-		// System.arraycopy(C0, f0, C, 0, lastIdx + 1 - f0);
+		// int[] C = new int[width * M];
+		List<Integer> C = create(width * M);
 		copy(C, C0, f0, lastIdx + 1);
 
 		// 	Fsub := F[1:]
 		// 	Psub := pattern[1:][:len(Fsub)]
-		int[] Fsub = new int[F.length - 1];
-		System.arraycopy(F, 1, Fsub, 0, F.length - 1);
-		// int[] Psub = new int[pattern.length() - 1 - (pattern.length() - 1 + Fsub.length)];
-		// String Psub = pattern.substring(1, 1 + Fsub.length);
+		List<Integer> Fsub = F.subList(1, F.size());
 		String Psub = pattern.substring(1);
-		Psub = Psub.substring(0, Fsub.length);
+		Psub = Psub.substring(0, Fsub.size());
 
 		// 	for off, f := range Fsub {
-		for (int off = 0; off < Fsub.length; off++) {
-			int f = Fsub[off];
+		for (int off = 0; off < Fsub.size(); off++) {
+			int f = Fsub.get(off);
 
 			// 		f := int(f)
 			// 		pchar := Psub[off]
@@ -270,14 +273,13 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			int row = pidx2 * width;
 			boolean inGap2 = false;
 			String Tsub2 = T.substring(f, lastIdx + 1);
-			int[] Bsub2 = slice(B, f, Tsub2.length());
-			int[] Csub2 = slice(C, row + f - f0, Tsub2.length());
-
-			int[] Cdiag = slice(C, row + f - f0 - 1 - width, Tsub2.length());
-			int[] H0sub2 = slice(H, row + f - f0, Tsub2.length());
-			int[] Hdiag = slice(H, row + f - f0 - 1 - width, Tsub2.length());
-			int[] Hleft = slice(H, row + f - f0 - 1, Tsub2.length());
-			Hleft[0] = 0;
+			List<Integer> Bsub2 = slicex(B, f, Tsub2.length());
+			List<Integer> Csub2 = slicex(C, row + f - f0, Tsub2.length());
+			List<Integer> Cdiag = slicex(C, row + f - f0 - 1 - width, Tsub2.length());
+			List<Integer> Hsub2 = slicex(H, row + f - f0, Tsub2.length());
+			List<Integer> Hdiag = slicex(H, row + f - f0 - 1 - width, Tsub2.length());
+			List<Integer> Hleft = slicex(H, row + f - f0 - 1, Tsub2.length());
+			Hleft.set(0, 0);
 
 			// 		for off, char := range Tsub {
 			for (int off2 = 0; off2 < Tsub2.length(); off2++) {
@@ -295,10 +297,10 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				// 				s2 = Hleft[off] + scoreGapStart
 				// 			}
 				if (inGap2) {
-					s2 = Hleft[off2] + SCORE_GAP_EXTENSION;
+					s2 = Hleft.get(off2) + SCORE_GAP_EXTENSION;
 				}
 				else {
-					s2 = Hleft[off2] + SCORE_GAP_START;
+					s2 = Hleft.get(off2) + SCORE_GAP_START;
 				}
 
 				// 			if pchar == char {
@@ -307,9 +309,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					// 				s1 = Hdiag[off] + scoreMatch
 					// 				b := Bsub[off]
 					// 				consecutive = Cdiag[off] + 1
-					s1 = Hdiag[off2] + SCORE_MATCH;
-					int b = Bsub2[off2];
-					consecutive = Cdiag[off2] + 1;
+					s1 = Hdiag.get(off2) + SCORE_MATCH;
+					int b = Bsub2.get(off2);
+					consecutive = Cdiag.get(off2) + 1;
 
 					// 				if consecutive > 1 {
 					// 					fb := B[col-int(consecutive)+1]
@@ -321,7 +323,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					// 					}
 					// 				}
 					if (consecutive > 1) {
-						int fb = B[col - consecutive + 1];
+						int fb = B.get(col - consecutive + 1);
 						if (b >= BONUS_BOUNDARY && b > fb) {
 							consecutive = 1;
 						}
@@ -337,7 +339,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					// 				}
 					// 			}
 					if (s1 + b < s2) {
-						s1 += Bsub2[off2];
+						s1 += Bsub2.get(off2);
 						consecutive = 0;
 					}
 					else {
@@ -345,7 +347,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					}
 				}
 				// 			Csub[off] = consecutive
-				Csub2[off2] = consecutive;
+				Csub2.set(off2, consecutive);
 				// 			inGap = s1 < s2
 				// 			score := util.Max16(util.Max16(s1, s2), 0)
 				inGap2 = s1 < s2;
@@ -358,11 +360,12 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					maxScorePos = col;
 				}
 				// 			Hsub[off] = score
-				H0sub2[off2] = score;
+				Hsub2.set(off2, score);
 			}
 		}
 
-		// 	// Phase 4. (Optional) Backtrace to find character positions
+		// Phase 4. (Optional) Backtrace to find character positions
+
 		// 	pos := posArray(withPos, M)
 		// 	j := f0
 		int[] pos = new int[M];
@@ -408,14 +411,14 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			for(;;) {
 				int I = i * width;
 				int j0 = j - f0;
-				int s = H[I + j0];
+				int s = H.get(I + j0);
 				int s1 = 0;
 				int s2 = 0;
-				if (i > 0 && j >= F[i]) {
-					s1 = H[I - width + j0 - 1];
+				if (i > 0 && j >= F.get(i)) {
+					s1 = H.get(I - width + j0 - 1);
 				}
-				if (j > F[i]) {
-					s2 = H[I + j0 - 1];
+				if (j > F.get(i)) {
+					s2 = H.get(I + j0 - 1);
 				}
 				if (s > s1 && (s > s2 || s == s2 && preferMatch)) {
 					// *pos = append(*pos, j)
@@ -425,7 +428,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					}
 					i--;
 				}
-				preferMatch = C[I + j0] > 1 || I + width + j0 + 1 < C.length && C[I + width + j0 + 1] > 0;
+				preferMatch = C.get(I + j0) > 1 || I + width + j0 + 1 < C.size() && C.get(I + width + j0 + 1) > 0;
 				j--;
 			}
 		}
@@ -434,27 +437,50 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 	}
 
 	// 	H0sub, C0sub, Bsub := H0[idx:][:len(Tsub)], C0[idx:][:len(Tsub)], B[idx:][:len(Tsub)]
-	private static int[] slice(int[] from, int start, int length) {
-		int l1 = from.length - start;
-		int l2 = l1 - (l1 - length);
-		int[] to = new int[l2];
-		System.arraycopy(from, start, to, 0, l2);
-		return to;
+	// private static int[] slice(int[] from, int start, int length) {
+	// 	int l1 = from.length - start;
+	// 	int l2 = l1 - (l1 - length);
+	// 	int[] to = new int[l2];
+	// 	System.arraycopy(from, start, to, 0, l2);
+	// 	return to;
+	// }
+
+	private static List<Integer> slicex(List<Integer> from, int start, int length) {
+		// int l1 = from.size() - start;
+		// int l2 = l1 - (l1 - length);
+		return from.subList(start, from.size()).subList(0, length);
+		// return from.subList(start, start + l2);
 	}
 
 	// 	copy(H, H0[f0:lastIdx+1])
 
-	private static void copy(int[] dst, int[] srcx, int start, int end) {
-		int[] src = new int[end - start];
-		System.arraycopy(srcx, start, dst, 0, end - start);
-		if (src.length > dst.length) {
-			System.arraycopy(src, 0, dst, 0, dst.length);
-		}
-		// else if (src.length > dst.length) {
-		// }
-		else {
-			System.arraycopy(src, 0, dst, 0, src.length);
+	// private static void copy(int[] dst, int[] srcx, int start, int end) {
+	// 	int[] src = new int[end - start];
+	// 	System.arraycopy(srcx, start, dst, 0, end - start);
+	// 	if (src.length > dst.length) {
+	// 		System.arraycopy(src, 0, dst, 0, dst.length);
+	// 	}
+	// 	// else if (src.length > dst.length) {
+	// 	// }
+	// 	else {
+	// 		System.arraycopy(src, 0, dst, 0, src.length);
+	// 	}
+	// }
+
+	private static void copy(List<Integer> dst, List<Integer> src, int start, int end) {
+		for (int i = start; i < end; i++) {
+			dst.set(i, src.get(i));
 		}
 	}
+
+
+	private static List<Integer> create(int size) {
+		List<Integer> list = new ArrayList<>(size);
+		for (int i = 0; i < size; i++) {
+			list.add(0);
+		}
+		return list;
+	}
+
 
 }

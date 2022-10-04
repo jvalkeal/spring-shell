@@ -47,7 +47,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		WHITE,
 		NONWORD,
 		DELIMITER,
-		CHARLOWER,
+		LOWER,
 		UPPER,
 		LETTER,
 		NUMBER
@@ -72,7 +72,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
 	static CharClass charClassOfAscii(char c) {
 		if (c >= 'a' && c <= 'z') {
-			return CharClass.CHARLOWER;
+			return CharClass.LOWER;
 		}
 		else if (c >= 'A' && c <= 'Z') {
 			return CharClass.UPPER;
@@ -102,7 +102,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 				return BONUS_BOUNDARY;
 			}
 		}
-		if (prevClass == CharClass.CHARLOWER && clazz == CharClass.UPPER ||
+		if (prevClass == CharClass.LOWER && clazz == CharClass.UPPER ||
 				prevClass != CharClass.NUMBER && clazz == CharClass.NUMBER) {
 			return BONUS_CAMEL123;
 		}
