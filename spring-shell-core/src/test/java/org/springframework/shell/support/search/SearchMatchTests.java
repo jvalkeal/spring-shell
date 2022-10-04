@@ -34,6 +34,10 @@ public class SearchMatchTests {
 	@Test
 	void testv2() {
 		FuzzyMatchV2SearchMatchAlgorithm algo = new FuzzyMatchV2SearchMatchAlgorithm();
+		SearchMatchResult match = algo.match(false, false, true, "fooBarbaz1", "obz", true);
+		assertThat(match.getStart()).isEqualTo(2);
+		assertThat(match.getEnd()).isEqualTo(9);
+		// assertThat(match.getScore()).isEqualTo(SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3);
 	}
 
 	static Stream<Arguments> testFuzzyMatch() {
