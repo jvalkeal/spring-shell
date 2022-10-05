@@ -2,11 +2,6 @@ package com.jediterm.terminal.ui.settings;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.util.Collections;
-
-import javax.swing.KeyStroke;
 
 import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TextStyle;
@@ -14,92 +9,9 @@ import com.jediterm.terminal.emulator.ColorPalette;
 import com.jediterm.terminal.emulator.ColorPaletteImpl;
 import com.jediterm.terminal.model.LinesBuffer;
 import com.jediterm.terminal.model.TerminalTypeAheadSettings;
-import com.jediterm.terminal.ui.TerminalActionPresentation;
 import com.jediterm.terminal.ui.UIUtil;
 
 public class DefaultSettingsProvider implements SettingsProvider {
-
-	@Override
-	public TerminalActionPresentation getNewSessionActionPresentation() {
-		return new TerminalActionPresentation("New Session", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getOpenUrlActionPresentation() {
-		return new TerminalActionPresentation("Open as URL", Collections.emptyList());
-	}
-
-	@Override
-	public TerminalActionPresentation getCopyActionPresentation() {
-		KeyStroke keyStroke = UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.META_DOWN_MASK)
-			// CTRL + C is used for signal; use CTRL + SHIFT + C instead
-			: KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
-		return new TerminalActionPresentation("Copy", keyStroke);
-	}
-
-	@Override
-	public TerminalActionPresentation getPasteActionPresentation() {
-		KeyStroke keyStroke = UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_DOWN_MASK)
-			// CTRL + V is used for signal; use CTRL + SHIFT + V instead
-			: KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
-		return new TerminalActionPresentation("Paste", keyStroke);
-	}
-
-	@Override
-	public TerminalActionPresentation getClearBufferActionPresentation() {
-		return new TerminalActionPresentation("Clear Buffer", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getPageUpActionPresentation() {
-		return new TerminalActionPresentation("Page Up",
-			KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getPageDownActionPresentation() {
-		return new TerminalActionPresentation("Page Down",
-			KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getLineUpActionPresentation() {
-		return new TerminalActionPresentation("Line Up", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getLineDownActionPresentation() {
-		return new TerminalActionPresentation("Line Down", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getCloseSessionActionPresentation() {
-		return new TerminalActionPresentation("Close Session", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getFindActionPresentation() {
-		return new TerminalActionPresentation("Find", UIUtil.isMac
-			? KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.META_DOWN_MASK)
-			: KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK));
-	}
-
-	@Override
-	public TerminalActionPresentation getSelectAllActionPresentation() {
-		return new TerminalActionPresentation("Select All", Collections.emptyList());
-	}
 
 	@Override
 	public ColorPalette getTerminalColorPalette() {
