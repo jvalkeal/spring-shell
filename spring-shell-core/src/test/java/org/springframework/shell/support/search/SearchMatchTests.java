@@ -92,7 +92,7 @@ public class SearchMatchTests {
 
 	static Stream<Arguments> testFuzzyMatch() {
 		return Stream.of(
-			Arguments.of(false, false, true, "fooBarbaz1", "obz", false, 2, 9, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "fooBarbaz1", "oBZ", false, 2, 9, new int[] { 2, 3, 8 },
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
 			Arguments.of(true, false, true, "fooBarbaz", "oBz", false, 2, 9, new int[] { 2, 3, 8 },
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3)

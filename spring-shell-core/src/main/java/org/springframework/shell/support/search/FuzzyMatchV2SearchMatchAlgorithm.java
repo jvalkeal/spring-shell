@@ -62,6 +62,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 		return Result{-1, -1, 0}, nil
 		// 	}
 		int idx = asciiFuzzyIndex(text, pattern, caseSensitive);
+		if (idx < 0) {
+			return SearchMatchResult.ofMinus();
+		}
 		// int idx = 0;
 
 		// 	// Reuse pre-allocated integer slice to avoid unnecessary sweeping of garbages

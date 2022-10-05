@@ -113,7 +113,7 @@ public interface SearchMatch {
 		private boolean caseSensitive;
 		private boolean normalize;
 		private boolean forward;
-		private boolean withPos;
+		private boolean withPos = true;
 
 		DefaultSearchMatch(boolean caseSensitive, boolean normalize, boolean forward) {
 			this.caseSensitive = caseSensitive;
@@ -137,7 +137,8 @@ public interface SearchMatch {
 			}
 			else {
 				// then for any other use fuzzy match
-				algo = new FuzzyMatchV1SearchMatchAlgorithm();
+				// algo = new FuzzyMatchV1SearchMatchAlgorithm();
+				algo = new FuzzyMatchV2SearchMatchAlgorithm();
 			}
 			return algo.match(caseSensitive, normalize, forward, text, pattern, withPos);
 		}
