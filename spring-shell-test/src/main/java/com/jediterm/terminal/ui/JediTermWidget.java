@@ -162,7 +162,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 				mySessionRunning.set(true);
 				Thread.currentThread().setName("Connector-" + myTtyConnector.getName());
 				if (myTtyConnector.init()) {
-					myTerminalPanel.addCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
+					// myTerminalPanel.addCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
 					myTerminalStarter.start();
 				}
 			} catch (Exception e) {
@@ -173,7 +173,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 				} catch (Exception e) {
 				}
 				mySessionRunning.set(false);
-				myTerminalPanel.removeCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
+				// myTerminalPanel.removeCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
 			}
 		}
 	}

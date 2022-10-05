@@ -103,7 +103,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	@Override
 	public void disconnected() {
-		myDisplay.setCursorVisible(false);
+		// myDisplay.setCursorVisible(false);
 	}
 
 	private void wrapLines() {
@@ -119,7 +119,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	}
 
 	private void finishText() {
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 		scrollY();
 	}
 
@@ -187,7 +187,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 				final int dy = myScrollRegionBottom - myCursorY;
 				myCursorY = myScrollRegionBottom;
 				scrollArea(myScrollRegionTop, scrollingRegionSize(), dy);
-				myDisplay.setCursor(myCursorX, myCursorY);
+				// myDisplay.setCursor(myCursorX, myCursorY);
 			}
 			if (myCursorY < myScrollRegionTop) {
 				myCursorY = myScrollRegionTop;
@@ -213,7 +213,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			carriageReturn();
 		}
 
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -290,13 +290,13 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			myCursorX = myTerminalWidth - 1;
 		}
 		adjustXY(-1);
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
 	public void carriageReturn() {
 		myCursorX = 0;
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -315,7 +315,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			myCursorX = stop;
 		}
 		adjustXY(+1);
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -379,7 +379,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	@Override
 	public void setCursorVisible(boolean visible) {
-		myDisplay.setCursorVisible(visible);
+		// myDisplay.setCursorVisible(visible);
 	}
 
 	@Override
@@ -513,7 +513,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	@Override
 	public void setBlinkingCursor(boolean enabled) {
-		myDisplay.setBlinkingCursor(enabled);
+		// myDisplay.setBlinkingCursor(enabled);
 	}
 
 	@Override
@@ -524,7 +524,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			myCursorY -= countY;
 			myCursorY = Math.max(myCursorY, scrollingRegionTop());
 			adjustXY(-1);
-			myDisplay.setCursor(myCursorX, myCursorY);
+			// myDisplay.setCursor(myCursorX, myCursorY);
 		} finally {
 			myTerminalTextBuffer.unlock();
 		}
@@ -538,7 +538,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			myCursorY += dY;
 			myCursorY = Math.min(myCursorY, scrollingRegionBottom());
 			adjustXY(-1);
-			myDisplay.setCursor(myCursorX, myCursorY);
+			// myDisplay.setCursor(myCursorX, myCursorY);
 		} finally {
 			myTerminalTextBuffer.unlock();
 		}
@@ -556,7 +556,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			} else {
 				myCursorY += 1;
 				adjustXY(-1);
-				myDisplay.setCursor(myCursorX, myCursorY);
+				// myDisplay.setCursor(myCursorX, myCursorY);
 			}
 		} finally {
 			myTerminalTextBuffer.unlock();
@@ -578,7 +578,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			} else {
 				myCursorY += 1;
 			}
-			myDisplay.setCursor(myCursorX, myCursorY);
+			// myDisplay.setCursor(myCursorX, myCursorY);
 		} finally {
 			myTerminalTextBuffer.unlock();
 		}
@@ -599,7 +599,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 				scrollArea(myScrollRegionTop, scrollingRegionSize(), 1);
 			} else {
 				myCursorY -= 1;
-				myDisplay.setCursor(myCursorX, myCursorY);
+				// myDisplay.setCursor(myCursorX, myCursorY);
 			}
 		} finally {
 			myTerminalTextBuffer.unlock();
@@ -619,7 +619,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 		myCursorX += dX;
 		myCursorX = Math.min(myCursorX, myTerminalWidth - 1);
 		adjustXY(+1);
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -627,12 +627,12 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 		myCursorX -= dX;
 		myCursorX = Math.max(myCursorX, 0);
 		adjustXY(-1);
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
 	public void cursorShape(CursorShape shape) {
-		myDisplay.setCursorShape(shape);
+		// myDisplay.setCursorShape(shape);
 	}
 
 	@Override
@@ -644,7 +644,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	public void linePositionAbsolute(int y) {
 		myCursorY = y;
 		adjustXY(-1);
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -667,7 +667,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 		adjustXY(-1);
 
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	@Override
@@ -742,7 +742,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 			//myGraphicSetState.designateGraphicSet(1, CharacterSet.DEC_SUPPLEMENTAL);
 			//mapCharsetToGR(1); //and the DEC Supplemental Graphic set into GR
 		}
-		myDisplay.setCursor(myCursorX, myCursorY);
+		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
 
 	public void restoreCursor( StoredCursor storedCursor) {

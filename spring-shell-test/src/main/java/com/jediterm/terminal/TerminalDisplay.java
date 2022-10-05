@@ -12,9 +12,9 @@ public interface TerminalDisplay {
 
 	int getColumnCount();
 
-	void setCursor(int x, int y);
+	// void setCursor(int x, int y);
 
-	void setCursorShape(CursorShape shape);
+	// void setCursorShape(CursorShape shape);
 
 	void beep();
 
@@ -23,11 +23,11 @@ public interface TerminalDisplay {
 
 	void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy);
 
-	void setCursorVisible(boolean shouldDrawCursor);
+	// void setCursorVisible(boolean shouldDrawCursor);
 
 	// void setScrollingEnabled(boolean enabled);
 
-	void setBlinkingCursor(boolean enabled);
+	// void setBlinkingCursor(boolean enabled);
 
 	String getWindowTitle();
 
