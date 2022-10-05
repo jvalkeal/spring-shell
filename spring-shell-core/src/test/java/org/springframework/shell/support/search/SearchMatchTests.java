@@ -40,28 +40,28 @@ public class SearchMatchTests {
 		return Stream.of(
 			Arguments.of(false, false, true, "fooBarbaz1", "oBZ", true, 2, 9, new int[] { 2, 3, 8 },
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
-			Arguments.of(false, false, true, "foo bar baz", "fbb", true, 0, 9, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "foo bar baz", "fbb", true, 0, 9, new int[] { 0, 4, 8 },
 				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE * 2 +
 				2 * SCORE_GAP_START + 4 * SCORE_GAP_EXTENSION),
-			Arguments.of(false, false, true, "/AutomatorDocument.icns", "rdoc", true, 9, 13, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "/AutomatorDocument.icns", "rdoc", true, 9, 13, new int[] { 9, 10, 11, 12 },
 				SCORE_MATCH * 4 + BONUS_CAMEL123 + BONUS_CONSECUTIVE * 2),
-			Arguments.of(false, false, true, "/man1/zshcompctl.1", "zshc", true, 6, 10, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "/man1/zshcompctl.1", "zshc", true, 6, 10, new int[] { 6, 7, 8, 9 },
 				SCORE_MATCH * 4 + BONUS_BOUNDARY_DELIMITER * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_DELIMITER * 3),
-			Arguments.of(false, false, true, "/.oh-my-zsh/cache", "zshc", true, 8, 13, new int[] { 2, 3, 8 },
-				SCORE_MATCH * 4 + BONUS_BOUNDARY * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY * 2 + SCORE_GAP_START * 2 + BONUS_BOUNDARY_DELIMITER),
-			Arguments.of(false, false, true, "ab0123 456", "12356", true, 3, 10, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "/.oh-my-zsh/cache", "zshc", true, 8, 13, new int[] { 8, 9, 10 ,12 },
+				SCORE_MATCH * 4 + BONUS_BOUNDARY * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY * 2 + SCORE_GAP_START + BONUS_BOUNDARY_DELIMITER),
+			Arguments.of(false, false, true, "ab0123 456", "12356", true, 3, 10, new int[] { 3, 4, 5, 8, 9 },
 				SCORE_MATCH * 5 + BONUS_CONSECUTIVE * 3 + SCORE_GAP_START + SCORE_GAP_EXTENSION),
-			Arguments.of(false, false, true, "abc123 456", "12356", true, 3, 10, new int[] { 2, 3, 8 },
-				SCORE_MATCH * 5 + BONUS_CAMEL123 + BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + BONUS_CONSECUTIVE + SCORE_GAP_START + SCORE_GAP_EXTENSION),
-			Arguments.of(false, false, true, "foo/bar/baz", "fbb", true, 0, 9, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "abc123 456", "12356", true, 3, 10, new int[] { 3, 4, 5, 8, 9 },
+				SCORE_MATCH * 5 + BONUS_CAMEL123 * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + BONUS_CONSECUTIVE + SCORE_GAP_START + SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, true, "foo/bar/baz", "fbb", true, 0, 9, new int[] { 0, 4, 8 },
 				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_DELIMITER * 2 + SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 4),
-			Arguments.of(false, false, true, "fooBarBaz", "fbb", true, 0, 7, new int[] { 2, 3, 8 },
-				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION),
-			Arguments.of(false, false, true, "foo barbaz", "fbb", true, 0, 8, new int[] { 2, 3, 8 },
-				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER +  SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 3),
-			Arguments.of(false, false, true, "fooBar Baz", "foob", true, 0, 4, new int[] { 2, 3, 8 },
-				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE * 3),
-			Arguments.of(false, false, true, "xFoo-Bar Baz", "foo-b", true, 1, 6, new int[] { 2, 3, 8 },
+			Arguments.of(false, false, true, "fooBarBaz", "fbb", true, 0, 7, new int[] { 0, 3, 6 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 2),
+			Arguments.of(false, false, true, "foo barbaz", "fbb", true, 0, 8, new int[] { 0, 4, 7 },
+				SCORE_MATCH * 3 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE +SCORE_GAP_START * 2 + SCORE_GAP_EXTENSION * 3),
+			Arguments.of(false, false, true, "fooBar Baz", "foob", true, 0, 4, new int[] { 0, 1, 2, 3 },
+				SCORE_MATCH * 4 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE * 3),
+			Arguments.of(false, false, true, "xFoo-Bar Baz", "foo-b", true, 1, 6, new int[] { 1, 2, 3, 4, 5 },
 				SCORE_MATCH * 5 + BONUS_CAMEL123 * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_CAMEL123 * 2 + BONUS_NON_WORD + BONUS_BOUNDARY),
 
 			Arguments.of(true, false, true, "fooBarbaz", "oBz", true, 2, 9, new int[] { 2, 3, 8 },
@@ -87,6 +87,7 @@ public class SearchMatchTests {
 		assertThat(match.getStart()).isEqualTo(start);
 		assertThat(match.getEnd()).isEqualTo(end);
 		assertThat(match.getScore()).isEqualTo(score);
+		assertThat(match.getPositions()).containsExactly(positions);
 	}
 
 	static Stream<Arguments> testFuzzyMatch() {

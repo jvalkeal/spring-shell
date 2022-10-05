@@ -37,8 +37,8 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 	public static final int BONUS_CAMEL123 = BONUS_BOUNDARY + SCORE_GAP_EXTENSION;
 	public static final int BONUS_CONSECUTIVE = -(SCORE_GAP_START + SCORE_GAP_EXTENSION);
 	public static final int BONUS_FIRST_CHAR_MULTIPLIER = 2;
-	public static final int BONUS_BOUNDARY_WHITE = BONUS_BOUNDARY;
-	public static final int BONUS_BOUNDARY_DELIMITER = BONUS_BOUNDARY + 1;
+	public static final int BONUS_BOUNDARY_WHITE = BONUS_BOUNDARY + 2; // default +2
+	public static final int BONUS_BOUNDARY_DELIMITER = BONUS_BOUNDARY + 1 + 1; // default +1
 
 	/**
 	 * Enumeration of matched characters.
@@ -70,6 +70,9 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		return max - index - 1;
 	}
 
+	// var delimiterChars = "/,:;|"
+	private final static String DELIMITER_CHARS = "/,:;|";
+
 	static CharClass charClassOfAscii(char c) {
 		if (c >= 'a' && c <= 'z') {
 			return CharClass.LOWER;
@@ -87,6 +90,9 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		// else if strings.IndexRune(delimiterChars, char) >= 0 {
 		// 	return charDelimiter
 		// }
+		else if (DELIMITER_CHARS.indexOf(c) >= 0) {
+			return CharClass.DELIMITER;
+		}
 		return CharClass.NONWORD;
 	}
 

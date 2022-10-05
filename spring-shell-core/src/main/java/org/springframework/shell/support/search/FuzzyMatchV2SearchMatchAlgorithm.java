@@ -61,7 +61,8 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 	if idx < 0 {
 		// 		return Result{-1, -1, 0}, nil
 		// 	}
-		int idx = 0;
+		int idx = asciiFuzzyIndex(text, pattern, caseSensitive);
+		// int idx = 0;
 
 		// 	// Reuse pre-allocated integer slice to avoid unnecessary sweeping of garbages
 		// 	offset16 := 0
@@ -82,6 +83,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 	_, T := alloc32(offset32, slab, N)
 		// 	input.CopyRunes(T)
 		String T = text;
+		// go modifies text and it gets visible later,
+		// thus need to use this hack for same effect
+		String Tl = !caseSensitive ? T.toLowerCase() : T;
 
 		// Phase 2. Calculate bonus for each point
 
@@ -96,7 +100,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		char pchar0 = pattern.charAt(0);
 		char pchar = pattern.charAt(0);
 		int prevH0 = 0;
-		CharClass prevClass = CharClass.DELIMITER;
+		CharClass prevClass = CharClass.WHITE;
 		boolean inGap = false;
 
 		// 	Tsub := T[idx:]
@@ -272,7 +276,8 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			int pidx2 = off + 1;
 			int row = pidx2 * width;
 			boolean inGap2 = false;
-			String Tsub2 = T.substring(f, lastIdx + 1);
+			// String Tsub2 = T.substring(f, lastIdx + 1);
+			String Tsub2 = Tl.substring(f, lastIdx + 1);
 			List<Integer> Bsub2 = slicex(B, f, Tsub2.length());
 			List<Integer> Csub2 = slicex(C, row + f - f0, Tsub2.length());
 			List<Integer> Cdiag = slicex(C, row + f - f0 - 1 - width, Tsub2.length());
@@ -407,13 +412,14 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			int i = M - 1;
 			j = maxScorePos;
 			boolean preferMatch = true;
-			int posidx = 0;
+			int posidx = pos.length - 1;
 			for(;;) {
 				int I = i * width;
 				int j0 = j - f0;
 				int s = H.get(I + j0);
 				int s1 = 0;
 				int s2 = 0;
+				// int f = F.get(i);
 				if (i > 0 && j >= F.get(i)) {
 					s1 = H.get(I - width + j0 - 1);
 				}
@@ -422,7 +428,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				}
 				if (s > s1 && (s > s2 || s == s2 && preferMatch)) {
 					// *pos = append(*pos, j)
-					pos[posidx++] = j;
+					pos[posidx--] = j;
 					if (i == 0) {
 						break;
 					}
@@ -468,8 +474,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 	// }
 
 	private static void copy(List<Integer> dst, List<Integer> src, int start, int end) {
+		int x = 0;
 		for (int i = start; i < end; i++) {
-			dst.set(i, src.get(i));
+			dst.set(x++, src.get(i));
 		}
 	}
 
