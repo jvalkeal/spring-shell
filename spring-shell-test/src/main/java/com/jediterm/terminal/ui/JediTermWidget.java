@@ -12,8 +12,6 @@ import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.model.JediTerminal;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalTextBuffer;
-import com.jediterm.terminal.model.hyperlinks.HyperlinkFilter;
-import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 import com.jediterm.terminal.ui.settings.SettingsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
 	protected final SettingsProvider mySettingsProvider;
-	private final TextProcessing myTextProcessing;
 
 	public JediTermWidget(SettingsProvider settingsProvider) {
 		this(80, 24, settingsProvider);
@@ -44,12 +41,8 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 		StyleState styleState = createDefaultStyle();
 
-		myTextProcessing = new TextProcessing(settingsProvider.getHyperlinkColor(),
-			settingsProvider.getHyperlinkHighlightingMode());
-
 		TerminalTextBuffer terminalTextBuffer = new TerminalTextBuffer(columns, lines, styleState,
-				settingsProvider.getBufferMaxLinesCount(), myTextProcessing);
-		myTextProcessing.setTerminalTextBuffer(terminalTextBuffer);
+				settingsProvider.getBufferMaxLinesCount());
 
 		myTerminalPanel = createTerminalPanel(mySettingsProvider, styleState, terminalTextBuffer);
 		myTerminal = new JediTerminal(myTerminalPanel, terminalTextBuffer, styleState);
@@ -188,10 +181,5 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	@Override
 	public TerminalStarter getTerminalStarter() {
 		return myTerminalStarter;
-	}
-
-
-	public void addHyperlinkFilter(HyperlinkFilter filter) {
-		myTextProcessing.addHyperlinkFilter(filter);
 	}
 }

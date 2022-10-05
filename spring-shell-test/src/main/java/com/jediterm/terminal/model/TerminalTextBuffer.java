@@ -5,7 +5,6 @@ import com.jediterm.terminal.StyledTextConsumer;
 import com.jediterm.terminal.StyledTextConsumerAdapter;
 import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.model.TerminalLine.TextEntry;
-import com.jediterm.terminal.model.hyperlinks.TextProcessing;
 import com.jediterm.terminal.util.CharUtils;
 import com.jediterm.terminal.util.Pair;
 import org.slf4j.Logger;
@@ -57,23 +56,15 @@ public class TerminalTextBuffer {
 
 	private final List<TerminalModelListener> myTypeAheadListeners = new CopyOnWriteArrayList<>();
 
-	private final TextProcessing myTextProcessing;
-
 	public TerminalTextBuffer(final int width, final int height,  StyleState styleState) {
-		this(width, height, styleState, null);
+		this(width, height, styleState, LinesBuffer.DEFAULT_MAX_LINES_COUNT);
 	}
 
-	public TerminalTextBuffer(final int width, final int height,  StyleState styleState,  TextProcessing textProcessing) {
-		this(width, height, styleState, LinesBuffer.DEFAULT_MAX_LINES_COUNT, textProcessing);
-	}
-
-	public TerminalTextBuffer(final int width, final int height, StyleState styleState, final int historyLinesCount,
-			TextProcessing textProcessing) {
+	public TerminalTextBuffer(final int width, final int height, StyleState styleState, final int historyLinesCount) {
 		myStyleState = styleState;
 		myWidth = width;
 		myHeight = height;
 		myHistoryLinesCount = historyLinesCount;
-		myTextProcessing = textProcessing;
 
 		myScreenBuffer = createScreenBuffer();
 		myHistoryBuffer = createHistoryBuffer();
@@ -81,12 +72,12 @@ public class TerminalTextBuffer {
 
 
 	private LinesBuffer createScreenBuffer() {
-		return new LinesBuffer(-1, myTextProcessing);
+		return new LinesBuffer(-1);
 	}
 
 
 	private LinesBuffer createHistoryBuffer() {
-		return new LinesBuffer(myHistoryLinesCount, myTextProcessing);
+		return new LinesBuffer(myHistoryLinesCount);
 	}
 
 	public Dimension resize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
@@ -439,9 +430,6 @@ public class TerminalTextBuffer {
 		if (y >= 0) {
 			myScreenBuffer.clearArea(leftX, y, rightX, y + 1, style);
 			fireModelChangeEvent();
-			if (myTextProcessing != null && y < getHeight()) {
-				myTextProcessing.processHyperlinks(myScreenBuffer, getLine(y));
-			}
 		} else {
 			LOG.error("Attempt to erase characters in line: " + y);
 		}

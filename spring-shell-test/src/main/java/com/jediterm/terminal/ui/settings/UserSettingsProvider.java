@@ -2,7 +2,6 @@ package com.jediterm.terminal.ui.settings;
 
 import java.awt.Font;
 
-import com.jediterm.terminal.HyperlinkStyle;
 import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.emulator.ColorPalette;
 import com.jediterm.terminal.model.TerminalTypeAheadSettings;
@@ -28,8 +27,6 @@ public interface UserSettingsProvider {
   TextStyle getFoundPatternColor();
 
   TextStyle getHyperlinkColor();
-
-  HyperlinkStyle.HighlightMode getHyperlinkHighlightingMode();
 
   boolean useInverseSelectionColor();
 
