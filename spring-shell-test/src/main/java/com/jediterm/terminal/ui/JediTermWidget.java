@@ -4,15 +4,17 @@ import java.awt.Dimension;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.jediterm.terminal.Terminal;
+import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalStarter;
+import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.TtyBasedArrayDataStream;
 import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.model.JediTerminal;
+import com.jediterm.terminal.model.LinesBuffer;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalTextBuffer;
-import com.jediterm.terminal.ui.settings.SettingsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,28 +28,26 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	private TtyConnector myTtyConnector;
 	private TerminalStarter myTerminalStarter;
 	private Thread myEmuThread;
-	protected final SettingsProvider mySettingsProvider;
 
-	public JediTermWidget(SettingsProvider settingsProvider) {
-		this(80, 24, settingsProvider);
+	public JediTermWidget() {
+		this(80, 24);
 	}
 
-	public JediTermWidget(Dimension dimension, SettingsProvider settingsProvider) {
-		this(dimension.width, dimension.height, settingsProvider);
+	public JediTermWidget(Dimension dimension) {
+		this(dimension.width, dimension.height);
 	}
 
-	public JediTermWidget(int columns, int lines, SettingsProvider settingsProvider) {
-		mySettingsProvider = settingsProvider;
+	public JediTermWidget(int columns, int lines) {
 
 		StyleState styleState = createDefaultStyle();
 
 		TerminalTextBuffer terminalTextBuffer = new TerminalTextBuffer(columns, lines, styleState,
-				settingsProvider.getBufferMaxLinesCount());
+				LinesBuffer.DEFAULT_MAX_LINES_COUNT);
 
-		myTerminalPanel = createTerminalPanel(mySettingsProvider, styleState, terminalTextBuffer);
+		myTerminalPanel = createTerminalPanel(styleState, terminalTextBuffer);
 		myTerminal = new JediTerminal(myTerminalPanel, terminalTextBuffer, styleState);
 
-		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, mySettingsProvider.altSendsEscape());
+		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, true);
 
 		myTerminalPanel.setCoordAccessor(myTerminal);
 
@@ -56,12 +56,12 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	protected StyleState createDefaultStyle() {
 		StyleState styleState = new StyleState();
-		styleState.setDefaultStyle(mySettingsProvider.getDefaultStyle());
+		styleState.setDefaultStyle(new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE));
 		return styleState;
 	}
 
-	protected TerminalPanel createTerminalPanel(SettingsProvider settingsProvider, StyleState styleState, TerminalTextBuffer terminalTextBuffer) {
-		return new TerminalPanel(settingsProvider, terminalTextBuffer, styleState);
+	protected TerminalPanel createTerminalPanel(StyleState styleState, TerminalTextBuffer terminalTextBuffer) {
+		return new TerminalPanel(terminalTextBuffer, styleState);
 	}
 
 	public TerminalDisplay getTerminalDisplay() {

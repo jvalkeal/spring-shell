@@ -24,7 +24,6 @@ import java.io.PipedOutputStream;
 import com.jediterm.terminal.TtyConnector;
 import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.TerminalSession;
-import com.jediterm.terminal.ui.settings.DefaultSettingsProvider;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class ShellAutoConfiguration {
 
 	@Bean
 	TerminalSession terminalSession(TtyConnector ttyConnector) {
-		JediTermWidget widget = new JediTermWidget(80, 24, new DefaultSettingsProvider());
+		JediTermWidget widget = new JediTermWidget(80, 24);
 		widget.setTtyConnector(ttyConnector);
 		// widget.start();
 		return widget;

@@ -17,7 +17,6 @@ import com.jediterm.terminal.model.TerminalLine;
 import com.jediterm.terminal.model.TerminalLineIntervalHighlighting;
 import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
-import com.jediterm.terminal.ui.settings.SettingsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private TerminalPanelListener myTerminalPanelListener;
 
-	private final SettingsProvider mySettingsProvider;
 	private final TerminalTextBuffer myTerminalTextBuffer;
 
 	final private StyleState myStyleState;
@@ -69,8 +67,7 @@ public class TerminalPanel implements TerminalDisplay {
 	// private final TerminalKeyHandler myTerminalKeyHandler = new TerminalKeyHandler();
 	private volatile boolean myBracketedPasteMode;
 
-	public TerminalPanel(SettingsProvider settingsProvider, TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
-		mySettingsProvider = settingsProvider;
+	public TerminalPanel(TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
 		myTerminalTextBuffer = terminalTextBuffer;
 		myStyleState = styleState;
 		myTermSize.width = terminalTextBuffer.getWidth();
@@ -311,8 +308,8 @@ public class TerminalPanel implements TerminalDisplay {
 	}
 
 	private int getBlinkingPeriod() {
-		if (myBlinkingPeriod != mySettingsProvider.caretBlinkingMs()) {
-			setBlinkingPeriod(mySettingsProvider.caretBlinkingMs());
+		if (myBlinkingPeriod != 505) {
+			setBlinkingPeriod(505);
 		}
 		return myBlinkingPeriod;
 	}
@@ -391,7 +388,7 @@ public class TerminalPanel implements TerminalDisplay {
 
 	@Override
 	public boolean ambiguousCharsAreDoubleWidth() {
-		return mySettingsProvider.ambiguousCharsAreDoubleWidth();
+		return false;
 	}
 
 	@Override
