@@ -67,9 +67,9 @@ public class TerminalStarter implements TerminalOutputStream {
 		}
 	}
 
-	public byte[] getCode(final int key, final int modifiers) {
-		return myTerminal.getCodeForKey(key, modifiers);
-	}
+	// public byte[] getCode(final int key, final int modifiers) {
+	// 	return myTerminal.getCodeForKey(key, modifiers);
+	// }
 
 	public void postResize(Dimension dimension, RequestOrigin origin) {
 		execute(() -> {

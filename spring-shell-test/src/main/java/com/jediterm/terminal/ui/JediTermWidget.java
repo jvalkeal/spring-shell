@@ -47,7 +47,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 		myTerminalPanel = createTerminalPanel(styleState, terminalTextBuffer);
 		myTerminal = new JediTerminal(myTerminalPanel, terminalTextBuffer, styleState);
 
-		myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, true);
+		// myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, true);
 
 		myTerminalPanel.setCoordAccessor(myTerminal);
 

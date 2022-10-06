@@ -16,7 +16,6 @@ import com.jediterm.terminal.RequestOrigin;
 import com.jediterm.terminal.Terminal;
 import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TerminalDisplay;
-import com.jediterm.terminal.TerminalKeyEncoder;
 import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.TextStyle;
@@ -58,7 +57,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	private final EnumSet<TerminalMode> myModes = EnumSet.noneOf(TerminalMode.class);
 
-	private final TerminalKeyEncoder myTerminalKeyEncoder = new TerminalKeyEncoder();
+	// private final TerminalKeyEncoder myTerminalKeyEncoder = new TerminalKeyEncoder();
 
 	private final Stack<String> myWindowTitlesStack = new Stack<>();
 
@@ -209,9 +208,9 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 		scrollY();
 
-		if (isAutoNewLine()) {
-			carriageReturn();
-		}
+		// if (isAutoNewLine()) {
+		// 	carriageReturn();
+		// }
 
 		// myDisplay.setCursor(myCursorX, myCursorY);
 	}
@@ -388,32 +387,32 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 		// myDisplay.setScrollingEnabled(!enabled);
 	}
 
-	@Override
-	public byte[] getCodeForKey(int key, int modifiers) {
-		return myTerminalKeyEncoder.getCode(key, modifiers);
-	}
+	// @Override
+	// public byte[] getCodeForKey(int key, int modifiers) {
+	// 	return myTerminalKeyEncoder.getCode(key, modifiers);
+	// }
 
 	@Override
 	public void setApplicationArrowKeys(boolean enabled) {
-		if (enabled) {
-			myTerminalKeyEncoder.arrowKeysApplicationSequences();
-		} else {
-			myTerminalKeyEncoder.arrowKeysAnsiCursorSequences();
-		}
+	// 	if (enabled) {
+	// 		myTerminalKeyEncoder.arrowKeysApplicationSequences();
+	// 	} else {
+	// 		myTerminalKeyEncoder.arrowKeysAnsiCursorSequences();
+	// 	}
 	}
 
 	@Override
 	public void setApplicationKeypad(boolean enabled) {
-		if (enabled) {
-			myTerminalKeyEncoder.keypadApplicationSequences();
-		} else {
-			myTerminalKeyEncoder.keypadAnsiSequences();
-		}
+	// 	if (enabled) {
+	// 		myTerminalKeyEncoder.keypadApplicationSequences();
+	// 	} else {
+	// 		myTerminalKeyEncoder.keypadAnsiSequences();
+	// 	}
 	}
 
 	@Override
 	public void setAutoNewLine(boolean enabled) {
-		myTerminalKeyEncoder.setAutoNewLine(enabled);
+	// 	myTerminalKeyEncoder.setAutoNewLine(enabled);
 	}
 
 	public void eraseInLine(int arg) {
@@ -786,14 +785,14 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	private void initModes() {
 		myModes.clear();
 		setModeEnabled(TerminalMode.AutoWrap, true);
-		setModeEnabled(TerminalMode.AutoNewLine, false);
+		// setModeEnabled(TerminalMode.AutoNewLine, false);
 		setModeEnabled(TerminalMode.CursorVisible, true);
 		setModeEnabled(TerminalMode.CursorBlinking, true);
 	}
 
-	public boolean isAutoNewLine() {
-		return myModes.contains(TerminalMode.AutoNewLine);
-	}
+	// public boolean isAutoNewLine() {
+	// 	return myModes.contains(TerminalMode.AutoNewLine);
+	// }
 
 	public boolean isOriginMode() {
 		return myModes.contains(TerminalMode.OriginMode);
@@ -809,7 +808,7 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	@Override
 	public void setAltSendsEscape(boolean enabled) {
-		myTerminalKeyEncoder.setAltSendsEscape(enabled);
+	// 	myTerminalKeyEncoder.setAltSendsEscape(enabled);
 	}
 
 	@Override
