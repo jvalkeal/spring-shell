@@ -1,7 +1,6 @@
 package com.jediterm.terminal.model;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -67,7 +66,6 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	private TerminalOutputStream myTerminalOutput = null;
 
-	private Point myLastMotionReport = null;
 	private boolean myCursorYChanged;
 
 	public JediTerminal(final TerminalDisplay display, final TerminalTextBuffer buf, final StyleState initialStyleState) {

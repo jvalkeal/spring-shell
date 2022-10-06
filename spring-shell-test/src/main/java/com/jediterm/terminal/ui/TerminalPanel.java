@@ -15,12 +15,10 @@ import com.jediterm.terminal.model.TerminalLine;
 import com.jediterm.terminal.model.TerminalLineIntervalHighlighting;
 import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TerminalPanel implements TerminalDisplay {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TerminalPanel.class);
+	// private static final Logger LOG = LoggerFactory.getLogger(TerminalPanel.class);
 
 	public static final double SCROLL_SPEED = 0.05;
 
@@ -29,9 +27,9 @@ public class TerminalPanel implements TerminalDisplay {
 	// private Font myItalicFont;
 	// private Font myBoldFont;
 	// private Font myBoldItalicFont;
-	private int myDescent = 0;
+	// private int myDescent = 0;
 	protected Dimension myCharSize = new Dimension();
-	private boolean myMonospaced;
+	// private boolean myMonospaced;
 	protected Dimension myTermSize = new Dimension(80, 24);
 
 	private TerminalStarter myTerminalStarter = null;
@@ -44,18 +42,18 @@ public class TerminalPanel implements TerminalDisplay {
 
 	private final TerminalTextBuffer myTerminalTextBuffer;
 
-	final private StyleState myStyleState;
+	// final private StyleState myStyleState;
 
 	/*scroll and cursor*/
 	// final private TerminalCursor myCursor = new TerminalCursor();
 
-	private boolean myScrollingEnabled = true;
+	// private boolean myScrollingEnabled = true;
 	protected int myClientScrollOrigin;
 	// private final List<KeyListener> myCustomKeyListeners = new CopyOnWriteArrayList<>();
 
 	private String myWindowTitle = "Terminal";
 
-	private String myInputMethodUncommittedChars;
+	// private String myInputMethodUncommittedChars;
 
 	private AtomicInteger scrollDy = new AtomicInteger(0);
 
@@ -63,11 +61,11 @@ public class TerminalPanel implements TerminalDisplay {
 	private TerminalCoordinates myCoordsAccessor;
 
 	// private final TerminalKeyHandler myTerminalKeyHandler = new TerminalKeyHandler();
-	private volatile boolean myBracketedPasteMode;
+	// private volatile boolean myBracketedPasteMode;
 
 	public TerminalPanel(TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
 		myTerminalTextBuffer = terminalTextBuffer;
-		myStyleState = styleState;
+		// myStyleState = styleState;
 		myTermSize.width = terminalTextBuffer.getWidth();
 		myTermSize.height = terminalTextBuffer.getHeight();
 		// myCopyPasteHandler = createCopyPasteHandler();
@@ -179,9 +177,9 @@ public class TerminalPanel implements TerminalDisplay {
 	// 	return isMonospaced;
 	// }
 
-	private static boolean isWordCharacter(char character) {
-		return Character.isLetterOrDigit(character);
-	}
+	// private static boolean isWordCharacter(char character) {
+	// 	return Character.isLetterOrDigit(character);
+	// }
 
 	// protected void setupAntialiasing(Graphics graphics) {
 	// 	if (graphics instanceof Graphics2D) {
@@ -194,9 +192,9 @@ public class TerminalPanel implements TerminalDisplay {
 	// 	}
 	// }
 
-	private boolean hasUncommittedChars() {
-		return myInputMethodUncommittedChars != null && myInputMethodUncommittedChars.length() > 0;
-	}
+	// private boolean hasUncommittedChars() {
+	// 	return myInputMethodUncommittedChars != null && myInputMethodUncommittedChars.length() > 0;
+	// }
 
 	// also called from com.intellij.terminal.JBTerminalPanel
 	// public void handleKeyEvent(KeyEvent e) {
@@ -248,14 +246,14 @@ public class TerminalPanel implements TerminalDisplay {
 
 		// cursor state
 		protected Point myCursorCoordinates = new Point();
-		private CursorShape myShape = CursorShape.BLINK_BLOCK;
+		// private CursorShape myShape = CursorShape.BLINK_BLOCK;
 
 		// terminal modes
-		private boolean myShouldDrawCursor = true;
+		// private boolean myShouldDrawCursor = true;
 		private boolean myBlinking = true;
 
-		private long myLastCursorChange;
-		private boolean myCursorHasChanged;
+		// private long myLastCursorChange;
+		// private boolean myCursorHasChanged;
 
 		public void setX(int x) {
 			myCursorCoordinates.x = x;
@@ -276,7 +274,7 @@ public class TerminalPanel implements TerminalDisplay {
 		}
 
 		public void setShouldDrawCursor(boolean shouldDrawCursor) {
-			myShouldDrawCursor = shouldDrawCursor;
+			// myShouldDrawCursor = shouldDrawCursor;
 		}
 
 		public void setBlinking(boolean blinking) {
@@ -288,8 +286,8 @@ public class TerminalPanel implements TerminalDisplay {
 		}
 
 		public void cursorChanged() {
-			myCursorHasChanged = true;
-			myLastCursorChange = System.currentTimeMillis();
+			// myCursorHasChanged = true;
+			// myLastCursorChange = System.currentTimeMillis();
 			// repaint();
 		}
 
@@ -297,7 +295,7 @@ public class TerminalPanel implements TerminalDisplay {
 		}
 
 		void setShape(CursorShape shape) {
-			this.myShape = shape;
+			// this.myShape = shape;
 		}
 	}
 
@@ -387,7 +385,7 @@ public class TerminalPanel implements TerminalDisplay {
 
 	@Override
 	public void setBracketedPasteMode(boolean enabled) {
-		myBracketedPasteMode = enabled;
+		// myBracketedPasteMode = enabled;
 	}
 
 	public LinesBuffer getScrollBuffer() {

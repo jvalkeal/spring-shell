@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.jediterm.terminal.Terminal;
 import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TerminalDisplay;
-import com.jediterm.terminal.TerminalMode;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.TextStyle;
 import com.jediterm.terminal.TtyBasedArrayDataStream;
