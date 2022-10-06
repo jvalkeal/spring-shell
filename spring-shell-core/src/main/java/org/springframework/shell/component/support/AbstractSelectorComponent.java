@@ -533,8 +533,16 @@ public abstract class AbstractSelectorComponent<T, C extends SelectorComponentCo
 
 		@Override
 		public String toString() {
-			return "DefaultSelectorComponentContext [cursorRow=" + cursorRow + "]";
+			return "BaseSelectorComponentContext [name=" + name + ", input=" + input + ", itemStates=" + itemStates
+					+ ", itemStateView=" + itemStateView + ", cursorRow=" + cursorRow + ", items=" + items
+					+ ", resultItems=" + resultItems + " super=" + super.toString() + "]";
 		}
+
+
+		// @Override
+		// public String toString() {
+		// 	return "DefaultSelectorComponentContext [cursorRow=" + cursorRow + "]";
+		// }
 	}
 
 	/**
