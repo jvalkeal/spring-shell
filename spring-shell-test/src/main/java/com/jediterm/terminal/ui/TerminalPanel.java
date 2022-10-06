@@ -6,8 +6,6 @@ import java.awt.Rectangle;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.jediterm.terminal.CursorShape;
-import com.jediterm.terminal.DefaultTerminalCopyPasteHandler;
-import com.jediterm.terminal.TerminalCopyPasteHandler;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.TerminalStarter;
@@ -75,10 +73,6 @@ public class TerminalPanel implements TerminalDisplay {
 		// myCopyPasteHandler = createCopyPasteHandler();
 
 		// updateScrolling(true);
-	}
-
-	protected TerminalCopyPasteHandler createCopyPasteHandler() {
-		return new DefaultTerminalCopyPasteHandler();
 	}
 
 	public TerminalPanelListener getTerminalPanelListener() {
