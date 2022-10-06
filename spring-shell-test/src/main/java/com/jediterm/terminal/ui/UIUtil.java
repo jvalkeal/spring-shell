@@ -1,10 +1,5 @@
 package com.jediterm.terminal.ui;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Toolkit;
-import java.util.Map;
-
 /**
  * @author traff
  */
@@ -20,18 +15,4 @@ public class UIUtil {
 	public static final boolean isUnix = !isWindows && !isOS2;
 
 	public static final String JAVA_RUNTIME_VERSION = System.getProperty("java.runtime.version");
-
-	public static String getJavaVmVendor() {
-		return System.getProperty("java.vm.vendor");
-	}
-
-	public static void applyRenderingHints(final Graphics g) {
-		Graphics2D g2d = (Graphics2D)g;
-		Toolkit tk = Toolkit.getDefaultToolkit();
-		//noinspection HardCodedStringLiteral
-		Map map = (Map)tk.getDesktopProperty("awt.font.desktophints");
-		if (map != null) {
-			g2d.addRenderingHints(map);
-		}
-	}
 }
