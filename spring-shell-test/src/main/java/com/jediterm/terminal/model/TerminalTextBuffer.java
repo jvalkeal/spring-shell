@@ -1,5 +1,14 @@
 package com.jediterm.terminal.model;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.jediterm.terminal.RequestOrigin;
 import com.jediterm.terminal.StyledTextConsumer;
 import com.jediterm.terminal.StyledTextConsumerAdapter;
@@ -9,14 +18,6 @@ import com.jediterm.terminal.util.CharUtils;
 import com.jediterm.terminal.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Buffer for storing styled text data.
