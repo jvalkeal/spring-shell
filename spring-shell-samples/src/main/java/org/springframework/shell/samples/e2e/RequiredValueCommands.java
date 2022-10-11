@@ -31,7 +31,7 @@ public class RequiredValueCommands extends BaseE2ECommands {
 
 	@ShellMethod(key = LEGACY_ANNO + "required-value", group = GROUP)
 	public String testRequiredValueAnnotation(
-		@ShellOption String arg1
+		@ShellOption(help = "Desc arg1") String arg1
 	) {
 		return "Hello " + arg1;
 	}
@@ -43,6 +43,7 @@ public class RequiredValueCommands extends BaseE2ECommands {
 			.group(GROUP)
 			.withOption()
 				.longNames("arg1")
+				.description("Desc arg1")
 				.required()
 				.and()
 			.withTarget()

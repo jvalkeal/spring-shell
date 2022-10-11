@@ -17,8 +17,6 @@ package org.springframework.shell.samples.e2e;
 
 import java.util.Optional;
 
-import org.jline.utils.AttributedString;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.ShellComponent;
@@ -48,22 +46,26 @@ public class ErrorHandlingCommands extends BaseE2ECommands {
 			.withTarget()
 				.function(ctx -> {
 					String arg1 = ctx.getOptionValue("arg1");
+					if ("throw".equals(arg1)) {
+						throw new CustomException();
+					}
 					return "Hello " + arg1;
 				})
 				.and()
 			.build();
 	}
 
+	private static class CustomException extends RuntimeException {
+	}
+
 	private static class CustomExceptionResolver implements ExceptionResolver {
 
 		@Override
-		public Optional<HandlingResult> resolve(Throwable throwable) {
-			return Optional.of(new HandlingResult() {
-				@Override
-				public AttributedString getMessage() {
-					return new AttributedString("Hi\n");
-				}
-			});
+		public Optional<HandlingResult> resolve(Exception e) {
+			if (e instanceof CustomException) {
+				return Optional.of(HandlingResult.of("hi\n"));
+			}
+			return null;
 		}
 	}
 }

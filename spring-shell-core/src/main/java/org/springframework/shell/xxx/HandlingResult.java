@@ -15,9 +15,29 @@
  */
 package org.springframework.shell.xxx;
 
-import org.jline.utils.AttributedString;
-
 public interface HandlingResult {
 
-	AttributedString getMessage();
+	String message();
+
+	public static HandlingResult empty() {
+		return of(null);
+	}
+
+	public static HandlingResult of(String message) {
+		return new DefaultHandlingResult(message);
+	}
+
+	static class DefaultHandlingResult implements HandlingResult {
+
+		private final String message;
+
+		DefaultHandlingResult(String message) {
+			this.message = message;
+		}
+
+		@Override
+		public String message() {
+			return message;
+		}
+	}
 }

@@ -83,6 +83,7 @@ public class Shell {
 	protected static final Object UNRESOLVED = new Object();
 
 	private Validator validator = Utils.defaultValidator();
+	private List<ExceptionResolver> exceptionResolvers = new ArrayList<>();
 
 	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
 			ShellContext shellContext, ExitCodeMappings exitCodeMappings) {
@@ -111,6 +112,11 @@ public class Shell {
 	@Autowired(required = false)
 	public void setValidatorFactory(ValidatorFactory validatorFactory) {
 		this.validator = validatorFactory.getValidator();
+	}
+
+	@Autowired(required = false)
+	public void setExceptionResolvers(List<ExceptionResolver> exceptionResolvers) {
+		this.exceptionResolvers = exceptionResolvers;
 	}
 
 	/**
@@ -158,15 +164,8 @@ public class Shell {
 		}
 	}
 
-	private List<ExceptionResolver> exceptionResolvers = new ArrayList<>();
-
-	@Autowired
-	public void setExceptionResolvers(List<ExceptionResolver> exceptionResolvers) {
-		this.exceptionResolvers = exceptionResolvers;
-	}
-
-
-	HandlingResult processException(List<ExceptionResolver> commandExceptionResolvers, Exception e) throws Exception {
+	private HandlingResult processException(List<ExceptionResolver> commandExceptionResolvers, Exception e)
+			throws Exception {
 		Optional<HandlingResult> r = null;
 		for (ExceptionResolver resolver : commandExceptionResolvers) {
 			r = resolver.resolve(e);
@@ -542,7 +541,7 @@ public class Shell {
 			try {
 				HandlingResult processException = processException(commandExceptionResolvers ,e);
 				if (processException != null) {
-					this.terminal.writer().append(processException.getMessage().toAnsi());
+					this.terminal.writer().append(processException.message());
 					return null;
 				}
 			} catch (Exception e1) {

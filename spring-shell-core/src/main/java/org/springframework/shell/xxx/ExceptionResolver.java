@@ -21,11 +21,11 @@ public interface ExceptionResolver {
 
 	/**
 	 *
-	 * @param throwable
+	 * @param ex
 	 * @return a corresponding {@code HandlingResult} framework to handle, or
 	 *         {@code null} for default processing in the resolution chain
 	 * @return
 	 */
-	Optional<HandlingResult> resolve(Throwable throwable);
+	Optional<HandlingResult> resolve(Exception ex);
 
 }

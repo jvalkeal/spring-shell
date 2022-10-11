@@ -463,7 +463,7 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testErrorHandling() {
 		ExceptionResolver er1 = new ExceptionResolver() {
 			@Override
-			public Optional<HandlingResult> resolve(Throwable throwable) {
+			public Optional<HandlingResult> resolve(Exception e) {
 				return Optional.empty();
 			}
 		};
