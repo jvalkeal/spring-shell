@@ -25,6 +25,7 @@ import org.springframework.shell.TerminalSizeAware;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.context.ShellContext;
 import org.springframework.shell.jline.InteractiveShellRunner;
+import org.springframework.shell.xxx.CommandParserExceptionResolver;
 
 /**
  * Used for explicit configuration of {@link org.springframework.shell.ResultHandler}s.
@@ -59,6 +60,11 @@ public class ResultHandlerConfig {
 	@Bean
 	public CommandParserExceptionsExceptionResultHandler commandParserExceptionsExceptionResultHandler(Terminal terminal) {
 		return new CommandParserExceptionsExceptionResultHandler(terminal);
+	}
+
+	@Bean
+	public CommandParserExceptionResolver commandParserExceptionResolver() {
+		return new CommandParserExceptionResolver();
 	}
 
 	@Bean

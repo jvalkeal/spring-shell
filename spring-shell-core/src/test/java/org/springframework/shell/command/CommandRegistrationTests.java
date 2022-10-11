@@ -16,6 +16,7 @@
 package org.springframework.shell.command;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,8 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.context.InteractionMode;
+import org.springframework.shell.xxx.ExceptionResolver;
+import org.springframework.shell.xxx.HandlingResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -454,5 +457,35 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 			.build();
 		assertThat(registration.getOptions()).hasSize(1);
 		assertThat(registration.getOptions().get(0).getCompletion()).isNotNull();
+	}
+
+	@Test
+	public void testErrorHandling() {
+		ExceptionResolver er1 = new ExceptionResolver() {
+			@Override
+			public Optional<HandlingResult> resolve(Throwable throwable) {
+				return Optional.empty();
+			}
+		};
+		CommandRegistration registration;
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.withErrorHandling()
+				.resolver(er1)
+				.and()
+			.withTarget()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getExceptionResolvers()).hasSize(1);
+		assertThat(registration.getExceptionResolvers().get(0)).isSameAs(er1);
+
+		registration = CommandRegistration.builder()
+			.command("command1")
+			.withTarget()
+				.function(function1)
+				.and()
+			.build();
+		assertThat(registration.getExceptionResolvers()).hasSize(0);
 	}
 }
