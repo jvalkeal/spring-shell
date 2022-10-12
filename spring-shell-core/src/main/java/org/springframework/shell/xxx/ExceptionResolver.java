@@ -15,15 +15,22 @@
  */
 package org.springframework.shell.xxx;
 
+/**
+ * Interface to be implemented by objects that can resolve exceptions thrown
+ * during command processing, in the typical case error response. Implementors
+ * are typically registered as beans in the application context or directly
+ * with command.
+ *
+ * @author Janne Valkealahti
+ */
 public interface ExceptionResolver {
 
 	/**
+	 * Try to resolve the given exception that got thrown during command processing.
 	 *
-	 * @param ex
+	 * @param ex the exception
 	 * @return a corresponding {@code HandlingResult} framework to handle, or
 	 *         {@code null} for default processing in the resolution chain
-	 * @return
 	 */
 	HandlingResult resolve(Exception ex);
-
 }

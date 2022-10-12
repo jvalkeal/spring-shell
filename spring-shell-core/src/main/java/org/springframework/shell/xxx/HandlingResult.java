@@ -15,19 +15,52 @@
  */
 package org.springframework.shell.xxx;
 
+import org.springframework.lang.Nullable;
+
+/**
+ * Holder for handling some processing, typically with {@link ExceptionResolver}.
+ *
+ * @author Janne Valkealahti
+ */
 public interface HandlingResult {
 
+	/**
+	 * Gets a message for this {@code HandlingResult}.
+	 *
+	 * @return a message
+	 */
+	@Nullable
 	String message();
 
+	/**
+	 * Indicate whether this {@code HandlingResult} has a result.
+	 *
+	 * @return true if result exist
+	 */
 	public boolean isPresent();
 
+	/**
+	 * Indicate whether this {@code HandlingResult} does not have a result.
+	 *
+	 * @return true if result doesn't exist
+	 */
 	public boolean isEmpty();
 
+	/**
+	 * Gets an empty instance of {@code HandlingResult}.
+	 *
+	 * @return empty instance of {@code HandlingResult}
+	 */
 	public static HandlingResult empty() {
 		return of(null);
 	}
 
-	public static HandlingResult of(String message) {
+	/**
+	 * Gets an instance of {@code HandlingResult}.
+	 *
+	 * @return instance of {@code HandlingResult}
+	 */
+	public static HandlingResult of(@Nullable String message) {
 		return new DefaultHandlingResult(message);
 	}
 

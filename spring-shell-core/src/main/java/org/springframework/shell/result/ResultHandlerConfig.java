@@ -57,10 +57,10 @@ public class ResultHandlerConfig {
 		return new ParameterValidationExceptionResultHandler(terminal);
 	}
 
-	@Bean
-	public CommandParserExceptionsExceptionResultHandler commandParserExceptionsExceptionResultHandler(Terminal terminal) {
-		return new CommandParserExceptionsExceptionResultHandler(terminal);
-	}
+	// @Bean
+	// public CommandParserExceptionsExceptionResultHandler commandParserExceptionsExceptionResultHandler(Terminal terminal) {
+	// 	return new CommandParserExceptionsExceptionResultHandler(terminal);
+	// }
 
 	@Bean
 	public CommandParserExceptionResolver commandParserExceptionResolver() {

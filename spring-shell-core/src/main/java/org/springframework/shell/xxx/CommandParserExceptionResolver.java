@@ -19,13 +19,16 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandParser.MissingOptionException;
 import org.springframework.util.StringUtils;
 
-import java.util.Optional;
-
+/**
+ * Handles {@link CommandParserExceptionsException}.
+ *
+ * @author Janne Valkealahti
+ */
 public class CommandParserExceptionResolver implements ExceptionResolver {
 
 	@Override
@@ -35,16 +38,11 @@ public class CommandParserExceptionResolver implements ExceptionResolver {
 			cpee.getParserExceptions().stream().forEach(e -> {
 				if (e instanceof MissingOptionException moe) {
 					CommandOption option = moe.getOption();
-					StringBuilder buf = new StringBuilder();
 					if (option.getLongNames().length > 0) {
-						buf.append("Missing mandatory option --");
-						buf.append(option.getLongNames()[0]);
-						if (StringUtils.hasText(option.getDescription())) {
-							buf.append(", ");
-							buf.append(option.getDescription());
-						}
-						buf.append(".");
-						builder.append(new AttributedString(buf.toString(), AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)));
+						handleLong(builder, option);
+					}
+					else if (option.getShortNames().length > 0) {
+						handleShort(builder, option);
 					}
 				}
 				else {
@@ -56,5 +54,29 @@ public class CommandParserExceptionResolver implements ExceptionResolver {
 			return HandlingResult.of(as);
 		}
 		return null;
+	}
+
+	private static void handleLong(AttributedStringBuilder builder, CommandOption option) {
+		StringBuilder buf = new StringBuilder();
+		buf.append("Missing mandatory option --");
+		buf.append(option.getLongNames()[0]);
+		if (StringUtils.hasText(option.getDescription())) {
+			buf.append(", ");
+			buf.append(option.getDescription());
+		}
+		buf.append(".");
+		builder.append(new AttributedString(buf.toString(), AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)));
+	}
+
+	private static void handleShort(AttributedStringBuilder builder, CommandOption option) {
+		StringBuilder buf = new StringBuilder();
+		buf.append("Missing mandatory option -");
+		buf.append(option.getShortNames()[0]);
+		if (StringUtils.hasText(option.getDescription())) {
+			buf.append(", ");
+			buf.append(option.getDescription());
+		}
+		buf.append(".");
+		builder.append(new AttributedString(buf.toString(), AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)));
 	}
 }
