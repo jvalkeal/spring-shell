@@ -29,11 +29,7 @@ import java.util.Optional;
 public class CommandParserExceptionResolver implements ExceptionResolver {
 
 	@Override
-	public Optional<HandlingResult> resolve(Exception ex) {
-
-		// Missing mandatory option "--name", Catalog name.
-		// Use the command "help catalog add" for additional information on command options
-
+	public HandlingResult resolve(Exception ex) {
 		if (ex instanceof CommandParserExceptionsException cpee) {
 			AttributedStringBuilder builder = new AttributedStringBuilder();
 			cpee.getParserExceptions().stream().forEach(e -> {
@@ -57,10 +53,8 @@ public class CommandParserExceptionResolver implements ExceptionResolver {
 				builder.append("\n");
 			});
 			String as = builder.toAttributedString().toAnsi();
-			return Optional.of(HandlingResult.of(as));
+			return HandlingResult.of(as);
 		}
-
 		return null;
 	}
-
 }

@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.samples.e2e;
 
-import java.util.Optional;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.standard.ShellComponent;
@@ -61,9 +59,9 @@ public class ErrorHandlingCommands extends BaseE2ECommands {
 	private static class CustomExceptionResolver implements ExceptionResolver {
 
 		@Override
-		public Optional<HandlingResult> resolve(Exception e) {
+		public HandlingResult resolve(Exception e) {
 			if (e instanceof CustomException) {
-				return Optional.of(HandlingResult.of("hi\n"));
+				return HandlingResult.of("hi\n");
 			}
 			return null;
 		}

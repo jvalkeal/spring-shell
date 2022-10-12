@@ -127,7 +127,7 @@ public class Shell {
 	 * (<em>e.g.</em> a {@literal script} command).
 	 * </p>
 	 */
-	public void runx(InputProvider inputProvider) throws Exception {
+	public void run(InputProvider inputProvider) throws Exception {
 		Object result = null;
 		while (!(result instanceof ExitRequest)) { // Handles ExitRequest thrown from Quit command
 			Input input;
@@ -164,9 +164,95 @@ public class Shell {
 		}
 	}
 
+	/**
+	 * Evaluate a single "line" of input from the user by trying to map words to a command and
+	 * arguments.
+	 *
+	 * <p>
+	 * This method does not throw exceptions, it catches them and returns them as a regular
+	 * result
+	 * </p>
+	 */
+	private Object evaluate(Input input) {
+		if (noInput(input)) {
+			return NO_INPUT;
+		}
+
+		List<String> words = input.words();
+		String line = words.stream().collect(Collectors.joining(" ")).trim();
+		String command = findLongestCommand(line);
+
+		if (command == null) {
+			return new CommandNotFound(words);
+		}
+
+		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
+
+		Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
+			.filter(r -> {
+				if (r.getCommand().equals(command)) {
+					return true;
+				}
+				for (CommandAlias a : r.getAliases()) {
+					if (a.getCommand().equals(command)) {
+						return true;
+					}
+				}
+				return false;
+			})
+			.findFirst();
+
+		if (commandRegistration.isEmpty()) {
+			return new CommandNotFound(words);
+		}
+
+		if (this.exitCodeMappings != null) {
+			List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
+					.getMappingFunctions();
+			this.exitCodeMappings.reset(mappingFunctions);
+		}
+
+		List<String> wordsForArgs = wordsForArguments(command, words);
+
+		Thread commandThread = Thread.currentThread();
+		Object sh = Signals.register("INT", () -> commandThread.interrupt());
+
+		CommandExecution execution = CommandExecution.of(
+				argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal,
+				conversionService);
+
+		List<ExceptionResolver> commandExceptionResolvers = commandRegistration.get().getExceptionResolvers();
+
+		Object evaluate = null;
+		Exception e = null;
+		try {
+			evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
+
+		} catch (CommandExecutionException e1) {
+				return e1.getCause();
+		} catch (Exception e2) {
+			e = e2;
+		} finally {
+			Signals.unregister("INT", sh);
+		}
+		if (e != null) {
+			try {
+				HandlingResult processException = processException(commandExceptionResolvers ,e);
+				if (processException != null) {
+					this.terminal.writer().append(processException.message());
+					return null;
+				}
+			} catch (Exception e1) {
+				log.warn("Handling exception failed", e1);
+			}
+		}
+
+		return evaluate;
+	}
+
 	private HandlingResult processException(List<ExceptionResolver> commandExceptionResolvers, Exception e)
 			throws Exception {
-		Optional<HandlingResult> r = null;
+		HandlingResult r = null;
 		for (ExceptionResolver resolver : commandExceptionResolvers) {
 			r = resolver.resolve(e);
 			if (r != null) {
@@ -186,88 +272,11 @@ public class Shell {
 				return null;
 			}
 			else {
-				return r.get();
+				return r;
 			}
 		}
 		throw e;
 	}
-
-	/**
-	 * Evaluate a single "line" of input from the user by trying to map words to a command and
-	 * arguments.
-	 *
-	 * <p>
-	 * This method does not throw exceptions, it catches them and returns them as a regular
-	 * result
-	 * </p>
-	 */
-	public Object evaluate(Input input) {
-		if (noInput(input)) {
-			return NO_INPUT;
-		}
-
-		String line = input.words().stream().collect(Collectors.joining(" ")).trim();
-		String command = findLongestCommand(line);
-
-		List<String> words = input.words();
-		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
-		if (command != null) {
-
-			Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
-				.filter(r -> {
-					if (r.getCommand().equals(command)) {
-						return true;
-					}
-					for (CommandAlias a : r.getAliases()) {
-						if (a.getCommand().equals(command)) {
-							return true;
-						}
-					}
-					return false;
-				})
-				.findFirst();
-
-			if (commandRegistration.isPresent()) {
-				if (this.exitCodeMappings != null) {
-					List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
-							.getMappingFunctions();
-					this.exitCodeMappings.reset(mappingFunctions);
-				}
-
-				List<String> wordsForArgs = wordsForArguments(command, words);
-
-				Thread commandThread = Thread.currentThread();
-				Object sh = Signals.register("INT", () -> commandThread.interrupt());
-				try {
-					CommandExecution execution = CommandExecution
-							.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal, conversionService);
-					return execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
-				}
-				catch (UndeclaredThrowableException e) {
-					if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
-						Thread.interrupted(); // to reset interrupted flag
-					}
-					return e.getCause();
-				}
-				catch (CommandExecutionException e) {
-					return e.getCause();
-				}
-				catch (Exception e) {
-					return e;
-				}
-				finally {
-					Signals.unregister("INT", sh);
-				}
-			}
-			else {
-				return new CommandNotFound(words);
-			}
-		}
-		else {
-			return new CommandNotFound(words);
-		}
-	}
-
 
 	/**
 	 * Return true if the parsed input ends up being empty (<em>e.g.</em> hitting ENTER on an
@@ -424,187 +433,4 @@ public class Shell {
 				.reduce("", (c1, c2) -> c1.length() > c2.length() ? c1 : c2);
 		return "".equals(result) ? null : result;
 	}
-
-
-	public void run(InputProvider inputProvider) throws Exception {
-		Object result = null;
-		while (!(result instanceof ExitRequest)) { // Handles ExitRequest thrown from Quit command
-			Input input;
-			try {
-				input = inputProvider.readInput();
-			}
-			catch (Exception e) {
-				if (e instanceof ExitRequest) { // Handles ExitRequest thrown from hitting CTRL-C
-					break;
-				}
-				resultHandlerService.handle(e);
-				continue;
-			}
-			if (input == null) {
-				break;
-			}
-
-			result = evaluate2(input);
-			if (result != NO_INPUT && !(result instanceof ExitRequest)) {
-				resultHandlerService.handle(result);
-			}
-
-			// throw if not in interactive mode so that boot's exit code feature
-			// can contribute exit code. we can't throw when in interactive mode as
-			// that would exit a shell
-			if (this.shellContext != null && this.shellContext.getInteractionMode() != InteractionMode.INTERACTIVE) {
-				if (result instanceof CommandExecution.CommandParserExceptionsException) {
-					throw (CommandExecution.CommandParserExceptionsException) result;
-				}
-				else if (result instanceof Exception) {
-					throw (Exception) result;
-				}
-			}
-		}
-	}
-
-	// if (evaluate instanceof Exception) {
-	// 	try {
-	// 		HandlingResult processException = processException((Exception)evaluate);
-	// 		log.debug("XXX1 {}", processException);
-	// 		if (processException != null) {
-	// 			this.terminal.writer().append(processException.getMessage().toAnsi());
-	// 			return null;
-	// 		}
-	// 	} catch (Exception e) {
-	// 	}
-	// }
-
-	public Object evaluate2(Input input) {
-		if (noInput(input)) {
-			return NO_INPUT;
-		}
-
-		List<String> words = input.words();
-		String line = words.stream().collect(Collectors.joining(" ")).trim();
-		String command = findLongestCommand(line);
-
-		if (command == null) {
-			return new CommandNotFound(words);
-		}
-
-		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
-
-		Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
-			.filter(r -> {
-				if (r.getCommand().equals(command)) {
-					return true;
-				}
-				for (CommandAlias a : r.getAliases()) {
-					if (a.getCommand().equals(command)) {
-						return true;
-					}
-				}
-				return false;
-			})
-			.findFirst();
-
-		if (commandRegistration.isEmpty()) {
-			return new CommandNotFound(words);
-		}
-
-		if (this.exitCodeMappings != null) {
-			List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
-					.getMappingFunctions();
-			this.exitCodeMappings.reset(mappingFunctions);
-		}
-
-		List<String> wordsForArgs = wordsForArguments(command, words);
-
-		Thread commandThread = Thread.currentThread();
-		Object sh = Signals.register("INT", () -> commandThread.interrupt());
-
-		CommandExecution execution = CommandExecution.of(
-				argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal,
-				conversionService);
-
-		List<ExceptionResolver> commandExceptionResolvers = commandRegistration.get().getExceptionResolvers();
-
-		Object evaluate = null;
-		Exception e = null;
-		try {
-			evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
-
-		} catch (CommandExecutionException e1) {
-				return e1.getCause();
-		} catch (Exception e2) {
-			e = e2;
-		} finally {
-			Signals.unregister("INT", sh);
-		}
-		if (e != null) {
-			try {
-				HandlingResult processException = processException(commandExceptionResolvers ,e);
-				if (processException != null) {
-					this.terminal.writer().append(processException.message());
-					return null;
-				}
-			} catch (Exception e1) {
-				log.warn("Handling exception failed", e1);
-			}
-		}
-
-		return evaluate;
-		// if (command != null) {
-
-		// 	Optional<CommandRegistration> commandRegistration = commandRegistry.getRegistrations().values().stream()
-		// 		.filter(r -> {
-		// 			if (r.getCommand().equals(command)) {
-		// 				return true;
-		// 			}
-		// 			for (CommandAlias a : r.getAliases()) {
-		// 				if (a.getCommand().equals(command)) {
-		// 					return true;
-		// 				}
-		// 			}
-		// 			return false;
-		// 		})
-		// 		.findFirst();
-
-		// 	if (commandRegistration.isPresent()) {
-		// 		if (this.exitCodeMappings != null) {
-		// 			List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
-		// 					.getMappingFunctions();
-		// 			this.exitCodeMappings.reset(mappingFunctions);
-		// 		}
-
-		// 		List<String> wordsForArgs = wordsForArguments(command, words);
-
-		// 		Thread commandThread = Thread.currentThread();
-		// 		Object sh = Signals.register("INT", () -> commandThread.interrupt());
-		// 		try {
-		// 			CommandExecution execution = CommandExecution
-		// 					.of(argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal, conversionService);
-		// 			return execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
-		// 		}
-		// 		catch (UndeclaredThrowableException e) {
-		// 			if (e.getCause() instanceof InterruptedException || e.getCause() instanceof ClosedByInterruptException) {
-		// 				Thread.interrupted(); // to reset interrupted flag
-		// 			}
-		// 			return e.getCause();
-		// 		}
-		// 		catch (CommandExecutionException e) {
-		// 			return e.getCause();
-		// 		}
-		// 		catch (Exception e) {
-		// 			return e;
-		// 		}
-		// 		finally {
-		// 			Signals.unregister("INT", sh);
-		// 		}
-		// 	}
-		// 	else {
-		// 		return new CommandNotFound(words);
-		// 	}
-		// }
-		// else {
-		// 	return new CommandNotFound(words);
-		// }
-	}
-
 }

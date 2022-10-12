@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.xxx;
 
-import java.util.Optional;
-
 public interface ExceptionResolver {
 
 	/**
@@ -26,6 +24,6 @@ public interface ExceptionResolver {
 	 *         {@code null} for default processing in the resolution chain
 	 * @return
 	 */
-	Optional<HandlingResult> resolve(Exception ex);
+	HandlingResult resolve(Exception ex);
 
 }

@@ -17,14 +17,13 @@ package org.springframework.shell.xxx;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
 import org.springframework.shell.command.CommandParser.CommandParserException;
 import org.springframework.shell.command.CommandParser.MissingOptionException;
+import org.springframework.shell.command.CommandRegistration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,8 +50,8 @@ class CommandParserExceptionResolverTests {
 		List<CommandParserException> parserExceptions = Arrays.asList(moe);
 		CommandParserExceptionsException cpee = new CommandParserExceptionsException("msg", parserExceptions);
 		CommandParserExceptionResolver resolver = new CommandParserExceptionResolver();
-		Optional<HandlingResult> resolve = resolver.resolve(cpee);
-		assertThat(resolve).isNotEmpty();
-		assertThat(resolve.get().message()).contains("--arg1", "Desc arg1");
+		HandlingResult resolve = resolver.resolve(cpee);
+		assertThat(resolve).isNotNull();
+		assertThat(resolve.message()).contains("--arg1", "Desc arg1");
 	}
 }

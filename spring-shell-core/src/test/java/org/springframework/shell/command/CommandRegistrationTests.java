@@ -16,7 +16,6 @@
 package org.springframework.shell.command;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -463,8 +462,8 @@ public class CommandRegistrationTests extends AbstractCommandTests {
 	public void testErrorHandling() {
 		ExceptionResolver er1 = new ExceptionResolver() {
 			@Override
-			public Optional<HandlingResult> resolve(Exception e) {
-				return Optional.empty();
+			public HandlingResult resolve(Exception e) {
+				return HandlingResult.empty();
 			}
 		};
 		CommandRegistration registration;

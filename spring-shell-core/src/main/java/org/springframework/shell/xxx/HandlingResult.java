@@ -19,6 +19,10 @@ public interface HandlingResult {
 
 	String message();
 
+	public boolean isPresent();
+
+	public boolean isEmpty();
+
 	public static HandlingResult empty() {
 		return of(null);
 	}
@@ -38,6 +42,16 @@ public interface HandlingResult {
 		@Override
 		public String message() {
 			return message;
+		}
+
+		@Override
+		public boolean isPresent() {
+			return message != null;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !isPresent();
 		}
 	}
 }
