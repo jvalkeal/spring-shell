@@ -227,7 +227,6 @@ public class Shell {
 		Exception e = null;
 		try {
 			evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
-
 		}
 		catch (UndeclaredThrowableException ute) {
 			if (ute.getCause() instanceof InterruptedException || ute.getCause() instanceof ClosedByInterruptException) {
@@ -246,16 +245,19 @@ public class Shell {
 		}
 		if (e != null) {
 			try {
-				HandlingResult processException = processException(commandExceptionResolvers ,e);
+				HandlingResult processException = processException(commandExceptionResolvers, e);
 				if (processException != null) {
 					this.terminal.writer().append(processException.message());
+					this.terminal.writer().flush();
 					return null;
 				}
 			} catch (Exception e1) {
-				log.warn("Handling exception failed", e1);
+				e = e1;
 			}
 		}
-
+		if (e != null) {
+			evaluate = e;
+		}
 		return evaluate;
 	}
 

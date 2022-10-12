@@ -44,8 +44,11 @@ public class ErrorHandlingCommands extends BaseE2ECommands {
 			.withTarget()
 				.function(ctx -> {
 					String arg1 = ctx.getOptionValue("arg1");
-					if ("throw".equals(arg1)) {
+					if ("throw1".equals(arg1)) {
 						throw new CustomException();
+					}
+					if ("throw2".equals(arg1)) {
+						throw new RuntimeException();
 					}
 					return "Hello " + arg1;
 				})
