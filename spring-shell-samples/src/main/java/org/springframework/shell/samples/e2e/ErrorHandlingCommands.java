@@ -17,9 +17,9 @@ package org.springframework.shell.samples.e2e;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.ExceptionResolver;
+import org.springframework.shell.command.HandlingResult;
 import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.xxx.ExceptionResolver;
-import org.springframework.shell.xxx.HandlingResult;
 
 /**
  * Commands used for e2e test.

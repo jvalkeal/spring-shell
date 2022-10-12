@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
 import org.springframework.shell.command.CommandParser.CommandParserException;
 import org.springframework.shell.command.CommandParser.MissingOptionException;
-import org.springframework.shell.command.CommandOption;
-import org.springframework.shell.command.CommandRegistration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.xxx;
+package org.springframework.shell.command;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
 import org.springframework.shell.command.CommandExecution.CommandParserExceptionsException;
-import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandParser.MissingOptionException;
 import org.springframework.util.StringUtils;
 

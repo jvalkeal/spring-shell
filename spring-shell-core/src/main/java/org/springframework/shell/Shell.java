@@ -43,12 +43,12 @@ import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandExecution.CommandExecutionException;
 import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.ExceptionResolver;
+import org.springframework.shell.command.HandlingResult;
 import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.shell.context.InteractionMode;
 import org.springframework.shell.context.ShellContext;
 import org.springframework.shell.exit.ExitCodeMappings;
-import org.springframework.shell.xxx.ExceptionResolver;
-import org.springframework.shell.xxx.HandlingResult;
 import org.springframework.util.StringUtils;
 
 /**
@@ -228,11 +228,20 @@ public class Shell {
 		try {
 			evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
 
-		} catch (CommandExecutionException e1) {
-				return e1.getCause();
-		} catch (Exception e2) {
+		}
+		catch (UndeclaredThrowableException ute) {
+			if (ute.getCause() instanceof InterruptedException || ute.getCause() instanceof ClosedByInterruptException) {
+				Thread.interrupted(); // to reset interrupted flag
+			}
+			return ute.getCause();
+		}
+		catch (CommandExecutionException e1) {
+			return e1.getCause();
+		}
+		catch (Exception e2) {
 			e = e2;
-		} finally {
+		}
+		finally {
 			Signals.unregister("INT", sh);
 		}
 		if (e != null) {

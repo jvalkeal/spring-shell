@@ -24,8 +24,6 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.context.InteractionMode;
-import org.springframework.shell.xxx.ExceptionResolver;
-import org.springframework.shell.xxx.HandlingResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

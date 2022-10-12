@@ -32,7 +32,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.shell.Availability;
 import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.shell.context.InteractionMode;
-import org.springframework.shell.xxx.ExceptionResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
