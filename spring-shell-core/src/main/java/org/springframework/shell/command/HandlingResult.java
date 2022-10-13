@@ -33,6 +33,14 @@ public interface HandlingResult {
 	String message();
 
 	/**
+	 * Gets an exit code for this {@code HandlingResult}. Exit code only has meaning
+	 * if shell is in non-interactive mode.
+	 *
+	 * @return an exit code
+	 */
+	Integer exitCode();
+
+	/**
 	 * Indicate whether this {@code HandlingResult} has a result.
 	 *
 	 * @return true if result exist
@@ -58,18 +66,36 @@ public interface HandlingResult {
 	/**
 	 * Gets an instance of {@code HandlingResult}.
 	 *
+	 * @param message the message
 	 * @return instance of {@code HandlingResult}
 	 */
 	public static HandlingResult of(@Nullable String message) {
-		return new DefaultHandlingResult(message);
+		return of(message, null);
+	}
+
+	/**
+	 * Gets an instance of {@code HandlingResult}.
+	 *
+	 * @param message the message
+	 * @param exitCode the exit code
+	 * @return instance of {@code HandlingResult}
+	 */
+	public static HandlingResult of(@Nullable String message, Integer exitCode) {
+		return new DefaultHandlingResult(message, exitCode);
 	}
 
 	static class DefaultHandlingResult implements HandlingResult {
 
 		private final String message;
+		private final Integer exitCode;
 
 		DefaultHandlingResult(String message) {
+			this(message, null);
+		}
+
+		DefaultHandlingResult(String message, Integer exitCode) {
 			this.message = message;
+			this.exitCode = exitCode;
 		}
 
 		@Override
@@ -78,8 +104,13 @@ public interface HandlingResult {
 		}
 
 		@Override
+		public Integer exitCode() {
+			return exitCode;
+		}
+
+		@Override
 		public boolean isPresent() {
-			return message != null;
+			return message != null || exitCode != null;
 		}
 
 		@Override

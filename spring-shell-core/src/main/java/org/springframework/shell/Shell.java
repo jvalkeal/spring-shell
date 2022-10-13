@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-
 import org.jline.terminal.Terminal;
 import org.jline.utils.Signals;
 import org.slf4j.Logger;
@@ -39,15 +38,16 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.shell.command.CommandAlias;
 import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.command.CommandExecution;
-import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandExecution.CommandExecutionException;
 import org.springframework.shell.command.CommandExecution.CommandExecutionHandlerMethodArgumentResolvers;
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.ExceptionResolver;
 import org.springframework.shell.command.HandlingResult;
 import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.shell.context.InteractionMode;
 import org.springframework.shell.context.ShellContext;
+import org.springframework.shell.exit.ExitCodeExceptionProvider;
 import org.springframework.shell.exit.ExitCodeMappings;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +75,8 @@ public class Shell {
 	private ConversionService conversionService = new DefaultConversionService();
 	private final ShellContext shellContext;
 	private final ExitCodeMappings exitCodeMappings;
+	private Exception handlingResultNonInt = null;
+	private HandlingResult processExceptionNonInt = null;
 
 	/**
 	 * Marker object to distinguish unresolved arguments from {@code null}, which is a valid
@@ -119,6 +121,13 @@ public class Shell {
 		this.exceptionResolvers = exceptionResolvers;
 	}
 
+	private ExitCodeExceptionProvider exitCodeExceptionProvider;
+
+	@Autowired(required = false)
+	public void setExitCodeExceptionProvider(ExitCodeExceptionProvider exitCodeExceptionProvider) {
+		this.exitCodeExceptionProvider = exitCodeExceptionProvider;
+	}
+
 	/**
 	 * The main program loop: acquire input, try to match it to a command and evaluate. Repeat
 	 * until a {@link ResultHandler} causes the process to exit or there is no input.
@@ -160,6 +169,15 @@ public class Shell {
 				else if (result instanceof Exception) {
 					throw (Exception) result;
 				}
+				if (handlingResultNonInt instanceof CommandExecution.CommandParserExceptionsException) {
+					throw (CommandExecution.CommandParserExceptionsException) handlingResultNonInt;
+				}
+				else if (processExceptionNonInt != null && processExceptionNonInt.exitCode() != null && exitCodeExceptionProvider != null) {
+					throw exitCodeExceptionProvider.apply(null, processExceptionNonInt.exitCode());
+				}
+				// else if (handlingResultEx instanceof Exception) {
+				// 	throw (Exception) handlingResultEx;
+				// }
 			}
 		}
 	}
@@ -246,7 +264,9 @@ public class Shell {
 		if (e != null) {
 			try {
 				HandlingResult processException = processException(commandExceptionResolvers, e);
+				processExceptionNonInt = processException;
 				if (processException != null) {
+					handlingResultNonInt = e;
 					this.terminal.writer().append(processException.message());
 					this.terminal.writer().flush();
 					return null;

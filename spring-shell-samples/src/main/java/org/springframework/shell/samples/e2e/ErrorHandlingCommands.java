@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.samples.e2e;
 
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.ExceptionResolver;
@@ -45,9 +46,12 @@ public class ErrorHandlingCommands extends BaseE2ECommands {
 				.function(ctx -> {
 					String arg1 = ctx.getOptionValue("arg1");
 					if ("throw1".equals(arg1)) {
-						throw new CustomException();
+						throw new CustomException1();
 					}
 					if ("throw2".equals(arg1)) {
+						throw new CustomException2(11);
+					}
+					if ("throw3".equals(arg1)) {
 						throw new RuntimeException();
 					}
 					return "Hello " + arg1;
@@ -56,15 +60,30 @@ public class ErrorHandlingCommands extends BaseE2ECommands {
 			.build();
 	}
 
-	private static class CustomException extends RuntimeException {
+	private static class CustomException1 extends RuntimeException {
 	}
+
+	private static class CustomException2 extends RuntimeException implements ExitCodeGenerator {
+
+		private int code;
+
+		CustomException2(int code) {
+			this.code = code;
+		}
+
+		@Override
+		public int getExitCode() {
+			return code;
+		}
+	}
+
 
 	private static class CustomExceptionResolver implements ExceptionResolver {
 
 		@Override
 		public HandlingResult resolve(Exception e) {
-			if (e instanceof CustomException) {
-				return HandlingResult.of("hi\n");
+			if (e instanceof CustomException1) {
+				return HandlingResult.of("Hi, handled exception\n", 42);
 			}
 			return null;
 		}
