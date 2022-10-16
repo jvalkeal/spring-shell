@@ -28,8 +28,8 @@ import org.springframework.util.StringUtils;
 class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 
 	@Override
-	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
-			boolean withPos) {
+	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text,
+			String pattern) {
 
 		// func FuzzyMatchV2(caseSensitive bool, normalize bool, forward bool, input *util.Chars, pattern []rune, withPos bool, slab *util.Slab) (Result, *[]int) {
 		// 	// Assume that pattern is given in lowercase if case-insensitive.
@@ -411,35 +411,34 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		// 	// want to pay extra cost for the option that has lost its importance.
 		// 	return Result{j, maxScorePos + 1, int(maxScore)}, pos
 		// }
-		if (withPos) {
-			int i = M - 1;
-			j = maxScorePos;
-			boolean preferMatch = true;
-			int posidx = pos.length - 1;
-			for(;;) {
-				int I = i * width;
-				int j0 = j - f0;
-				int s = H.get(I + j0);
-				int s1 = 0;
-				int s2 = 0;
-				// int f = F.get(i);
-				if (i > 0 && j >= F.get(i)) {
-					s1 = H.get(I - width + j0 - 1);
-				}
-				if (j > F.get(i)) {
-					s2 = H.get(I + j0 - 1);
-				}
-				if (s > s1 && (s > s2 || s == s2 && preferMatch)) {
-					// *pos = append(*pos, j)
-					pos[posidx--] = j;
-					if (i == 0) {
-						break;
-					}
-					i--;
-				}
-				preferMatch = C.get(I + j0) > 1 || I + width + j0 + 1 < C.size() && C.get(I + width + j0 + 1) > 0;
-				j--;
+
+		int i = M - 1;
+		j = maxScorePos;
+		boolean preferMatch = true;
+		int posidx = pos.length - 1;
+		for(;;) {
+			int I = i * width;
+			int j0 = j - f0;
+			int s = H.get(I + j0);
+			int s1 = 0;
+			int s2 = 0;
+			// int f = F.get(i);
+			if (i > 0 && j >= F.get(i)) {
+				s1 = H.get(I - width + j0 - 1);
 			}
+			if (j > F.get(i)) {
+				s2 = H.get(I + j0 - 1);
+			}
+			if (s > s1 && (s > s2 || s == s2 && preferMatch)) {
+				// *pos = append(*pos, j)
+				pos[posidx--] = j;
+				if (i == 0) {
+					break;
+				}
+				i--;
+			}
+			preferMatch = C.get(I + j0) > 1 || I + width + j0 + 1 < C.size() && C.get(I + width + j0 + 1) > 0;
+			j--;
 		}
 
 		return SearchMatchResult.of(j, maxScorePos + 1, maxScore, pos, this);

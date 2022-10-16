@@ -31,9 +31,7 @@ public interface SearchMatchAlgorithm {
 	 * @param forward the forward
 	 * @param text the test
 	 * @param pattern the pattern
-	 * @param withPos the pos
 	 * @return a search match result
 	 */
-	SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
-			boolean withPos);
+	SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern);
 }

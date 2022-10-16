@@ -27,8 +27,7 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 	private int eidx = -1;
 
 	@Override
-	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern,
-			boolean withPos) {
+	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern) {
 		int lenRunes = text.length();
 		int lenPattern = pattern.length();
 
@@ -84,8 +83,7 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				sidx = lenRunes - eidx;
 				eidx = lenRunes - sidx;
 			}
-			CalculateScore calculateScore = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx,
-					withPos);
+			CalculateScore calculateScore = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx);
 			return SearchMatchResult.of(sidx, eidx, calculateScore.score, calculateScore.pos, this);
 		}
 		return SearchMatchResult.of(-1, -1, 0, new int[0], this);

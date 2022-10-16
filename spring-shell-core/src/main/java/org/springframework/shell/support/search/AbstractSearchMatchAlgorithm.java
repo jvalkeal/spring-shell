@@ -129,7 +129,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 	}
 
 	static CalculateScore calculateScore(boolean caseSensitive, boolean normalize, String text, String pattern,
-			int sidx, int eidx, boolean withPos) {
+			int sidx, int eidx) {
 		int pidx = 0;
 		int score = 0;
 		boolean inGap = false;

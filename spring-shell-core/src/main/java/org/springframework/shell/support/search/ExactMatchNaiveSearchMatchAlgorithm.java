@@ -26,7 +26,7 @@ class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 
 	@Override
 	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text,
-			String pattern, boolean withPos) {
+			String pattern) {
 
 		if (!StringUtils.hasText(pattern)) {
 			return SearchMatchResult.ofZeros();
@@ -104,7 +104,7 @@ class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				sidx = lenRunes - (bestPos + 1);
 				eidx = lenRunes - (bestPos - lenPattern + 1);
 			}
-			CalculateScore score = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx, false);
+			CalculateScore score = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx);
 			return SearchMatchResult.of(sidx, eidx, score.score, score.pos, this);
 		}
 		return SearchMatchResult.ofMinus();

@@ -77,7 +77,7 @@ class FuzzyMatchV2SearchMatchAlgorithmTests {
 		if (!caseSensitive) {
 			pattern = pattern.toLowerCase();
 		}
-		SearchMatchResult result = searchMatch.match(caseSensitive, normalize, forward, text, pattern, true);
+		SearchMatchResult result = searchMatch.match(caseSensitive, normalize, forward, text, pattern);
 		assertThat(result.getStart()).isEqualTo(start);
 		assertThat(result.getEnd()).isEqualTo(end);
 		assertThat(result.getScore()).isEqualTo(score);
