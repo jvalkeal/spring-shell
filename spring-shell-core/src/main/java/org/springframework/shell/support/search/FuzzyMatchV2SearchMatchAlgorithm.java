@@ -229,7 +229,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			return SearchMatchResult.ofMinus();
 		}
 		if (M == 1) {
-			return SearchMatchResult.of(maxScorePos, maxScorePos + 1, maxScore, new int[] { maxScorePos });
+			return SearchMatchResult.of(maxScorePos, maxScorePos + 1, maxScore, new int[] { maxScorePos }, this);
 		}
 
 		// Phase 3. Fill in score matrix (H)
@@ -442,7 +442,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			}
 		}
 
-		return SearchMatchResult.of(j, maxScorePos + 1, maxScore, pos);
+		return SearchMatchResult.of(j, maxScorePos + 1, maxScore, pos, this);
 	}
 
 	// 	H0sub, C0sub, Bsub := H0[idx:][:len(Tsub)], C0[idx:][:len(Tsub)], B[idx:][:len(Tsub)]

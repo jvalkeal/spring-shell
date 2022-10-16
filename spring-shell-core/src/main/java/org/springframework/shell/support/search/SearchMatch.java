@@ -38,12 +38,15 @@ public interface SearchMatch {
 	/**
 	 * Gets an instance of a builder for a {@link SearchMatch}.
 	 *
-	 * @return
+	 * @return builder for search match
 	 */
 	public static Builder builder() {
 		return new DefaultBuilder();
 	}
 
+	/**
+	 * Defines an interface for {@link SearchMatch}.
+	 */
 	interface Builder {
 
 		/**
@@ -123,23 +126,28 @@ public interface SearchMatch {
 
 		@Override
 		public SearchMatchResult match(String text, String pattern) {
-			// algos are currently expecting to pass patter as lower case if
-			// case sensitivity is not enabled.
-			if (!caseSensitive && pattern != null) {
-				pattern = pattern.toLowerCase();
+			SearchMatchAlgorithm algo = null;
+			if (pattern != null) {
+				// algos are currently expecting to pass pattern as lower case if
+				// case sensitivity is not enabled.
+				if (!caseSensitive) {
+					pattern = pattern.toLowerCase();
+				}
+
+				// pick algorithm based on pattern
+				if (pattern.startsWith("'")) {
+					// exact match starting with "'"
+					algo = new ExactMatchNaiveSearchMatchAlgorithm();
+					pattern = pattern.substring(1);
+				}
 			}
-			// pick algorithm based on pattern
-			SearchMatchAlgorithm algo;
-			if (pattern.startsWith("'")) {
-				// exact match starting with "'"
-				algo = new ExactMatchNaiveSearchMatchAlgorithm();
-				pattern = pattern.substring(1);
-			}
-			else {
-				// then for any other use fuzzy match
+
+			// default algo is fuzzy match
+			if (algo == null) {
 				// algo = new FuzzyMatchV1SearchMatchAlgorithm();
 				algo = new FuzzyMatchV2SearchMatchAlgorithm();
 			}
+
 			return algo.match(caseSensitive, normalize, forward, text, pattern, withPos);
 		}
 	}

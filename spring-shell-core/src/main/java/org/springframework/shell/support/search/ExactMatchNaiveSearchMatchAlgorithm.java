@@ -105,7 +105,7 @@ class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				eidx = lenRunes - (bestPos - lenPattern + 1);
 			}
 			CalculateScore score = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx, false);
-			return SearchMatchResult.of(sidx, eidx, score.score, score.pos);
+			return SearchMatchResult.of(sidx, eidx, score.score, score.pos, this);
 		}
 		return SearchMatchResult.ofMinus();
 	}

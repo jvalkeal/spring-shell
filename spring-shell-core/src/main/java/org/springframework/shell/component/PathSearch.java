@@ -203,7 +203,6 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 	private void selectorListUpdated(PathSearchContext context) {
 		List<PathViewItem> pathViews = selectorList.getProjection().stream()
 			.map(i -> {
-				// return new PathViewItem(i.getItem().getPath(), i.getItem().getNameMatchParts(), i.isSelected());
 				return new PathViewItem(i.getItem().getPath(), i.getItem().getPartsText(), i.isSelected());
 			})
 			.collect(Collectors.toList());

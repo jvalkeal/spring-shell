@@ -86,8 +86,8 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			}
 			CalculateScore calculateScore = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx,
 					withPos);
-			return SearchMatchResult.of(sidx, eidx, calculateScore.score, calculateScore.pos);
+			return SearchMatchResult.of(sidx, eidx, calculateScore.score, calculateScore.pos, this);
 		}
-		return SearchMatchResult.of(-1, -1, 0, new int[0]);
+		return SearchMatchResult.of(-1, -1, 0, new int[0], this);
 	}
 }

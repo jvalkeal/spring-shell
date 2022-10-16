@@ -32,7 +32,7 @@ public interface SearchMatchResult {
 	/**
 	 * Get end of a match.
 	 *
-	 * @return a end of a match
+	 * @return a end of a matchh
 	 */
 	int getEnd();
 
@@ -51,6 +51,13 @@ public interface SearchMatchResult {
 	int[] getPositions();
 
 	/**
+	 * Get {@link SearchMatchAlgorithm} handling a search.
+	 *
+	 * @return {@link SearchMatchAlgorithm} handling a search
+	 */
+	SearchMatchAlgorithm getAlgorithm();
+
+	/**
 	 * Construct {@link SearchMatchResult} with given parameters.
 	 *
 	 * @param start the start
@@ -59,16 +66,16 @@ public interface SearchMatchResult {
 	 * @param positions the positions
 	 * @return a search match result
 	 */
-	public static SearchMatchResult of(int start, int end, int score, int[] positions) {
-		return new DefaultResult(start, end, score, positions);
+	public static SearchMatchResult of(int start, int end, int score, int[] positions, SearchMatchAlgorithm algo) {
+		return new DefaultResult(start, end, score, positions, algo);
 	}
 
 	public static SearchMatchResult ofZeros() {
-		return of(0, 0, 0, new int[0]);
+		return of(0, 0, 0, new int[0], null);
 	}
 
 	public static SearchMatchResult ofMinus() {
-		return of(-1, -1, 0, new int[0]);
+		return of(-1, -1, 0, new int[0], null);
 	}
 
 	static class DefaultResult implements SearchMatchResult {
@@ -77,12 +84,14 @@ public interface SearchMatchResult {
 		int end;
 		int score;
 		int[] positions;
+		SearchMatchAlgorithm algo;
 
-		DefaultResult(int start, int end, int score, int[] positions) {
+		DefaultResult(int start, int end, int score, int[] positions, SearchMatchAlgorithm algo) {
 			this.start = start;
 			this.end = end;
 			this.score = score;
 			this.positions = positions;
+			this.algo = algo;
 		}
 
 		@Override
@@ -103,6 +112,11 @@ public interface SearchMatchResult {
 		@Override
 		public int[] getPositions() {
 			return positions;
+		}
+
+		@Override
+		public SearchMatchAlgorithm getAlgorithm() {
+			return algo;
 		}
 	}
 }
