@@ -72,7 +72,10 @@ public class ComponentCommands extends AbstractShellComponent {
 	@ShellMethod(key = "component path search", value = "Path search", group = "Components")
 	public String pathSearch(
 		@ShellOption(defaultValue = ShellOption.NULL) Integer maxPathsShow,
-		@ShellOption(defaultValue = ShellOption.NULL) Integer maxPathsSearch
+		@ShellOption(defaultValue = ShellOption.NULL) Integer maxPathsSearch,
+		@ShellOption(defaultValue = "true") boolean searchForward,
+		@ShellOption(defaultValue = "false") boolean searchCaseSensitive,
+		@ShellOption(defaultValue = "false") boolean searchNormalize
 	) {
 		PathSearchConfig config = new PathSearch.PathSearchConfig();
 		if (maxPathsShow != null) {
@@ -81,6 +84,9 @@ public class ComponentCommands extends AbstractShellComponent {
 		if (maxPathsSearch != null) {
 			config.setMaxPathsSearch(maxPathsSearch);
 		}
+		config.setSearchForward(searchForward);
+		config.setSearchCaseSensitive(searchCaseSensitive);
+		config.setSearchNormalize(searchNormalize);
 		PathSearch component = new PathSearch(getTerminal(), "Enter value", config);
 		component.setResourceLoader(getResourceLoader());
 		component.setTemplateExecutor(getTemplateExecutor());

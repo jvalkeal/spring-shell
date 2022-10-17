@@ -153,7 +153,7 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 			}
 
 			if (normalize) {
-				// c = normilizeRune(c);
+				c = normalizeRune(c);
 			}
 
 			if (c == pattern.charAt(pidx)) {
@@ -241,5 +241,16 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		}
 
 		return firstIndex;
+	}
+
+	static char normalizeRune(char r) {
+		if (r < 0x00C0 || r > 0x2184) {
+			return r;
+		}
+		Character n = Normalize.normalized.get(r);
+		if (n != null && n > 0) {
+			return n;
+		}
+		return r;
 	}
 }

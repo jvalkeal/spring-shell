@@ -40,7 +40,7 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			}
 
 			if (normalize) {
-				// c = normalizeRune(c);
+				c = normalizeRune(c);
 			}
 
 			char pchar = pattern.charAt(indexAt(pidx, lenPattern, forward));

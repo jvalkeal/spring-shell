@@ -237,6 +237,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		private int maxPathsShow = 5;
 		private int maxPathsSearch = 20;
+		private boolean searchForward = true;
+		private boolean searchCaseSensitive = false;
+		private boolean searchNormalize = false;
 		private Supplier<BiFunction<String, PathSearchContext, PathScannerResult>> pathScanner = () -> DefaultPathScanner.of();
 
 		public int getMaxPathsShow() {
@@ -260,6 +263,30 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		public void setPathScanner(Supplier<BiFunction<String, PathSearchContext, PathScannerResult>> pathScanner) {
 			Assert.notNull(pathScanner, "pathScanner supplier cannot be null");
 			this.pathScanner = pathScanner;
+		}
+
+		public boolean isSearchForward() {
+			return searchForward;
+		}
+
+		public void setSearchForward(boolean searchForward) {
+			this.searchForward = searchForward;
+		}
+
+		public boolean isSearchCaseSensitive() {
+			return searchCaseSensitive;
+		}
+
+		public void setSearchCaseSensitive(boolean searchCaseSensitive) {
+			this.searchCaseSensitive = searchCaseSensitive;
+		}
+
+		public boolean isSearchNormalize() {
+			return searchNormalize;
+		}
+
+		public void setSearchNormalize(boolean searchNormalize) {
+			this.searchNormalize = searchNormalize;
 		}
 	}
 
@@ -558,9 +585,9 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				SearchMatchResult result;
 				if (StringUtils.hasText(match)) {
 					SearchMatch searchMatch = SearchMatch.builder()
-						.caseSensitive(false)
-						.normalize(false)
-						.forward(true)
+						.caseSensitive(context.getPathSearchConfig().isSearchCaseSensitive())
+						.normalize(context.getPathSearchConfig().isSearchNormalize())
+						.forward(context.getPathSearchConfig().searchForward)
 						.build();
 					result = searchMatch.match(p.toString(), match);
 				}

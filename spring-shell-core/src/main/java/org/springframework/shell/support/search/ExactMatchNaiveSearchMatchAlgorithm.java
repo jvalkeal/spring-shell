@@ -61,7 +61,7 @@ class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 					c += 32;
 				}
 				if (normalize) {
-					// char = normalizeRune(char)
+					c = normalizeRune(c);
 				}
 			}
 

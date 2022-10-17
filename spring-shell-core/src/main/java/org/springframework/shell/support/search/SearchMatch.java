@@ -132,6 +132,11 @@ public interface SearchMatch {
 				if (!caseSensitive) {
 					pattern = pattern.toLowerCase();
 				}
+				// algos are currently expecting to pass pattern as normalized if
+				// it is enabled.
+				if (normalize) {
+					pattern = Normalize.normalizeRunes(pattern);
+				}
 
 				// pick algorithm based on pattern
 				if (pattern.startsWith("'")) {

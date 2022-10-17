@@ -139,6 +139,9 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				if (c >= 'A' && c <= 'Z') {
 					c += 32;
 				}
+				if (normalize) {
+					c = normalizeRune(c);
+				}
 			}
 
 			// 		Tsub[off] = char
