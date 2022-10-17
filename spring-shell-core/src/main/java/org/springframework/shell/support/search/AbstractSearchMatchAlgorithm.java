@@ -70,7 +70,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		return max - index - 1;
 	}
 
-	// var delimiterChars = "/,:;|"
 	private final static String DELIMITER_CHARS = "/,:;|";
 
 	static CharClass charClassOfAscii(char c) {
@@ -86,10 +85,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		else if (Character.isWhitespace(c)) {
 			return CharClass.WHITE;
 		}
-		// TODO: os and other delimited checks
-		// else if strings.IndexRune(delimiterChars, char) >= 0 {
-		// 	return charDelimiter
-		// }
 		else if (DELIMITER_CHARS.indexOf(c) >= 0) {
 			return CharClass.DELIMITER;
 		}
