@@ -33,11 +33,11 @@ import static org.springframework.shell.support.search.AbstractSearchMatchAlgori
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_GAP_START;
 import static org.springframework.shell.support.search.AbstractSearchMatchAlgorithm.SCORE_MATCH;
 
-class FuzzyMatchV2SearchMatchAlgorithmTests {
+class FuzzyMatchV1SearchMatchAlgorithmTests {
 
-	private final FuzzyMatchV2SearchMatchAlgorithm searchMatch = new FuzzyMatchV2SearchMatchAlgorithm();
+	private final FuzzyMatchV1SearchMatchAlgorithm searchMatch = new FuzzyMatchV1SearchMatchAlgorithm();
 
-	static Stream<Arguments> testFuzzyMatchV2() {
+	static Stream<Arguments> testFuzzyMatchV1() {
 		return Stream.of(
 			Arguments.of(false, false, "fooBarbaz1", "oBZ", true, 2, 9, new int[] { 2, 3, 8 },
 				SCORE_MATCH * 3 + BONUS_CAMEL123 + SCORE_GAP_START + SCORE_GAP_EXTENSION * 3),
@@ -85,7 +85,7 @@ class FuzzyMatchV2SearchMatchAlgorithmTests {
 
 	@ParameterizedTest
 	@MethodSource
-	void testFuzzyMatchV2(boolean caseSensitive, boolean normalize, String text, String pattern, boolean withPos,
+	void testFuzzyMatchV1(boolean caseSensitive, boolean normalize, String text, String pattern, boolean withPos,
 			int start, int end, int[] positions, int score) {
 		if (!caseSensitive) {
 			pattern = pattern.toLowerCase();
@@ -104,4 +104,31 @@ class FuzzyMatchV2SearchMatchAlgorithmTests {
 		assertThat(result.getScore()).isEqualTo(score);
 		assertThat(result.getPositions()).containsExactly(positions);
 	}
+
+
+	static Stream<Arguments> testFuzzyMatchV1Backward() {
+		return Stream.of(
+			Arguments.of(false, true, "foobar fb", "fb", 0, 4, new int[] { 0, 3 },
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + SCORE_GAP_START + SCORE_GAP_EXTENSION),
+			Arguments.of(false, false, "foobar fb", "fb", 7, 9, new int[] { 7, 8 },
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_WHITE * BONUS_FIRST_CHAR_MULTIPLIER + BONUS_BOUNDARY_WHITE)
+			);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+    void testFuzzyMatchV1Backward(boolean caseSensitive, boolean forward, String text, String pattern, int start,
+            int end, int[] positions, int score) {
+		if (!caseSensitive) {
+			pattern = pattern.toLowerCase();
+		}
+		SearchMatchResult result;
+
+		result = searchMatch.match(caseSensitive, false, forward, text, pattern);
+		assertThat(result.getStart()).isEqualTo(start);
+		assertThat(result.getEnd()).isEqualTo(end);
+		assertThat(result.getScore()).isEqualTo(score);
+		assertThat(result.getPositions()).containsExactly(positions);
+	}
+
 }

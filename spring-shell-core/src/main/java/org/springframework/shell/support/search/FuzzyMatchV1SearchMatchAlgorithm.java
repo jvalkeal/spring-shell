@@ -22,12 +22,11 @@ package org.springframework.shell.support.search;
  */
 class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 
-	private int pidx = 0;
-	private int sidx = -1;
-	private int eidx = -1;
-
 	@Override
 	public SearchMatchResult match(boolean caseSensitive, boolean normalize, boolean forward, String text, String pattern) {
+		int pidx = 0;
+		int sidx = -1;
+		int eidx = -1;
 		int lenRunes = text.length();
 		int lenPattern = pattern.length();
 
@@ -80,8 +79,9 @@ class FuzzyMatchV1SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 				}
 			}
 			if (!forward) {
+				int sidxOrig = sidx;
 				sidx = lenRunes - eidx;
-				eidx = lenRunes - sidx;
+				eidx = lenRunes - sidxOrig;
 			}
 			CalculateScore calculateScore = calculateScore(caseSensitive, normalize, text, pattern, sidx, eidx);
 			return SearchMatchResult.of(sidx, eidx, calculateScore.score, calculateScore.pos, this);
