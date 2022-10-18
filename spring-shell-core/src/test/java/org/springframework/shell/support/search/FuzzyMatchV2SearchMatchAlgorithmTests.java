@@ -136,4 +136,36 @@ class FuzzyMatchV2SearchMatchAlgorithmTests {
 		assertThat(result.getScore()).isEqualTo(score);
 		assertThat(result.getPositions()).containsExactly(positions);
 	}
+
+	static Stream<Arguments> testFuzzyMatchV2Extra() {
+		return Stream.of(
+			Arguments.of(false, true, "/tmp/test/suomi/o.txt", "oo", false, 12, 17, new int[] { 12, 16 },
+				37),
+			Arguments.of(false, true, "/tmp/test/suomi/ö.txt", "oo", false, 12, 17, new int[] { 12, 16 },
+				37),
+			Arguments.of(false, true, "/tmp/test/suomi/O.txt", "oo", false, 12, 17, new int[] { 12, 16 },
+				37),
+			Arguments.of(false, true, "/tmp/test/suomi/Ö.txt", "oo", false, 12, 17, new int[] { 12, 16 },
+				37)
+			);
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void testFuzzyMatchV2Extra(boolean caseSensitive, boolean normalize, String text, String pattern, boolean withPos,
+			int start, int end, int[] positions, int score) {
+		if (!caseSensitive) {
+			pattern = pattern.toLowerCase();
+		}
+		if (normalize) {
+			pattern = Normalize.normalizeRunes(pattern);
+		}
+		SearchMatchResult result;
+
+		result = searchMatch.match(caseSensitive, normalize, true, text, pattern);
+		assertThat(result.getStart()).isEqualTo(start);
+		assertThat(result.getEnd()).isEqualTo(end);
+		assertThat(result.getScore()).isEqualTo(score);
+		assertThat(result.getPositions()).containsExactly(positions);
+	}
 }

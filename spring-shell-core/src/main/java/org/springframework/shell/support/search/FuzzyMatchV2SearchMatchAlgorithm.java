@@ -139,15 +139,32 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// TODO go code checks unicode.MaxASCII and then uses
 			//      charClassOfAscii vs charClassOfNonAscii
 			// clazz = charClassOfAscii(c);
-			clazz = charClassOfNonAscii(c);
-			if (!caseSensitive && clazz == CharClass.UPPER) {
-				if (c >= 'A' && c <= 'Z') {
+
+			if (c >= 32 && c < 127) {
+				clazz = charClassOfAscii(c);
+				if (!caseSensitive && clazz == CharClass.UPPER) {
 					c += 32;
 				}
 			}
-			if (normalize) {
-				c = normalizeRune(c);
+			else {
+				clazz = charClassOfNonAscii(c);
+				if (!caseSensitive && clazz == CharClass.UPPER) {
+					c = Character.toLowerCase(c);
+				}
+				if (normalize) {
+					c = normalizeRune(c);
+				}
 			}
+
+			// clazz = charClassOfNonAscii(c);
+			// if (!caseSensitive && clazz == CharClass.UPPER) {
+			// 	if (c >= 'A' && c <= 'Z') {
+			// 		c += 32;
+			// 	}
+			// }
+			// if (normalize) {
+			// 	c = normalizeRune(c);
+			// }
 
 			// 		Tsub[off] = char
 			// 		bonus := bonusFor(prevClass, class)
