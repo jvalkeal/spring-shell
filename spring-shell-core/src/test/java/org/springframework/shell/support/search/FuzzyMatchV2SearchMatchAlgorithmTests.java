@@ -140,13 +140,13 @@ class FuzzyMatchV2SearchMatchAlgorithmTests {
 	static Stream<Arguments> testFuzzyMatchV2Extra() {
 		return Stream.of(
 			Arguments.of(false, true, "/tmp/test/suomi/o.txt", "oo", false, 12, 17, new int[] { 12, 16 },
-				37),
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_DELIMITER + SCORE_GAP_START + SCORE_GAP_EXTENSION * 2),
 			Arguments.of(false, true, "/tmp/test/suomi/ö.txt", "oo", false, 12, 17, new int[] { 12, 16 },
-				37),
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_DELIMITER + SCORE_GAP_START + SCORE_GAP_EXTENSION * 2),
 			Arguments.of(false, true, "/tmp/test/suomi/O.txt", "oo", false, 12, 17, new int[] { 12, 16 },
-				37),
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_DELIMITER + SCORE_GAP_START + SCORE_GAP_EXTENSION * 2),
 			Arguments.of(false, true, "/tmp/test/suomi/Ö.txt", "oo", false, 12, 17, new int[] { 12, 16 },
-				37)
+				SCORE_MATCH * 2 + BONUS_BOUNDARY_DELIMITER + SCORE_GAP_START + SCORE_GAP_EXTENSION * 2)
 			);
 	}
 
