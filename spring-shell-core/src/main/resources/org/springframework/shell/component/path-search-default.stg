@@ -1,3 +1,14 @@
+// message
+message(model) ::= <%
+<if(model.message && model.hasMessageLevelError)>
+<({<figures.error>}); format="style-level-error"> <model.message; format="style-level-error">
+<elseif(model.message && model.hasMessageLevelWarn)>
+<({<figures.warning>}); format="style-level-warn"> <model.message; format="style-level-warn">
+<elseif(model.message && model.hasMessageLevelInfo)>
+<({<figures.info>}); format="style-level-info"> <model.message; format="style-level-info">
+<endif>
+%>
+
 // info section after '? xxx'
 info(model) ::= <%
 <if(model.input)>

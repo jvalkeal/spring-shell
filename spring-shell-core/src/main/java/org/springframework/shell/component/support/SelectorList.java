@@ -56,6 +56,9 @@ public interface SelectorList<T extends Nameable> {
 		@Override
 		public T getSelected() {
 			int index = start + position;
+			if (this.items.isEmpty()) {
+				return null;
+			}
 			return this.items.get(index);
 		}
 

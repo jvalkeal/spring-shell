@@ -159,7 +159,10 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 				inputUpdated(context, input);
 				break;
 			case OPERATION_EXIT:
-				context.setResultValue(selectorList.getSelected().getPath());
+				PathViewItem selected = selectorList.getSelected();
+				if (selected != null) {
+					context.setResultValue(selected.getPath());
+				}
 				return true;
 			case OPERATION_UP:
 				selectorList.scrollUp();
@@ -211,21 +214,34 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 	private void updateSelectorList(String path, PathSearchContext context) {
 		PathScannerResult result = this.config.pathScanner.get().apply(path, context);
-
-		if (result.getFileCount() > -1) {
-			String message = String.format(", dirs %s files %s", result.getDirCount(),
-					result.getFileCount());
-			context.setMessage("Type '<path> <pattern>' to search " + message, MessageLevel.INFO);
-		}
-
 		List<PathViewItem> items = result.getScoredPaths().stream()
+			.filter(scoredPath -> {
+				if (result.hasFilter()) {
+					return scoredPath.result.getScore() > 0;
+				}
+				else {
+					return true;
+				}
+			})
 			.map(scoredPath -> {
 					int[] positions = scoredPath.getResult().getPositions();
-					PartsText partsText = PathSearchContext.ofNameMatchPartsx(scoredPath.getPath().toString(), positions);
+					String text = scoredPath.getPath().toString();
+					if (!StringUtils.hasText(text)) {
+						text = ".";
+					}
+					// PartsText partsText = PathSearchContext.ofNameMatchPartsx(scoredPath.getPath().toString(), positions);
+					PartsText partsText = PathSearchContext.ofNameMatchPartsx(text, positions);
 					PathViewItem item = new PathViewItem(scoredPath.getPath(), partsText, false);
 					return item;
 				})
 			.collect(Collectors.toList());
+
+		long total = result.getDirCount() + result.getFileCount();
+		if (total > -1) {
+			int found = items.size();
+			String message = String.format(", %s/%s", found, total);
+			context.setMessage("Type '<path> <pattern>' to search" + message, MessageLevel.INFO);
+		}
 
 		selectorList.reset(items);
 	}
@@ -298,20 +314,22 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 		private final List<ScoredPath> scoredPaths;
 		private long dirCount = -1;
 		private long fileCount = -1;
+		private boolean hasFilter = false;
 
-		PathScannerResult(List<ScoredPath> scoredPaths, long dirCount, long fileCount) {
+		PathScannerResult(List<ScoredPath> scoredPaths, long dirCount, long fileCount, boolean hasFilter) {
 			Assert.notNull(scoredPaths, "Scored paths cannot be null");
 			this.scoredPaths = scoredPaths;
 			this.dirCount = dirCount;
 			this.fileCount = fileCount;
+			this.hasFilter = hasFilter;
 		}
 
-		public static PathScannerResult of(List<ScoredPath> scoredPaths) {
-			return new PathScannerResult(scoredPaths, -1, -1);
+		public static PathScannerResult of(List<ScoredPath> scoredPaths, boolean hasFilter) {
+			return new PathScannerResult(scoredPaths, -1, -1, hasFilter);
 		}
 
-		public static PathScannerResult of(List<ScoredPath> scoredPaths, long dirCount, long fileCount) {
-			return new PathScannerResult(scoredPaths, dirCount, fileCount);
+		public static PathScannerResult of(List<ScoredPath> scoredPaths, long dirCount, long fileCount, boolean hasFilter) {
+			return new PathScannerResult(scoredPaths, dirCount, fileCount, hasFilter);
 		}
 
 		public List<ScoredPath> getScoredPaths() {
@@ -324,6 +342,10 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 		public long getFileCount() {
 			return fileCount;
+		}
+
+		public boolean hasFilter() {
+			return hasFilter;
 		}
 	}
 
@@ -581,30 +603,31 @@ public class PathSearch extends AbstractTextComponent<Path, PathSearchContext> {
 
 			// match and score candidates
  			Set<ScoredPath> treeSet = new HashSet<ScoredPath>();
-			Stream.concat(visitor.getFileList().stream(), visitor.getDirList().stream()).forEach(p -> {
-				SearchMatchResult result;
-				if (StringUtils.hasText(match)) {
-					SearchMatch searchMatch = SearchMatch.builder()
-						.caseSensitive(context.getPathSearchConfig().isSearchCaseSensitive())
-						.normalize(context.getPathSearchConfig().isSearchNormalize())
-						.forward(context.getPathSearchConfig().searchForward)
-						.build();
-					result = searchMatch.match(p.toString(), match);
-				}
-				else {
-					result = SearchMatchResult.ofMinus();
-				}
-				treeSet.add(ScoredPath.of(p, result));
-			});
+			Stream.concat(visitor.getFileList().stream(), visitor.getDirList().stream())
+				.forEach(p -> {
+					SearchMatchResult result;
+					if (StringUtils.hasText(match)) {
+						SearchMatch searchMatch = SearchMatch.builder()
+							.caseSensitive(context.getPathSearchConfig().isSearchCaseSensitive())
+							.normalize(context.getPathSearchConfig().isSearchNormalize())
+							.forward(context.getPathSearchConfig().searchForward)
+							.build();
+						result = searchMatch.match(p.toString(), match);
+					}
+					else {
+						result = SearchMatchResult.ofMinus();
+					}
+					treeSet.add(ScoredPath.of(p, result));
+				});
 
 			// sort and limit
 			return treeSet.stream()
 				.sorted()
-				.filter(sp -> StringUtils.hasText(sp.getPath().toString()))
+				// .filter(sp -> StringUtils.hasText(sp.getPath().toString()))
 				.limit(context.getPathSearchConfig().getMaxPathsSearch())
 				.collect(Collectors.collectingAndThen(Collectors.toList(),
 						list -> PathScannerResult.of(list, visitor.getPathCounters().getDirectoryCounter().get(),
-								visitor.getPathCounters().getFileCounter().get())));
+								visitor.getPathCounters().getFileCounter().get(), StringUtils.hasText(match))));
 		}
 	}
 
