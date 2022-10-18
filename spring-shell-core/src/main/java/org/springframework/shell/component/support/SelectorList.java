@@ -70,9 +70,14 @@ public interface SelectorList<T extends Nameable> {
 			}
 			// at highest position, can't go furter, start over from bottom
 			else if (start + position <= 0) {
-				// start = 0;
-				start = items.size() - max;
-				position = max - 1;
+				if (items.size() < max) {
+					start = 0;
+					position = items.size() - 1;
+				}
+				else {
+					start = items.size() - max;
+					position = max - 1;
+				}
 			}
 			// moving up in same page
 			else {
@@ -107,7 +112,7 @@ public interface SelectorList<T extends Nameable> {
 			// Math.min(items.size(), max)
 			// for (int i = start; i < start + this.max; i++) {
 			for (int i = start; i < start + Math.min(items.size(), max); i++) {
-					boolean selected = i == start + position;
+				boolean selected = i == start + position;
 				BaseProjectionItem<T> item = new BaseProjectionItem<>(items.get(i), selected);
 				projection.add(item);
 			}

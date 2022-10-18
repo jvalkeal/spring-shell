@@ -214,6 +214,17 @@ class SelectorListTests {
 
 	}
 
+	@Test
+	void upWhenLessItemsThanMax() {
+		SelectorList<TestItem> list = SelectorList.of(3);
+		list.reset(items(2));
+
+		list.scrollUp();
+		assertThat(list).asInstanceOf(SELECTOR_LIST)
+			.namesContainsExactly("name0", "name1")
+			.selectedContainsExactly(false, true);
+	}
+
 	private static class TestItem implements Nameable {
 
 		String name;
