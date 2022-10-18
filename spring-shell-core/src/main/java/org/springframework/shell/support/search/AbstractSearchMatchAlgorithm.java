@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.support.search;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,6 +91,46 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		}
 		return CharClass.NONWORD;
 	}
+
+	static CharClass charClassOfNonAscii(char c) {
+		if (Character.isLowerCase(c)) {
+			return CharClass.LOWER;
+		}
+		else if (Character.isUpperCase(c)) {
+			return CharClass.UPPER;
+		}
+		else if (Character.isDigit(c)) {
+			return CharClass.NUMBER;
+		}
+		else if (Character.isLetter(c)) {
+			return CharClass.LETTER;
+		}
+		else if (Character.isWhitespace(c)) {
+			return CharClass.WHITE;
+		}
+		else if (DELIMITER_CHARS.indexOf(c) >= 0) {
+			return CharClass.DELIMITER;
+		}
+		return CharClass.NONWORD;
+	}
+
+	// func charClassOfNonAscii(char rune) charClass {
+	// 	if unicode.IsLower(char) {
+	// 		return charLower
+	// 	} else if unicode.IsUpper(char) {
+	// 		return charUpper
+	// 	} else if unicode.IsNumber(char) {
+	// 		return charNumber
+	// 	} else if unicode.IsLetter(char) {
+	// 		return charLetter
+	// 	} else if unicode.IsSpace(char) {
+	// 		return charWhite
+	// 	} else if strings.IndexRune(delimiterChars, char) >= 0 {
+	// 		return charDelimiter
+	// 	}
+	// 	return charNonWord
+	// }
+
 
 	static int bonusFor(CharClass prevClass, CharClass clazz) {
 		if (clazz.ordinal() > CharClass.NONWORD.ordinal()) {
@@ -218,6 +259,10 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 
 	static int asciiFuzzyIndex(String input, String pattern, boolean caseSensitive) {
 		if (!StringUtils.hasText(input)) {
+			return 0;
+		}
+
+		if (!Charset.forName("US-ASCII").newEncoder().canEncode(input)) {
 			return 0;
 		}
 

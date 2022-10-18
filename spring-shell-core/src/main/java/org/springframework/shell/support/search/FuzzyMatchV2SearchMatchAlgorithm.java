@@ -88,7 +88,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		String T = text;
 		// go modifies text and it gets visible later,
 		// thus need to use this hack for same effect
-		String Tl = !caseSensitive ? T.toLowerCase() : T;
+		// String Tl = !caseSensitive ? T.toLowerCase() : T;
 
 		// Phase 2. Calculate bonus for each point
 
@@ -107,6 +107,7 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 		boolean inGap = false;
 
 		// 	Tsub := T[idx:]
+		int TsubIdxRestore = idx;
 		String Tsub = T.substring(idx);
 
 		// 	H0sub, C0sub, Bsub := H0[idx:][:len(Tsub)], C0[idx:][:len(Tsub)], B[idx:][:len(Tsub)]
@@ -134,20 +135,26 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			// 				char = normalizeRune(char)
 			// 			}
 			// 		}
-			clazz = charClassOfAscii(c);
+
+			// TODO go code checks unicode.MaxASCII and then uses
+			//      charClassOfAscii vs charClassOfNonAscii
+			// clazz = charClassOfAscii(c);
+			clazz = charClassOfNonAscii(c);
 			if (!caseSensitive && clazz == CharClass.UPPER) {
 				if (c >= 'A' && c <= 'Z') {
 					c += 32;
 				}
-				if (normalize) {
-					c = normalizeRune(c);
-				}
+			}
+			if (normalize) {
+				c = normalizeRune(c);
 			}
 
 			// 		Tsub[off] = char
 			// 		bonus := bonusFor(prevClass, class)
 			// 		Bsub[off] = bonus
 			// 		prevClass = class
+			// TODO: potential speed increase as go can directly modify underlying array/slice
+			//       by access via for loop variables and so on. we create a lot of garbage here.
 			Tsub = Tsub.substring(0, off) + c + Tsub.substring(off + 1);
 			int bonus = bonusFor(prevClass, clazz);
 			Bsub.set(off, bonus);
@@ -217,6 +224,10 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			}
 			prevH0 = H0sub.get(off);
 		}
+
+		// T = T.substring(0, TsubIdxRestore) + Tsub.substring(TsubIdxRestore);
+		T = T.substring(0, TsubIdxRestore) + Tsub;
+
 		// 	if pidx != M {
 		// 		return Result{-1, -1, 0}, nil
 		// 	}
@@ -282,8 +293,8 @@ class FuzzyMatchV2SearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			int pidx2 = off + 1;
 			int row = pidx2 * width;
 			boolean inGap2 = false;
-			// String Tsub2 = T.substring(f, lastIdx + 1);
-			String Tsub2 = Tl.substring(f, lastIdx + 1);
+			String Tsub2 = T.substring(f, lastIdx + 1);
+			// String Tsub2 = Tl.substring(f, lastIdx + 1);
 			List<Integer> Bsub2 = slicex(B, f, Tsub2.length());
 			List<Integer> Csub2 = slicex(C, row + f - f0, Tsub2.length());
 			List<Integer> Cdiag = slicex(C, row + f - f0 - 1 - width, Tsub2.length());
