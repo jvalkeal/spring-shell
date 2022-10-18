@@ -39,14 +39,6 @@ class ExactMatchNaiveSearchMatchAlgorithm extends AbstractSearchMatchAlgorithm {
 			return SearchMatchResult.ofMinus();
 		}
 
-		// if (asciiFuzzyIndex(text, pattern, caseSensitive) < 0) {
-		// 	return SearchMatchResult.ofMinus();
-		// }
-
-		// 	if asciiFuzzyIndex(text, pattern, caseSensitive) < 0 {
-		// 		return Result{-1, -1, 0}, nil
-		// 	}
-
 		int pidx = 0;
 		int bestPos = -1;
 		int bonus = 0;

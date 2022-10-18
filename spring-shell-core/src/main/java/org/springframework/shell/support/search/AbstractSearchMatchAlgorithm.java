@@ -114,24 +114,6 @@ abstract class AbstractSearchMatchAlgorithm implements SearchMatchAlgorithm {
 		return CharClass.NONWORD;
 	}
 
-	// func charClassOfNonAscii(char rune) charClass {
-	// 	if unicode.IsLower(char) {
-	// 		return charLower
-	// 	} else if unicode.IsUpper(char) {
-	// 		return charUpper
-	// 	} else if unicode.IsNumber(char) {
-	// 		return charNumber
-	// 	} else if unicode.IsLetter(char) {
-	// 		return charLetter
-	// 	} else if unicode.IsSpace(char) {
-	// 		return charWhite
-	// 	} else if strings.IndexRune(delimiterChars, char) >= 0 {
-	// 		return charDelimiter
-	// 	}
-	// 	return charNonWord
-	// }
-
-
 	static int bonusFor(CharClass prevClass, CharClass clazz) {
 		if (clazz.ordinal() > CharClass.NONWORD.ordinal()) {
 			if (prevClass == CharClass.WHITE) {
