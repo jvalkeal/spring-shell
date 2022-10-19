@@ -1,18 +1,14 @@
 package com.jediterm.terminal.ui;
 
 import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.jediterm.terminal.CursorShape;
 import com.jediterm.terminal.TerminalDisplay;
 import com.jediterm.terminal.TerminalOutputStream;
 import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.model.LinesBuffer;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalLine;
-import com.jediterm.terminal.model.TerminalLineIntervalHighlighting;
 import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 
@@ -29,7 +25,6 @@ public class TerminalPanel implements TerminalDisplay {
 	protected int myClientScrollOrigin;
 	private String myWindowTitle = "Terminal";
 	private AtomicInteger scrollDy = new AtomicInteger(0);
-	private int myBlinkingPeriod = 500;
 	private TerminalCoordinates myCoordsAccessor;
 
 	public TerminalPanel(TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
@@ -40,10 +35,6 @@ public class TerminalPanel implements TerminalDisplay {
 
 	public TerminalPanelListener getTerminalPanelListener() {
 		return myTerminalPanelListener;
-	}
-
-	public void setBlinkingPeriod(int blinkingPeriod) {
-		myBlinkingPeriod = blinkingPeriod;
 	}
 
 	public void setCoordAccessor(TerminalCoordinates coordAccessor) {
@@ -86,64 +77,6 @@ public class TerminalPanel implements TerminalDisplay {
 		SHOWING, HIDDEN, NO_FOCUS;
 	}
 
-	public class TerminalCursor {
-
-		// cursor state
-		protected Point myCursorCoordinates = new Point();
-
-		// terminal modes
-		private boolean myBlinking = true;
-
-		public void setX(int x) {
-			myCursorCoordinates.x = x;
-			cursorChanged();
-		}
-
-		public void setY(int y) {
-			myCursorCoordinates.y = y;
-			cursorChanged();
-		}
-
-		public int getCoordX() {
-			return myCursorCoordinates.x;
-		}
-
-		public int getCoordY() {
-			return myCursorCoordinates.y - 1 - myClientScrollOrigin;
-		}
-
-		public void setShouldDrawCursor(boolean shouldDrawCursor) {
-			// myShouldDrawCursor = shouldDrawCursor;
-		}
-
-		public void setBlinking(boolean blinking) {
-			myBlinking = blinking;
-		}
-
-		public boolean isBlinking() {
-			return myBlinking && (getBlinkingPeriod() > 0);
-		}
-
-		public void cursorChanged() {
-			// myCursorHasChanged = true;
-			// myLastCursorChange = System.currentTimeMillis();
-			// repaint();
-		}
-
-		public void changeStateIfNeeded() {
-		}
-
-		void setShape(CursorShape shape) {
-			// this.myShape = shape;
-		}
-	}
-
-	private int getBlinkingPeriod() {
-		if (myBlinkingPeriod != 505) {
-			setBlinkingPeriod(505);
-		}
-		return myBlinkingPeriod;
-	}
 
 	// Called in a background thread with myTerminalTextBuffer.lock() acquired
 	public void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy) {
@@ -155,21 +88,6 @@ public class TerminalPanel implements TerminalDisplay {
 		// if (mySettingsProvider.audibleBell()) {
 		// 	Toolkit.getDefaultToolkit().beep();
 		// }
-	}
-
-	public Rectangle getBounds(TerminalLineIntervalHighlighting highlighting) {
-		TerminalLine line = highlighting.getLine();
-		int index = myTerminalTextBuffer.findScreenLineIndex(line);
-		if (index >= 0 && !highlighting.isDisposed()) {
-			return getBounds(new LineCellInterval(index, highlighting.getStartOffset(), highlighting.getEndOffset() + 1));
-		}
-		return null;
-	}
-
-	private Rectangle getBounds(LineCellInterval cellInterval) {
-		Point topLeft = new Point(cellInterval.getStartColumn() * myCharSize.width + getInsetX(),
-			cellInterval.getLine() * myCharSize.height);
-		return new Rectangle(topLeft, new Dimension(myCharSize.width * cellInterval.getCellCount(), myCharSize.height));
 	}
 
 	public TerminalTextBuffer getTerminalTextBuffer() {
@@ -204,11 +122,6 @@ public class TerminalPanel implements TerminalDisplay {
 		if (myTerminalPanelListener != null) {
 			myTerminalPanelListener.onTitleChanged(myWindowTitle);
 		}
-	}
-
-	public void selectAll() {
-		mySelection = new TerminalSelection(new Point(0, -myTerminalTextBuffer.getHistoryLinesCount()),
-			new Point(myTermSize.width, myTerminalTextBuffer.getScreenLinesCount()));
 	}
 
 	public void clearBuffer() {
