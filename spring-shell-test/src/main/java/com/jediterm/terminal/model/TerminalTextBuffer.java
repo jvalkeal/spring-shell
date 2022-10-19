@@ -98,23 +98,8 @@ public class TerminalTextBuffer {
 		int newCursorY = cursorY;
 
 		if (myWidth != newWidth) {
-			// ChangeWidthOperation changeWidthOperation = new ChangeWidthOperation(this, newWidth, newHeight);
-			// Point cursor = new Point(cursorX, cursorY - 1);
-			// changeWidthOperation.addPointToTrack(cursor, true);
-			// if (mySelection != null) {
-			// 	changeWidthOperation.addPointToTrack(mySelection.getStart());
-			// 	changeWidthOperation.addPointToTrack(mySelection.getEnd());
-			// }
-			// changeWidthOperation.run();
 			myWidth = newWidth;
 			myHeight = newHeight;
-			// Point newCursor = changeWidthOperation.getTrackedPoint(cursor);
-			// newCursorX = newCursor.x;
-			// newCursorY = newCursor.y + 1;
-			// if (mySelection != null) {
-			// 	mySelection.getStart().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getStart()));
-			// 	mySelection.getEnd().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getEnd()));
-			// }
 		}
 
 		final int oldHeight = myHeight;
@@ -129,9 +114,6 @@ public class TerminalTextBuffer {
 			} else {
 				newCursorY = cursorY;
 			}
-			// if (mySelection != null) {
-			// 	mySelection.shiftY(-count);
-			// }
 		} else if (newHeight > oldHeight) {
 			if (!myAlternateBuffer) {
 				//we need to move lines from scroll buffer to the text buffer
@@ -141,9 +123,6 @@ public class TerminalTextBuffer {
 			} else {
 				newCursorY = cursorY;
 			}
-			// if (mySelection != null) {
-			// 	mySelection.shiftY(newHeight - cursorY);
-			// }
 		}
 
 		myWidth = newWidth;
