@@ -9,7 +9,7 @@ import com.jediterm.terminal.TerminalStarter;
 import com.jediterm.terminal.model.LinesBuffer;
 import com.jediterm.terminal.model.StyleState;
 import com.jediterm.terminal.model.TerminalLine;
-import com.jediterm.terminal.model.TerminalSelection;
+// import com.jediterm.terminal.model.TerminalSelection;
 import com.jediterm.terminal.model.TerminalTextBuffer;
 
 public class TerminalPanel implements TerminalDisplay {
@@ -19,7 +19,7 @@ public class TerminalPanel implements TerminalDisplay {
 	protected Dimension myCharSize = new Dimension();
 	protected Dimension myTermSize = new Dimension(80, 24);
 	private TerminalStarter myTerminalStarter = null;
-	private TerminalSelection mySelection = null;
+	// private TerminalSelection mySelection = null;
 	private TerminalPanelListener myTerminalPanelListener;
 	private final TerminalTextBuffer myTerminalTextBuffer;
 	protected int myClientScrollOrigin;
@@ -81,7 +81,7 @@ public class TerminalPanel implements TerminalDisplay {
 	// Called in a background thread with myTerminalTextBuffer.lock() acquired
 	public void scrollArea(final int scrollRegionTop, final int scrollRegionSize, int dy) {
 		scrollDy.addAndGet(dy);
-		mySelection = null;
+		// mySelection = null;
 	}
 
 	public void beep() {
@@ -94,9 +94,9 @@ public class TerminalPanel implements TerminalDisplay {
 		return myTerminalTextBuffer;
 	}
 
-	public TerminalSelection getSelection() {
-		return mySelection;
-	}
+	// public TerminalSelection getSelection() {
+	// 	return mySelection;
+	// }
 
 	@Override
 	public boolean ambiguousCharsAreDoubleWidth() {
