@@ -1,0 +1,22 @@
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Test Autoconfigure'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
+	implementation project(':spring-shell-standard')
+	implementation project(':spring-shell-test')
+	implementation project(':spring-shell-autoconfigure')
+	implementation 'org.springframework:spring-test'
+	implementation 'org.springframework.boot:spring-boot-autoconfigure'
+	implementation 'org.springframework.boot:spring-boot-test-autoconfigure'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
+	api('org.jline:jline')
+	api('org.assertj:assertj-core')
+	api('org.junit.jupiter:junit-jupiter-api')
+	// testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.awaitility:awaitility'
+}
