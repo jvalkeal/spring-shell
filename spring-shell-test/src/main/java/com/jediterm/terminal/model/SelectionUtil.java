@@ -46,9 +46,9 @@ public class SelectionUtil {
 		}
 	}
 
-	public static String getSelectionText(TerminalSelection selection, TerminalTextBuffer terminalTextBuffer) {
-		return getSelectionText(selection.getStart(), selection.getEnd(), terminalTextBuffer);
-	}
+	// public static String getSelectionText(TerminalSelection selection, TerminalTextBuffer terminalTextBuffer) {
+	// 	return getSelectionText(selection.getStart(), selection.getEnd(), terminalTextBuffer);
+	// }
 
 
 	public static String getSelectionText( Point selectionStart,

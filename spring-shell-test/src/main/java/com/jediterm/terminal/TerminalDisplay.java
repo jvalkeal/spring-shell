@@ -1,6 +1,6 @@
 package com.jediterm.terminal;
 
-import com.jediterm.terminal.model.TerminalSelection;
+// import com.jediterm.terminal.model.TerminalSelection;
 
 /**
  *
@@ -33,7 +33,7 @@ public interface TerminalDisplay {
 
 	void setWindowTitle(String name);
 
-	TerminalSelection getSelection();
+	// TerminalSelection getSelection();
 
 	boolean ambiguousCharsAreDoubleWidth();
 

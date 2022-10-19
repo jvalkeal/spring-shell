@@ -82,17 +82,17 @@ public class TerminalTextBuffer {
 	}
 
 	public Dimension resize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
-			final int cursorY, JediTerminal.ResizeHandler resizeHandler, TerminalSelection mySelection) {
+			final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
 		lock();
 		try {
-			return doResize(pendingResize, origin, cursorX, cursorY, resizeHandler, mySelection);
+			return doResize(pendingResize, origin, cursorX, cursorY, resizeHandler);
 		} finally {
 			unlock();
 		}
 	}
 
 	private Dimension doResize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
-			final int cursorY, JediTerminal.ResizeHandler resizeHandler, TerminalSelection mySelection) {
+			final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
 		final int newWidth = pendingResize.width;
 		final int newHeight = pendingResize.height;
 		int newCursorX = cursorX;
@@ -102,20 +102,20 @@ public class TerminalTextBuffer {
 			ChangeWidthOperation changeWidthOperation = new ChangeWidthOperation(this, newWidth, newHeight);
 			Point cursor = new Point(cursorX, cursorY - 1);
 			changeWidthOperation.addPointToTrack(cursor, true);
-			if (mySelection != null) {
-				changeWidthOperation.addPointToTrack(mySelection.getStart());
-				changeWidthOperation.addPointToTrack(mySelection.getEnd());
-			}
+			// if (mySelection != null) {
+			// 	changeWidthOperation.addPointToTrack(mySelection.getStart());
+			// 	changeWidthOperation.addPointToTrack(mySelection.getEnd());
+			// }
 			changeWidthOperation.run();
 			myWidth = newWidth;
 			myHeight = newHeight;
 			Point newCursor = changeWidthOperation.getTrackedPoint(cursor);
 			newCursorX = newCursor.x;
 			newCursorY = newCursor.y + 1;
-			if (mySelection != null) {
-				mySelection.getStart().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getStart()));
-				mySelection.getEnd().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getEnd()));
-			}
+			// if (mySelection != null) {
+			// 	mySelection.getStart().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getStart()));
+			// 	mySelection.getEnd().setLocation(changeWidthOperation.getTrackedPoint(mySelection.getEnd()));
+			// }
 		}
 
 		final int oldHeight = myHeight;
@@ -130,9 +130,9 @@ public class TerminalTextBuffer {
 			} else {
 				newCursorY = cursorY;
 			}
-			if (mySelection != null) {
-				mySelection.shiftY(-count);
-			}
+			// if (mySelection != null) {
+			// 	mySelection.shiftY(-count);
+			// }
 		} else if (newHeight > oldHeight) {
 			if (!myAlternateBuffer) {
 				//we need to move lines from scroll buffer to the text buffer
@@ -142,9 +142,9 @@ public class TerminalTextBuffer {
 			} else {
 				newCursorY = cursorY;
 			}
-			if (mySelection != null) {
-				mySelection.shiftY(newHeight - cursorY);
-			}
+			// if (mySelection != null) {
+			// 	mySelection.shiftY(newHeight - cursorY);
+			// }
 		}
 
 		myWidth = newWidth;
