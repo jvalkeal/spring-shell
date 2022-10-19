@@ -21,9 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import com.jediterm.terminal.TtyConnector;
-import com.jediterm.terminal.ui.JediTermWidget;
-import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
@@ -32,6 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.boot.JLineShellAutoConfiguration;
+import org.springframework.shell.test.jediterm.terminal.TtyConnector;
+import org.springframework.shell.test.jediterm.terminal.ui.JediTermWidget;
+import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
 
 @AutoConfiguration(before = JLineShellAutoConfiguration.class)
 public class ShellAutoConfiguration {

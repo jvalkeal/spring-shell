@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.test;
 
-import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.keymap.KeyMap;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
@@ -27,6 +26,7 @@ import org.springframework.shell.context.DefaultShellContext;
 import org.springframework.shell.jline.InteractiveShellRunner;
 import org.springframework.shell.jline.NonInteractiveShellRunner;
 import org.springframework.shell.jline.PromptProvider;
+import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
 
 /**
  * Client for terminal session which can be used as a programmatic way

@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
-import com.jediterm.terminal.ui.TerminalSession;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.shell.Shell;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.shell.test.ShellClient;
+import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
 
 /**
  *
