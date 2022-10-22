@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.emulator;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -498,7 +497,7 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 				if (height == 0) {
 					height = myTerminal.getTerminalHeight();
 				}
-				myTerminal.resize(new Dimension(width, height), RequestOrigin.Remote);
+				myTerminal.resize(width, height, RequestOrigin.Remote);
 				return true;
 			case 22:
 				return csi22(args);

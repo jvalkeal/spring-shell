@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.ui;
 
-import java.awt.Dimension;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -31,10 +30,6 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	public JediTermWidget() {
 		this(80, 24);
-	}
-
-	public JediTermWidget(Dimension dimension) {
-		this(dimension.width, dimension.height);
 	}
 
 	public JediTermWidget(int columns, int lines) {

@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.concurrent.CompletableFuture;
@@ -72,9 +71,9 @@ public class TerminalStarter implements TerminalOutputStream {
 	// 	return myTerminal.getCodeForKey(key, modifiers);
 	// }
 
-	public void postResize(Dimension dimension, RequestOrigin origin) {
+	public void postResize(int width, int height, RequestOrigin origin) {
 		execute(() -> {
-			resize(myEmulator, myTerminal, myTtyConnector, dimension, origin, (millisDelay, runnable) -> {
+			resize(myEmulator, myTerminal, myTtyConnector, width, height, origin, (millisDelay, runnable) -> {
 				myEmulatorExecutor.schedule(runnable, millisDelay, TimeUnit.MILLISECONDS);
 			});
 		});
@@ -83,11 +82,11 @@ public class TerminalStarter implements TerminalOutputStream {
 	/**
 	 * Resizes terminal and tty connector, should be called on a pooled thread.
 	 */
-	public static void resize(Emulator emulator, Terminal terminal, TtyConnector ttyConnector, Dimension newTermSize,
+	public static void resize(Emulator emulator, Terminal terminal, TtyConnector ttyConnector, int width, int height,
 			RequestOrigin origin, BiConsumer<Long, Runnable> taskScheduler) {
 		CompletableFuture<?> promptUpdated = ((JediEmulator)emulator).getPromptUpdatedAfterResizeFuture(taskScheduler);
-		terminal.resize(newTermSize, origin, promptUpdated);
-		ttyConnector.resize(newTermSize);
+		terminal.resize(width, height, origin, promptUpdated);
+		ttyConnector.resize(width, height);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.model;
 
-import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.shell.test.jediterm.terminal.RequestOrigin;
 import org.springframework.shell.test.jediterm.terminal.StyledTextConsumer;
 import org.springframework.shell.test.jediterm.terminal.StyledTextConsumerAdapter;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
@@ -81,62 +79,62 @@ public class TerminalTextBuffer {
 		return new LinesBuffer(myHistoryLinesCount);
 	}
 
-	public Dimension resize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
-			final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
-		lock();
-		try {
-			return doResize(pendingResize, origin, cursorX, cursorY, resizeHandler);
-		} finally {
-			unlock();
-		}
-	}
+	// public Dimension resize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
+	// 		final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
+	// 	lock();
+	// 	try {
+	// 		return doResize(pendingResize, origin, cursorX, cursorY, resizeHandler);
+	// 	} finally {
+	// 		unlock();
+	// 	}
+	// }
 
-	private Dimension doResize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
-			final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
-		final int newWidth = pendingResize.width;
-		final int newHeight = pendingResize.height;
-		int newCursorX = cursorX;
-		int newCursorY = cursorY;
+	// private Dimension doResize(final Dimension pendingResize, final RequestOrigin origin, final int cursorX,
+	// 		final int cursorY, JediTerminal.ResizeHandler resizeHandler) {
+	// 	final int newWidth = pendingResize.width;
+	// 	final int newHeight = pendingResize.height;
+	// 	int newCursorX = cursorX;
+	// 	int newCursorY = cursorY;
 
-		if (myWidth != newWidth) {
-			myWidth = newWidth;
-			myHeight = newHeight;
-		}
+	// 	if (myWidth != newWidth) {
+	// 		myWidth = newWidth;
+	// 		myHeight = newHeight;
+	// 	}
 
-		final int oldHeight = myHeight;
-		if (newHeight < oldHeight) {
-			int count = oldHeight - newHeight;
-			if (!myAlternateBuffer) {
-				//we need to move lines from text buffer to the scroll buffer
-				//but empty bottom lines can be collapsed
-				int emptyLinesDeleted = myScreenBuffer.removeBottomEmptyLines(oldHeight - 1, count);
-				myScreenBuffer.moveTopLinesTo(count - emptyLinesDeleted, myHistoryBuffer);
-				newCursorY = cursorY - (count - emptyLinesDeleted);
-			} else {
-				newCursorY = cursorY;
-			}
-		} else if (newHeight > oldHeight) {
-			if (!myAlternateBuffer) {
-				//we need to move lines from scroll buffer to the text buffer
-				int historyLinesCount = Math.min(newHeight - oldHeight, myHistoryBuffer.getLineCount());
-				myHistoryBuffer.moveBottomLinesTo(historyLinesCount, myScreenBuffer);
-				newCursorY = cursorY + historyLinesCount;
-			} else {
-				newCursorY = cursorY;
-			}
-		}
+	// 	final int oldHeight = myHeight;
+	// 	if (newHeight < oldHeight) {
+	// 		int count = oldHeight - newHeight;
+	// 		if (!myAlternateBuffer) {
+	// 			//we need to move lines from text buffer to the scroll buffer
+	// 			//but empty bottom lines can be collapsed
+	// 			int emptyLinesDeleted = myScreenBuffer.removeBottomEmptyLines(oldHeight - 1, count);
+	// 			myScreenBuffer.moveTopLinesTo(count - emptyLinesDeleted, myHistoryBuffer);
+	// 			newCursorY = cursorY - (count - emptyLinesDeleted);
+	// 		} else {
+	// 			newCursorY = cursorY;
+	// 		}
+	// 	} else if (newHeight > oldHeight) {
+	// 		if (!myAlternateBuffer) {
+	// 			//we need to move lines from scroll buffer to the text buffer
+	// 			int historyLinesCount = Math.min(newHeight - oldHeight, myHistoryBuffer.getLineCount());
+	// 			myHistoryBuffer.moveBottomLinesTo(historyLinesCount, myScreenBuffer);
+	// 			newCursorY = cursorY + historyLinesCount;
+	// 		} else {
+	// 			newCursorY = cursorY;
+	// 		}
+	// 	}
 
-		myWidth = newWidth;
-		myHeight = newHeight;
-
-
-		resizeHandler.sizeUpdated(myWidth, myHeight, newCursorX, newCursorY);
+	// 	myWidth = newWidth;
+	// 	myHeight = newHeight;
 
 
-		fireModelChangeEvent();
+	// 	resizeHandler.sizeUpdated(myWidth, myHeight, newCursorX, newCursorY);
 
-		return pendingResize;
-	}
+
+	// 	fireModelChangeEvent();
+
+	// 	return pendingResize;
+	// }
 
 	public void addModelListener(TerminalModelListener listener) {
 		myListeners.add(listener);

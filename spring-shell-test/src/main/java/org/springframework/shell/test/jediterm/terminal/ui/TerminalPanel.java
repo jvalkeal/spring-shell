@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.ui;
 
-import java.awt.Dimension;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.shell.test.jediterm.terminal.TerminalDisplay;
@@ -15,8 +14,10 @@ public class TerminalPanel implements TerminalDisplay {
 
 	public static final double SCROLL_SPEED = 0.05;
 
-	protected Dimension myCharSize = new Dimension();
-	protected Dimension myTermSize = new Dimension(80, 24);
+	protected int myCharSizeWidth = 0;
+	protected int myCharSizeHeight = 0;
+	protected int myTermSizeWidth = 80;
+	protected int myTermSizeHeight = 24;
 	private TerminalStarter myTerminalStarter = null;
 	// private TerminalSelection mySelection = null;
 	private TerminalPanelListener myTerminalPanelListener;
@@ -28,8 +29,8 @@ public class TerminalPanel implements TerminalDisplay {
 
 	public TerminalPanel(TerminalTextBuffer terminalTextBuffer, StyleState styleState) {
 		myTerminalTextBuffer = terminalTextBuffer;
-		myTermSize.width = terminalTextBuffer.getWidth();
-		myTermSize.height = terminalTextBuffer.getHeight();
+		myTermSizeWidth = terminalTextBuffer.getWidth();
+		myTermSizeHeight = terminalTextBuffer.getHeight();
 	}
 
 	public TerminalPanelListener getTerminalPanelListener() {
@@ -49,19 +50,19 @@ public class TerminalPanel implements TerminalDisplay {
 	}
 
 	public int getPixelWidth() {
-		return myCharSize.width * myTermSize.width + getInsetX();
+		return myCharSizeWidth * myTermSizeWidth + getInsetX();
 	}
 
 	public int getPixelHeight() {
-		return myCharSize.height * myTermSize.height;
+		return myCharSizeHeight * myTermSizeHeight;
 	}
 
 	public int getColumnCount() {
-		return myTermSize.width;
+		return myTermSizeWidth;
 	}
 
 	public int getRowCount() {
-		return myTermSize.height;
+		return myTermSizeHeight;
 	}
 
 	public String getWindowTitle() {

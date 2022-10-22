@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal;
 
-import java.awt.Dimension;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CompletableFuture;
 
@@ -12,9 +11,9 @@ import org.springframework.shell.test.jediterm.terminal.model.StyleState;
  * @author jediterm authors
  */
 public interface Terminal {
-	void resize(Dimension newTermSize, RequestOrigin origin);
+	void resize(int width, int height, RequestOrigin origin);
 
-	void resize(Dimension newTermSize, RequestOrigin origin, CompletableFuture<?> promptUpdated);
+	void resize(int width, int height, RequestOrigin origin, CompletableFuture<?> promptUpdated);
 
 	void beep();
 
