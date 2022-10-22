@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.test.jediterm.terminal.Terminal;
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TerminalDisplay;
 import org.springframework.shell.test.jediterm.terminal.TerminalStarter;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
@@ -51,7 +50,8 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	protected StyleState createDefaultStyle() {
 		StyleState styleState = new StyleState();
-		styleState.setDefaultStyle(new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE));
+		// styleState.setDefaultStyle(new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE));
+		styleState.setDefaultStyle(new TextStyle());
 		return styleState;
 	}
 

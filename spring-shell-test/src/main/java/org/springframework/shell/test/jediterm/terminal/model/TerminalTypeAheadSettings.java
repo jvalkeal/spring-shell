@@ -2,7 +2,6 @@ package org.springframework.shell.test.jediterm.terminal.model;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
 public final class TerminalTypeAheadSettings {
@@ -10,7 +9,7 @@ public final class TerminalTypeAheadSettings {
   public static final TerminalTypeAheadSettings DEFAULT = new TerminalTypeAheadSettings(
     true,
     TimeUnit.MILLISECONDS.toNanos(100),
-    new TextStyle(new TerminalColor(8), null)
+    new TextStyle(null)
   );
 
   private final boolean myEnabled;

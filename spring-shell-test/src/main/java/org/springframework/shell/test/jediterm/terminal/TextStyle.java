@@ -16,21 +16,26 @@ public class TextStyle {
 
 	private static final WeakHashMap<TextStyle, WeakReference<TextStyle>> styles = new WeakHashMap<>();
 
-	private final TerminalColor myForeground;
-	private final TerminalColor myBackground;
+	// private final TerminalColor myForeground;
+	// private final TerminalColor myBackground;
 	private final EnumSet<Option> myOptions;
 
 	public TextStyle() {
-		this(null, null, NO_OPTIONS);
+		// this(null, null, NO_OPTIONS);
+		this(NO_OPTIONS);
 	}
 
-	public TextStyle(TerminalColor foreground, TerminalColor background) {
-		this(foreground, background, NO_OPTIONS);
-	}
+	// public TextStyle(TerminalColor foreground, TerminalColor background) {
+	// 	this(foreground, background, NO_OPTIONS);
+	// }
 
-	public TextStyle(TerminalColor foreground, TerminalColor background, EnumSet<Option> options) {
-		myForeground = foreground;
-		myBackground = background;
+	// public TextStyle(TerminalColor foreground, TerminalColor background, EnumSet<Option> options) {
+	// 	myForeground = foreground;
+	// 	myBackground = background;
+	// 	myOptions = options.clone();
+	// }
+
+	public TextStyle(EnumSet<Option> options) {
 		myOptions = options.clone();
 	}
 
@@ -46,16 +51,17 @@ public class TextStyle {
 		return currentStyle;
 	}
 
-	public TerminalColor getForeground() {
-		return myForeground;
-	}
+	// public TerminalColor getForeground() {
+	// 	return myForeground;
+	// }
 
-	public TerminalColor getBackground() {
-		return myBackground;
-	}
+	// public TerminalColor getBackground() {
+	// 	return myBackground;
+	// }
 
 	public TextStyle createEmptyWithColors() {
-		return new TextStyle(myForeground, myBackground);
+		// return new TextStyle(myForeground, myBackground);
+		return new TextStyle();
 	}
 
 	public int getId() {
@@ -71,23 +77,25 @@ public class TextStyle {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		TextStyle textStyle = (TextStyle) o;
-		return Objects.equals(myForeground, textStyle.myForeground) &&
-			Objects.equals(myBackground, textStyle.myBackground) &&
+		return
+			// Objects.equals(myForeground, textStyle.myForeground) &&
+			// Objects.equals(myBackground, textStyle.myBackground) &&
 			myOptions.equals(textStyle.myOptions);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(myForeground, myBackground, myOptions);
+		// return Objects.hash(myForeground, myBackground, myOptions);
+		return Objects.hash(myOptions);
 	}
 
-	public TerminalColor getBackgroundForRun() {
-		return myOptions.contains(Option.INVERSE) ? myForeground : myBackground;
-	}
+	// public TerminalColor getBackgroundForRun() {
+	// 	return myOptions.contains(Option.INVERSE) ? myForeground : myBackground;
+	// }
 
-	public TerminalColor getForegroundForRun() {
-		return myOptions.contains(Option.INVERSE) ? myBackground : myForeground;
-	}
+	// public TerminalColor getForegroundForRun() {
+	// 	return myOptions.contains(Option.INVERSE) ? myBackground : myForeground;
+	// }
 
 	public Builder toBuilder() {
 		return new Builder(this);
@@ -113,31 +121,31 @@ public class TextStyle {
 	}
 
 	public static class Builder {
-		private TerminalColor myForeground;
-		private TerminalColor myBackground;
+		// private TerminalColor myForeground;
+		// private TerminalColor myBackground;
 		private EnumSet<Option> myOptions;
 
 		public Builder(TextStyle textStyle) {
-			myForeground = textStyle.myForeground;
-			myBackground = textStyle.myBackground;
+			// myForeground = textStyle.myForeground;
+			// myBackground = textStyle.myBackground;
 			myOptions = textStyle.myOptions.clone();
 		}
 
 		public Builder() {
-			myForeground = null;
-			myBackground = null;
+			// myForeground = null;
+			// myBackground = null;
 			myOptions = EnumSet.noneOf(Option.class);
 		}
 
-		public Builder setForeground(TerminalColor foreground) {
-			myForeground = foreground;
-			return this;
-		}
+		// public Builder setForeground(TerminalColor foreground) {
+		// 	myForeground = foreground;
+		// 	return this;
+		// }
 
-		public Builder setBackground(TerminalColor background) {
-			myBackground = background;
-			return this;
-		}
+		// public Builder setBackground(TerminalColor background) {
+		// 	myBackground = background;
+		// 	return this;
+		// }
 
 		public Builder setOption(Option option, boolean val) {
 			option.set(myOptions, val);
@@ -145,7 +153,8 @@ public class TextStyle {
 		}
 
 		public TextStyle build() {
-			return new TextStyle(myForeground, myBackground, myOptions);
+			// return new TextStyle(myForeground, myBackground, myOptions);
+			return new TextStyle(myOptions);
 		}
 	}
 }

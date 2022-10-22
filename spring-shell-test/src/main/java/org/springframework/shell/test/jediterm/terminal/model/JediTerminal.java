@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.test.jediterm.terminal.CursorShape;
 import org.springframework.shell.test.jediterm.terminal.RequestOrigin;
 import org.springframework.shell.test.jediterm.terminal.Terminal;
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TerminalDisplay;
 import org.springframework.shell.test.jediterm.terminal.TerminalMode;
 import org.springframework.shell.test.jediterm.terminal.TerminalOutputStream;
@@ -269,15 +268,15 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 		}
 	}
 
-	@Override
-	public  TerminalColor getWindowForeground() {
-		return myDisplay.getWindowForeground();
-	}
+	// @Override
+	// public  TerminalColor getWindowForeground() {
+	// 	return myDisplay.getWindowForeground();
+	// }
 
-	@Override
-	public  TerminalColor getWindowBackground() {
-		return myDisplay.getWindowBackground();
-	}
+	// @Override
+	// public  TerminalColor getWindowBackground() {
+	// 	return myDisplay.getWindowBackground();
+	// }
 
 	@Override
 	public void backspace() {

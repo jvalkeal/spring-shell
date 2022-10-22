@@ -22,11 +22,11 @@ public interface TerminalDisplay {
 
 	default void setBracketedPasteMode(boolean enabled) {}
 
-	default TerminalColor getWindowForeground() {
-		return null;
-	}
+	// default TerminalColor getWindowForeground() {
+	// 	return null;
+	// }
 
-	default TerminalColor getWindowBackground() {
-		return null;
-	}
+	// default TerminalColor getWindowBackground() {
+	// 	return null;
+	// }
 }

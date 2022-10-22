@@ -149,7 +149,7 @@ public interface Terminal {
 
 	void setBracketedPasteMode(boolean enabled);
 
-	TerminalColor getWindowForeground();
+	// TerminalColor getWindowForeground();
 
-	TerminalColor getWindowBackground();
+	// TerminalColor getWindowBackground();
 }
