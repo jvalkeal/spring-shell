@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal;
 
-import java.awt.Dimension;
 import java.io.IOException;
 
 /**
@@ -14,21 +13,21 @@ public interface TtyConnector {
 
 	void close();
 
-	default void resize(Dimension termWinSize) {
+	default void resize(int width, int height) {
 		// support old implementations not overriding this method
-		resize(termWinSize, new Dimension(0, 0));
+		resize(width, height);
 		// StackOverflowError is only possible if both resize(Dimension) and resize(Dimension,Dimension) are not overridden.
 	}
 
-	/**
-	 * @deprecated use {@link #resize(Dimension)} instead
-	 */
-	@SuppressWarnings("unused")
-	@Deprecated
-	default void resize(Dimension termWinSize, Dimension pixelSize) {
-		// support old code that calls this method on new implementations (not overriding this deprecated method)
-		resize(termWinSize);
-	}
+	// /**
+	//  * @deprecated use {@link #resize(Dimension)} instead
+	//  */
+	// @SuppressWarnings("unused")
+	// @Deprecated
+	// default void resize(int width, int height, int pixelSizeWidth, int pixelSizeHeight) {
+	// 	// support old code that calls this method on new implementations (not overriding this deprecated method)
+	// 	resize(width, height);
+	// }
 
 	String getName();
 

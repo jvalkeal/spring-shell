@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.model;
 
-import java.awt.Dimension;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -876,12 +875,12 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	}
 
 	@Override
-	public void resize( Dimension newTermSize,  RequestOrigin origin) {
-		resize(newTermSize, origin, CompletableFuture.completedFuture(null));
+	public void resize(int width, int height,  RequestOrigin origin) {
+		resize(width, height, origin, CompletableFuture.completedFuture(null));
 	}
 
 	@Override
-	public void resize( Dimension newTermSize,  RequestOrigin origin,  CompletableFuture<?> promptUpdated) {
+	public void resize(int width, int height,  RequestOrigin origin,  CompletableFuture<?> promptUpdated) {
 		// int oldHeight = myTerminalHeight;
 		// ensureTermMinimumSize(newTermSize);
 		// if (newTermSize.width == myTerminalWidth && newTermSize.height == myTerminalHeight) {
@@ -912,9 +911,9 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 	// 	myScrollRegionBottom += myTerminalHeight - oldHeight;
 	// }
 
-	public static void ensureTermMinimumSize( Dimension termSize) {
-		termSize.setSize(Math.max(MIN_WIDTH, termSize.width), Math.max(MIN_HEIGHT, termSize.height));
-	}
+	// public static void ensureTermMinimumSize(int width, int height) {
+	// 	termSize.setSize(Math.max(MIN_WIDTH, width), Math.max(MIN_HEIGHT, height));
+	// }
 
 	@Override
 	public void fillScreen(final char c) {
