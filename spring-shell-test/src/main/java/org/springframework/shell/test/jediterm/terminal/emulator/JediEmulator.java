@@ -13,7 +13,6 @@ import org.springframework.shell.test.jediterm.terminal.CursorShape;
 import org.springframework.shell.test.jediterm.terminal.DataStreamIteratingEmulator;
 import org.springframework.shell.test.jediterm.terminal.RequestOrigin;
 import org.springframework.shell.test.jediterm.terminal.Terminal;
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TerminalDataStream;
 import org.springframework.shell.test.jediterm.terminal.TerminalMode;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
@@ -240,8 +239,8 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 			// 	}
 			// 	break;
 			case 10:
-			case 11:
-				return processColorQuery(args);
+			// case 11:
+			// 	return processColorQuery(args);
 		}
 		return false;
 	}
@@ -253,37 +252,37 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 	 * the same form which can be used to set the corresponding dynamic color.
 	 * </a>
 	 */
-	private boolean processColorQuery( SystemCommandSequence args) {
-		if (!"?".equals(args.getStringAt(1))) {
-			return false;
-		}
-		int ps = args.getIntAt(0, -1);
-		TerminalColor color;
-		if (ps == 10) {
-			color = myTerminal.getWindowForeground();
-		}
-		else if (ps == 11) {
-			color = myTerminal.getWindowBackground();
-		}
-		else {
-			return false;
-		}
-		if (color != null) {
-			String str = args.format(ps + ";" + formatXParseColor(color));
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Responding to OSC " + ps + " query: " + str);
-			}
-			myTerminal.deviceStatusReport(str);
-		}
-		return true;
-	}
+	// private boolean processColorQuery( SystemCommandSequence args) {
+	// 	if (!"?".equals(args.getStringAt(1))) {
+	// 		return false;
+	// 	}
+	// 	int ps = args.getIntAt(0, -1);
+	// 	TerminalColor color;
+	// 	if (ps == 10) {
+	// 		color = myTerminal.getWindowForeground();
+	// 	}
+	// 	else if (ps == 11) {
+	// 		color = myTerminal.getWindowBackground();
+	// 	}
+	// 	else {
+	// 		return false;
+	// 	}
+	// 	if (color != null) {
+	// 		String str = args.format(ps + ";" + formatXParseColor(color));
+	// 		if (LOG.isDebugEnabled()) {
+	// 			LOG.debug("Responding to OSC " + ps + " query: " + str);
+	// 		}
+	// 		myTerminal.deviceStatusReport(str);
+	// 	}
+	// 	return true;
+	// }
 
 	/**
 	 * Returns <a href="https://linux.die.net/man/3/xparsecolor">XParseColor</a> representation of TerminalColor
 	 */
-	private static  String formatXParseColor(TerminalColor color) {
-		return "rgb:" + color.toHexString16();
-	}
+	// private static  String formatXParseColor(TerminalColor color) {
+	// 	return "rgb:" + color.toHexString16();
+	// }
 
 	private void processTwoCharSequence(char ch, Terminal terminal) throws IOException {
 		char secondCh = myDataStream.getChar();
@@ -974,17 +973,17 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 				case 35:
 				case 36:
 				case 37:
-					builder.setForeground(TerminalColor.index(arg - 30));
+					// builder.setForeground(TerminalColor.index(arg - 30));
 					break;
 				case 38: // Set xterm-256 text color
-					TerminalColor color256 = getColor256(args, i);
-					if (color256 != null) {
-						builder.setForeground(color256);
-						step = getColor256Step(args, i);
-					}
+					// TerminalColor color256 = getColor256(args, i);
+					// if (color256 != null) {
+					// 	builder.setForeground(color256);
+					// 	step = getColor256Step(args, i);
+					// }
 					break;
 				case 39: // Default (original) foreground
-					builder.setForeground(null);
+					// builder.setForeground(null);
 					break;
 				case 40:
 				case 41:
@@ -994,17 +993,17 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 				case 45:
 				case 46:
 				case 47:
-					builder.setBackground(TerminalColor.index(arg - 40));
+					// builder.setBackground(TerminalColor.index(arg - 40));
 					break;
 				case 48: // Set xterm-256 background color
-					TerminalColor bgColor256 = getColor256(args, i);
-					if (bgColor256 != null) {
-						builder.setBackground(bgColor256);
-						step = getColor256Step(args, i);
-					}
+					// TerminalColor bgColor256 = getColor256(args, i);
+					// if (bgColor256 != null) {
+					// 	builder.setBackground(bgColor256);
+					// 	step = getColor256Step(args, i);
+					// }
 					break;
 				case 49: //Default (original) foreground
-					builder.setBackground(null);
+					// builder.setBackground(null);
 					break;
 				case 90:
 				case 91:
@@ -1013,10 +1012,10 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 				case 94:
 				case 95:
 				case 96:
-				case 97:
-					//Bright versions of the ISO colors for foreground
-					builder.setForeground(ColorPalette.getIndexedTerminalColor(arg - 82));
-					break;
+				// case 97:
+				// 	//Bright versions of the ISO colors for foreground
+				// 	builder.setForeground(ColorPalette.getIndexedTerminalColor(arg - 82));
+				// 	break;
 				case 100:
 				case 101:
 				case 102:
@@ -1024,10 +1023,10 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 				case 104:
 				case 105:
 				case 106:
-				case 107:
-					//Bright versions of the ISO colors for background
-					builder.setBackground(ColorPalette.getIndexedTerminalColor(arg - 92));
-					break;
+				// case 107:
+				// 	//Bright versions of the ISO colors for background
+				// 	builder.setBackground(ColorPalette.getIndexedTerminalColor(arg - 92));
+				// 	break;
 				default:
 					LOG.warn("Unknown character attribute:" + arg);
 			}
@@ -1036,40 +1035,40 @@ public class JediEmulator extends DataStreamIteratingEmulator {
 		return builder.build();
 	}
 
-	private static TerminalColor getColor256(ControlSequence args, int index) {
-		int code = args.getArg(index + 1, 0);
+	// private static TerminalColor getColor256(ControlSequence args, int index) {
+	// 	int code = args.getArg(index + 1, 0);
 
-		if (code == 2) {
-			/* direct color in rgb space */
-			int val0 = args.getArg(index + 2, -1);
-			int val1 = args.getArg(index + 3, -1);
-			int val2 = args.getArg(index + 4, -1);
-			if ((val0 >= 0 && val0 < 256) &&
-							(val1 >= 0 && val1 < 256) &&
-							(val2 >= 0 && val2 < 256)) {
-				return new TerminalColor(val0, val1, val2);
-			} else {
-				LOG.warn("Bogus color setting " + args.toString());
-				return null;
-			}
-		} else if (code == 5) {
-			/* indexed color */
-			return ColorPalette.getIndexedTerminalColor(args.getArg(index + 2, 0));
-		} else {
-			LOG.warn("Unsupported code for color attribute " + args.toString());
-			return null;
-		}
-	}
+	// 	if (code == 2) {
+	// 		/* direct color in rgb space */
+	// 		int val0 = args.getArg(index + 2, -1);
+	// 		int val1 = args.getArg(index + 3, -1);
+	// 		int val2 = args.getArg(index + 4, -1);
+	// 		if ((val0 >= 0 && val0 < 256) &&
+	// 						(val1 >= 0 && val1 < 256) &&
+	// 						(val2 >= 0 && val2 < 256)) {
+	// 			return new TerminalColor(val0, val1, val2);
+	// 		} else {
+	// 			LOG.warn("Bogus color setting " + args.toString());
+	// 			return null;
+	// 		}
+	// 	} else if (code == 5) {
+	// 		/* indexed color */
+	// 		return ColorPalette.getIndexedTerminalColor(args.getArg(index + 2, 0));
+	// 	} else {
+	// 		LOG.warn("Unsupported code for color attribute " + args.toString());
+	// 		return null;
+	// 	}
+	// }
 
-	private static int getColor256Step(ControlSequence args, int i) {
-		int code = args.getArg(i + 1, 0);
-		if (code == 2) {
-			return 5;
-		} else if (code == 5) {
-			return 3;
-		}
-		return 1;
-	}
+	// private static int getColor256Step(ControlSequence args, int i) {
+	// 	int code = args.getArg(i + 1, 0);
+	// 	if (code == 2) {
+	// 		return 5;
+	// 	} else if (code == 5) {
+	// 		return 3;
+	// 	}
+	// 	return 1;
+	// }
 
 	private boolean cursorUp(ControlSequence cs) {
 		int arg = cs.getArg(0, 0);

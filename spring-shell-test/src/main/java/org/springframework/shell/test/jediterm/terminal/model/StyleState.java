@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.model;
 
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
 public class StyleState {
@@ -19,12 +18,12 @@ public class StyleState {
 
   private static TextStyle merge( TextStyle style,  TextStyle defaultStyle) {
     TextStyle.Builder builder = style.toBuilder();
-    if (style.getBackground() == null && defaultStyle.getBackground() != null) {
-      builder.setBackground(defaultStyle.getBackground());
-    }
-    if (style.getForeground() == null && defaultStyle.getForeground() != null) {
-      builder.setForeground(defaultStyle.getForeground());
-    }
+    // if (style.getBackground() == null && defaultStyle.getBackground() != null) {
+    //   builder.setBackground(defaultStyle.getBackground());
+    // }
+    // if (style.getForeground() == null && defaultStyle.getForeground() != null) {
+    //   builder.setForeground(defaultStyle.getForeground());
+    // }
     return builder.build();
   }
 
@@ -42,21 +41,21 @@ public class StyleState {
     myMergedStyle = null;
   }
 
-  public TerminalColor getBackground() {
-    return getBackground(null);
-  }
+  // public TerminalColor getBackground() {
+  //   return getBackground(null);
+  // }
 
-  public TerminalColor getBackground(TerminalColor color) {
-    return color != null ? color : myDefaultStyle.getBackground();
-  }
+  // public TerminalColor getBackground(TerminalColor color) {
+  //   return color != null ? color : myDefaultStyle.getBackground();
+  // }
 
-  public TerminalColor getForeground() {
-    return getForeground(null);
-  }
+  // public TerminalColor getForeground() {
+  //   return getForeground(null);
+  // }
 
-  public TerminalColor getForeground(TerminalColor color) {
-    return color != null ? color : myDefaultStyle.getForeground();
-  }
+  // public TerminalColor getForeground(TerminalColor color) {
+  //   return color != null ? color : myDefaultStyle.getForeground();
+  // }
 
   public void setCurrent(TextStyle current) {
     myCurrentStyle = current;

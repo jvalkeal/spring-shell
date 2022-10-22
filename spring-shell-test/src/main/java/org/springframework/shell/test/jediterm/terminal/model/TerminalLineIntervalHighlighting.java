@@ -1,6 +1,5 @@
 package org.springframework.shell.test.jediterm.terminal.model;
 
-import org.springframework.shell.test.jediterm.terminal.TerminalColor;
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
 public abstract class TerminalLineIntervalHighlighting {
@@ -55,15 +54,15 @@ public abstract class TerminalLineIntervalHighlighting {
   }
 
   public  TextStyle mergeWith( TextStyle style) {
-    TerminalColor foreground = myStyle.getForeground();
-    if (foreground == null) {
-      foreground = style.getForeground();
-    }
-    TerminalColor background = myStyle.getBackground();
-    if (background == null) {
-      background = style.getBackground();
-    }
-    return new TextStyle(foreground, background);
+    // TerminalColor foreground = myStyle.getForeground();
+    // if (foreground == null) {
+    //   foreground = style.getForeground();
+    // }
+    // TerminalColor background = myStyle.getBackground();
+    // if (background == null) {
+    //   background = style.getBackground();
+    // }
+    return new TextStyle();
   }
 
   @Override
