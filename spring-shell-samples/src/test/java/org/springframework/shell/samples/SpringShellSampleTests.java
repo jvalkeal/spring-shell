@@ -18,6 +18,8 @@ package org.springframework.shell.samples;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -31,6 +33,8 @@ import static org.awaitility.Awaitility.await;
 @ShellTest
 @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
 public class SpringShellSampleTests {
+
+	private final static Logger log = LoggerFactory.getLogger(SpringShellSampleTests.class);
 
 	@Autowired
 	ShellClient.Builder builder;
@@ -74,6 +78,26 @@ public class SpringShellSampleTests {
 		client.write(client.writeSequence().cr().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(client.screen()).contains("Got value value1,value2");
+		});
+	}
+
+	@Test
+	void componentPathSearch() {
+		ShellClient client = builder.build();
+		client.shell();
+
+		client.write(client.writeSequence().command("component path search").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			assertThat(client.screen()).contains("<path> <pattern>");
+		});
+
+		client.write(client.writeSequence().text(". src").build());
+		// String screen1 = client.screen();
+		// client.write(client.writeSequence().keyDown().build());
+		// String screen2 = client.screen();
+		// String screen3 = client.screen();
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			assertThat(client.screen()).contains("src");
 		});
 	}
 }
