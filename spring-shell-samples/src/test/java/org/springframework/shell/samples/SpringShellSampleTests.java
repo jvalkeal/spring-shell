@@ -18,12 +18,11 @@ package org.springframework.shell.samples;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.shell.samples.standard.ResolvedCommands;
+import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.autoconfigure.ShellTest;
 
@@ -33,8 +32,6 @@ import static org.awaitility.Awaitility.await;
 @ShellTest
 @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
 public class SpringShellSampleTests {
-
-	private final static Logger log = LoggerFactory.getLogger(SpringShellSampleTests.class);
 
 	@Autowired
 	ShellClient.Builder builder;
@@ -46,17 +43,17 @@ public class SpringShellSampleTests {
 
 		client.write(client.writeSequence().command("component single").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("❯ key1");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key1");
 		});
 
 		client.write(client.writeSequence().keyDown().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("❯ key2");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key2");
 		});
 
 		client.write(client.writeSequence().cr().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("Got value value2");
+			ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
 		});
 	}
 
@@ -67,17 +64,17 @@ public class SpringShellSampleTests {
 
 		client.write(client.writeSequence().command("component multi").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("❯ ☐  key1");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ ☐  key1");
 		});
 
 		client.write(client.writeSequence().space().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("❯ ☒  key1");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ ☒  key1");
 		});
 
 		client.write(client.writeSequence().cr().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("Got value value1,value2");
+			ShellAssertions.assertThat(client.screen()).containsText("Got value value1,value2");
 		});
 	}
 
@@ -88,16 +85,14 @@ public class SpringShellSampleTests {
 
 		client.write(client.writeSequence().command("component path search").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("<path> <pattern>");
+			ShellAssertions.assertThat(client.screen()).containsText("<path> <pattern>");
+			assertThat(client.screen()).asInstanceOf(ShellAssertions.SHELLSCREEN).containsText("<path> <pattern>");
+
 		});
 
-		client.write(client.writeSequence().text(". src").build());
-		// String screen1 = client.screen();
-		// client.write(client.writeSequence().keyDown().build());
-		// String screen2 = client.screen();
-		// String screen3 = client.screen();
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			assertThat(client.screen()).contains("src");
-		});
+		// client.write(client.writeSequence().text(". src").build());
+		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+		// 	assertThat(client.screen()).contains("src");
+		// });
 	}
 }

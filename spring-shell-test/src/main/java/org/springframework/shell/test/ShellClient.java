@@ -45,11 +45,11 @@ public interface ShellClient {
 	void write(String text);
 
 	/**
-	 * Read screen text.
+	 * Read the screen.
 	 *
-	 * @return the screen text
+	 * @return the screen
 	 */
-	String screen();
+	ShellScreen screen();
 
 	/**
 	 * Run interactive shell session.
@@ -239,9 +239,8 @@ public interface ShellClient {
 		}
 
 		@Override
-		public String screen() {
-			String screen = terminalSession.getTerminalTextBuffer().getScreenLines();
-			return screen;
+		public ShellScreen screen() {
+			return ShellScreen.of(terminalSession.getTerminalTextBuffer().getScreen());
 		}
 
 		@Override

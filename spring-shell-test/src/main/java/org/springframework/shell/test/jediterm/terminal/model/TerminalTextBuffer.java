@@ -1,5 +1,6 @@
 package org.springframework.shell.test.jediterm.terminal.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -278,10 +279,10 @@ public class TerminalTextBuffer {
 		}
 	}
 
-	public String getScreenLines() {
+	public List<String> getScreen() {
 		myLock.lock();
+		List<String> lines = new ArrayList<>();
 		try {
-			final StringBuilder sb = new StringBuilder();
 			for (int row = 0; row < myHeight; row++) {
 				StringBuilder line = new StringBuilder(myScreenBuffer.getLine(row).getText());
 
@@ -291,11 +292,9 @@ public class TerminalTextBuffer {
 				if (line.length() > myWidth) {
 					line.setLength(myWidth);
 				}
-
-				sb.append(line);
-				sb.append('\n');
+				lines.add(line.toString());
 			}
-			return sb.toString();
+			return lines;
 		} finally {
 			myLock.unlock();
 		}
