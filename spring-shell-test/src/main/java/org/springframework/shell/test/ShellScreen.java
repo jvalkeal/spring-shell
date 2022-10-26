@@ -31,6 +31,12 @@ public interface ShellScreen {
 	 */
     List<String> lines();
 
+	/**
+	 * Get {@code ShellScreen} out of lines.
+	 *
+	 * @param lines the lines
+	 * @return instance of shell screen
+	 */
 	static ShellScreen of(List<String> lines) {
 		return new DefaultShellScreen(lines);
 	}

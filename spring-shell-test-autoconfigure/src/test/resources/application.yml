@@ -1,0 +1,7 @@
+logging:
+  level:
+    root: debug
+    org:
+      jline: debug
+      springframework:
+        shell: debug

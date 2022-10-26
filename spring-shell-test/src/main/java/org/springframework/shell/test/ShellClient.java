@@ -15,10 +15,8 @@
  */
 package org.springframework.shell.test;
 
-import org.jline.keymap.KeyMap;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
-import org.jline.utils.InfoCmp;
 
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
@@ -38,11 +36,19 @@ import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
 public interface ShellClient {
 
 	/**
-	 * Write plain text into a shell.
+	 * Run interactive shell session.
 	 *
-	 * @param text the text
+	 * @return client for chaining
 	 */
-	void write(String text);
+	ShellClient runInterative();
+
+	/**
+	 * Run non-interactive command session.
+	 *
+	 * @param args the command arguments
+	 * @return client for chaining
+	 */
+	ShellClient runNonInterative(String... args);
 
 	/**
 	 * Read the screen.
@@ -52,16 +58,12 @@ public interface ShellClient {
 	ShellScreen screen();
 
 	/**
-	 * Run interactive shell session.
-	 */
-	void shell();
-
-	/**
-	 * Run non-interactive command session.
+	 * Write plain text into a shell.
 	 *
-	 * @param args the command arguments
+	 * @param text the text
+	 * @return client for chaining
 	 */
-	void command(String... args);
+	ShellClient write(String text);
 
 	/**
 	 * Close and release resources for previously run shell or command session.
@@ -73,7 +75,7 @@ public interface ShellClient {
 	 *
 	 * @return a write sequencer
 	 */
-	WriteSequence writeSequence();
+	ShellWriteSequence writeSequence();
 
 	/**
 	 * Get an instance of a builder.
@@ -91,93 +93,7 @@ public interface ShellClient {
 	}
 
 	/**
-	 * Interface sequencing various things into terminal aware text types.
-	 */
-	interface WriteSequence {
-
-		/**
-		 * Sequence terminal clear screen.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence clearScreen();
-
-		/**
-		 * Sequence terminal carriage return.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence carriageReturn();
-
-		/**
-		 * Sequence from command with expected {@code carriage return}.
-		 *
-		 * @param command the command
-		 * @return a sequence for chaining
-		 */
-		WriteSequence command(String command);
-
-		/**
-		 * Sequence terminal carriage return. Alias for {@link #carriageReturn}
-		 *
-		 * @return a sequence for chaining
-		 * @see #carriageReturn()
-		 */
-		WriteSequence cr();
-
-		/**
-		 * Sequence text.
-		 *
-		 * @param text the text
-		 * @return a sequence for chaining
-		 */
-		WriteSequence text(String text);
-
-		/**
-		 * Sequence terminal key down.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence keyDown();
-
-		/**
-		 * Sequence terminal key left.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence keyLeft();
-
-		/**
-		 * Sequence terminal key right.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence keyRight();
-
-		/**
-		 * Sequence terminal key up.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence keyUp();
-
-		/**
-		 * Sequence terminal space.
-		 *
-		 * @return a sequence for chaining
-		 */
-		WriteSequence space();
-
-		/**
-		 * Build the result.
-		 *
-		 * @return the result
-		 */
-		String build();
-	}
-
-	/**
-	 *
+	 * Builder interface for {@code ShellClient}.
 	 */
 	interface Builder {
 
@@ -212,7 +128,6 @@ public interface ShellClient {
 					this.lineReader, this.terminal);
 			return client;
 		}
-
 	}
 
 	static class DefaultShellClient implements ShellClient {
@@ -234,8 +149,29 @@ public interface ShellClient {
 		}
 
 		@Override
-		public void write(String data) {
+		public ShellClient runInterative() {
+			terminalSession.start();
+			if (runnerThread == null) {
+				runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
+				runnerThread.start();
+			}
+			return this;
+		}
+
+		@Override
+		public ShellClient runNonInterative(String... args) {
+			terminalSession.start();
+			if (runnerThread == null) {
+				runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
+				runnerThread.start();
+			}
+			return this;
+		}
+
+		@Override
+		public ShellClient write(String data) {
 			terminalSession.getTerminalStarter().sendString(data);
+			return this;
 		}
 
 		@Override
@@ -244,100 +180,17 @@ public interface ShellClient {
 		}
 
 		@Override
-		public void shell() {
-			this.terminalSession.start();
-			if (this.runnerThread == null) {
-				this.runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
-				this.runnerThread.start();
-			}
-		}
-
-		@Override
-		public void command(String... args) {
-			this.terminalSession.start();
-			if (this.runnerThread == null) {
-				this.runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
-				this.runnerThread.start();
-			}
-		}
-
-		@Override
 		public void close() {
-			if (this.runnerThread != null) {
-				this.runnerThread.interrupt();
+			if (runnerThread != null) {
+				runnerThread.interrupt();
 			}
-			this.terminalSession.close();
+			terminalSession.close();
+			runnerThread = null;
 		}
 
 		@Override
-		public WriteSequence writeSequence() {
-			return new WriteSequence() {
-
-				private StringBuilder buf = new StringBuilder();
-
-				@Override
-				public WriteSequence carriageReturn() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.carriage_return));
-					return this;
-				}
-
-				@Override
-				public WriteSequence clearScreen() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.clear_screen));
-					return this;
-				}
-
-				@Override
-				public WriteSequence command(String command) {
-					this.text(command);
-					return carriageReturn();
-				}
-
-				@Override
-				public WriteSequence cr() {
-					return carriageReturn();
-				}
-
-				@Override
-				public WriteSequence keyUp() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_up));
-					return this;
-				}
-
-				@Override
-				public WriteSequence keyDown() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_down));
-					return this;
-				}
-
-				@Override
-				public WriteSequence keyLeft() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_left));
-					return this;
-				}
-
-				@Override
-				public WriteSequence keyRight() {
-					this.buf.append(KeyMap.key(DefaultShellClient.this.terminal, InfoCmp.Capability.key_right));
-					return this;
-				}
-
-				@Override
-				public WriteSequence text(String text) {
-					this.buf.append(text);
-					return this;
-				}
-
-				@Override
-				public WriteSequence space() {
-					return this.text(" ");
-				}
-
-				@Override
-				public String build() {
-					return buf.toString();
-				}
-			};
+		public ShellWriteSequence writeSequence() {
+			return ShellWriteSequence.of(DefaultShellClient.this.terminal);
 		}
 	}
 
@@ -384,5 +237,4 @@ public interface ShellClient {
 			}
 		}
 	}
-
 }
