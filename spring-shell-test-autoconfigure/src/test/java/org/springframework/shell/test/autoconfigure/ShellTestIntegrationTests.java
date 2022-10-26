@@ -15,8 +15,10 @@
  */
 package org.springframework.shell.test.autoconfigure;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
 import org.springframework.test.context.ContextConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 @ShellTest
@@ -37,18 +40,36 @@ public class ShellTestIntegrationTests {
 	@Test
 	void testInteractive() throws Exception {
 		ShellClient client = builder.build();
-		client.shell();
-		client.write("help\n");
+		client.runInterative();
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client.screen()).containsText("shell");
+		});
+
+		client.write("help\n");
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			ShellAssertions.assertThat(client.screen()).containsText("AVAILABLE COMMANDS");
+		});
+
+		client.write(client.writeSequence().carriageReturn().build());
+		await().atMost(4, TimeUnit.SECONDS).untilAsserted(() -> {
+			List<String> lines = client.screen().lines();
+			Condition<String> prompt = new Condition<>(line -> line.contains("shell:"), "prompt");
+			assertThat(lines).areExactly(3, prompt);
+		});
+
+		client.write(client.writeSequence().clearScreen().build());
+		await().atMost(4, TimeUnit.SECONDS).untilAsserted(() -> {
+			List<String> lines = client.screen().lines();
+			Condition<String> prompt = new Condition<>(line -> line.contains("shell:"), "prompt");
+			assertThat(lines).areExactly(1, prompt);
 		});
 	}
 
 	@Test
 	void testNonInteractive() throws Exception {
 		ShellClient client = builder.build();
-		client.command("help");
+		client.runNonInterative("help");
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			ShellAssertions.assertThat(client.screen()).containsText("AVAILABLE COMMANDS");

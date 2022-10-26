@@ -37,9 +37,9 @@ public class SpringShellSampleTests {
 	ShellClient.Builder builder;
 
 	@Test
-	void componentSingle() {
+	void componentSingleInteractive() {
 		ShellClient client = builder.build();
-		client.shell();
+		client.runInterative();
 
 		client.write(client.writeSequence().command("component single").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -55,44 +55,68 @@ public class SpringShellSampleTests {
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
 		});
+
+		client.close();
 	}
 
 	@Test
-	void componentMulti() {
+	void componentSingleNonInteractive() {
 		ShellClient client = builder.build();
-		client.shell();
+		client.runNonInterative("component single");
 
-		client.write(client.writeSequence().command("component multi").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("❯ ☐  key1");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key1");
 		});
 
-		client.write(client.writeSequence().space().build());
+		client.write(client.writeSequence().keyDown().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("❯ ☒  key1");
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key2");
 		});
 
 		client.write(client.writeSequence().cr().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("Got value value1,value2");
-		});
-	}
-
-	@Test
-	void componentPathSearch() {
-		ShellClient client = builder.build();
-		client.shell();
-
-		client.write(client.writeSequence().command("component path search").build());
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("<path> <pattern>");
-			assertThat(client.screen()).asInstanceOf(ShellAssertions.SHELLSCREEN).containsText("<path> <pattern>");
-
+			ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
 		});
 
-		// client.write(client.writeSequence().text(". src").build());
-		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-		// 	assertThat(client.screen()).contains("src");
-		// });
+		client.close();
 	}
+
+	// @Test
+	// void componentMulti() {
+	// 	ShellClient client = builder.build();
+	// 	client.shell();
+
+	// 	client.write(client.writeSequence().command("component multi").build());
+	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ ☐  key1");
+	// 	});
+
+	// 	client.write(client.writeSequence().space().build());
+	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ ☒  key1");
+	// 	});
+
+	// 	client.write(client.writeSequence().cr().build());
+	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+	// 		ShellAssertions.assertThat(client.screen()).containsText("Got value value1,value2");
+	// 	});
+	// }
+
+	// @Test
+	// void componentPathSearch() {
+	// 	ShellClient client = builder.build();
+	// 	client.shell();
+
+	// 	client.write(client.writeSequence().command("component path search").build());
+	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+	// 		ShellAssertions.assertThat(client.screen()).containsText("<path> <pattern>");
+	// 		assertThat(client.screen()).asInstanceOf(ShellAssertions.SHELLSCREEN).containsText("<path> <pattern>");
+
+	// 	});
+
+	// 	// client.write(client.writeSequence().text(". src").build());
+	// 	// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+	// 	// 	assertThat(client.screen()).contains("src");
+	// 	// });
+	// }
 }
