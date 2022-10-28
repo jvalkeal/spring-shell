@@ -109,20 +109,18 @@ public class ShellAutoConfiguration {
 
 		@Override
 		public int read(char[] buf, int offset, int length) throws IOException {
-			log.info("XXX read1");
-
+			log.trace("XXX read1");
 			int read = this.myReader.read(buf, offset, length);
-			log.info("XXX read2 {} {}", read, new String(buf));
-
+			log.trace("XXX read2 {} {}", read, new String(buf));
 			return read;
 		}
 
 		@Override
 		public void write(byte[] bytes) throws IOException {
-			log.info("XXX write1 {}", bytes);
+			log.trace("XXX write1 {}", bytes);
 			this.myWriter.write(new String(bytes));
 			this.myWriter.flush();
-			log.info("XXX write2");
+			log.trace("XXX write2");
 		}
 
 		@Override
@@ -142,9 +140,9 @@ public class ShellAutoConfiguration {
 
 		@Override
 		public boolean ready() throws IOException {
-			log.info("XXX ready1");
+			log.trace("XXX ready1");
 			boolean ready = myReader.ready();
-			log.info("XXX ready2 {}", ready);
+			log.trace("XXX ready2 {}", ready);
 			return ready;
 		}
 	}
