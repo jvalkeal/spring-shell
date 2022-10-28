@@ -38,7 +38,7 @@ public class ShellTestIntegrationTests {
 	ShellClient.Builder builder;
 
 	@Test
-	void testInteractive() throws Exception {
+	void testInteractive1() throws Exception {
 		ShellClient client = builder.build();
 		client.runInterative();
 
@@ -67,12 +67,46 @@ public class ShellTestIntegrationTests {
 	}
 
 	@Test
+	void testInteractive2() throws Exception {
+		ShellClient client1 = builder.build();
+		client1.runInterative();
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client1.screen()).containsText("shell");
+		});
+
+		client1.write(client1.writeSequence().text("xxx").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client1.screen()).containsText("xxx");
+		});
+
+		client1.close();
+
+		// ShellClient client2 = builder.build();
+		// client2.runInterative();
+
+		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+		// 	ShellAssertions.assertThat(client2.screen()).containsText("xxx");
+		// });
+
+	}
+
+	@Test
 	void testNonInteractive() throws Exception {
 		ShellClient client = builder.build();
+
 		client.runNonInterative("help");
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			ShellAssertions.assertThat(client.screen()).containsText("AVAILABLE COMMANDS");
+		});
+
+		client.close();
+
+		client.runNonInterative("version");
+
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client.screen()).containsText("Version");
 		});
 	}
 

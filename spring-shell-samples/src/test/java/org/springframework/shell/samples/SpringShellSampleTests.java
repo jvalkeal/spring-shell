@@ -25,12 +25,16 @@ import org.springframework.shell.samples.standard.ResolvedCommands;
 import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.autoconfigure.ShellTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 @ShellTest
 @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class SpringShellSampleTests {
 
 	@Autowired

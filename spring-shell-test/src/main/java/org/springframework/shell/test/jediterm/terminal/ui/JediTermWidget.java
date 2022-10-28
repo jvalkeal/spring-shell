@@ -18,39 +18,30 @@ import org.springframework.shell.test.jediterm.terminal.model.TerminalTextBuffer
 
 public class JediTermWidget implements TerminalSession, TerminalWidget {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JediTermWidget.class);
-
-	protected final TerminalPanel myTerminalPanel;
-	protected final JediTerminal myTerminal;
-	protected final AtomicBoolean mySessionRunning = new AtomicBoolean();
-	private TtyConnector myTtyConnector;
-	private TerminalStarter myTerminalStarter;
-	private Thread myEmuThread;
+	private static final Logger log = LoggerFactory.getLogger(JediTermWidget.class);
+	protected final TerminalPanel terminalPanel;
+	protected final JediTerminal terminal;
+	protected final AtomicBoolean sessionRunning = new AtomicBoolean();
+	private TtyConnector ttyConnector;
+	private TerminalStarter terminalStarter;
+	private Thread emuThread;
 
 	public JediTermWidget() {
 		this(80, 24);
 	}
 
 	public JediTermWidget(int columns, int lines) {
-
 		StyleState styleState = createDefaultStyle();
-
 		TerminalTextBuffer terminalTextBuffer = new TerminalTextBuffer(columns, lines, styleState,
 				LinesBuffer.DEFAULT_MAX_LINES_COUNT);
-
-		myTerminalPanel = createTerminalPanel(styleState, terminalTextBuffer);
-		myTerminal = new JediTerminal(myTerminalPanel, terminalTextBuffer, styleState);
-
-		// myTerminal.setModeEnabled(TerminalMode.AltSendsEscape, true);
-
-		myTerminalPanel.setCoordAccessor(myTerminal);
-
-		mySessionRunning.set(false);
+		terminalPanel = createTerminalPanel(styleState, terminalTextBuffer);
+		terminal = new JediTerminal(terminalPanel, terminalTextBuffer, styleState);
+		terminalPanel.setCoordAccessor(terminal);
+		sessionRunning.set(false);
 	}
 
 	protected StyleState createDefaultStyle() {
 		StyleState styleState = new StyleState();
-		// styleState.setDefaultStyle(new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE));
 		styleState.setDefaultStyle(new TextStyle());
 		return styleState;
 	}
@@ -64,62 +55,61 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	}
 
 	public TerminalPanel getTerminalPanel() {
-		return myTerminalPanel;
+		return terminalPanel;
 	}
 
 	public void setTtyConnector(TtyConnector ttyConnector) {
-		myTtyConnector = ttyConnector;
-
-		myTerminalStarter = createTerminalStarter(myTerminal, myTtyConnector);
-		myTerminalPanel.setTerminalStarter(myTerminalStarter);
+		this.ttyConnector = ttyConnector;
+		terminalStarter = createTerminalStarter(terminal, ttyConnector);
+		terminalPanel.setTerminalStarter(terminalStarter);
 	}
 
 	protected TerminalStarter createTerminalStarter(JediTerminal terminal, TtyConnector connector) {
-		return new TerminalStarter(terminal, connector,
-			new TtyBasedArrayDataStream(connector));
+		TtyBasedArrayDataStream ttyBasedArrayDataStream = new TtyBasedArrayDataStream(connector);
+		return new TerminalStarter(terminal, connector, ttyBasedArrayDataStream);
 	}
 
 	@Override
 	public TtyConnector getTtyConnector() {
-		return myTtyConnector;
+		return ttyConnector;
 	}
 
 	@Override
 	public Terminal getTerminal() {
-		return myTerminal;
+		return terminal;
 	}
 
 	@Override
 	public String getSessionName() {
-		if (myTtyConnector != null) {
-			return myTtyConnector.getName();
+		if (ttyConnector != null) {
+			return ttyConnector.getName();
 		} else {
 			return "Session";
 		}
 	}
 
 	public void start() {
-		if (!mySessionRunning.get()) {
-			myEmuThread = new Thread(new EmulatorTask());
-			myEmuThread.start();
+		if (!sessionRunning.get()) {
+			emuThread = new Thread(new EmulatorTask());
+			emuThread.start();
 		} else {
-			LOG.error("Should not try to start session again at this point... ");
+			log.error("Should not try to start session again at this point... ");
 		}
 	}
 
 	public void stop() {
-		if (mySessionRunning.get() && myEmuThread != null) {
-			myEmuThread.interrupt();
+		if (sessionRunning.get() && emuThread != null) {
+			emuThread.interrupt();
 		}
 	}
 
 	public boolean isSessionRunning() {
-		return mySessionRunning.get();
+		return sessionRunning.get();
 	}
 
 	@Override
 	public TerminalTextBuffer getTerminalTextBuffer() {
-		return myTerminalPanel.getTerminalTextBuffer();
+		return terminalPanel.getTerminalTextBuffer();
 	}
 
 	public boolean canOpenSession() {
@@ -128,7 +118,7 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	@Override
 	public void setTerminalPanelListener(TerminalPanelListener terminalPanelListener) {
-		myTerminalPanel.setTerminalPanelListener(terminalPanelListener);
+		terminalPanel.setTerminalPanelListener(terminalPanelListener);
 	}
 
 	@Override
@@ -145,36 +135,34 @@ public class JediTermWidget implements TerminalSession, TerminalWidget {
 	@Override
 	public void close() {
 		stop();
-		if (myTerminalStarter != null) {
-			myTerminalStarter.close();
+		if (terminalStarter != null) {
+			terminalStarter.close();
 		}
-		myTerminalPanel.dispose();
+		terminalPanel.dispose();
 	}
 
 	class EmulatorTask implements Runnable {
 		public void run() {
 			try {
-				mySessionRunning.set(true);
-				Thread.currentThread().setName("Connector-" + myTtyConnector.getName());
-				if (myTtyConnector.init()) {
-					// myTerminalPanel.addCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
-					myTerminalStarter.start();
+				sessionRunning.set(true);
+				Thread.currentThread().setName("Connector-" + ttyConnector.getName());
+				if (ttyConnector.init()) {
+					terminalStarter.start();
 				}
 			} catch (Exception e) {
-				LOG.error("Exception running terminal", e);
+				log.error("Exception running terminal", e);
 			} finally {
 				try {
-					myTtyConnector.close();
+					ttyConnector.close();
 				} catch (Exception e) {
 				}
-				mySessionRunning.set(false);
-				// myTerminalPanel.removeCustomKeyListener(myTerminalPanel.getTerminalKeyListener());
+				sessionRunning.set(false);
 			}
 		}
 	}
 
 	@Override
 	public TerminalStarter getTerminalStarter() {
-		return myTerminalStarter;
+		return terminalStarter;
 	}
 }
