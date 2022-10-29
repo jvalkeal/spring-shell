@@ -19,9 +19,9 @@ import org.springframework.shell.test.jediterm.terminal.model.TerminalTextBuffer
 public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	private static final Logger log = LoggerFactory.getLogger(JediTermWidget.class);
-	protected final TerminalPanel terminalPanel;
-	protected final JediTerminal terminal;
-	protected final AtomicBoolean sessionRunning = new AtomicBoolean();
+	private final TerminalPanel terminalPanel;
+	private final JediTerminal terminal;
+	private final AtomicBoolean sessionRunning = new AtomicBoolean();
 	private TtyConnector ttyConnector;
 	private TerminalStarter terminalStarter;
 	private Thread emuThread;

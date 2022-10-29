@@ -110,6 +110,7 @@ public class ShellAutoConfiguration {
 		@Override
 		public int read(char[] buf, int offset, int length) throws IOException {
 			log.trace("XXX read1");
+			String xxx = new String(buf);
 			int read = this.myReader.read(buf, offset, length);
 			log.trace("XXX read2 {} {}", read, new String(buf));
 			return read;

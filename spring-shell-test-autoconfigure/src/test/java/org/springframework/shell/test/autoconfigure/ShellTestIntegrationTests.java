@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
+import org.springframework.shell.test.ShellScreen;
 import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -97,17 +98,19 @@ public class ShellTestIntegrationTests {
 
 		client.runNonInterative("help");
 
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("AVAILABLE COMMANDS");
-		});
+		ShellScreen screen1 = client.screen();
+		ShellScreen screen2 = client.screen();
 
 		client.close();
 
 		client.runNonInterative("version");
 
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("Version");
-		});
+		ShellScreen screen3 = client.screen();
+
+		client.close();
+
+		ShellScreen screen4 = client.screen();
+
 	}
 
 }
