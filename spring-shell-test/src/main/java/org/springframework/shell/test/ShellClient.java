@@ -183,6 +183,11 @@ public interface ShellClient {
 		public void close() {
 			if (runnerThread != null) {
 				runnerThread.interrupt();
+				try {
+					runnerThread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			terminalSession.close();
 			runnerThread = null;
