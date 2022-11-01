@@ -101,6 +101,8 @@ public class ShellTestIntegrationTests {
 		ShellScreen screen1 = client.screen();
 		ShellScreen screen2 = client.screen();
 
+		client.write(client.writeSequence().clearScreen().build());
+
 		// client.close();
 
 		client.runNonInterative("help help");
