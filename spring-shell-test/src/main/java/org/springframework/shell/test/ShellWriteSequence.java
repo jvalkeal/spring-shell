@@ -133,9 +133,10 @@ public interface ShellWriteSequence {
 
 		@Override
 		public ShellWriteSequence clearScreen() {
-			// String ansiClearScreen = KeyMap.key(this.terminal, InfoCmp.Capability.clear_screen);
-			String ctrl = KeyMap.ctrl('L');
-			this.buf.append(ctrl);
+			String ansiClearScreen = KeyMap.key(this.terminal, InfoCmp.Capability.clear_screen);
+			this.buf.append(ansiClearScreen);
+			// String ctrl = KeyMap.ctrl('L');
+			// this.buf.append(ctrl);
 			return this;
 		}
 
