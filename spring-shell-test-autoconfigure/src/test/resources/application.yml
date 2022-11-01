@@ -1,9 +1,9 @@
-logging:
-  file:
-    name: xxx.log
-  level:
-    root: debug
-    org:
-      jline: debug
-      springframework:
-        shell: trace
+#logging:
+#  file:
+#    name: xxx.log
+#  level:
+#    root: debug
+#    org:
+#      jline: debug
+#      springframework:
+#        shell: trace

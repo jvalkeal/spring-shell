@@ -60,7 +60,6 @@ public class ShellAutoConfiguration {
 	TerminalSession terminalSession(TtyConnector ttyConnector) {
 		JediTermWidget widget = new JediTermWidget(80, 24);
 		widget.setTtyConnector(ttyConnector);
-		// widget.start();
 		return widget;
 	}
 
