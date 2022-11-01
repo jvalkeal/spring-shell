@@ -101,14 +101,10 @@ public class ShellTestIntegrationTests {
 		ShellScreen screen1 = client.screen();
 		ShellScreen screen2 = client.screen();
 
-		client.close();
+		// client.close();
 
-		client.runNonInterative("version");
-
+		client.runNonInterative("help help");
 		ShellScreen screen3 = client.screen();
-
-		client.close();
-
 		ShellScreen screen4 = client.screen();
 
 	}

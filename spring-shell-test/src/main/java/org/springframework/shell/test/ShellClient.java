@@ -15,11 +15,16 @@
  */
 package org.springframework.shell.test;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
 
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
+import org.springframework.shell.ShellRunner;
 import org.springframework.shell.context.DefaultShellContext;
 import org.springframework.shell.jline.InteractiveShellRunner;
 import org.springframework.shell.jline.NonInteractiveShellRunner;
@@ -162,9 +167,13 @@ public interface ShellClient {
 		public ShellClient runNonInterative(String... args) {
 			terminalSession.start();
 			if (runnerThread == null) {
-				runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
+				// runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
+				runnerThread = new Thread(new ShellRunnerTask(this.blockingQueue));
 				runnerThread.start();
 			}
+			ShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
+			ApplicationArguments argsx = new DefaultApplicationArguments(args);
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
 			return this;
 		}
 
@@ -189,7 +198,7 @@ public interface ShellClient {
 					e.printStackTrace();
 				}
 			}
-			terminalSession.close();
+			// terminalSession.close();
 			runnerThread = null;
 		}
 
@@ -197,7 +206,47 @@ public interface ShellClient {
 		public ShellWriteSequence writeSequence() {
 			return ShellWriteSequence.of(DefaultShellClient.this.terminal);
 		}
+
+		BlockingQueue<ShellRunnerTaskData> blockingQueue = new LinkedBlockingDeque<>(10);
 	}
+
+
+
+	static record ShellRunnerTaskData(
+		ShellRunner runner,
+		ApplicationArguments args
+	) {}
+
+	static class ShellRunnerTask implements Runnable {
+
+		BlockingQueue<ShellRunnerTaskData> blockingQueue;
+
+		ShellRunnerTask(BlockingQueue<ShellRunnerTaskData> blockingQueue) {
+			this.blockingQueue = blockingQueue;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					ShellRunnerTaskData data = blockingQueue.take();
+					if (data.runner == null) {
+						return;
+					}
+					try {
+						data.runner().run(data.args());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+
+		}
+
+	}
+
 
 	static class InteractiveShellRunnerTask implements Runnable {
 
