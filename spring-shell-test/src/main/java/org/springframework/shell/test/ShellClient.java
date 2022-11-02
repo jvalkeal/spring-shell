@@ -15,11 +15,14 @@
  */
 package org.springframework.shell.test;
 
+import java.io.Closeable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -38,7 +41,7 @@ import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
  *
  * @author Janne Valkealahti
  */
-public interface ShellClient {
+public interface ShellClient extends Closeable {
 
 	/**
 	 * Run interactive shell session.
@@ -73,6 +76,7 @@ public interface ShellClient {
 	/**
 	 * Close and release resources for previously run shell or command session.
 	 */
+	@Override
 	void close();
 
 	/**
@@ -137,12 +141,15 @@ public interface ShellClient {
 
 	static class DefaultShellClient implements ShellClient {
 
+		private final static Logger log = LoggerFactory.getLogger(DefaultShellClient.class);
+
 		private TerminalSession terminalSession;
 		private Shell shell;
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
 		private Thread runnerThread;
 		private Terminal terminal;
+		// private boolean interactive = false;
 
 		DefaultShellClient(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
 				LineReader lineReader, Terminal terminal) {
@@ -157,9 +164,13 @@ public interface ShellClient {
 		public ShellClient runInterative() {
 			terminalSession.start();
 			if (runnerThread == null) {
-				runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
+				// runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
+				runnerThread = new Thread(new ShellRunnerTask(this.blockingQueue));
 				runnerThread.start();
 			}
+			ShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell, new DefaultShellContext());
+			ApplicationArguments argsx = new DefaultApplicationArguments();
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
 			return this;
 		}
 
@@ -190,6 +201,7 @@ public interface ShellClient {
 
 		@Override
 		public void close() {
+			// write(writeSequence().ctrl('c').build());
 			if (runnerThread != null) {
 				runnerThread.interrupt();
 				try {
@@ -198,7 +210,7 @@ public interface ShellClient {
 					e.printStackTrace();
 				}
 			}
-			// terminalSession.close();
+			terminalSession.close();
 			runnerThread = null;
 		}
 
@@ -219,6 +231,8 @@ public interface ShellClient {
 
 	static class ShellRunnerTask implements Runnable {
 
+		private final static Logger log = LoggerFactory.getLogger(ShellRunnerTask.class);
+
 		BlockingQueue<ShellRunnerTaskData> blockingQueue;
 
 		ShellRunnerTask(BlockingQueue<ShellRunnerTaskData> blockingQueue) {
@@ -234,7 +248,9 @@ public interface ShellClient {
 						return;
 					}
 					try {
+						log.info("Running {}", data.runner());
 						data.runner().run(data.args());
+						log.info("Running done {}", data.runner());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -248,47 +264,47 @@ public interface ShellClient {
 	}
 
 
-	static class InteractiveShellRunnerTask implements Runnable {
+	// static class InteractiveShellRunnerTask implements Runnable {
 
-		Shell shell;
-		PromptProvider promptProvider;
-		LineReader lineReader;
+	// 	Shell shell;
+	// 	PromptProvider promptProvider;
+	// 	LineReader lineReader;
 
-		public InteractiveShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
-			this.shell = shell;
-			this.promptProvider = promptProvider;
-			this.lineReader = lineReader;
-		}
+	// 	public InteractiveShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
+	// 		this.shell = shell;
+	// 		this.promptProvider = promptProvider;
+	// 		this.lineReader = lineReader;
+	// 	}
 
-		@Override
-		public void run() {
-			InteractiveShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell,
-					new DefaultShellContext());
-			try {
-				runner.run(new DefaultApplicationArguments());
-			} catch (Throwable e) {
-			}
-		}
+	// 	@Override
+	// 	public void run() {
+	// 		InteractiveShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell,
+	// 				new DefaultShellContext());
+	// 		try {
+	// 			runner.run(new DefaultApplicationArguments());
+	// 		} catch (Throwable e) {
+	// 		}
+	// 	}
 
-	}
+	// }
 
-	static class NonInteractiveShellRunnerTask implements Runnable {
+	// static class NonInteractiveShellRunnerTask implements Runnable {
 
-		private Shell shell;
-		private String[] args;
+	// 	private Shell shell;
+	// 	private String[] args;
 
-		public NonInteractiveShellRunnerTask(Shell shell, String[] args) {
-			this.shell = shell;
-			this.args = args;
-		}
+	// 	public NonInteractiveShellRunnerTask(Shell shell, String[] args) {
+	// 		this.shell = shell;
+	// 		this.args = args;
+	// 	}
 
-		@Override
-		public void run() {
-			NonInteractiveShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
-			try {
-				runner.run(new DefaultApplicationArguments(this.args));
-			} catch (Throwable e) {
-			}
-		}
-	}
+	// 	@Override
+	// 	public void run() {
+	// 		NonInteractiveShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
+	// 		try {
+	// 			runner.run(new DefaultApplicationArguments(this.args));
+	// 		} catch (Throwable e) {
+	// 		}
+	// 	}
+	// }
 }

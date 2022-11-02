@@ -81,7 +81,7 @@ public class ShellTestIntegrationTests {
 			ShellAssertions.assertThat(client1.screen()).containsText("xxx");
 		});
 
-		client1.close();
+		// client1.close();
 
 		// ShellClient client2 = builder.build();
 		// client2.runInterative();

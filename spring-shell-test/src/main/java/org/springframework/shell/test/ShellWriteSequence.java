@@ -99,6 +99,8 @@ public interface ShellWriteSequence {
 	 */
 	ShellWriteSequence space();
 
+	ShellWriteSequence ctrl(char c);
+
 	/**
 	 * Build the result.
 	 *
@@ -137,6 +139,13 @@ public interface ShellWriteSequence {
 			this.buf.append(ansiClearScreen);
 			// String ctrl = KeyMap.ctrl('L');
 			// this.buf.append(ctrl);
+			return this;
+		}
+
+		@Override
+		public ShellWriteSequence ctrl(char c) {
+			String ctrl = KeyMap.ctrl(c);
+			this.buf.append(ctrl);
 			return this;
 		}
 
