@@ -36,11 +36,10 @@ import static org.awaitility.Awaitility.await;
 public class ShellTestIntegrationTests {
 
 	@Autowired
-	ShellClient.Builder builder;
+	ShellClient client;
 
 	@Test
 	void testInteractive1() throws Exception {
-		ShellClient client = builder.build();
 		client.runInterative();
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
@@ -59,29 +58,33 @@ public class ShellTestIntegrationTests {
 			assertThat(lines).areExactly(3, prompt);
 		});
 
-		client.write(client.writeSequence().clearScreen().build());
+		// client.write(client.writeSequence().clearScreen().build());
+		client.write(client.writeSequence().ctrl('l').build());
 		await().atMost(4, TimeUnit.SECONDS).untilAsserted(() -> {
 			List<String> lines = client.screen().lines();
 			Condition<String> prompt = new Condition<>(line -> line.contains("shell:"), "prompt");
 			assertThat(lines).areExactly(1, prompt);
 		});
+
+		client.close();
+		client.screen();
+
 	}
 
 	@Test
 	void testInteractive2() throws Exception {
-		ShellClient client1 = builder.build();
-		client1.runInterative();
+		client.runInterative();
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client1.screen()).containsText("shell");
+			ShellAssertions.assertThat(client.screen()).containsText("shell");
 		});
 
-		client1.write(client1.writeSequence().text("xxx").build());
+		client.write(client.writeSequence().text("xxx").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client1.screen()).containsText("xxx");
+			ShellAssertions.assertThat(client.screen()).containsText("xxx");
 		});
 
-		// client1.close();
+		client.close();
 
 		// ShellClient client2 = builder.build();
 		// client2.runInterative();
@@ -89,12 +92,21 @@ public class ShellTestIntegrationTests {
 		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 		// 	ShellAssertions.assertThat(client2.screen()).containsText("xxx");
 		// });
+		client.screen();
 
 	}
 
-	@Test
+	// @Test
+	void testInteractive3() throws Exception {
+		// ShellClient client1 = builder.build();
+		client.runInterative();
+		client.close();
+		client.screen();
+	}
+
+	// @Test
 	void testNonInteractive() throws Exception {
-		ShellClient client = builder.build();
+		// ShellClient client = builder.build();
 
 		client.runNonInterative("help");
 

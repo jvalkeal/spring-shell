@@ -201,17 +201,18 @@ public interface ShellClient extends Closeable {
 
 		@Override
 		public void close() {
-			// write(writeSequence().ctrl('c').build());
-			if (runnerThread != null) {
-				runnerThread.interrupt();
-				try {
-					runnerThread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			terminalSession.close();
-			runnerThread = null;
+			write(writeSequence().ctrl('c').build());
+			// this.blockingQueue.add(new ShellRunnerTaskData(null, null));
+			// if (runnerThread != null) {
+			// 	runnerThread.interrupt();
+			// 	try {
+			// 		runnerThread.join();
+			// 	} catch (InterruptedException e) {
+			// 		e.printStackTrace();
+			// 	}
+			// }
+			// terminalSession.close();
+			// runnerThread = null;
 		}
 
 		@Override
@@ -241,7 +242,9 @@ public interface ShellClient extends Closeable {
 
 		@Override
 		public void run() {
+			log.info("ShellRunnerTask start");
 			try {
+				Thread.currentThread().setName("ShellRunnerTask");
 				while (true) {
 					ShellRunnerTaskData data = blockingQueue.take();
 					if (data.runner == null) {
@@ -258,7 +261,7 @@ public interface ShellClient extends Closeable {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-
+			log.info("ShellRunnerTask end");
 		}
 
 	}

@@ -34,11 +34,19 @@ import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
 @AutoConfiguration
 public class ShellClientAutoConfiguration {
 
+	// @Bean
+	// @Scope("prototype")
+	// @ConditionalOnMissingBean
+	// ShellClient.Builder shellClientBuilder(TerminalSession widget, Shell shell, PromptProvider promptProvider,
+	// 		LineReader lineReader, Terminal terminal) {
+	// 	return ShellClient.builder(widget, shell, promptProvider, lineReader, terminal);
+	// }
+
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	ShellClient.Builder shellClientBuilder(TerminalSession widget, Shell shell, PromptProvider promptProvider,
+	ShellClient shellClient(TerminalSession widget, Shell shell, PromptProvider promptProvider,
 			LineReader lineReader, Terminal terminal) {
-		return ShellClient.builder(widget, shell, promptProvider, lineReader, terminal);
+		return ShellClient.builder(widget, shell, promptProvider, lineReader, terminal).build();
 	}
 }
