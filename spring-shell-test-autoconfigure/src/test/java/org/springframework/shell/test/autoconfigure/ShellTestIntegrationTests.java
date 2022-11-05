@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
 import org.springframework.shell.test.ShellScreen;
+import org.springframework.shell.test.ShellClient.InteractiveShellSession;
+import org.springframework.shell.test.ShellClient.NonInteractiveShellSession;
 import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -40,87 +42,73 @@ public class ShellTestIntegrationTests {
 
 	@Test
 	void testInteractive1() throws Exception {
-		client.runInterative();
+		InteractiveShellSession session = client.interactive().run();
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("shell");
+			ShellAssertions.assertThat(session.screen()).containsText("shell");
 		});
 
-		client.write("help\n");
+		session.write("help\n");
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("AVAILABLE COMMANDS");
+			ShellAssertions.assertThat(session.screen()).containsText("AVAILABLE COMMANDS");
 		});
 
-		client.write(client.writeSequence().carriageReturn().build());
+		session.write(session.writeSequence().carriageReturn().build());
 		await().atMost(4, TimeUnit.SECONDS).untilAsserted(() -> {
-			List<String> lines = client.screen().lines();
+			List<String> lines = session.screen().lines();
 			Condition<String> prompt = new Condition<>(line -> line.contains("shell:"), "prompt");
 			assertThat(lines).areExactly(3, prompt);
 		});
 
-		// client.write(client.writeSequence().clearScreen().build());
-		client.write(client.writeSequence().ctrl('l').build());
+		session.write(session.writeSequence().ctrl('l').build());
 		await().atMost(4, TimeUnit.SECONDS).untilAsserted(() -> {
-			List<String> lines = client.screen().lines();
+			List<String> lines = session.screen().lines();
 			Condition<String> prompt = new Condition<>(line -> line.contains("shell:"), "prompt");
 			assertThat(lines).areExactly(1, prompt);
 		});
 
-		client.close();
-		client.screen();
+		session.abort();
+		ShellScreen screen1 = session.screen();
+		ShellScreen screen2 = session.screen();
 
 	}
 
 	@Test
 	void testInteractive2() throws Exception {
-		client.runInterative();
+		InteractiveShellSession session = client.interactive().run();
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("shell");
+			ShellAssertions.assertThat(session.screen()).containsText("shell");
 		});
 
-		client.write(client.writeSequence().text("xxx").build());
+		session.write(session.writeSequence().text("xxx").build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(client.screen()).containsText("xxx");
+			ShellAssertions.assertThat(session.screen()).containsText("xxx");
 		});
 
-		client.close();
-
-		// ShellClient client2 = builder.build();
-		// client2.runInterative();
-
-		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-		// 	ShellAssertions.assertThat(client2.screen()).containsText("xxx");
-		// });
-		client.screen();
-
-	}
-
-	// @Test
-	void testInteractive3() throws Exception {
-		// ShellClient client1 = builder.build();
-		client.runInterative();
-		client.close();
-		client.screen();
-	}
-
-	// @Test
-	void testNonInteractive() throws Exception {
-		// ShellClient client = builder.build();
-
-		client.runNonInterative("help");
-
+		session.abort();
 		ShellScreen screen1 = client.screen();
+		session.abort();
 		ShellScreen screen2 = client.screen();
+	}
 
-		client.write(client.writeSequence().clearScreen().build());
+	@Test
+	void testNonInteractive() throws Exception {
+		ShellScreen screen1 = client.screen();
+		NonInteractiveShellSession session1 = client.nonInterative("help").run();
 
-		// client.close();
-
-		client.runNonInterative("help help");
+		ShellScreen screen2 = client.screen();
 		ShellScreen screen3 = client.screen();
-		ShellScreen screen4 = client.screen();
 
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session1.screen()).containsText("AVAILABLE COMMANDS");
+		});
+
+		session1.write(session1.writeSequence().clearScreen().build());
+		NonInteractiveShellSession session2 = client.nonInterative("help help").run();
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session2.screen()).containsText("Display help about available commands");
+		});
 	}
 
 }
