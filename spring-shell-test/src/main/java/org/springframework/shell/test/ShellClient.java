@@ -24,6 +24,7 @@ import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
@@ -41,22 +42,22 @@ import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
  *
  * @author Janne Valkealahti
  */
-public interface ShellClient extends Closeable {
+public interface ShellClient extends DisposableBean {
 
 	/**
 	 * Run interactive shell session.
 	 *
-	 * @return client for chaining
+	 * @return session for chaining
 	 */
-	ShellClient runInterative();
+	InteractiveShellSession interactive();
 
 	/**
 	 * Run non-interactive command session.
 	 *
 	 * @param args the command arguments
-	 * @return client for chaining
+	 * @return session for chaining
 	 */
-	ShellClient runNonInterative(String... args);
+	NonInteractiveShellSession nonInterative(String... args);
 
 	/**
 	 * Read the screen.
@@ -66,25 +67,10 @@ public interface ShellClient extends Closeable {
 	ShellScreen screen();
 
 	/**
-	 * Write plain text into a shell.
-	 *
-	 * @param text the text
-	 * @return client for chaining
-	 */
-	ShellClient write(String text);
-
-	/**
 	 * Close and release resources for previously run shell or command session.
 	 */
-	@Override
-	void close();
-
-	/**
-	 * Get a write sequencer.
-	 *
-	 * @return a write sequencer
-	 */
-	ShellWriteSequence writeSequence();
+	// @Override
+	// void close();
 
 	/**
 	 * Get an instance of a builder.
@@ -112,6 +98,43 @@ public interface ShellClient extends Closeable {
 		 * @return a shell client
 		 */
 		ShellClient build();
+	}
+
+	interface BaseShellSession<T extends BaseShellSession<T>>  {
+
+		/**
+		 * Get a write sequencer.
+		 *
+		 * @return a write sequencer
+		 */
+		ShellWriteSequence writeSequence();
+
+		/**
+		 * Read the screen.
+		 *
+		 * @return the screen
+		 */
+		ShellScreen screen();
+
+		/**
+		 * Write plain text into a shell.
+		 *
+		 * @param text the text
+		 * @return client for chaining
+		 */
+		T write(String text);
+
+		T run();
+	}
+
+	interface InteractiveShellSession extends BaseShellSession<InteractiveShellSession> {
+
+		void abort();
+
+	}
+
+	interface NonInteractiveShellSession extends BaseShellSession<NonInteractiveShellSession> {
+
 	}
 
 	static class DefaultBuilder implements Builder {
@@ -161,36 +184,87 @@ public interface ShellClient extends Closeable {
 		}
 
 		@Override
-		public ShellClient runInterative() {
+		public InteractiveShellSession interactive() {
 			terminalSession.start();
 			if (runnerThread == null) {
-				// runnerThread = new Thread(new InteractiveShellRunnerTask(this.shell, this.promptProvider, this.lineReader));
 				runnerThread = new Thread(new ShellRunnerTask(this.blockingQueue));
 				runnerThread.start();
 			}
-			ShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell, new DefaultShellContext());
-			ApplicationArguments argsx = new DefaultApplicationArguments();
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
-			return this;
+			return new DefaultInteractiveShellSession(shell, promptProvider, lineReader, blockingQueue, terminalSession, terminal);
 		}
 
 		@Override
-		public ShellClient runNonInterative(String... args) {
+		public NonInteractiveShellSession nonInterative(String... args) {
 			terminalSession.start();
 			if (runnerThread == null) {
-				// runnerThread = new Thread(new NonInteractiveShellRunnerTask(this.shell, args));
 				runnerThread = new Thread(new ShellRunnerTask(this.blockingQueue));
 				runnerThread.start();
 			}
-			ShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
-			ApplicationArguments argsx = new DefaultApplicationArguments(args);
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
-			return this;
+			return new DefaultNonInteractiveShellSession(shell, args, blockingQueue, terminalSession, terminal);
 		}
 
 		@Override
-		public ShellClient write(String data) {
-			terminalSession.getTerminalStarter().sendString(data);
+		public ShellScreen screen() {
+			return ShellScreen.of(terminalSession.getTerminalTextBuffer().getScreen());
+		}
+
+		// @Override
+		// public void close() {
+		// 	// write(writeSequence().ctrl('c').build());
+
+		// 	// this.blockingQueue.add(new ShellRunnerTaskData(null, null));
+		// 	// if (runnerThread != null) {
+		// 	// 	runnerThread.interrupt();
+		// 	// 	try {
+		// 	// 		runnerThread.join();
+		// 	// 	} catch (InterruptedException e) {
+		// 	// 		e.printStackTrace();
+		// 	// 	}
+		// 	// }
+		// 	// terminalSession.close();
+		// 	// runnerThread = null;
+		// }
+
+		@Override
+		public void destroy() throws Exception {
+			log.info("closing");
+		}
+
+		// @Override
+		// public ShellWriteSequence writeSequence() {
+		// 	return ShellWriteSequence.of(DefaultShellClient.this.terminal);
+		// }
+
+		BlockingQueue<ShellRunnerTaskData> blockingQueue = new LinkedBlockingDeque<>(10);
+	}
+
+	static class DefaultInteractiveShellSession implements InteractiveShellSession {
+
+		private Shell shell;
+		private PromptProvider promptProvider;
+		private LineReader lineReader;
+		private BlockingQueue<ShellRunnerTaskData> blockingQueue;
+		private TerminalSession terminalSession;
+		private Terminal terminal;
+
+		public DefaultInteractiveShellSession(Shell shell, PromptProvider promptProvider, LineReader lineReader,
+				BlockingQueue<ShellRunnerTaskData> blockingQueue, TerminalSession terminalSession, Terminal terminal) {
+			this.shell = shell;
+			this.promptProvider = promptProvider;
+			this.lineReader = lineReader;
+			this.blockingQueue = blockingQueue;
+			this.terminalSession = terminalSession;
+			this.terminal = terminal;
+		}
+
+		@Override
+		public ShellWriteSequence writeSequence() {
+			return ShellWriteSequence.of(terminal);
+		}
+
+		@Override
+		public InteractiveShellSession write(String text) {
+			terminalSession.getTerminalStarter().sendString(text);
 			return this;
 		}
 
@@ -200,30 +274,62 @@ public interface ShellClient extends Closeable {
 		}
 
 		@Override
-		public void close() {
+		public void abort() {
 			write(writeSequence().ctrl('c').build());
-			// this.blockingQueue.add(new ShellRunnerTaskData(null, null));
-			// if (runnerThread != null) {
-			// 	runnerThread.interrupt();
-			// 	try {
-			// 		runnerThread.join();
-			// 	} catch (InterruptedException e) {
-			// 		e.printStackTrace();
-			// 	}
-			// }
-			// terminalSession.close();
-			// runnerThread = null;
+		}
+
+		@Override
+		public InteractiveShellSession run() {
+			ShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell, new DefaultShellContext());
+			ApplicationArguments argsx = new DefaultApplicationArguments();
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
+			return this;
+		}
+
+	}
+
+	static class DefaultNonInteractiveShellSession implements NonInteractiveShellSession {
+
+		private Shell shell;
+		private String[] args;
+		private BlockingQueue<ShellRunnerTaskData> blockingQueue;
+		private TerminalSession terminalSession;
+		private Terminal terminal;
+
+		public DefaultNonInteractiveShellSession(Shell shell, String[] args,
+				BlockingQueue<ShellRunnerTaskData> blockingQueue, TerminalSession terminalSession, Terminal terminal) {
+			this.shell = shell;
+			this.args = args;
+			this.blockingQueue = blockingQueue;
+			this.terminalSession = terminalSession;
+			this.terminal = terminal;
 		}
 
 		@Override
 		public ShellWriteSequence writeSequence() {
-			return ShellWriteSequence.of(DefaultShellClient.this.terminal);
+			return ShellWriteSequence.of(terminal);
 		}
 
-		BlockingQueue<ShellRunnerTaskData> blockingQueue = new LinkedBlockingDeque<>(10);
+		@Override
+		public NonInteractiveShellSession write(String text) {
+			terminalSession.getTerminalStarter().sendString(text);
+			return this;
+		}
+
+		@Override
+		public ShellScreen screen() {
+			return ShellScreen.of(terminalSession.getTerminalTextBuffer().getScreen());
+		}
+
+		@Override
+		public NonInteractiveShellSession run() {
+			ShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
+			ApplicationArguments argsx = new DefaultApplicationArguments(args);
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
+			return this;
+		}
+
 	}
-
-
 
 	static record ShellRunnerTaskData(
 		ShellRunner runner,
@@ -266,48 +372,4 @@ public interface ShellClient extends Closeable {
 
 	}
 
-
-	// static class InteractiveShellRunnerTask implements Runnable {
-
-	// 	Shell shell;
-	// 	PromptProvider promptProvider;
-	// 	LineReader lineReader;
-
-	// 	public InteractiveShellRunnerTask(Shell shell, PromptProvider promptProvider, LineReader lineReader) {
-	// 		this.shell = shell;
-	// 		this.promptProvider = promptProvider;
-	// 		this.lineReader = lineReader;
-	// 	}
-
-	// 	@Override
-	// 	public void run() {
-	// 		InteractiveShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell,
-	// 				new DefaultShellContext());
-	// 		try {
-	// 			runner.run(new DefaultApplicationArguments());
-	// 		} catch (Throwable e) {
-	// 		}
-	// 	}
-
-	// }
-
-	// static class NonInteractiveShellRunnerTask implements Runnable {
-
-	// 	private Shell shell;
-	// 	private String[] args;
-
-	// 	public NonInteractiveShellRunnerTask(Shell shell, String[] args) {
-	// 		this.shell = shell;
-	// 		this.args = args;
-	// 	}
-
-	// 	@Override
-	// 	public void run() {
-	// 		NonInteractiveShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
-	// 		try {
-	// 			runner.run(new DefaultApplicationArguments(this.args));
-	// 		} catch (Throwable e) {
-	// 		}
-	// 	}
-	// }
 }
