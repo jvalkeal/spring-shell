@@ -124,6 +124,11 @@ public interface ShellClient extends DisposableBean {
 		 */
 		T write(String text);
 
+		/**
+		 * Run a session.
+		 *
+		 * @return client for chaining
+		 */
 		T run();
 	}
 
@@ -134,7 +139,6 @@ public interface ShellClient extends DisposableBean {
 	}
 
 	interface NonInteractiveShellSession extends BaseShellSession<NonInteractiveShellSession> {
-
 	}
 
 	static class DefaultBuilder implements Builder {
@@ -165,14 +169,13 @@ public interface ShellClient extends DisposableBean {
 	static class DefaultShellClient implements ShellClient {
 
 		private final static Logger log = LoggerFactory.getLogger(DefaultShellClient.class);
-
 		private TerminalSession terminalSession;
 		private Shell shell;
 		private PromptProvider promptProvider;
 		private LineReader lineReader;
 		private Thread runnerThread;
 		private Terminal terminal;
-		// private boolean interactive = false;
+		private final BlockingQueue<ShellRunnerTaskData> blockingQueue = new LinkedBlockingDeque<>(10);
 
 		DefaultShellClient(TerminalSession terminalSession, Shell shell, PromptProvider promptProvider,
 				LineReader lineReader, Terminal terminal) {
@@ -229,13 +232,6 @@ public interface ShellClient extends DisposableBean {
 		public void destroy() throws Exception {
 			log.info("closing");
 		}
-
-		// @Override
-		// public ShellWriteSequence writeSequence() {
-		// 	return ShellWriteSequence.of(DefaultShellClient.this.terminal);
-		// }
-
-		BlockingQueue<ShellRunnerTaskData> blockingQueue = new LinkedBlockingDeque<>(10);
 	}
 
 	static class DefaultInteractiveShellSession implements InteractiveShellSession {
@@ -281,11 +277,10 @@ public interface ShellClient extends DisposableBean {
 		@Override
 		public InteractiveShellSession run() {
 			ShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell, new DefaultShellContext());
-			ApplicationArguments argsx = new DefaultApplicationArguments();
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
+			ApplicationArguments appArgs = new DefaultApplicationArguments();
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs));
 			return this;
 		}
-
 	}
 
 	static class DefaultNonInteractiveShellSession implements NonInteractiveShellSession {
@@ -324,11 +319,10 @@ public interface ShellClient extends DisposableBean {
 		@Override
 		public NonInteractiveShellSession run() {
 			ShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
-			ApplicationArguments argsx = new DefaultApplicationArguments(args);
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, argsx));
+			ApplicationArguments appArgs = new DefaultApplicationArguments(args);
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs));
 			return this;
 		}
-
 	}
 
 	static record ShellRunnerTaskData(
@@ -339,8 +333,7 @@ public interface ShellClient extends DisposableBean {
 	static class ShellRunnerTask implements Runnable {
 
 		private final static Logger log = LoggerFactory.getLogger(ShellRunnerTask.class);
-
-		BlockingQueue<ShellRunnerTaskData> blockingQueue;
+		private BlockingQueue<ShellRunnerTaskData> blockingQueue;
 
 		ShellRunnerTask(BlockingQueue<ShellRunnerTaskData> blockingQueue) {
 			this.blockingQueue = blockingQueue;
@@ -348,7 +341,7 @@ public interface ShellClient extends DisposableBean {
 
 		@Override
 		public void run() {
-			log.info("ShellRunnerTask start");
+			log.trace("ShellRunnerTask start");
 			try {
 				Thread.currentThread().setName("ShellRunnerTask");
 				while (true) {
@@ -357,19 +350,17 @@ public interface ShellClient extends DisposableBean {
 						return;
 					}
 					try {
-						log.info("Running {}", data.runner());
+						log.trace("Running {}", data.runner());
 						data.runner().run(data.args());
-						log.info("Running done {}", data.runner());
+						log.trace("Running done {}", data.runner());
 					} catch (Exception e) {
-						e.printStackTrace();
+						log.trace("ShellRunnerThread ex", e);
 					}
 				}
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-			log.info("ShellRunnerTask end");
+			log.trace("ShellRunnerTask end");
 		}
-
 	}
-
 }
