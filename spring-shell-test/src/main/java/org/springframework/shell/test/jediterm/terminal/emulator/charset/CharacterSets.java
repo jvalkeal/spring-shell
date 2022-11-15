@@ -19,6 +19,8 @@ import org.springframework.shell.test.jediterm.terminal.util.CharUtils;
 
 /**
  * Provides the (graphical) character sets.
+ *
+ * @author jediterm authors
  */
 public final class CharacterSets {
   private static final int C0_START = 0;

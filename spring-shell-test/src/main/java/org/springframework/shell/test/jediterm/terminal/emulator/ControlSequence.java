@@ -22,6 +22,9 @@ import org.springframework.shell.test.jediterm.terminal.TerminalDataStream;
 import org.springframework.shell.test.jediterm.terminal.util.CharUtils;
 import org.springframework.shell.test.jediterm.typeahead.Ascii;
 
+/**
+ * @author jediterm authors
+ */
 public class ControlSequence {
 	private int myArgc;
 

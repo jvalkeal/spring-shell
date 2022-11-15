@@ -22,8 +22,7 @@ import org.springframework.shell.test.jediterm.terminal.util.CharUtils;
 import org.springframework.shell.test.jediterm.terminal.util.Pair;
 
 /**
- *
- * @author traff
+ * @author jediterm authors
  */
 public class CharBuffer implements Iterable<Character>, CharSequence {
 

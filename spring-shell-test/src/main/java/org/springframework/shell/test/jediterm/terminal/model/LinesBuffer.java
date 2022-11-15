@@ -27,6 +27,8 @@ import java.util.List;
 
 /**
  * Holds styled characters lines
+ *
+ * @author jediterm authors
  */
 public class LinesBuffer {
 	private static final Logger LOG = LoggerFactory.getLogger(LinesBuffer.class);

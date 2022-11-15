@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.test.jediterm.terminal.util;
 
+/**
+ * @author jediterm authors
+ */
 public class Pair<A, B> {
 
 	public final A first;

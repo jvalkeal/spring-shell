@@ -16,7 +16,7 @@
 package org.springframework.shell.test.jediterm.terminal.ui;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public class UIUtil {
 	public static final String OS_NAME = System.getProperty("os.name");

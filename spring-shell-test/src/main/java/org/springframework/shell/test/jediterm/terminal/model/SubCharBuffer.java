@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.test.jediterm.terminal.model;
 
+/**
+ * @author jediterm authors
+ */
 public class SubCharBuffer extends CharBuffer {
   private final CharBuffer myParent;
   private final int myOffset;

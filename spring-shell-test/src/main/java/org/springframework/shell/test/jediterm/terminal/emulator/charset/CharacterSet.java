@@ -17,6 +17,8 @@ package org.springframework.shell.test.jediterm.terminal.emulator.charset;
 
 /**
  * Provides an enum with names for the supported character sets.
+ *
+ * @author jediterm authors
  */
 public enum CharacterSet
 {

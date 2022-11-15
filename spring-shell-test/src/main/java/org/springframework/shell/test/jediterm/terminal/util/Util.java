@@ -19,6 +19,10 @@ import java.lang.reflect.Array;
 import java.util.BitSet;
 
 // In Java 5, the java.util.Arrays class has no copyOf() members...
+
+/**
+ * @author jediterm authors
+ */
 public class Util {
   @SuppressWarnings("unchecked")
   public static <T> T[] copyOf(T[] original, int newLength) {

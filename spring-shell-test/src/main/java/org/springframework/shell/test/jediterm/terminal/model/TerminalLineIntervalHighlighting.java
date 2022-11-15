@@ -17,6 +17,9 @@ package org.springframework.shell.test.jediterm.terminal.model;
 
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
+/**
+ * @author jediterm authors
+ */
 public abstract class TerminalLineIntervalHighlighting {
   private final TerminalLine myLine;
   private final int myStartOffset;

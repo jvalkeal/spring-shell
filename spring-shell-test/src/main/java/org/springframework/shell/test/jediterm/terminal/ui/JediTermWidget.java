@@ -31,6 +31,9 @@ import org.springframework.shell.test.jediterm.terminal.model.LinesBuffer;
 import org.springframework.shell.test.jediterm.terminal.model.StyleState;
 import org.springframework.shell.test.jediterm.terminal.model.TerminalTextBuffer;
 
+/**
+ * @author jediterm authors
+ */
 public class JediTermWidget implements TerminalSession, TerminalWidget {
 
 	private static final Logger log = LoggerFactory.getLogger(JediTermWidget.class);

@@ -22,7 +22,7 @@ import org.springframework.shell.test.jediterm.terminal.model.CharBuffer;
 import org.springframework.shell.test.jediterm.typeahead.Ascii;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public class CharUtils {
 	private static final int ESC = Ascii.ESC;

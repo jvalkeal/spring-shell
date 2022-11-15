@@ -18,6 +18,8 @@ package org.springframework.shell.test.jediterm.terminal.model;
 
 /**
  * Provides a tabulator that keeps track of the tab stops of a terminal.
+ *
+ * @author jediterm authors
  */
 public interface Tabulator
 {

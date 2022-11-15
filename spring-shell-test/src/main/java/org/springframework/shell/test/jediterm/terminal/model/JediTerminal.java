@@ -44,7 +44,7 @@ import org.springframework.shell.test.jediterm.terminal.util.CharUtils;
  * Terminal that reflects obtained commands and text at {@link TerminalDisplay}(handles change of cursor position, screen size etc)
  * and  {@link TerminalTextBuffer}(stores printed text)
  *
- * @author traff
+ * @author jediterm authors
  */
 public class JediTerminal implements Terminal, TerminalCoordinates {
 

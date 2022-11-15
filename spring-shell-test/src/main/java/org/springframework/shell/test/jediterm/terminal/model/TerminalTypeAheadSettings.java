@@ -19,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
+/**
+ * @author jediterm authors
+ */
 public final class TerminalTypeAheadSettings {
 
   public static final TerminalTypeAheadSettings DEFAULT = new TerminalTypeAheadSettings(

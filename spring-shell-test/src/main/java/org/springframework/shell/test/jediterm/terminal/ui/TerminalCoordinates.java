@@ -16,7 +16,7 @@
 package org.springframework.shell.test.jediterm.terminal.ui;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public interface TerminalCoordinates {
 	int getX();

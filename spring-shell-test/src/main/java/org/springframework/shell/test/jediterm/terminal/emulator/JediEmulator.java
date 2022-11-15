@@ -40,9 +40,8 @@ import org.springframework.shell.test.jediterm.typeahead.Ascii;
  * Obtains data from the  {@link org.springframework.shell.test.jediterm.terminal.TerminalDataStream}, interprets terminal ANSI escape sequences as commands and directs them
  * as well as plain data characters to the  {@link org.springframework.shell.test.jediterm.terminal.Terminal}
  *
- * @author traff
+ * @author jediterm authors
  */
-
 public class JediEmulator extends DataStreamIteratingEmulator {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JediEmulator.class);

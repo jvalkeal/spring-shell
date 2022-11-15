@@ -19,6 +19,9 @@ import org.springframework.shell.test.jediterm.terminal.TextStyle;
 import org.springframework.shell.test.jediterm.terminal.emulator.charset.CharacterSet;
 import org.springframework.shell.test.jediterm.terminal.emulator.charset.GraphicSetState;
 
+/**
+ * @author jediterm authors
+ */
 public class StoredCursor {
 
   //Cursor position

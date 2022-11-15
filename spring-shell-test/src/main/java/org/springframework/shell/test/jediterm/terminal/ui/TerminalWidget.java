@@ -19,7 +19,7 @@ import org.springframework.shell.test.jediterm.terminal.TerminalDisplay;
 import org.springframework.shell.test.jediterm.terminal.TtyConnector;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public interface TerminalWidget {
 

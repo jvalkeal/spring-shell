@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public final class TerminalLine {
   private static final Logger LOG = LoggerFactory.getLogger(TerminalLine.class);

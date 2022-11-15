@@ -17,6 +17,9 @@ package org.springframework.shell.test.jediterm.terminal.model;
 
 import org.springframework.shell.test.jediterm.terminal.TextStyle;
 
+/**
+ * @author jediterm authors
+ */
 public class StyleState {
   private TextStyle myCurrentStyle = TextStyle.EMPTY;
   private TextStyle myDefaultStyle = TextStyle.EMPTY;

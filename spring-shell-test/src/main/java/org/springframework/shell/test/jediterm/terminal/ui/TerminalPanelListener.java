@@ -17,6 +17,9 @@ package org.springframework.shell.test.jediterm.terminal.ui;
 
 import org.springframework.shell.test.jediterm.terminal.RequestOrigin;
 
+/**
+ * @author jediterm authors
+ */
 public interface TerminalPanelListener {
 	void onPanelResize(RequestOrigin origin);
 

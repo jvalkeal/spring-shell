@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.test.jediterm.terminal.ui;
 
+/**
+ * @author jediterm authors
+ */
 final class LineCellInterval {
 	private final int myLine;
 	private final int myStartColumn;

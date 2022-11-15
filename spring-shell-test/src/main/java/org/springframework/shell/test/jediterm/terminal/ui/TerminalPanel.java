@@ -25,6 +25,9 @@ import org.springframework.shell.test.jediterm.terminal.model.StyleState;
 import org.springframework.shell.test.jediterm.terminal.model.TerminalLine;
 import org.springframework.shell.test.jediterm.terminal.model.TerminalTextBuffer;
 
+/**
+ * @author jediterm authors
+ */
 public class TerminalPanel implements TerminalDisplay {
 
 	public static final double SCROLL_SPEED = 0.05;

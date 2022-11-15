@@ -21,7 +21,7 @@ import org.springframework.shell.test.jediterm.terminal.TtyConnector;
 import org.springframework.shell.test.jediterm.terminal.model.TerminalTextBuffer;
 
 /**
- * @author traff
+ * @author jediterm authors
  */
 public interface TerminalSession {
 

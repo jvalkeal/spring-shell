@@ -15,7 +15,9 @@
  */
 package org.springframework.shell.test.jediterm.terminal.emulator.charset;
 
-
+/**
+ * @author jediterm authors
+ */
 public class GraphicSetState {
   private final GraphicSet[] myGraphicSets;
 

@@ -17,6 +17,8 @@ package org.springframework.shell.test.jediterm.terminal.emulator.charset;
 
 /**
  * Denotes how a graphic set is designated.
+ *
+ * @author jediterm authors
  */
 public class GraphicSet
 {
