@@ -15,9 +15,9 @@
  */
 package org.springframework.shell.test;
 
-import java.io.Closeable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
@@ -130,12 +130,11 @@ public interface ShellClient extends DisposableBean {
 		 * @return client for chaining
 		 */
 		T run();
+
+		boolean isComplete();
 	}
 
 	interface InteractiveShellSession extends BaseShellSession<InteractiveShellSession> {
-
-		void abort();
-
 	}
 
 	interface NonInteractiveShellSession extends BaseShellSession<NonInteractiveShellSession> {
@@ -160,9 +159,7 @@ public interface ShellClient extends DisposableBean {
 
 		@Override
 		public ShellClient build() {
-			DefaultShellClient client = new DefaultShellClient(this.terminalSession, this.shell, this.promptProvider,
-					this.lineReader, this.terminal);
-			return client;
+			return new DefaultShellClient(terminalSession, shell, promptProvider, lineReader, terminal);
 		}
 	}
 
@@ -242,6 +239,7 @@ public interface ShellClient extends DisposableBean {
 		private BlockingQueue<ShellRunnerTaskData> blockingQueue;
 		private TerminalSession terminalSession;
 		private Terminal terminal;
+		private final AtomicInteger state = new AtomicInteger(-2);
 
 		public DefaultInteractiveShellSession(Shell shell, PromptProvider promptProvider, LineReader lineReader,
 				BlockingQueue<ShellRunnerTaskData> blockingQueue, TerminalSession terminalSession, Terminal terminal) {
@@ -270,16 +268,16 @@ public interface ShellClient extends DisposableBean {
 		}
 
 		@Override
-		public void abort() {
-			write(writeSequence().ctrl('c').build());
-		}
-
-		@Override
 		public InteractiveShellSession run() {
 			ShellRunner runner = new InteractiveShellRunner(lineReader, promptProvider, shell, new DefaultShellContext());
 			ApplicationArguments appArgs = new DefaultApplicationArguments();
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs));
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs, state));
 			return this;
+		}
+
+		@Override
+		public boolean isComplete() {
+			return state.get() == 0;
 		}
 	}
 
@@ -290,6 +288,7 @@ public interface ShellClient extends DisposableBean {
 		private BlockingQueue<ShellRunnerTaskData> blockingQueue;
 		private TerminalSession terminalSession;
 		private Terminal terminal;
+		private final AtomicInteger state = new AtomicInteger(-2);
 
 		public DefaultNonInteractiveShellSession(Shell shell, String[] args,
 				BlockingQueue<ShellRunnerTaskData> blockingQueue, TerminalSession terminalSession, Terminal terminal) {
@@ -320,14 +319,20 @@ public interface ShellClient extends DisposableBean {
 		public NonInteractiveShellSession run() {
 			ShellRunner runner = new NonInteractiveShellRunner(shell, new DefaultShellContext());
 			ApplicationArguments appArgs = new DefaultApplicationArguments(args);
-			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs));
+			this.blockingQueue.add(new ShellRunnerTaskData(runner, appArgs, state));
 			return this;
+		}
+
+		@Override
+		public boolean isComplete() {
+			return state.get() >= 0;
 		}
 	}
 
 	static record ShellRunnerTaskData(
 		ShellRunner runner,
-		ApplicationArguments args
+		ApplicationArguments args,
+		AtomicInteger state
 	) {}
 
 	static class ShellRunnerTask implements Runnable {
@@ -351,9 +356,12 @@ public interface ShellClient extends DisposableBean {
 					}
 					try {
 						log.trace("Running {}", data.runner());
+						data.state().set(-1);
 						data.runner().run(data.args());
+						data.state().set(0);
 						log.trace("Running done {}", data.runner());
 					} catch (Exception e) {
+						data.state().set(1);
 						log.trace("ShellRunnerThread ex", e);
 					}
 				}

@@ -380,9 +380,8 @@ public enum CharacterSet
   /**
    * Creates a new {@link CharacterSet} instance.
    *
-   * @param designations
-   *          the characters that designate this character set, cannot be
-   *          <code>null</code>.
+   * @param designations the characters that designate this character set, cannot
+   *                     be {@code null}.
    */
   CharacterSet(int... designations)
   {
@@ -394,10 +393,9 @@ public enum CharacterSet
   /**
    * Returns the {@link CharacterSet} for the given character.
    *
-   * @param designation
-   *          the character to translate to a {@link CharacterSet}.
-   * @return a character set name corresponding to the given character,
-   *         defaulting to ASCII if no mapping could be made.
+   * @param designation the character to translate to a {@link CharacterSet}.
+   * @return a character set name corresponding to the given character, defaulting
+   *         to ASCII if no mapping could be made.
    */
   public static CharacterSet valueOf( char designation )
   {
@@ -415,8 +413,7 @@ public enum CharacterSet
    * Maps the character with the given index to a character in this character
    * set.
    *
-   * @param index
-   *          the index of the character set, >= 0 && < 128.
+   * @param index the index of the character set, {@literal >= 0 && < 128}.
    * @return a mapped character, or -1 if no mapping could be made and the
    *         ASCII value should be used.
    */
@@ -426,10 +423,9 @@ public enum CharacterSet
    * Returns whether or not the given designation character belongs to this
    * character set's set of designations.
    *
-   * @param designation
-   *          the designation to test for.
-   * @return <code>true</code> if the given designation character maps to this
-   *         character set, <code>false</code> otherwise.
+   * @param designation the designation to test for.
+   * @return {@code true} if the given designation character maps to this
+   *         character set, {@code true} otherwise.
    */
   private boolean isDesignation( char designation )
   {

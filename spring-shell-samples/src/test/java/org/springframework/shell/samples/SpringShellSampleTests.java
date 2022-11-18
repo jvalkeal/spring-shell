@@ -24,101 +24,95 @@ import org.springframework.context.annotation.Import;
 import org.springframework.shell.samples.standard.ResolvedCommands;
 import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
+import org.springframework.shell.test.ShellClient.InteractiveShellSession;
+import org.springframework.shell.test.ShellClient.NonInteractiveShellSession;
 import org.springframework.shell.test.autoconfigure.ShellTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-// @ShellTest
-// @Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
-// @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ShellTest
+@Import(ResolvedCommands.ResolvedCommandsConfiguration.class)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class SpringShellSampleTests {
 
-	// @Autowired
-	// ShellClient client;
+	@Autowired
+	ShellClient client;
 
-	// @Test
-	// void componentSingleInteractive() {
-	// 	client.runInterative();
+	@Test
+	void componentSingleInteractive() {
+		InteractiveShellSession session = client.interactive().run();
 
-	// 	client.write(client.writeSequence().command("component single").build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ key1");
-	// 	});
+		session.write(session.writeSequence().command("component single").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key1");
+		});
 
-	// 	client.write(client.writeSequence().keyDown().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ key2");
-	// 	});
+		session.write(session.writeSequence().keyDown().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client.screen()).containsText("❯ key2");
+		});
 
-	// 	client.write(client.writeSequence().cr().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
-	// 	});
+		session.write(session.writeSequence().cr().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
+		});
+	}
 
-	// 	client.close();
-	// }
+	@Test
+	void componentSingleNonInteractive() {
+		NonInteractiveShellSession session = client.nonInterative("component single").run();
 
-	// @Test
-	// void componentSingleNonInteractive() {
-	// 	client.runNonInterative("component single");
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("❯ key1");
+		});
 
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ key1");
-	// 	});
+		session.write(session.writeSequence().keyDown().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("❯ key2");
+		});
 
-	// 	client.write(client.writeSequence().keyDown().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ key2");
-	// 	});
+		session.write(session.writeSequence().cr().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("Got value value2");
+		});
+	}
 
-	// 	client.write(client.writeSequence().cr().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("Got value value2");
-	// 	});
+	@Test
+	void componentMulti() {
+		InteractiveShellSession session = client.interactive().run();
 
-	// 	client.close();
-	// }
+		session.write(session.writeSequence().command("component multi").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("❯ ☐  key1");
+		});
 
-	// @Test
-	// void componentMulti() {
-	// 	ShellClient client = builder.build();
-	// 	client.shell();
+		session.write(session.writeSequence().space().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("❯ ☒  key1");
+		});
 
-	// 	client.write(client.writeSequence().command("component multi").build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ ☐  key1");
-	// 	});
+		session.write(session.writeSequence().cr().build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("Got value value1,value2");
+		});
+	}
 
-	// 	client.write(client.writeSequence().space().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("❯ ☒  key1");
-	// 	});
+	@Test
+	void componentPathSearch() {
+		InteractiveShellSession session = client.interactive().run();
 
-	// 	client.write(client.writeSequence().cr().build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("Got value value1,value2");
-	// 	});
-	// }
+		session.write(session.writeSequence().command("component path search").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("<path> <pattern>");
+			assertThat(client.screen()).asInstanceOf(ShellAssertions.SHELLSCREEN).containsText("<path> <pattern>");
+		});
 
-	// @Test
-	// void componentPathSearch() {
-	// 	ShellClient client = builder.build();
-	// 	client.shell();
-
-	// 	client.write(client.writeSequence().command("component path search").build());
-	// 	await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 		ShellAssertions.assertThat(client.screen()).containsText("<path> <pattern>");
-	// 		assertThat(client.screen()).asInstanceOf(ShellAssertions.SHELLSCREEN).containsText("<path> <pattern>");
-
-	// 	});
-
-	// 	// client.write(client.writeSequence().text(". src").build());
-	// 	// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-	// 	// 	assertThat(client.screen()).contains("src");
-	// 	// });
-	// }
+		session.write(session.writeSequence().text(". src").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("main");
+		});
+	}
 }

@@ -278,7 +278,7 @@ public class TerminalTextBuffer {
 	 * Returns terminal lines. Negative indexes are for history buffer. Non-negative for screen buffer.
 	 *
 	 * @param index index of line
-	 * @return history lines for index<0, screen line for index>=0
+	 * @return history lines for {@literal index<0}, screen line for index>=0
 	 */
 	public TerminalLine getLine(int index) {
 		if (index >= 0) {

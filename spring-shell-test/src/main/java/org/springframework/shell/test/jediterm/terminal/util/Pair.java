@@ -35,12 +35,8 @@ public class Pair<A, B> {
 		return pair != null ? pair.second : null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static final Pair EMPTY = create(null, null);
-
-	@SuppressWarnings("unchecked")
 	public static <A, B> Pair<A, B> empty() {
-		return EMPTY;
+		return create(null, null);
 	}
 
 	public Pair(A first, B second) {
@@ -61,7 +57,7 @@ public class Pair<A, B> {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		Pair pair = (Pair)o;
+		Pair<?, ?> pair = (Pair<?, ?>)o;
 
 		if (first != null ? !first.equals(pair.first) : pair.first != null) return false;
 		if (second != null ? !second.equals(pair.second) : pair.second != null) return false;

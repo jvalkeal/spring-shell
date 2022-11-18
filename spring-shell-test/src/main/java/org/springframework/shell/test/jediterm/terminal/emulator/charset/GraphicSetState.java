@@ -97,7 +97,7 @@ public class GraphicSetState {
   /**
    * Overrides the GL graphic set for the next written character.
    *
-   * @param index the graphic set index, >= 0 && < 3.
+   * @param index the graphic set index, {@literal >= 0 && < 3}.
    */
   public void overrideGL(int index) {
     myGlOverride = getGraphicSet(index);
@@ -118,7 +118,7 @@ public class GraphicSetState {
   /**
    * Selects the graphic set for GL.
    *
-   * @param index the graphic set index, >= 0 && <= 3.
+   * @param index the graphic set index, {@literal >= 0 && <= 3}.
    */
   public void setGL(int index) {
     myGL = getGraphicSet(index);
@@ -127,7 +127,7 @@ public class GraphicSetState {
   /**
    * Selects the graphic set for GR.
    *
-   * @param index the graphic set index, >= 0 && <= 3.
+   * @param index the graphic set index, {@literal >= 0 && <= 3}.
    */
   public void setGR(int index) {
     myGR = getGraphicSet(index);
