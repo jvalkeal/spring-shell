@@ -50,9 +50,6 @@ public class JediTerminal implements Terminal, TerminalCoordinates {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JediTerminal.class.getName());
 
-	private static final int MIN_WIDTH = 5;
-	private static final int MIN_HEIGHT = 2;
-
 	private int myScrollRegionTop;
 	private int myScrollRegionBottom;
 	volatile private int myCursorX = 0;

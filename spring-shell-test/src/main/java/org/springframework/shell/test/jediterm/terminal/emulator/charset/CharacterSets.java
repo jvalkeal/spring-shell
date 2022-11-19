@@ -29,8 +29,6 @@ public final class CharacterSets {
   private static final int C1_END = 159;
   private static final int GL_START = 32;
   private static final int GL_END = 127;
-  private static final int GR_START = 160;
-  private static final int GR_END = 255;
 
   public static final String[] ASCII_NAMES = {"<nul>", "<soh>", "<stx>", "<etx>", "<eot>", "<enq>", "<ack>", "<bell>",
     "\b", "\t", "\n", "<vt>", "<ff>", "\r", "<so>", "<si>", "<dle>", "<dc1>", "<dc2>", "<dc3>", "<dc4>", "<nak>",

@@ -65,7 +65,7 @@ public class TerminalTextBuffer {
 
 	private LinesBuffer myScreenBufferBackup; // to store textBuffer after switching to alternate buffer
 
-	private boolean myAlternateBuffer = false;
+	// private boolean myAlternateBuffer = false;
 
 	private boolean myUsingAlternateBuffer = false;
 
@@ -376,7 +376,7 @@ public class TerminalTextBuffer {
 	}
 
 	public void useAlternateBuffer(boolean enabled) {
-		myAlternateBuffer = enabled;
+		// myAlternateBuffer = enabled;
 		if (enabled) {
 			if (!myUsingAlternateBuffer) {
 				myScreenBufferBackup = myScreenBuffer;

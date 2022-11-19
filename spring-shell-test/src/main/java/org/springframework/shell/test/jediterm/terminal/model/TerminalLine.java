@@ -370,19 +370,19 @@ public final class TerminalLine {
     myTextEntries.add(entry);
   }
 
-  @SuppressWarnings("unused") // used by IntelliJ
-  public synchronized  TerminalLineIntervalHighlighting addCustomHighlighting(int startOffset, int length,  TextStyle textStyle) {
-    TerminalLineIntervalHighlighting highlighting = new TerminalLineIntervalHighlighting(this, startOffset, length, textStyle) {
-      @Override
-      protected void doDispose() {
-        synchronized (TerminalLine.this) {
-          myCustomHighlightings.remove(this);
-        }
-      }
-    };
-    myCustomHighlightings.add(highlighting);
-    return highlighting;
-  }
+  // @SuppressWarnings("unused") // used by IntelliJ
+  // public synchronized  TerminalLineIntervalHighlighting addCustomHighlighting(int startOffset, int length,  TextStyle textStyle) {
+  //   TerminalLineIntervalHighlighting highlighting = new TerminalLineIntervalHighlighting(this, startOffset, length, textStyle) {
+  //     @Override
+  //     protected void doDispose() {
+  //       synchronized (TerminalLine.this) {
+  //         myCustomHighlightings.remove(this);
+  //       }
+  //     }
+  //   };
+  //   myCustomHighlightings.add(highlighting);
+  //   return highlighting;
+  // }
 
   @Override
   public String toString() {

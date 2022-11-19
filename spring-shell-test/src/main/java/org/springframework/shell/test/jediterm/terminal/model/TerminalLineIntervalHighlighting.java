@@ -24,10 +24,9 @@ public abstract class TerminalLineIntervalHighlighting {
   private final TerminalLine myLine;
   private final int myStartOffset;
   private final int myEndOffset;
-  private final TextStyle myStyle;
   private boolean myDisposed = false;
 
-  TerminalLineIntervalHighlighting( TerminalLine line, int startOffset, int length,  TextStyle style) {
+  TerminalLineIntervalHighlighting( TerminalLine line, int startOffset, int length) {
     if (startOffset < 0) {
       throw new IllegalArgumentException("Negative startOffset: " + startOffset);
     }
@@ -37,7 +36,6 @@ public abstract class TerminalLineIntervalHighlighting {
     myLine = line;
     myStartOffset = startOffset;
     myEndOffset = startOffset + length;
-    myStyle = style;
   }
 
   public  TerminalLine getLine() {
