@@ -108,7 +108,7 @@ public class ShellTestIntegrationTests {
 		});
 
 		session.write(session.writeSequence().clearScreen().build());
-		NonInteractiveShellSession session2 = client.nonInterative("help help").run();
+		NonInteractiveShellSession session2 = client.nonInterative("help", "help").run();
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			List<String> lines = session2.screen().lines();
 			assertThat(lines).areNot(helpCondition);
