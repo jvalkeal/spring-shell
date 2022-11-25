@@ -87,7 +87,7 @@ jobs:
           name: spring-shell-samples-${{ matrix.nickname }}
           path: spring-shell-samples/build
       - name: fix artifacts
-        if: runner.os == 'Windows'
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           chmod +x spring-shell-samples/build/native/nativeCompile/spring-shell-samples
