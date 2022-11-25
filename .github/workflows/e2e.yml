@@ -16,14 +16,14 @@ jobs:
             os: windows-2022
             graal: 22.3.0
             musl: false
-          - nickname: macos
-            os: macos-12
-            graal: 22.3.0
-            musl: false
-          - nickname: linux
-            os: ubuntu-22.04
-            graal: 22.3.0
-            musl: true
+          # - nickname: macos
+          #   os: macos-12
+          #   graal: 22.3.0
+          #   musl: false
+          # - nickname: linux
+          #   os: ubuntu-22.04
+          #   graal: 22.3.0
+          #   musl: true
     name: Compile ${{ matrix.nickname }}
     steps:
       - uses: actions/checkout@v2
@@ -58,14 +58,14 @@ jobs:
             nickname: win
           - os: windows-2019
             nickname: win
-          - os: macos-12
-            nickname: macos
-          - os: macos-11
-            nickname: macos
-          - os: ubuntu-22.04
-            nickname: linux
-          - os: ubuntu-20.04
-            nickname: linux
+          # - os: macos-12
+          #   nickname: macos
+          # - os: macos-11
+          #   nickname: macos
+          # - os: ubuntu-22.04
+          #   nickname: linux
+          # - os: ubuntu-20.04
+          #   nickname: linux
     name: E2E ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2

@@ -31,7 +31,7 @@ describe('flow commands', () => {
     await waitForExpect(async () => {
       const screen = cli.screen();
       expect(screen).toEqual(expect.arrayContaining([expect.stringContaining('Single1')]));
-    }, 60000);
+    });
 
     await cli.keyDown();
     await waitForExpect(async () => {
