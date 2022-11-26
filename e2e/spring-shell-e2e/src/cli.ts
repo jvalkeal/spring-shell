@@ -33,6 +33,7 @@ export class Cli {
 
   public run(): void {
     this.term = new Terminal({
+      allowProposedApi: true,
       cols: this.cols,
       rows: this.rows
     });
