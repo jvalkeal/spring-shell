@@ -86,7 +86,7 @@ public class ShellTestIntegrationTests {
 		});
 
 		session.write(session.writeSequence().ctrl('c').ctrl('c').build());
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.isComplete()).isTrue();
 		});
 	}
@@ -101,7 +101,7 @@ public class ShellTestIntegrationTests {
 
 		NonInteractiveShellSession session = client.nonInterative("help").run();
 
-		await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> {
+		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			List<String> lines = session.screen().lines();
 			assertThat(lines).areExactly(1, helpCondition);
 			assertThat(lines).areNot(helpHelpCondition);
