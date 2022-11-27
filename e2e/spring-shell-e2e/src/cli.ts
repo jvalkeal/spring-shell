@@ -44,7 +44,7 @@ export class Cli {
       name: 'xterm-256color',
       cols: this.cols,
       rows: this.rows,
-      useConpty: true
+      useConpty: false
     });
     this.pty.onData(data => {
       this.term?.write(data);
