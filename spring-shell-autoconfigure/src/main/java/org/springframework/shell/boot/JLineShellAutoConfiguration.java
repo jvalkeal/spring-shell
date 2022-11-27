@@ -41,6 +41,7 @@ import org.springframework.shell.jline.PromptProvider;
 public class JLineShellAutoConfiguration {
 
 	@Bean(destroyMethod = "close")
+	@ConditionalOnMissingBean(Terminal.class)
 	public Terminal terminal() {
 		try {
 			return TerminalBuilder.builder().build();
