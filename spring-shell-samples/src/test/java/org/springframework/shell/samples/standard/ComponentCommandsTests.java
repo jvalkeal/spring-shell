@@ -70,17 +70,19 @@ public class ComponentCommandsTests extends AbstractSampleTests {
 
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
-				assertThat(line).containsPattern("[>❯] .  key1");
+				assertThat(line).containsPattern("[>❯] (☐|\\[ \\])  key1");
 			});
 			// ShellAssertions.assertThat(session.screen()).containsText("❯ ☐  key1");
+			// ShellAssertions.assertThat(session.screen()).containsText("> [ ]  key1");
 		});
 
 		session.write(session.writeSequence().space().build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
-				assertThat(line).containsPattern("[>❯] .  key1");
+				assertThat(line).containsPattern("[>❯] (☒|\\[x\\])  key1");
 			});
 			// ShellAssertions.assertThat(session.screen()).containsText("❯ ☒  key1");
+			// ShellAssertions.assertThat(session.screen()).containsText("> [x]  key1");
 		});
 
 		session.write(session.writeSequence().cr().build());
