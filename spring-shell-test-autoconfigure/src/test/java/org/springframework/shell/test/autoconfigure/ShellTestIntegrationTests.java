@@ -28,6 +28,8 @@ import org.springframework.shell.test.ShellScreenAssert;
 import org.springframework.shell.test.ShellClient.InteractiveShellSession;
 import org.springframework.shell.test.ShellClient.NonInteractiveShellSession;
 import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +37,7 @@ import static org.awaitility.Awaitility.await;
 
 @ShellTest
 @ContextConfiguration(classes = ExampleShellApplication.class)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ShellTestIntegrationTests {
 
 	@Autowired
