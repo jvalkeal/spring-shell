@@ -84,12 +84,12 @@ public class ShellTestIntegrationTests {
 			ShellAssertions.assertThat(session.screen()).containsText("shell:");
 		});
 
-		session.write(session.writeSequence().text("xxx").build());
-		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-			ShellAssertions.assertThat(session.screen()).containsText("xxx");
-		});
+		// session.write(session.writeSequence().text("xxx").build());
+		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+		// 	ShellAssertions.assertThat(session.screen()).containsText("xxx");
+		// });
 
-		session.write(session.writeSequence().ctrl('u').build());
+		// session.write(session.writeSequence().ctrl('u').build());
 		session.write(session.writeSequence().ctrl('c').build());
 		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.isComplete()).isTrue();
