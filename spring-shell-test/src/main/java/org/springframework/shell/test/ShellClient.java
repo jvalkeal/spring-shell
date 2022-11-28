@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.test;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,7 +26,6 @@ import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.shell.Shell;
@@ -42,7 +43,7 @@ import org.springframework.shell.test.jediterm.terminal.ui.TerminalSession;
  *
  * @author Janne Valkealahti
  */
-public interface ShellClient extends DisposableBean {
+public interface ShellClient extends Closeable {
 
 	/**
 	 * Run interactive shell session.
@@ -65,12 +66,6 @@ public interface ShellClient extends DisposableBean {
 	 * @return the screen
 	 */
 	ShellScreen screen();
-
-	/**
-	 * Close and release resources for previously run shell or command session.
-	 */
-	// @Override
-	// void close();
 
 	/**
 	 * Get an instance of a builder.
@@ -208,26 +203,13 @@ public interface ShellClient extends DisposableBean {
 			return ShellScreen.of(terminalSession.getTerminalTextBuffer().getScreen());
 		}
 
-		// @Override
-		// public void close() {
-		// 	// write(writeSequence().ctrl('c').build());
-
-		// 	// this.blockingQueue.add(new ShellRunnerTaskData(null, null));
-		// 	// if (runnerThread != null) {
-		// 	// 	runnerThread.interrupt();
-		// 	// 	try {
-		// 	// 		runnerThread.join();
-		// 	// 	} catch (InterruptedException e) {
-		// 	// 		e.printStackTrace();
-		// 	// 	}
-		// 	// }
-		// 	// terminalSession.close();
-		// 	// runnerThread = null;
-		// }
-
 		@Override
-		public void destroy() throws Exception {
-			log.info("closing");
+		public void close() throws IOException {
+			if (runnerThread != null) {
+				runnerThread.interrupt();
+			}
+			runnerThread = null;
+			terminalSession.close();
 		}
 	}
 
