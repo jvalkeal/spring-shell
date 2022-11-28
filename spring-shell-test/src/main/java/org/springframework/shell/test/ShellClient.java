@@ -277,7 +277,7 @@ public interface ShellClient extends DisposableBean {
 
 		@Override
 		public boolean isComplete() {
-			return state.get() == 0;
+			return state.get() >= 0;
 		}
 	}
 
