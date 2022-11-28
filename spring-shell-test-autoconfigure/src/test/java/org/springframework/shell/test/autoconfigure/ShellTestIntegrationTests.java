@@ -89,7 +89,8 @@ public class ShellTestIntegrationTests {
 			ShellAssertions.assertThat(session.screen()).containsText("xxx");
 		});
 
-		session.write(session.writeSequence().ctrl('c').ctrl('c').build());
+		session.write(session.writeSequence().ctrl('u').build());
+		session.write(session.writeSequence().ctrl('c').build());
 		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.isComplete()).isTrue();
 		});
