@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.samples.standard;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +22,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import org.springframework.shell.samples.AbstractSampleTests;
 import org.springframework.shell.test.ShellAssertions;
-import org.springframework.shell.test.ShellScreen;
 import org.springframework.shell.test.ShellClient.BaseShellSession;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +41,6 @@ public class ComponentCommandsTests extends AbstractSampleTests {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
 				assertThat(line).containsPattern("[>❯] key1");
 			});
-			// ShellAssertions.assertThat(session.screen()).containsText("❯ key1");
 		});
 
 		session.write(session.writeSequence().keyDown().build());
@@ -51,7 +48,6 @@ public class ComponentCommandsTests extends AbstractSampleTests {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
 				assertThat(line).containsPattern("[>❯] key2");
 			});
-			// ShellAssertions.assertThat(session.screen()).containsText("❯ key2");
 		});
 
 		session.write(session.writeSequence().cr().build());
@@ -72,8 +68,6 @@ public class ComponentCommandsTests extends AbstractSampleTests {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
 				assertThat(line).containsPattern("[>❯] (☐|\\[ \\])  key1");
 			});
-			// ShellAssertions.assertThat(session.screen()).containsText("❯ ☐  key1");
-			// ShellAssertions.assertThat(session.screen()).containsText("> [ ]  key1");
 		});
 
 		session.write(session.writeSequence().space().build());
@@ -81,8 +75,6 @@ public class ComponentCommandsTests extends AbstractSampleTests {
 			assertThat(session.screen().lines()).anySatisfy(line -> {
 				assertThat(line).containsPattern("[>❯] (☒|\\[x\\])  key1");
 			});
-			// ShellAssertions.assertThat(session.screen()).containsText("❯ ☒  key1");
-			// ShellAssertions.assertThat(session.screen()).containsText("> [x]  key1");
 		});
 
 		session.write(session.writeSequence().cr().build());
