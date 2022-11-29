@@ -205,6 +205,7 @@ public interface ShellClient extends Closeable {
 
 		@Override
 		public void close() throws IOException {
+			log.debug("Closing ShellClient");
 			if (runnerThread != null) {
 				runnerThread.interrupt();
 			}
