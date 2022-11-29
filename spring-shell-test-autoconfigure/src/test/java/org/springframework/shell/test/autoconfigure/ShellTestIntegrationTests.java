@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.test.ShellAssertions;
 import org.springframework.shell.test.ShellClient;
-import org.springframework.shell.test.ShellScreenAssert;
 import org.springframework.shell.test.ShellClient.InteractiveShellSession;
 import org.springframework.shell.test.ShellClient.NonInteractiveShellSession;
 import org.springframework.shell.test.autoconfigure.app.ExampleShellApplication;
@@ -84,13 +83,12 @@ public class ShellTestIntegrationTests {
 			ShellAssertions.assertThat(session.screen()).containsText("shell:");
 		});
 
-		// session.write(session.writeSequence().text("xxx").build());
-		// await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
-		// 	ShellAssertions.assertThat(session.screen()).containsText("xxx");
-		// });
+		session.write(session.writeSequence().text("xxx").build());
+		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
+			ShellAssertions.assertThat(session.screen()).containsText("xxx");
+		});
 
-		// session.write(session.writeSequence().ctrl('u').build());
-		session.write(session.writeSequence().ctrl('c').build());
+		session.write(session.writeSequence().ctrl('c').ctrl('c').build());
 		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.isComplete()).isTrue();
 		});
@@ -108,8 +106,7 @@ public class ShellTestIntegrationTests {
 
 		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
 			List<String> lines = session.screen().lines();
-			// assertThat(lines).areExactly(1, helpCondition);
-			ShellAssertions.assertThat(session.screen()).containsText("AVAILABLE COMMANDS");
+			assertThat(lines).areExactly(1, helpCondition);
 			assertThat(lines).areNot(helpHelpCondition);
 		});
 
