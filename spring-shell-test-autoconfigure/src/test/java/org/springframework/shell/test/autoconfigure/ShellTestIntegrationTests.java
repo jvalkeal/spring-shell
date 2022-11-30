@@ -34,8 +34,8 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-@ShellTest
 @ContextConfiguration(classes = ExampleShellApplication.class)
+@ShellTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ShellTestIntegrationTests {
 
@@ -116,6 +116,19 @@ public class ShellTestIntegrationTests {
 		session.write(session.writeSequence().ctrl('c').build());
 		await().atMost(2, TimeUnit.SECONDS).untilAsserted(() -> {
 			assertThat(session.isComplete()).isTrue();
+		});
+	}
+
+	@Test
+	void testNonInteractive2() throws Exception {
+		Condition<String> helloCondition = new Condition<>(line -> line.contains("hello"),
+				"Hello has expected output");
+
+		NonInteractiveShellSession session = client.nonInterative("hello").run();
+
+		await().atMost(30, TimeUnit.SECONDS).untilAsserted(() -> {
+			List<String> lines = session.screen().lines();
+			assertThat(lines).areExactly(1, helloCondition);
 		});
 	}
 }
