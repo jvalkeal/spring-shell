@@ -15,17 +15,13 @@
  */
 package org.springframework.shell.completion;
 
-import java.util.List;
-import java.util.function.Function;
-
-import org.springframework.shell.CompletionContext;
-import org.springframework.shell.CompletionProposal;
-
 /**
- * Interface resolving completion proposals.
+ * Interface resolving completion proposals. This is same as
+ * {@link CompletionProvider} but mean to be autowired globally.
  *
  * @author Janne Valkealahti
+ * @see CompletionProvider
  */
 @FunctionalInterface
-public interface CompletionResolver extends Function<CompletionContext, List<CompletionProposal>> {
+public interface CompletionResolver extends CompletionProvider {
 }

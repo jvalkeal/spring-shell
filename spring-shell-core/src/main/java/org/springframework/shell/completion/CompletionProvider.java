@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.e2e;
+package org.springframework.shell.completion;
+
+import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.shell.CompletionContext;
+import org.springframework.shell.CompletionProposal;
 
 /**
- * Base class for all e2e commands.
+ * Interface resolving completion proposals.
  *
  * @author Janne Valkealahti
  */
-abstract class BaseE2ECommands {
-
-	static final String GROUP = "E2E Commands";
-	static final String REG = "e2e reg";
-	static final String LEGACY_ANNO = "e2e anno ";
-	// TODO: anno should become anno-legacy and annox to anno
-	static final String ANNO = "e2e annox ";
+@FunctionalInterface
+public interface CompletionProvider extends Function<CompletionContext, List<CompletionProposal>> {
 }

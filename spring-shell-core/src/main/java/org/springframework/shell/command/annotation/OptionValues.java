@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.e2e;
+package org.springframework.shell.command.annotation;
 
-/**
- * Base class for all e2e commands.
- *
- * @author Janne Valkealahti
- */
-abstract class BaseE2ECommands {
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	static final String GROUP = "E2E Commands";
-	static final String REG = "e2e reg";
-	static final String LEGACY_ANNO = "e2e anno ";
-	// TODO: anno should become anno-legacy and annox to anno
-	static final String ANNO = "e2e annox ";
+import org.springframework.aot.hint.annotation.Reflective;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@Documented
+@Reflective
+public @interface OptionValues {
+
+	String ref() default "";
 }
