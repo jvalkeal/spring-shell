@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.completion;
+package org.springframework.shell.command.annotation;
 
-/**
- * Interface resolving completion proposals. This is same as
- * {@link CompletionProvider} but mean to be autowired globally.
- *
- * @author Janne Valkealahti
- * @see CompletionProvider
- */
-@FunctionalInterface
-public interface CompletionResolver extends CompletionProvider {
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.aot.hint.annotation.Reflective;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+@Documented
+@Reflective
+public @interface OptionValues {
+
+	String ref() default "";
 }

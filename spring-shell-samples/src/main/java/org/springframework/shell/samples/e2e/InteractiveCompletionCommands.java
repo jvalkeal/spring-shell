@@ -23,15 +23,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.shell.CompletionContext;
 import org.springframework.shell.CompletionProposal;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.CommandComponent;
+import org.springframework.shell.command.annotation.Option;
+import org.springframework.shell.command.annotation.OptionValues;
+import org.springframework.shell.completion.CompletionProvider;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.shell.standard.ValueProvider;
 
 @ShellComponent
+@CommandComponent
 public class InteractiveCompletionCommands extends BaseE2ECommands {
 
-	@ShellMethod(key = LEGACY_ANNO + "interactive-completion-1", group = GROUP)
+	private final static String INTERACTIVE_COMPLETION_1 = "interactive-completion-1";
+
+	@ShellMethod(key = LEGACY_ANNO + INTERACTIVE_COMPLETION_1, group = GROUP)
 	public String testInteractiveCompletion1(
 		@ShellOption(valueProvider = Test1ValuesProvider.class) String arg1,
 		@ShellOption(valueProvider = Test2ValuesProvider.class) String arg2
@@ -39,12 +47,34 @@ public class InteractiveCompletionCommands extends BaseE2ECommands {
 		return "Hello " + arg1;
 	}
 
+	@Command(command = ANNO + INTERACTIVE_COMPLETION_1)
+	public String testInteractiveCompletion1Annotation(
+		@Option @OptionValues(ref = "test1CompletionProvider") String arg1,
+		@Option @OptionValues(ref = "test2CompletionProvider") String arg2
+	) {
+		return "Hello " + arg1;
+	}
+
+	@Bean
+	CompletionProvider test1CompletionProvider() {
+		return ctx -> Arrays.stream(new String[] { "values1Complete1", "values1Complete2" })
+			.map(CompletionProposal::new)
+			.collect(Collectors.toList());
+	}
+
+	@Bean
+	CompletionProvider test2CompletionProvider() {
+		return ctx -> Arrays.stream(new String[] { "values2Complete1", "values2Complete2" })
+			.map(CompletionProposal::new)
+			.collect(Collectors.toList());
+	}
+
 	@Bean
 	CommandRegistration testInteractiveCompletion1Registration(CommandRegistration.BuilderSupplier builder) {
 		Test1ValuesProvider test1ValuesProvider = new Test1ValuesProvider();
 		Test2ValuesProvider test2ValuesProvider = new Test2ValuesProvider();
 		return builder.get()
-			.command(REG, "interactive-completion-1")
+			.command(REG, INTERACTIVE_COMPLETION_1)
 			.group(GROUP)
 			.withOption()
 				.longNames("arg1")
@@ -102,5 +132,4 @@ public class InteractiveCompletionCommands extends BaseE2ECommands {
 				.collect(Collectors.toList());
 		}
 	}
-
 }

@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.boot;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.MethodTargetRegistrar;
 import org.springframework.shell.boot.SpringShellProperties.Help;
@@ -34,6 +36,7 @@ import org.springframework.shell.command.CommandRegistration.BuilderSupplier;
 import org.springframework.shell.command.CommandRegistration.OptionNameModifier;
 import org.springframework.shell.command.support.OptionNameModifierSupport;
 import org.springframework.shell.command.CommandResolver;
+import org.springframework.shell.command.annotation.AnnotatedCommandResolver;
 
 @AutoConfiguration
 @EnableConfigurationProperties(SpringShellProperties.class)
@@ -120,6 +123,16 @@ public class CommandCatalogAutoConfiguration {
 			CommandRegistration.Builder builder = CommandRegistration.builder();
 			customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
+		};
+	}
+
+	@Bean
+	public CommandCatalogCustomizer annotatedCommandCommandCatalogCustomizer(ApplicationContext applicationContext,
+			Supplier<CommandRegistration.Builder> builder) {
+		return catalog -> {
+			AnnotatedCommandResolver resolver = new AnnotatedCommandResolver(applicationContext, builder);
+			Collection<CommandRegistration> registrations = resolver.resolve();
+			registrations.forEach(registration -> catalog.register(registration));
 		};
 	}
 }

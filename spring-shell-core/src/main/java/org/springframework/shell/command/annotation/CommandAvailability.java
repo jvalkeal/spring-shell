@@ -13,15 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.completion;
+package org.springframework.shell.command.annotation;
 
-/**
- * Interface resolving completion proposals. This is same as
- * {@link CompletionProvider} but mean to be autowired globally.
- *
- * @author Janne Valkealahti
- * @see CompletionProvider
- */
-@FunctionalInterface
-public interface CompletionResolver extends CompletionProvider {
+public @interface CommandAvailability {
+
 }
