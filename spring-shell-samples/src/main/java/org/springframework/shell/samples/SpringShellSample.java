@@ -22,7 +22,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.shell.command.annotation.EnableCommand;
 import org.springframework.shell.jline.PromptProvider;
+import org.springframework.shell.samples.e2e.HiddenCommands;
 
 /**
  * Main entry point for the application.
@@ -33,6 +35,7 @@ import org.springframework.shell.jline.PromptProvider;
  * @author Janne Valkealahti
  */
 @SpringBootApplication
+@EnableCommand({HiddenCommands.class})
 public class SpringShellSample {
 
 	public static void main(String[] args) throws Exception {

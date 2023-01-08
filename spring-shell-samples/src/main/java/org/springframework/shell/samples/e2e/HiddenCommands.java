@@ -18,11 +18,10 @@ package org.springframework.shell.samples.e2e;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.command.annotation.CommandComponent;
 import org.springframework.shell.standard.ShellComponent;
 
 @ShellComponent
-@CommandComponent
+@Command
 public class HiddenCommands extends BaseE2ECommands {
 
 	@Command(command = ANNO + "hidden-1", hidden = true)

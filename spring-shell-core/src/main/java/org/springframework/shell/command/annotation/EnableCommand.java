@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,43 +21,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.context.annotation.Import;
+import org.springframework.shell.command.annotation.support.EnableCommandRegistrar;
 
 /**
- * Annotation marking a method parameter to be a candicate for an option.
+ * Enable support for {@link Command @Command} annotated classes.
+ * {@code @Command} classes can be registered directly on this annotation.
  *
  * @author Janne Valkealahti
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
 @Documented
-@Reflective
-public @interface Option {
+@Import(EnableCommandRegistrar.class)
+public @interface EnableCommand {
 
 	/**
-	 * Long names of an option.
+	 * Defines candicate classes for shell commands.
 	 *
-	 * @return Long names of an option
+	 * @return candidate classes for shell commands
 	 */
-	String[] longNames() default {};
-
-	/**
-	 * Short names of an option.
-	 *
-	 * @return Short names of an option
-	 */
-	char[] shortNames() default {};
-
-	/**
-	 * Return a short description of the option.
-	 *
-	 * @return description of the option
-	 */
-	String description() default "";
-
-	int arityMin() default -1;
-	int arityMax() default -1;
-	String defaultValue() default "";
-
-	boolean bindPosition() default false;
+	Class<?>[] value() default {};
 }
