@@ -30,7 +30,7 @@ import org.springframework.shell.context.InteractionMode;
  * @author Janne Valkealahti
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Reflective
 public @interface Command {
