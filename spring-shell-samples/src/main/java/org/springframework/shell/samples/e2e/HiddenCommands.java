@@ -18,22 +18,20 @@ package org.springframework.shell.samples.e2e;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.standard.ShellComponent;
+import org.springframework.stereotype.Component;
 
-// @ShellComponent
-// @Command
-public class HiddenCommands /*  extends BaseE2ECommands*/ {
+public class HiddenCommands {
 
 	@Command(command = BaseE2ECommands.ANNO, hidden = true)
 	public static class HiddenCommandsAnnotation extends BaseE2ECommands {
 
-		@Command(command = ANNO + "hidden-1")
+		@Command(command = "hidden-1")
 		public String testHidden1Annotation() {
 			return "Hello from hidden command";
 		}
 	}
 
-	@ShellComponent
+	@Component
 	public static class HiddenCommandsRegistration extends BaseE2ECommands {
 
 		@Bean
@@ -50,23 +48,4 @@ public class HiddenCommands /*  extends BaseE2ECommands*/ {
 				.build();
 		}
 	}
-
-	// @Command(command = ANNO + "hidden-1", hidden = true)
-	// public String testHidden1Annotation() {
-	// 	return "Hello from hidden command";
-	// }
-
-	// @Bean
-	// public CommandRegistration testHidden1Registration(CommandRegistration.BuilderSupplier builder) {
-	// 	return builder.get()
-	// 		.command(REG, "hidden-1")
-	// 		.group(GROUP)
-	// 		.hidden()
-	// 		.withTarget()
-	// 			.function(ctx -> {
-	// 				return "Hello from hidden command";
-	// 			})
-	// 			.and()
-	// 		.build();
-	// }
 }
