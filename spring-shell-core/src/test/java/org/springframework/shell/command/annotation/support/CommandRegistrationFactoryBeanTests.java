@@ -58,4 +58,32 @@ class CommandRegistrationFactoryBeanTests {
 		}
 	}
 
+	@Test
+	void commandOnBothClassAndMethod() {
+		OnBothClassAndMethod commands = new OnBothClassAndMethod();
+		this.contextRunner
+				.withBean(BEAN, OnBothClassAndMethod.class, () -> commands)
+				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
+				})
+				.run((context) -> {
+					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
+							CommandRegistrationFactoryBean.class);
+					assertThat(fb).isNotNull();
+					CommandRegistration registration = fb.getObject();
+					assertThat(registration).isNotNull();
+					assertThat(registration.getCommand()).isEqualTo("one two");
+				});
+	}
+
+	@Command(command = "one")
+	private static class OnBothClassAndMethod {
+
+		@Command(command = "two")
+		void command(){
+		}
+	}
+
 }

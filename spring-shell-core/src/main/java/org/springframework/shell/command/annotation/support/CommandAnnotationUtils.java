@@ -15,29 +15,37 @@
  */
 package org.springframework.shell.command.annotation.support;
 
+import java.util.stream.Stream;
+
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.util.StringUtils;
 
 /**
- * Utilities to merge {@link Command} annotations using opinionated logic.
+ * Utilities to merge {@link Command} annotations using opinionated logic. In
+ * this class {@code left} is meant for annotation on a class level and
+ * {@code right} annotation on a method level. Class level is meant to provide
+ * defaults and every field may have its own logic.
  *
  * @author Janne Valkealahti
  */
 class CommandAnnotationUtils {
 
+	private final static String HIDDEN = "hidden";
+	private final static String COMMAND = "command";
+
 	/**
-	 * Get a boolean field where right side overrides if it's defined.
+	 * Deduce {@link Command#hidden()} from annotations.
 	 *
-	 * @param name the field name
 	 * @param left the left side annotation
 	 * @param right the right side annotation
-	 * @return resolved boolean
+	 * @return deduced boolean for hidden field
 	 */
-	static boolean resolveBoolean(String name, MergedAnnotation<?> left, MergedAnnotation<?> right) {
-		Boolean def = right.getDefaultValue(name, Boolean.class).orElse(null);
+	static boolean deduceHidden(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		Boolean def = right.getDefaultValue(HIDDEN, Boolean.class).orElse(null);
 
-		boolean l = left.getBoolean(name);
-		boolean r = right.getBoolean(name);
+		boolean l = left.getBoolean(HIDDEN);
+		boolean r = right.getBoolean(HIDDEN);
 
 		if (def != null) {
 			if (def != r) {
@@ -49,6 +57,24 @@ class CommandAnnotationUtils {
 		}
 
 		return l;
+	}
+
+	/**
+	 * Deduce {@link Command#command()} from annotations. Command array is supposed
+	 * to contain commands without leading or trailing white spaces, so strip, split
+	 * and assume that class level defines prefix for array.
+	 *
+	 * @param left  the left side annotation
+	 * @param right the right side annotation
+	 * @return deduced boolean for command field
+	 */
+	static String[] deduceCommand(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return Stream.of(left.getStringArray(COMMAND), right.getStringArray(COMMAND))
+				.flatMap(commands -> Stream.of(commands))
+				.flatMap(command -> Stream.of(command.split(" ")))
+				.filter(command -> StringUtils.hasText(command))
+				.map(command -> command.strip())
+				.toArray(String[]::new);
 	}
 
 }

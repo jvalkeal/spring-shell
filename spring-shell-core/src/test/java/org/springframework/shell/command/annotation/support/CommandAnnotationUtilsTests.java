@@ -31,13 +31,13 @@ class CommandAnnotationUtilsTests {
 
 	@Test
 	void testHidden() {
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenTrue, hiddenDefault)).isTrue();
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenTrue, hiddenFalse)).isTrue();
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenTrue, hiddenTrue)).isTrue();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenTrue, hiddenDefault)).isTrue();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenTrue, hiddenFalse)).isTrue();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenTrue, hiddenTrue)).isTrue();
 
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenFalse, hiddenDefault)).isFalse();
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenFalse, hiddenFalse)).isFalse();
-		assertThat(CommandAnnotationUtils.resolveBoolean("hidden", hiddenFalse, hiddenTrue)).isTrue();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenFalse, hiddenDefault)).isFalse();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenFalse, hiddenFalse)).isFalse();
+		assertThat(CommandAnnotationUtils.deduceHidden(hiddenFalse, hiddenTrue)).isTrue();
 	}
 
 	@Command(hidden = true)
@@ -50,6 +50,45 @@ class CommandAnnotationUtilsTests {
 
 	@Command()
 	private static class HiddenDefault {
+	}
+
+	@Test
+	void testCommand() {
+		assertThat(CommandAnnotationUtils.deduceCommand(commandDefault, commandDefault)).isEmpty();
+		assertThat(CommandAnnotationUtils.deduceCommand(commandDefault, commandValues1))
+				.isEqualTo(new String[] { "one", "two" });
+		assertThat(CommandAnnotationUtils.deduceCommand(commandValues1, commandValues2))
+				.isEqualTo(new String[] { "one", "two", "three", "four" });
+		assertThat(CommandAnnotationUtils.deduceCommand(commandDefault, commandValues3))
+				.isEqualTo(new String[] { "five", "six", "seven" });
+		assertThat(CommandAnnotationUtils.deduceCommand(commandDefault, commandValues4))
+				.isEqualTo(new String[] { "eight", "nine" });
+	}
+
+	private static MergedAnnotation<Command> commandDefault = MergedAnnotations.from(CommandDefault.class).get(Command.class);
+	private static MergedAnnotation<Command> commandValues1 = MergedAnnotations.from(CommandValues1.class).get(Command.class);
+	private static MergedAnnotation<Command> commandValues2 = MergedAnnotations.from(CommandValues2.class).get(Command.class);
+	private static MergedAnnotation<Command> commandValues3 = MergedAnnotations.from(CommandValues3.class).get(Command.class);
+	private static MergedAnnotation<Command> commandValues4 = MergedAnnotations.from(CommandValues4.class).get(Command.class);
+
+	@Command
+	private static class CommandDefault {
+	}
+
+	@Command(command = { "one", "two" })
+	private static class CommandValues1 {
+	}
+
+	@Command(command = { "three", "four" })
+	private static class CommandValues2 {
+	}
+
+	@Command(command = { " five", "six ", " seven " })
+	private static class CommandValues3 {
+	}
+
+	@Command(command = { " eight nine " })
+	private static class CommandValues4 {
 	}
 
 }

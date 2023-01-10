@@ -135,19 +135,25 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		MergedAnnotation<Command> methodAnnotation = MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY)
 				.get(Command.class);
 
-		boolean resolvedHidden = CommandAnnotationUtils.resolveBoolean("hidden", classAnnotation, methodAnnotation);
+		boolean resolvedHidden = CommandAnnotationUtils.deduceHidden(classAnnotation, methodAnnotation);
 
 		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
 
 		Builder builder = getBuilder();
 
-		String[] keys = ann.command();
-		if (keys.length == 0) {
-			keys = new String[] { Utils.unCamelify(method.getName()) };
+		String[] deduceCommand = CommandAnnotationUtils.deduceCommand(classAnnotation, methodAnnotation);
+		if (deduceCommand.length == 0) {
+			deduceCommand = new String[] { Utils.unCamelify(method.getName()) };
 		}
-		String key = keys[0];
+		builder.command(deduceCommand);
 
-		builder.command(key);
+		// String[] keys = ann.command();
+		// if (keys.length == 0) {
+		// 	keys = new String[] { Utils.unCamelify(method.getName()) };
+		// }
+		// String key = keys[0];
+		// builder.command(key);
+
 		// builder.hidden(ann.hidden());
 		builder.hidden(resolvedHidden);
 		builder.group(ann.group());

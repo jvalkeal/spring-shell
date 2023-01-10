@@ -42,6 +42,8 @@ public @interface Command {
 	 */
 	String[] command() default {};
 
+	String[] alias() default {};
+
 	/**
 	 * Name of a command group.
 	 *
