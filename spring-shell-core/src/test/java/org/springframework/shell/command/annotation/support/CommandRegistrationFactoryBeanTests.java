@@ -15,27 +15,47 @@
  */
 package org.springframework.shell.command.annotation.support;
 
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.annotation.Command;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CommandRegistrationFactoryBeanTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
+	private final static String BEAN = "commandBean";
+	private final static String FACTORYBEAN = "commandRegistrationFactoryBean";
+	private final static String FACTORYBEANREF = "&" + FACTORYBEAN;
 
-	void test() {
+	@Test
+	void hiddenOnClassLevel() {
+		HiddenOnClassBean commands = new HiddenOnClassBean();
 		this.contextRunner
-				.withUserConfiguration(Config1.class)
-				.withInitializer(asdf -> {
-
+				.withBean(BEAN, HiddenOnClassBean.class, () -> commands)
+				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
 				})
-
-				// .withBean(CommandRegistrationFactoryBean.class, () -> new RootBeanDefinition(CommandRegistrationFactoryBean.class), bd -> {})
 				.run((context) -> {
-					// context.getb
+					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
+							CommandRegistrationFactoryBean.class);
+					assertThat(fb).isNotNull();
+					CommandRegistration registration = fb.getObject();
+					assertThat(registration).isNotNull();
+					assertThat(registration.isHidden()).isTrue();
 				});
 	}
 
-	private static class Config1 {
+	@Command(hidden = true)
+	private static class HiddenOnClassBean {
+
+		@Command
+		void command(){
+		}
 	}
 
 }

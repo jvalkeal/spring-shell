@@ -20,26 +20,53 @@ import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.standard.ShellComponent;
 
-@ShellComponent
-@Command
-public class HiddenCommands extends BaseE2ECommands {
+// @ShellComponent
+// @Command
+public class HiddenCommands /*  extends BaseE2ECommands*/ {
 
-	@Command(command = ANNO + "hidden-1", hidden = true)
-	public String testHidden1Annotation() {
-		return "Hello from hidden command";
+	@Command(command = BaseE2ECommands.ANNO, hidden = true)
+	public static class HiddenCommandsAnnotation extends BaseE2ECommands {
+
+		@Command(command = ANNO + "hidden-1")
+		public String testHidden1Annotation() {
+			return "Hello from hidden command";
+		}
 	}
 
-	@Bean
-	public CommandRegistration testHidden1Registration(CommandRegistration.BuilderSupplier builder) {
-		return builder.get()
-			.command(REG, "hidden-1")
-			.group(GROUP)
-			.hidden()
-			.withTarget()
-				.function(ctx -> {
-					return "Hello from hidden command";
-				})
-				.and()
-			.build();
+	@ShellComponent
+	public static class HiddenCommandsRegistration extends BaseE2ECommands {
+
+		@Bean
+		public CommandRegistration testHidden1Registration(CommandRegistration.BuilderSupplier builder) {
+			return builder.get()
+				.command(REG, "hidden-1")
+				.group(GROUP)
+				.hidden()
+				.withTarget()
+					.function(ctx -> {
+						return "Hello from hidden command";
+					})
+					.and()
+				.build();
+		}
 	}
+
+	// @Command(command = ANNO + "hidden-1", hidden = true)
+	// public String testHidden1Annotation() {
+	// 	return "Hello from hidden command";
+	// }
+
+	// @Bean
+	// public CommandRegistration testHidden1Registration(CommandRegistration.BuilderSupplier builder) {
+	// 	return builder.get()
+	// 		.command(REG, "hidden-1")
+	// 		.group(GROUP)
+	// 		.hidden()
+	// 		.withTarget()
+	// 			.function(ctx -> {
+	// 				return "Hello from hidden command";
+	// 			})
+	// 			.and()
+	// 		.build();
+	// }
 }
