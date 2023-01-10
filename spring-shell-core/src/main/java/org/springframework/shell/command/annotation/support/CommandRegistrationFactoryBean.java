@@ -32,6 +32,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.shell.Utils;
 import org.springframework.shell.command.CommandExceptionResolver;
@@ -47,26 +50,39 @@ import org.springframework.shell.command.annotation.ExceptionResolverMethodResol
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * Factory bean used in {@link CommandRegistrationBeanRegistrar} to build
- * instance of {@link CommandRegistration}.
+ * instance of {@link CommandRegistration}. Main logic of constructing
+ * {@link CommandRegistration} out from annotated command target is
+ * in this factory.
+ *
+ * This factory needs a name of a {@code commandBeanName} which is a bean
+ * hosting command methods, {@code method} which is a {@link Method} in
+ * a bean and optionally {@code BuilderSupplier} if context provides
+ * pre-configured builder.
+ *
+ * This is internal class and not meant for generic use.
  *
  * @author Janne Valkealahti
  */
 class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>, ApplicationContextAware, InitializingBean {
 
 	private final Logger log = LoggerFactory.getLogger(CommandRegistrationFactoryBean.class);
-	private ObjectProvider<Supplier<CommandRegistration.Builder>> supplier;
-	private String commandBeanName;
-	private Object bean;
-	private Method method;
-	private ApplicationContext applicationContext;
+	public static final String COMMAND_BEAN_TYPE = "commandBeanType";
+	public static final String COMMAND_BEAN_NAME = "commandBeanName";
+	public static final String COMMAND_METHOD_NAME = "commandMethodName";
+	public static final String COMMAND_METHOD_PARAMETERS = "commandMethodParameters";
 
-	public CommandRegistrationFactoryBean(ObjectProvider<Supplier<CommandRegistration.Builder>> supplier) {
-		this.supplier = supplier;
-	}
+	private ObjectProvider<CommandRegistration.BuilderSupplier> supplier;
+	private ApplicationContext applicationContext;
+	private Object commandBean;
+	private Class<?>[] commandBeanType;
+	private String commandBeanName;
+	private String commandMethodName;
+	private Class<?>[] commandMethodParameters;
 
 	@Override
 	public CommandRegistration getObject() throws Exception {
@@ -86,15 +102,24 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.bean = applicationContext.getBean(commandBeanName);
+		this.commandBean = applicationContext.getBean(commandBeanName);
+		this.supplier = applicationContext.getBeanProvider(CommandRegistration.BuilderSupplier.class);
+	}
+
+	public void setCommandBeanType(Class<?>[] commandBeanType) {
+		this.commandBeanType = commandBeanType;
 	}
 
 	public void setCommandBeanName(String commandBeanName) {
 		this.commandBeanName = commandBeanName;
 	}
 
-	public void setCommandMethod(Method method) {
-		this.method = method;
+	public void setCommandMethodName(String commandMethodName) {
+		this.commandMethodName = commandMethodName;
+	}
+
+	public void setCommandMethodParameters(Class<?>[] commandMethodParameters) {
+		this.commandMethodParameters = commandMethodParameters;
 	}
 
 	private CommandRegistration.Builder getBuilder() {
@@ -102,6 +127,16 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 	}
 
 	private CommandRegistration onCommand() {
+		Method method = ReflectionUtils.findMethod(commandBean.getClass(), commandMethodName, commandMethodParameters);
+
+		MergedAnnotation<Command> classAnnotation = MergedAnnotations.from(commandBean.getClass(), SearchStrategy.TYPE_HIERARCHY)
+				.get(Command.class);
+
+		MergedAnnotation<Command> methodAnnotation = MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY)
+				.get(Command.class);
+
+		boolean resolvedHidden = CommandAnnotationUtils.resolveBoolean("hidden", classAnnotation, methodAnnotation);
+
 		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
 
 		Builder builder = getBuilder();
@@ -113,7 +148,8 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		String key = keys[0];
 
 		builder.command(key);
-		builder.hidden(ann.hidden());
+		// builder.hidden(ann.hidden());
+		builder.hidden(resolvedHidden);
 		builder.group(ann.group());
 		builder.description(ann.description());
 		builder.interactionMode(ann.interactionMode());
@@ -122,16 +158,16 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 
 		// builder.availability(availabilityIndicator)
 
-		builder.withTarget().method(bean, method);
+		builder.withTarget().method(commandBean, method);
 
-		InvocableHandlerMethod ihm = new InvocableHandlerMethod(bean, method);
+		InvocableHandlerMethod ihm = new InvocableHandlerMethod(commandBean, method);
 		for (MethodParameter mp : ihm.getMethodParameters()) {
 			onCommandParameter(mp, builder);
 		}
 
-		ExceptionResolverMethodResolver exceptionResolverMethodResolver = new ExceptionResolverMethodResolver(bean.getClass());
+		ExceptionResolverMethodResolver exceptionResolverMethodResolver = new ExceptionResolverMethodResolver(commandBean.getClass());
 		MethodCommandExceptionResolver methodCommandExceptionResolver = new MethodCommandExceptionResolver();
-		methodCommandExceptionResolver.bean = bean;
+		methodCommandExceptionResolver.bean = commandBean;
 		methodCommandExceptionResolver.exceptionResolverMethodResolver = exceptionResolverMethodResolver;
 		builder.withErrorHandling().resolver(methodCommandExceptionResolver);
 

@@ -15,6 +15,60 @@
  */
 package org.springframework.shell.command.annotation.support;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.shell.command.annotation.Command;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 class CommandRegistrationBeanRegistrarTests {
 
+	private final BeanDefinitionRegistry registry = new DefaultListableBeanFactory();
+	private final CommandRegistrationBeanRegistrar registrar = new CommandRegistrationBeanRegistrar(registry);
+
+	@Test
+	void registerWhenNotAlreadyRegisteredAddBeanDefinition() {
+		String beanName = BeanCommand.class.getName();
+		this.registrar.register(BeanCommand.class);
+		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
+		assertThat(definition).isNotNull();
+		assertThat(definition.getBeanClassName()).isEqualTo(BeanCommand.class.getName());
+	}
+
+	@Test
+	void registerWhenNoAnnotationThrowsException() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.registrar.register(NoAnnotationCommand.class))
+				.withMessageContaining("No Command annotation found");
+	}
+
+	@Test
+	void registerWhenNotAlreadyRegisteredAddMethodBeanDefinition() {
+		String beanName = BeanWithMethodCommand.class.getName();
+		this.registrar.register(BeanWithMethodCommand.class);
+		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
+		assertThat(definition).isNotNull();
+		definition = this.registry.getBeanDefinition(beanName + "/method");
+		assertThat(definition).isNotNull();
+		assertThat(definition.getBeanClassName()).isEqualTo(CommandRegistrationFactoryBean.class.getName());
+	}
+
+	@Command
+	static class BeanCommand {
+	}
+
+	@Command
+	static class BeanWithMethodCommand {
+
+		@Command
+		void method() {
+		}
+	}
+
+	static class NoAnnotationCommand {
+	}
 }
