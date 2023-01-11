@@ -170,11 +170,13 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		// target
 		builder.withTarget().method(commandBean, method);
 
+		// options
 		InvocableHandlerMethod ihm = new InvocableHandlerMethod(commandBean, method);
 		for (MethodParameter mp : ihm.getMethodParameters()) {
 			onCommandParameter(mp, builder);
 		}
 
+		// error handling
 		ExceptionResolverMethodResolver exceptionResolverMethodResolver = new ExceptionResolverMethodResolver(commandBean.getClass());
 		MethodCommandExceptionResolver methodCommandExceptionResolver = new MethodCommandExceptionResolver();
 		methodCommandExceptionResolver.bean = commandBean;
