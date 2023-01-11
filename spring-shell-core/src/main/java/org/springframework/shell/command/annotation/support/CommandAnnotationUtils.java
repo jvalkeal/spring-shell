@@ -31,8 +31,10 @@ import org.springframework.util.StringUtils;
  */
 class CommandAnnotationUtils {
 
-	private final static String HIDDEN = "hidden";
 	private final static String COMMAND = "command";
+	private final static String ALIAS = "alias";
+	private final static String HIDDEN = "hidden";
+	private final static String GROUP = "group";
 
 	/**
 	 * Deduce {@link Command#hidden()} from annotations.
@@ -69,12 +71,49 @@ class CommandAnnotationUtils {
 	 * @return deduced boolean for command field
 	 */
 	static String[] deduceCommand(MergedAnnotation<?> left, MergedAnnotation<?> right) {
-		return Stream.of(left.getStringArray(COMMAND), right.getStringArray(COMMAND))
+		return deduceStringArray(COMMAND, left, right);
+	}
+
+	/**
+	 * Deduce {@link Command#alias()} from annotations. Alias array is supposed
+	 * to contain commands without leading or trailing white spaces, so strip, split
+	 * and assume that class level defines prefix for array.
+	 *
+	 * @param left  the left side annotation
+	 * @param right the right side annotation
+	 * @return deduced boolean for alias field
+	 */
+	static String[] deduceAlias(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return deduceStringArray(ALIAS, left, right);
+	}
+
+	/**
+	 * Deduce {@link Command#group()} from annotations. Right side overrides if it
+	 * has value.
+	 *
+	 * @param left  the left side annotation
+	 * @param right the right side annotation
+	 * @return deduced String for group field
+	 */
+	static String deduceGroup(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return deduceStringRightOverrides(GROUP, left, right);
+	}
+
+	private static String[] deduceStringArray(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return Stream.of(left.getStringArray(field), right.getStringArray(field))
 				.flatMap(commands -> Stream.of(commands))
 				.flatMap(command -> Stream.of(command.split(" ")))
 				.filter(command -> StringUtils.hasText(command))
 				.map(command -> command.strip())
 				.toArray(String[]::new);
+	}
+
+	private static String deduceStringRightOverrides(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		String r = right.getString(field);
+		if (StringUtils.hasText(r)) {
+			return r;
+		}
+		return left.getString(field);
 	}
 
 }
