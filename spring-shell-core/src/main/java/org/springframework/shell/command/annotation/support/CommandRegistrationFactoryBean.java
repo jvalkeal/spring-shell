@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -47,6 +46,7 @@ import org.springframework.shell.command.annotation.ExceptionResolverMethodResol
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.command.annotation.OptionValues;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
+import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -154,9 +154,9 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		String deduceDescription = CommandAnnotationUtils.deduceDescription(classAnn, methodAnn);
 		builder.description(deduceDescription);
 
-
-		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
-		builder.interactionMode(ann.interactionMode());
+		// interaction mode
+		InteractionMode deduceInteractionMode = CommandAnnotationUtils.deduceInteractionMode(classAnn, methodAnn);
+		builder.interactionMode(deduceInteractionMode);
 
 		// Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
 		// builder.availability(availabilityIndicator)

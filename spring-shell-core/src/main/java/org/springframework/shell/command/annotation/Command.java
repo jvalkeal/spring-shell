@@ -108,6 +108,11 @@ public @interface Command {
 	/**
 	 * Define a command description.
 	 *
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level descriptions inherit this primary
+	 * field. Can be overridden on method-level.
+	 *
 	 * @return the command description
 	 */
 	String description() default "";
@@ -140,10 +145,15 @@ public @interface Command {
 	 * available. For example presense of some commands doesn't make sense if shell
 	 * is running as non-interactive mode and vice versa.
 	 *
-	 * Defaults to {@link InteractionMode#ALL}
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level mappings inherit this primary
+	 * field.
 	 *
-	 * @return interaction mode
+	 * Type is an array to be able to indicate that default don't have anyting defined.
+	 *
+	 * @return interaction modes
 	 */
-	InteractionMode interactionMode() default InteractionMode.ALL;
+	InteractionMode[] interactionMode() default {};
 
 }

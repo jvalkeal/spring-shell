@@ -18,7 +18,9 @@ package org.springframework.shell.command.annotation.support;
 import java.util.stream.Stream;
 
 import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.lang.Nullable;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.context.InteractionMode;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,6 +38,7 @@ class CommandAnnotationUtils {
 	private final static String HIDDEN = "hidden";
 	private final static String GROUP = "group";
 	private final static String DESCRIPTION = "description";
+	private final static String INTERACTION_MODE = "interactionMode";
 
 	/**
 	 * Deduce {@link Command#hidden()} from annotations.
@@ -111,6 +114,41 @@ class CommandAnnotationUtils {
 	static String deduceDescription(MergedAnnotation<?> left, MergedAnnotation<?> right) {
 		return deduceStringRightOverrides(DESCRIPTION, left, right);
 	}
+
+	/**
+	 * Deduce {@link Command#interactionMode()} from annotations. Right side overrides if.
+	 * Returns {@code null} if nothing defined.
+	 *
+	 * @param left  the left side annotation
+	 * @param right the right side annotation
+	 * @return deduced InteractionMode for interaction mode field
+	 */
+	static @Nullable InteractionMode deduceInteractionMode(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		InteractionMode mode = null;
+		InteractionMode[] l = left.getEnumArray(INTERACTION_MODE, InteractionMode.class);
+		for (InteractionMode m : l) {
+			if (InteractionMode.ALL == m) {
+				mode = m;
+				break;
+			}
+			else {
+				mode = m;
+			}
+		}
+		InteractionMode[] r = right.getEnumArray(INTERACTION_MODE, InteractionMode.class);
+		for (InteractionMode m : r) {
+			if (InteractionMode.ALL == m) {
+				mode = m;
+				break;
+			}
+			else {
+				mode = m;
+				break;
+			}
+		}
+		return mode;
+	}
+
 
 	private static String[] deduceStringArray(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {
 		return Stream.of(left.getStringArray(field), right.getStringArray(field))
