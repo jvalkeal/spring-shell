@@ -35,6 +35,7 @@ class CommandAnnotationUtils {
 	private final static String ALIAS = "alias";
 	private final static String HIDDEN = "hidden";
 	private final static String GROUP = "group";
+	private final static String DESCRIPTION = "description";
 
 	/**
 	 * Deduce {@link Command#hidden()} from annotations.
@@ -97,6 +98,18 @@ class CommandAnnotationUtils {
 	 */
 	static String deduceGroup(MergedAnnotation<?> left, MergedAnnotation<?> right) {
 		return deduceStringRightOverrides(GROUP, left, right);
+	}
+
+	/**
+	 * Deduce {@link Command#description()} from annotations. Right side overrides if it
+	 * has value.
+	 *
+	 * @param left  the left side annotation
+	 * @param right the right side annotation
+	 * @return deduced String for description field
+	 */
+	static String deduceDescription(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return deduceStringRightOverrides(DESCRIPTION, left, right);
 	}
 
 	private static String[] deduceStringArray(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {

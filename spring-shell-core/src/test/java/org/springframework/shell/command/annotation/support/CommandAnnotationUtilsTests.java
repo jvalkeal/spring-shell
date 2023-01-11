@@ -154,4 +154,28 @@ class CommandAnnotationUtilsTests {
 		assertThat(CommandAnnotationUtils.deduceGroup(groupValue1, groupValue2)).isEqualTo("group2");
 	}
 
+	private static MergedAnnotation<Command> descriptionValue1 = MergedAnnotations.from(DescriptionValues1.class).get(Command.class);
+	private static MergedAnnotation<Command> descriptionValue2 = MergedAnnotations.from(DescriptionValues2.class).get(Command.class);
+	private static MergedAnnotation<Command> descriptionDefault = MergedAnnotations.from(DescriptionDefault.class).get(Command.class);
+
+	@Command(description = "description1")
+	private static class DescriptionValues1 {
+	}
+
+	@Command(description = "description2")
+	private static class DescriptionValues2 {
+	}
+
+	@Command()
+	private static class DescriptionDefault {
+	}
+
+	@Test
+	void testDescription() {
+		assertThat(CommandAnnotationUtils.deduceDescription(descriptionDefault, descriptionDefault)).isEqualTo("");
+		assertThat(CommandAnnotationUtils.deduceDescription(descriptionDefault, descriptionValue1)).isEqualTo("description1");
+		assertThat(CommandAnnotationUtils.deduceDescription(descriptionValue1, descriptionDefault)).isEqualTo("description1");
+		assertThat(CommandAnnotationUtils.deduceDescription(descriptionValue1, descriptionValue2)).isEqualTo("description2");
+	}
+
 }
