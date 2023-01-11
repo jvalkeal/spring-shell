@@ -86,7 +86,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 
 	@Override
 	public CommandRegistration getObject() throws Exception {
-		CommandRegistration registration = onCommand();
+		CommandRegistration registration = buildRegistration();
 		return registration;
 	}
 
@@ -126,7 +126,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		return supplier.getIfAvailable(() -> () -> CommandRegistration.builder()).get();
 	}
 
-	private CommandRegistration onCommand() {
+	private CommandRegistration buildRegistration() {
 		Method method = ReflectionUtils.findMethod(commandBean.getClass(), commandMethodName, commandMethodParameters);
 
 		MergedAnnotation<Command> classAnnotation = MergedAnnotations.from(commandBean.getClass(), SearchStrategy.TYPE_HIERARCHY)
@@ -135,9 +135,8 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		MergedAnnotation<Command> methodAnnotation = MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY)
 				.get(Command.class);
 
-		boolean resolvedHidden = CommandAnnotationUtils.deduceHidden(classAnnotation, methodAnnotation);
+		boolean deduceHidden = CommandAnnotationUtils.deduceHidden(classAnnotation, methodAnnotation);
 
-		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
 
 		Builder builder = getBuilder();
 
@@ -147,6 +146,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		}
 		builder.command(deduceCommand);
 
+		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
 		// String[] keys = ann.command();
 		// if (keys.length == 0) {
 		// 	keys = new String[] { Utils.unCamelify(method.getName()) };
@@ -155,14 +155,24 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		// builder.command(key);
 
 		// builder.hidden(ann.hidden());
-		builder.hidden(resolvedHidden);
-		builder.group(ann.group());
+		builder.hidden(deduceHidden);
+
+		String deduceGroup = CommandAnnotationUtils.deduceGroup(classAnnotation, methodAnnotation);
+		builder.group(deduceGroup);
+
 		builder.description(ann.description());
 		builder.interactionMode(ann.interactionMode());
 
 		// Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
 
 		// builder.availability(availabilityIndicator)
+
+		String[] deduceAlias = CommandAnnotationUtils.deduceAlias(classAnnotation, methodAnnotation);
+		if (deduceAlias.length > 0) {
+			builder.withAlias().command(deduceAlias);
+		}
+
+		// builder.withAlias().command(deduceCommand)
 
 		builder.withTarget().method(commandBean, method);
 

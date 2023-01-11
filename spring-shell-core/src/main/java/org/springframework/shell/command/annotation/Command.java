@@ -36,30 +36,95 @@ import org.springframework.shell.context.InteractionMode;
 public @interface Command {
 
 	/**
-	 * Command as an array.
+	 * Define command as an array. Given that command should be
+	 * {@code command1 sub1} it can be defined as:
+	 *
+	 * <pre class="code">
+	 * command = { "command1", "sub1" }
+	 * command = "command1 sub1"
+	 * </pre>
+	 *
+	 * Values are split and trimmed meaning spaces doesn't matter.
+	 *
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level mappings inherit this primary
+	 * command to use it as a prefix.
+	 *
+	 * <pre class="code">
+	 * &#64;Command(command = "command1")
+	 * class MyCommands {
+	 *
+	 *   &#64;Command(command = "sub1")
+	 *   void sub1(){}
+	 * }
+	 * </pre>
 	 *
 	 * @return the command as an array
 	 */
 	String[] command() default {};
 
+	/**
+	 * Define alias as an array. Given that alias should be
+	 * {@code alias1 sub1} it can be defined as:
+	 *
+	 * <pre class="code">
+	 * command = { "alias1", "sub1" }
+	 * command = "alias1 sub1"
+	 * </pre>
+	 *
+	 * Values are split and trimmed meaning spaces doesn't matter.
+	 *
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level mappings inherit this primary
+	 * alias to use it as a prefix.
+	 *
+	 * <pre class="code">
+	 * &#64;Command(alias = "alias1")
+	 * class MyCommands {
+	 *
+	 *   &#64;Command(alias = "sub1")
+	 *   void sub1(){}
+	 * }
+	 * </pre>
+	 *
+	 * @return the aliases as an array
+	 */
 	String[] alias() default {};
 
 	/**
-	 * Name of a command group.
+	 * Define a command group.
 	 *
 	 * @return the command group
 	 */
 	String group() default "";
 
 	/**
-	 * Description of a command.
+	 * Define a command description.
 	 *
-	 * @return the Description of a command
+	 * @return the command description
 	 */
 	String description() default "";
 
 	/**
-	 * Defines if a command should be hidden.
+	 * Define command to be hidden.
+	 *
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level mappings inherit this primary
+	 * hidden field.
+	 *
+	 * <pre class="code">
+	 * &#64;Command(hidden = true)
+	 * class MyCommands {
+	 *
+	 *   &#64;Command
+	 *   void sub1(){
+	 *     // sub1 command is hidden
+	 *   }
+	 * }
+	 * </pre>
 	 *
 	 * @return true if command should be hidden
 	 */
@@ -75,4 +140,5 @@ public @interface Command {
 	 * @return interaction mode
 	 */
 	InteractionMode interactionMode() default InteractionMode.ALL;
+
 }

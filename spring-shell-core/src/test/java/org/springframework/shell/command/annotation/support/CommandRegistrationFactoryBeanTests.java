@@ -32,14 +32,7 @@ class CommandRegistrationFactoryBeanTests {
 
 	@Test
 	void hiddenOnClassLevel() {
-		HiddenOnClassBean commands = new HiddenOnClassBean();
-		this.contextRunner
-				.withBean(BEAN, HiddenOnClassBean.class, () -> commands)
-				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
-				})
+		configCommon(HiddenOnClassBean.class, new HiddenOnClassBean())
 				.run((context) -> {
 					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
 							CommandRegistrationFactoryBean.class);
@@ -59,15 +52,8 @@ class CommandRegistrationFactoryBeanTests {
 	}
 
 	@Test
-	void commandOnBothClassAndMethod() {
-		OnBothClassAndMethod commands = new OnBothClassAndMethod();
-		this.contextRunner
-				.withBean(BEAN, OnBothClassAndMethod.class, () -> commands)
-				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
-				})
+	void commandCommonThings() {
+		configCommon(OnBothClassAndMethod.class, new OnBothClassAndMethod())
 				.run((context) -> {
 					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
 							CommandRegistrationFactoryBean.class);
@@ -75,15 +61,27 @@ class CommandRegistrationFactoryBeanTests {
 					CommandRegistration registration = fb.getObject();
 					assertThat(registration).isNotNull();
 					assertThat(registration.getCommand()).isEqualTo("one two");
+					assertThat(registration.getAliases()).hasSize(1);
+					assertThat(registration.getAliases().get(0).getCommand()).isEqualTo("three four");
+					assertThat(registration.getGroup()).isEqualTo("group2");
 				});
 	}
 
-	@Command(command = "one")
+	@Command(command = "one", alias = "three", group = "group1")
 	private static class OnBothClassAndMethod {
 
-		@Command(command = "two")
+		@Command(command = "two", alias = "four", group = "group2")
 		void command(){
 		}
 	}
 
+	private <T> ApplicationContextRunner configCommon(Class<T> type, T bean) {
+		return this.contextRunner
+				.withBean(BEAN, type, () -> bean)
+				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
+				});
+	}
 }
