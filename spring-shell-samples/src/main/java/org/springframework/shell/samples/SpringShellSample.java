@@ -18,14 +18,12 @@ package org.springframework.shell.samples;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.shell.command.annotation.CommandScan;
-import org.springframework.shell.command.annotation.EnableCommand;
 import org.springframework.shell.jline.PromptProvider;
-import org.springframework.shell.samples.e2e.HiddenCommands;
 
 /**
  * Main entry point for the application.
@@ -36,7 +34,6 @@ import org.springframework.shell.samples.e2e.HiddenCommands;
  * @author Janne Valkealahti
  */
 @SpringBootApplication
-// @EnableCommand({HiddenCommands.class})
 @CommandScan
 public class SpringShellSample {
 

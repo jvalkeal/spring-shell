@@ -20,9 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -48,7 +45,6 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
  */
 public final class CommandRegistrationBeanRegistrar {
 
-	private final Logger log = LoggerFactory.getLogger(CommandRegistrationBeanRegistrar.class);
 	private final BeanDefinitionRegistry registry;
 	private final BeanFactory beanFactory;
 	private static final MethodFilter COMMAND_METHODS = method ->

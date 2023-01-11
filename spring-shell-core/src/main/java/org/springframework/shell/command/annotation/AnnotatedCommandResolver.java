@@ -97,7 +97,7 @@ public class AnnotatedCommandResolver {
 		builder.hidden(ann.hidden());
 		builder.group(ann.group());
 		builder.description(ann.description());
-		builder.interactionMode(ann.interactionMode());
+		// builder.interactionMode(ann.interactionMode());
 
 		// Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
 

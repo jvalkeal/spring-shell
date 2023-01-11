@@ -79,6 +79,7 @@ class CommandRegistrationFactoryBeanTests {
 		return this.contextRunner
 				.withBean(BEAN, type, () -> bean)
 				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_TYPE, type);
 					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
 					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
 					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
