@@ -18,7 +18,6 @@ package org.springframework.shell.command.annotation.support;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +43,9 @@ import org.springframework.shell.command.CommandRegistration.Builder;
 import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.CommandRegistration.OptionSpec;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.ExceptionResolverMethodResolver;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.command.annotation.OptionValues;
-import org.springframework.shell.command.annotation.ExceptionResolverMethodResolver;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -59,10 +58,11 @@ import org.springframework.util.StringUtils;
  * {@link CommandRegistration} out from annotated command target is
  * in this factory.
  *
- * This factory needs a name of a {@code commandBeanName} which is a bean
- * hosting command methods, {@code method} which is a {@link Method} in
- * a bean and optionally {@code BuilderSupplier} if context provides
- * pre-configured builder.
+ * This factory needs a name of a {@code commandBeanName} which is a name of bean
+ * hosting command methods, {@code commandBeanType} which is type of a bean,
+ * {@code commandMethodName} which is a name of {@link Method} in a bean,
+ * {@code commandMethodParameters} for method parameter types and optionally
+ * {@code BuilderSupplier} if context provides pre-configured builder.
  *
  * This is internal class and not meant for generic use.
  *
@@ -79,7 +79,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 	private ObjectProvider<CommandRegistration.BuilderSupplier> supplier;
 	private ApplicationContext applicationContext;
 	private Object commandBean;
-	private Class<?>[] commandBeanType;
+	private Class<?> commandBeanType;
 	private String commandBeanName;
 	private String commandMethodName;
 	private Class<?>[] commandMethodParameters;
@@ -106,7 +106,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		this.supplier = applicationContext.getBeanProvider(CommandRegistration.BuilderSupplier.class);
 	}
 
-	public void setCommandBeanType(Class<?>[] commandBeanType) {
+	public void setCommandBeanType(Class<?> commandBeanType) {
 		this.commandBeanType = commandBeanType;
 	}
 
@@ -127,53 +127,47 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 	}
 
 	private CommandRegistration buildRegistration() {
-		Method method = ReflectionUtils.findMethod(commandBean.getClass(), commandMethodName, commandMethodParameters);
-
-		MergedAnnotation<Command> classAnnotation = MergedAnnotations.from(commandBean.getClass(), SearchStrategy.TYPE_HIERARCHY)
+		Method method = ReflectionUtils.findMethod(commandBeanType, commandMethodName, commandMethodParameters);
+		MergedAnnotation<Command> classAnn = MergedAnnotations.from(commandBeanType, SearchStrategy.TYPE_HIERARCHY)
 				.get(Command.class);
-
-		MergedAnnotation<Command> methodAnnotation = MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY)
+		MergedAnnotation<Command> methodAnn = MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY)
 				.get(Command.class);
-
-		boolean deduceHidden = CommandAnnotationUtils.deduceHidden(classAnnotation, methodAnnotation);
-
 
 		Builder builder = getBuilder();
 
-		String[] deduceCommand = CommandAnnotationUtils.deduceCommand(classAnnotation, methodAnnotation);
+		// command
+		String[] deduceCommand = CommandAnnotationUtils.deduceCommand(classAnn, methodAnn);
 		if (deduceCommand.length == 0) {
 			deduceCommand = new String[] { Utils.unCamelify(method.getName()) };
 		}
 		builder.command(deduceCommand);
 
-		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
-		// String[] keys = ann.command();
-		// if (keys.length == 0) {
-		// 	keys = new String[] { Utils.unCamelify(method.getName()) };
-		// }
-		// String key = keys[0];
-		// builder.command(key);
-
-		// builder.hidden(ann.hidden());
-		builder.hidden(deduceHidden);
-
-		String deduceGroup = CommandAnnotationUtils.deduceGroup(classAnnotation, methodAnnotation);
+		// group
+		String deduceGroup = CommandAnnotationUtils.deduceGroup(classAnn, methodAnn);
 		builder.group(deduceGroup);
 
-		builder.description(ann.description());
+		// hidden
+		boolean deduceHidden = CommandAnnotationUtils.deduceHidden(classAnn, methodAnn);
+		builder.hidden(deduceHidden);
+
+		// description
+		String deduceDescription = CommandAnnotationUtils.deduceDescription(classAnn, methodAnn);
+		builder.description(deduceDescription);
+
+
+		Command ann = AnnotatedElementUtils.findMergedAnnotation(method, Command.class);
 		builder.interactionMode(ann.interactionMode());
 
 		// Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
-
 		// builder.availability(availabilityIndicator)
 
-		String[] deduceAlias = CommandAnnotationUtils.deduceAlias(classAnnotation, methodAnnotation);
+		// alias
+		String[] deduceAlias = CommandAnnotationUtils.deduceAlias(classAnn, methodAnn);
 		if (deduceAlias.length > 0) {
 			builder.withAlias().command(deduceAlias);
 		}
 
-		// builder.withAlias().command(deduceCommand)
-
+		// target
 		builder.withTarget().method(commandBean, method);
 
 		InvocableHandlerMethod ihm = new InvocableHandlerMethod(commandBean, method);

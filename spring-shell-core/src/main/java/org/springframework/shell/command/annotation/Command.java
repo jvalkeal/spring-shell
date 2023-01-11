@@ -96,6 +96,11 @@ public @interface Command {
 	/**
 	 * Define a command group.
 	 *
+	 * <p>
+	 * <b>Supported at the type level as well as at the method level!</b>
+	 * When used at the type level, all method-level group inherit this primary
+	 * group. Can be overridden on method-level.
+	 *
 	 * @return the command group
 	 */
 	String group() default "";
@@ -131,7 +136,7 @@ public @interface Command {
 	boolean hidden() default false;
 
 	/**
-	 * Defines interaction mode for a command as a hint when command should be
+	 * Define interaction mode for a command as a hint when command should be
 	 * available. For example presense of some commands doesn't make sense if shell
 	 * is running as non-interactive mode and vice versa.
 	 *
