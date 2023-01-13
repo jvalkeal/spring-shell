@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.Option;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,14 +76,58 @@ class CommandRegistrationFactoryBeanTests {
 		}
 	}
 
+	@Test
+	void setsRequiredOption() {
+		configCommon(RequiredOption.class, new RequiredOption(), "command1", new Class[] { String.class })
+				.run((context) -> {
+					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
+							CommandRegistrationFactoryBean.class);
+					assertThat(fb).isNotNull();
+					CommandRegistration registration = fb.getObject();
+					assertThat(registration).isNotNull();
+					assertThat(registration.getOptions()).hasSize(1);
+					assertThat(registration.getOptions().get(0).isRequired()).isTrue();
+		});
+		configCommon(RequiredOption.class, new RequiredOption(), "command2", new Class[] { String.class })
+				.run((context) -> {
+					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
+							CommandRegistrationFactoryBean.class);
+					assertThat(fb).isNotNull();
+					CommandRegistration registration = fb.getObject();
+					assertThat(registration).isNotNull();
+					assertThat(registration.getOptions()).hasSize(1);
+					assertThat(registration.getOptions().get(0).isRequired()).isFalse();
+		});
+	}
+
+	@Command
+	private static class RequiredOption {
+
+		@Command
+		void command1(@Option(required = true) String arg) {
+		}
+
+		@Command
+		void command2(@Option(required = false) String arg) {
+		}
+	}
+
 	private <T> ApplicationContextRunner configCommon(Class<T> type, T bean) {
+		return configCommon(type, bean, "command", new Class[0]);
+	}
+
+	// private <T> ApplicationContextRunner configCommon(Class<T> type, T bean, Class<?>[] parameters) {}
+
+	private <T> ApplicationContextRunner configCommon(Class<T> type, T bean, String method, Class<?>[] parameters) {
 		return this.contextRunner
 				.withBean(BEAN, type, () -> bean)
 				.withBean(FACTORYBEAN, CommandRegistrationFactoryBean.class, () -> new CommandRegistrationFactoryBean(), bd -> {
 					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_TYPE, type);
 					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_BEAN_NAME, BEAN);
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
-					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
+					// bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, "command");
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_NAME, method);
+					// bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, new Class[0]);
+					bd.getPropertyValues().add(CommandRegistrationFactoryBean.COMMAND_METHOD_PARAMETERS, parameters);
 				});
 	}
 }

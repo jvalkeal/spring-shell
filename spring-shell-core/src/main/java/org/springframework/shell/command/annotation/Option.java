@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.shell.command.CommandRegistration.OptionArity;
 
 /**
  * Annotation marking a method parameter to be a candicate for an option.
@@ -35,18 +36,34 @@ import org.springframework.aot.hint.annotation.Reflective;
 public @interface Option {
 
 	/**
-	 * Long names of an option.
+	 * Long names of an option. There can be multiple names where first is primary
+	 * one and other are aliases.
 	 *
-	 * @return Long names of an option
+	 * @return Option long names, defaults to empty.
 	 */
 	String[] longNames() default {};
 
 	/**
-	 * Short names of an option.
+	 * Short names of an option. There can be multiple names where first is primary
+	 * one and other are aliases.
 	 *
-	 * @return Short names of an option
+	 * @return Option short names, defaults to empty.
 	 */
 	char[] shortNames() default {};
+
+	/**
+	 * Mark option required.
+	 *
+	 * @return true if option is required, defaults to false.
+	 */
+	boolean required() default false;
+
+	/**
+	 * Define option default value.
+	 *
+	 * @return
+	 */
+	String defaultValue() default "";
 
 	/**
 	 * Return a short description of the option.
@@ -57,7 +74,8 @@ public @interface Option {
 
 	int arityMin() default -1;
 	int arityMax() default -1;
-	String defaultValue() default "";
+
+	// OptionArity arity();
 
 	boolean bindPosition() default false;
 }

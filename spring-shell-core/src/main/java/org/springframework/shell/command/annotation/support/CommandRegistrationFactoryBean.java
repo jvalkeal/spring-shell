@@ -188,6 +188,10 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 	}
 
 	private void onCommandParameter(MethodParameter mp, Builder builder) {
+
+		MergedAnnotation<Option> optionAnn = MergedAnnotations.from(mp.getParameter(), SearchStrategy.TYPE_HIERARCHY)
+				.get(Option.class);
+
 		Option so = mp.getParameterAnnotation(Option.class);
 		log.debug("Registering with mp='{}' so='{}'", mp, so);
 		if (so != null) {
@@ -243,7 +247,11 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 					optionSpec.defaultValue("false");
 				}
 				else {
-					optionSpec.required();
+					if (optionAnn.isPresent()) {
+						boolean requiredDeduce = optionAnn.getBoolean("required");
+						optionSpec.required(requiredDeduce);
+					}
+					// optionSpec.required();
 				}
 
 
@@ -289,6 +297,9 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		@Override
 		public CommandHandlingResult resolve(Exception ex) {
 			Method exceptionHandlerMethod = exceptionResolverMethodResolver.resolveMethodByThrowable(ex);
+			if (exceptionHandlerMethod == null) {
+				return null;
+			}
 			InvocableShellMethod invocable = new InvocableShellMethod(bean, exceptionHandlerMethod);
 			try {
 				Object invoke = invocable.invoke(null, ex);
