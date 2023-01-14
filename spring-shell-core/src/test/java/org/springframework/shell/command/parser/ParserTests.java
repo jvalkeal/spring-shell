@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ParserTests {
 
 	@Test
-	void test() {
+	void tokenizeOnePlainRoot() {
 		Map<String, CommandRegistration> registrations = new HashMap<>();
 		CommandRegistration root1 = CommandRegistration.builder()
 			.command("root1")

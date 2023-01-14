@@ -8,12 +8,19 @@ import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 
 public class Parser {
 
+	private final ParserConfiguration configuration;
 	CommandModel commandModel;
 
 	Parser(CommandModel commandModel) {
-		this.commandModel = commandModel;
+		this(commandModel, new ParserConfiguration());
 	}
 
+	Parser(CommandModel commandModel, ParserConfiguration configuration) {
+		this.commandModel = commandModel;
+		this.configuration = configuration;
+	}
+
+	// [ root1 [ sub1 [ --arg1 <asdf> ] ] ]
 	void parse(List<String> arguments) {
 		List<Token> tokens = tokenize(arguments);
 		for (Token token : tokens) {
@@ -28,8 +35,7 @@ public class Parser {
 	List<Token> tokenize(List<String> arguments) {
 
 		var foundDoubleDash = false;
-		// var foundEndOfDirectives = !configuration.EnableDirectives;
-		var foundEndOfDirectives = false;
+		var foundEndOfDirectives = !configuration.isEnableDirectives();
 
 		List<Token> tokenList = new ArrayList<Token>(arguments.size());
 
@@ -38,12 +44,12 @@ public class Parser {
 			i++;
 
 			if (foundDoubleDash) {
-				tokenList.add(new Token(argument, TokenType.ARGUMENT, i));
+				tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
 				continue;
 			}
 
 			if (!foundDoubleDash && "--".equals(argument)) {
-					tokenList.add(new Token(argument, TokenType.DOUBLEDASH, i));
+					tokenList.add(Token.of(argument, TokenType.DOUBLEDASH, i));
 					foundDoubleDash = true;
 					continue;
 			}
@@ -61,7 +67,6 @@ public class Parser {
 		return tokenList;
 	}
 
-	// Function<String, String> xxx = t -> t;
 
 	// Token Argument(string value) => new(value, TokenType.Argument, default, i);
 	// Token CommandArgument(string value, Command command) => new(value, TokenType.Argument, command, i);

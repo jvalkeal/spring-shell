@@ -14,22 +14,29 @@ public class CommandModel {
 	CommandModel(Map<String, CommandRegistration> registrations) {
 		registrations.entrySet().forEach(e -> {
 			String[] commands = e.getKey().split(" ");
-
-			CommandInfo info = null;
+			CommandInfo parent = null;
 			for (int i = 0; i < commands.length; i++) {
-				CommandRegistration parent = info != null ? e.getValue() : null;
-				info = rootCommands.computeIfAbsent(commands[i],
-						command -> new CommandInfo(e.getValue(), parent));
+				CommandRegistration registration = i + 1 == commands.length ? e.getValue() : null;
+				if (parent == null) {
+					CommandInfo info = new CommandInfo(registration, parent);
+					rootCommands.computeIfAbsent(commands[i], command -> info);
+					parent = info;
+				}
+				else {
+					CommandInfo info = new CommandInfo(registration, parent);
+					parent.children.add(info);
+					parent = info;
+				}
 			}
 		});
 	}
 
 	static class CommandInfo {
 		CommandRegistration registration;
-		CommandRegistration parent;
-		List<CommandRegistration> children = new ArrayList<>();
+		CommandInfo parent;
+		List<CommandInfo> children = new ArrayList<>();
 
-		CommandInfo(CommandRegistration registration, CommandRegistration parent) {
+		CommandInfo(CommandRegistration registration, CommandInfo parent) {
 			this.registration = registration;
 			this.parent = parent;
 		}
@@ -53,10 +60,12 @@ public class CommandModel {
 		Map<String, Token> tokens = new HashMap<>();
 		rootCommands.entrySet().forEach(e -> {
 			tokens.put(e.getKey(), new Token(e.getKey(), TokenType.COMMAND));
-			e.getValue().registration.getAliases().forEach(alias -> {
-				String[] commands = alias.getCommand().split(" ");
-				tokens.put(commands[0], new Token(commands[0], TokenType.COMMAND));
-			});
+			if (e.getValue().registration != null) {
+				e.getValue().registration.getAliases().forEach(alias -> {
+					String[] commands = alias.getCommand().split(" ");
+					tokens.put(commands[0], new Token(commands[0], TokenType.COMMAND));
+				});
+			}
 		});
 		return tokens;
 	}

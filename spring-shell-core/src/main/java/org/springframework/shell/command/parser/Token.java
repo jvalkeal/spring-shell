@@ -17,6 +17,14 @@ public class Token {
 		this.position = position;
 	}
 
+	public static Token of(String value, TokenType type) {
+		return new Token(value, type);
+	}
+
+	public static Token of(String value, TokenType type, int position) {
+		return new Token(value, type, position);
+	}
+
 	public String getValue() {
 		return value;
 	}
