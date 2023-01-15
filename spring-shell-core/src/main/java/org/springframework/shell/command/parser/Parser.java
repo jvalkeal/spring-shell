@@ -2,6 +2,8 @@ package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
@@ -30,6 +32,13 @@ public class Parser {
 		}
 
 		// new CommandNode(Token, null)
+
+		ParseResultVisitor visitor = new ParseResultVisitor();
+		// visitor.visit(commandNode);
+	}
+
+	void tokensToNodes(List<Token> tokens) {
+
 	}
 
 	List<Token> tokenize(List<String> arguments) {
@@ -57,7 +66,33 @@ public class Parser {
 			// finding a command marks no-more-directives as those
 			// are always before commands.
 			if (!foundEndOfDirectives) {
+				if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
+						&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
+					tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i));
+					continue;
+				}
+			}
 
+			// if (!configuration.RootCommand.HasAlias(arg))
+			// {
+			// 	foundEndOfDirectives = true;
+			// }
+
+
+			// Set<String> validTokens = commandModel.getValidRootTokens().keySet();
+			Map<String, Token> validRootTokens = commandModel.getValidRootTokens();
+			if (validRootTokens.containsKey(argument)) {
+				Token token = validRootTokens.get(argument);
+				switch (token.getType()) {
+					case OPTION:
+						// tokenList.Add(Option(arg, (Option)token.Symbol!));
+						// tokenList.add(Token.of(argument, TokenType.OPTION, i));
+						break;
+					case COMMAND:
+						break;
+					default:
+						break;
+				}
 			}
 
 			CommandInfo info = commandModel.getRootCommand(argument);
