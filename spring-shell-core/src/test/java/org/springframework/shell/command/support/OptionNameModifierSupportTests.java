@@ -36,7 +36,6 @@ class OptionNameModifierSupportTests {
 
 	@ParameterizedTest
 	@CsvSource({
-		// "pascalCase,Pascalcase",
 		"pascal-case,PascalCase",
 		"pascal_case,PascalCase",
 		"pascalCase,PascalCase",

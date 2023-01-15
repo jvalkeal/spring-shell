@@ -28,13 +28,12 @@ public class OptionNamingCommands {
 	public static class OptionNamingCommandsLegacyAnnotation extends BaseE2ECommands {
 
 		@ShellMethod(key = LEGACY_ANNO + "option-naming-1", group = GROUP)
-		public String testOptionNaming1Annotation(
+		public void testOptionNaming1Annotation(
 			@ShellOption("from_snake") String snake,
 			@ShellOption("fromCamel") String camel,
 			@ShellOption("from-kebab") String kebab,
 			@ShellOption("FromPascal") String pascal
 		) {
-			return "Hello ";
 		}
 
 	}
@@ -69,10 +68,7 @@ public class OptionNamingCommands {
 					.required()
 					.and()
 				.withTarget()
-					.function(ctx -> {
-						String arg1 = ctx.getOptionValue("arg1");
-						return "Hello " + arg1;
-					})
+					.consumer(ctx -> {})
 					.and()
 				.build();
 		}

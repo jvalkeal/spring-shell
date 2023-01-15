@@ -41,41 +41,64 @@ public abstract class OptionNameModifierSupport {
 	public static final OptionNameModifier KEBABCASE = name -> toKebabCase(name);
 	public static final OptionNameModifier PASCALCASE = name -> toPascalCase(name);
 
+	private static final Pattern PATTERN = Pattern
+			.compile("[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+");
+
+	/**
+	 * Convert given name to {@code camelCase}.
+	 *
+	 * @param name the name to modify
+	 * @return a modified name as camel case
+	 */
 	public static String toCamelCase(String name) {
 		return toCapitalizeCase(name, false, ' ', '-', '_');
 	}
 
-	public static String toSnakeCase(String original) {
-		Pattern pattern = Pattern.compile("[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+");
-		Matcher matcher = pattern.matcher(original);
-		List<String> allMatches = new ArrayList<>();
-		while (matcher.find()) {
-			String group = matcher.group();
-			allMatches.add(group);
-		}
-		return allMatches.stream().map(x -> x.toLowerCase()).collect(Collectors.joining("_"));
+	/**
+	 * Convert given name to {@code snake_case}.
+	 *
+	 * @param name the name to modify
+	 * @return a modified name as snake case
+	 */
+	public static String toSnakeCase(String name) {
+		return matchJoin(name, "_");
 	}
 
-	public static String toKebabCase(CharSequence original) {
-		Pattern pattern = Pattern.compile("[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+");
-		Matcher matcher = pattern.matcher(original);
-		List<String> allMatches = new ArrayList<>();
-		while (matcher.find()) {
-			String group = matcher.group();
-			allMatches.add(group);
-		}
-		return allMatches.stream().map(x -> x.toLowerCase()).collect(Collectors.joining("-"));
+	/**
+	 * Convert given name to {@code kebab-case}.
+	 *
+	 * @param name the name to modify
+	 * @return a modified name as kebab case
+	 */
+	public static String toKebabCase(String name) {
+		return matchJoin(name, "-");
 	}
 
+	/**
+	 * Convert given name to {@code PascalCase}.
+	 *
+	 * @param name the name to modify
+	 * @return a modified name as pascal case
+	 */
 	public static String toPascalCase(String name) {
 		return toCapitalizeCase(name, true, ' ', '-', '_');
 	}
 
-	private static String toCapitalizeCase(String namex, final boolean capitalizeFirstLetter, final char... delimiters) {
-        if (!StringUtils.hasText(namex)) {
-            return namex;
+	private static String matchJoin(String name, String delimiter) {
+		Matcher matcher = PATTERN.matcher(name);
+		List<String> matches = new ArrayList<>();
+		while (matcher.find()) {
+			String group = matcher.group();
+			matches.add(group);
+		}
+		return matches.stream().map(x -> x.toLowerCase()).collect(Collectors.joining(delimiter));
+	}
+
+	private static String toCapitalizeCase(String name, final boolean capitalizeFirstLetter, final char... delimiters) {
+        if (!StringUtils.hasText(name)) {
+            return name;
         }
-        String nameL = namex.toLowerCase();
+        String nameL = name.toLowerCase();
 
 		final int strLen = nameL.length();
         final int[] newCodePoints = new int[strLen];
@@ -106,10 +129,10 @@ public abstract class OptionNameModifierSupport {
 
 		if (!delimiterFound) {
 			if (capitalizeFirstLetter) {
-				return namex.substring(0, 1).toUpperCase() + namex.substring(1, namex.length());
+				return name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
 			}
 			else {
-				return namex.substring(0, 1).toLowerCase() + namex.substring(1, namex.length());
+				return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
 			}
 		}
 

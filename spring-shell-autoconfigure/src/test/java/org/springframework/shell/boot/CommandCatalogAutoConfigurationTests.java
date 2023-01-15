@@ -92,7 +92,8 @@ public class CommandCatalogAutoConfigurationTests {
 
 	@Test
 	void defaultOptionNameModifierIsSet() {
-		this.contextRunner.withUserConfiguration(CustomOptionNameModifierConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomOptionNameModifierConfiguration.class)
 				.run(context -> {
 					BuilderSupplier builderSupplier = context.getBean(BuilderSupplier.class);
 					Builder builder = builderSupplier.get();
@@ -100,6 +101,43 @@ public class CommandCatalogAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void defaultOptionNameModifierIsSetFromProperties() {
+		this.contextRunner
+				.withPropertyValues("spring.shell.option.naming.case-type=kebab")
+				.run(context -> {
+					BuilderSupplier builderSupplier = context.getBean(BuilderSupplier.class);
+					Builder builder = builderSupplier.get();
+					assertThat(builder).extracting("defaultOptionNameModifier").isNotNull();
+				});
+	}
+
+	@Test
+	void defaultOptionNameModifierNoopNotSetFromProperties() {
+		this.contextRunner
+				.withPropertyValues("spring.shell.option.naming.case-type=noop")
+				.run(context -> {
+					BuilderSupplier builderSupplier = context.getBean(BuilderSupplier.class);
+					Builder builder = builderSupplier.get();
+					assertThat(builder).extracting("defaultOptionNameModifier").isNull();
+					// there is customizer but it doesn't do anything
+					assertThat(context).hasBean("defaultOptionNameModifierCommandRegistrationCustomizer");
+				});
+	}
+
+	@Test
+	void noCustomizerIfPropertyIsNotSet() {
+		this.contextRunner
+				.run(context -> {
+					BuilderSupplier builderSupplier = context.getBean(BuilderSupplier.class);
+					Builder builder = builderSupplier.get();
+					assertThat(builder).extracting("defaultOptionNameModifier").isNull();
+					// no customizer added without property
+					assertThat(context).doesNotHaveBean("defaultOptionNameModifierCommandRegistrationCustomizer");
+				});
+	}
+
+	// defaultOptionNameModifierCommandRegistrationCustomizer
 	@Configuration
 	static class CustomOptionNameModifierConfiguration {
 
