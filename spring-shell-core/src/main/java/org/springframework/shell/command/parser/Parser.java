@@ -1,113 +1,58 @@
+/*
+ * Copyright 2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.shell.command.parser;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 
-import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+import org.springframework.shell.command.parser.Ast.AstResult;
 
-public class Parser {
+public interface Parser {
 
-	private final ParserConfiguration configuration;
-	CommandModel commandModel;
+	ParseResult parse(List<String> arguments);
 
-	Parser(CommandModel commandModel) {
-		this(commandModel, new ParserConfiguration());
-	}
+	public static class DefaultParser implements Parser {
 
-	Parser(CommandModel commandModel, ParserConfiguration configuration) {
-		this.commandModel = commandModel;
-		this.configuration = configuration;
-	}
+		private final ParserConfiguration configuration;
+		private final CommandModel commandModel;
+		private final Lexer lexer;
+		private final Ast ast;
 
-	// [ root1 [ sub1 [ --arg1 <asdf> ] ] ]
-	void parse(List<String> arguments) {
-		List<Token> tokens = tokenize(arguments);
-		for (Token token : tokens) {
-			if (token.getType() == TokenType.COMMAND) {
-				new CommandNode(token, token.getValue());
-			}
+		DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast) {
+			this(commandModel, lexer, ast, new ParserConfiguration());
 		}
 
-		// new CommandNode(Token, null)
-
-		ParseResultVisitor visitor = new ParseResultVisitor();
-		// visitor.visit(commandNode);
-	}
-
-	void tokensToNodes(List<Token> tokens) {
-
-	}
-
-	List<Token> tokenize(List<String> arguments) {
-
-		var foundDoubleDash = false;
-		var foundEndOfDirectives = !configuration.isEnableDirectives();
-
-		List<Token> tokenList = new ArrayList<Token>(arguments.size());
-
-		int i = -1;
-		for (String argument : arguments) {
-			i++;
-
-			if (foundDoubleDash) {
-				tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
-				continue;
-			}
-
-			if (!foundDoubleDash && "--".equals(argument)) {
-					tokenList.add(Token.of(argument, TokenType.DOUBLEDASH, i));
-					foundDoubleDash = true;
-					continue;
-			}
-
-			// finding a command marks no-more-directives as those
-			// are always before commands.
-			if (!foundEndOfDirectives) {
-				if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
-						&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
-					tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i));
-					continue;
-				}
-			}
-
-			// if (!configuration.RootCommand.HasAlias(arg))
-			// {
-			// 	foundEndOfDirectives = true;
-			// }
-
-
-			// Set<String> validTokens = commandModel.getValidRootTokens().keySet();
-			Map<String, Token> validRootTokens = commandModel.getValidRootTokens();
-			if (validRootTokens.containsKey(argument)) {
-				Token token = validRootTokens.get(argument);
-				switch (token.getType()) {
-					case OPTION:
-						// tokenList.Add(Option(arg, (Option)token.Symbol!));
-						// tokenList.add(Token.of(argument, TokenType.OPTION, i));
-						break;
-					case COMMAND:
-						break;
-					default:
-						break;
-				}
-			}
-
-			CommandInfo info = commandModel.getRootCommand(argument);
-			tokenList.addAll(commandModel.getValidRootTokens().values());
+		DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration) {
+			this.commandModel = commandModel;
+			this.lexer = lexer;
+			this.ast = ast;
+			this.configuration = configuration;
 		}
 
-		return tokenList;
+		@Override
+		public ParseResult parse(List<String> arguments) {
+			// 1. tokenize arguments
+			List<Token> tokens = lexer.tokenize(arguments);
+
+			// 2. generate syntax tree
+			AstResult astResult = ast.generate(tokens);
+			CommandNode commandNode = astResult.getCommandNode();
+
+			// 3. visit nodes to get parsing result
+			NodeVisitor visitor = new NodeVisitor();
+			return visitor.visit(commandNode);
+		}
 	}
-
-
-	// Token Argument(string value) => new(value, TokenType.Argument, default, i);
-	// Token CommandArgument(string value, Command command) => new(value, TokenType.Argument, command, i);
-	// Token OptionArgument(string value, Option option) => new(value, TokenType.Argument, option, i);
-	// Token Command(string value, Command cmd) => new(value, TokenType.Command, cmd, i);
-	// Token Option(string value, Option option) => new(value, TokenType.Option, option, i);
-	// Token DoubleDash() => new("--", TokenType.DoubleDash, default, i);
-	// Token Directive(string value) => new(value, TokenType.Directive, default, i);
 }

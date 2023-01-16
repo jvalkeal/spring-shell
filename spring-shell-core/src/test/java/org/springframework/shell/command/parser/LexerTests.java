@@ -11,7 +11,7 @@ import org.springframework.shell.command.CommandRegistration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ParserTests {
+class LexerTests {
 
 	@Test
 	void tokenizeOnePlainRoot() {
@@ -25,8 +25,9 @@ class ParserTests {
 		registrations.put("root1", root1);
 		CommandModel model = new CommandModel(registrations);
 
-		Parser parser = new Parser(model);
-		List<Token> tokens = parser.tokenize(Arrays.asList("root1"));
+		// Parser parser = new Parser(model);
+		Lexer lexer = new Lexer.DefaultLexer(model, new ParserConfiguration());
+		List<Token> tokens = lexer.tokenize(Arrays.asList("root1"));
 		assertThat(tokens).hasSize(1);
 		assertThat(tokens.get(0)).satisfies(token -> {
 			assertThat(token).isNotNull();
