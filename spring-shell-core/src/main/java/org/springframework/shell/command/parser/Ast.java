@@ -71,9 +71,23 @@ public interface Ast {
 						break;
 				}
 			}
-			return null;
+			return new DefaultAstResult(null);
 		}
 
+	}
+
+	static class DefaultAstResult implements AstResult {
+
+		private final CommandNode commandNode;
+
+		DefaultAstResult(CommandNode commandNode) {
+			this.commandNode = commandNode;
+		}
+
+		@Override
+		public CommandNode getCommandNode() {
+			return commandNode;
+		}
 	}
 
 }

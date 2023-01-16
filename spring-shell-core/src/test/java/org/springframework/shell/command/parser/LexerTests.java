@@ -16,6 +16,7 @@ class LexerTests {
 	@Test
 	void tokenizeOnePlainRoot() {
 		Map<String, CommandRegistration> registrations = new HashMap<>();
+
 		CommandRegistration root1 = CommandRegistration.builder()
 			.command("root1")
 			.withTarget()
@@ -23,12 +24,26 @@ class LexerTests {
 				.and()
 			.build();
 		registrations.put("root1", root1);
+
+		CommandRegistration root2sub1 = CommandRegistration.builder()
+			.command("root2", "sub1")
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.withTarget()
+				.consumer(ctx -> {})
+				.and()
+			.build();
+
+		registrations.put("root1", root1);
+		registrations.put("root2 sub1", root2sub1);
+
 		CommandModel model = new CommandModel(registrations);
 
-		// Parser parser = new Parser(model);
 		Lexer lexer = new Lexer.DefaultLexer(model, new ParserConfiguration());
 		List<Token> tokens = lexer.tokenize(Arrays.asList("root1"));
-		assertThat(tokens).hasSize(1);
+
+		assertThat(tokens).hasSize(2);
 		assertThat(tokens.get(0)).satisfies(token -> {
 			assertThat(token).isNotNull();
 			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);

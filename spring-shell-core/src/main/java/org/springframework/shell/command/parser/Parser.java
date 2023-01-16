@@ -19,10 +19,25 @@ import java.util.List;
 
 import org.springframework.shell.command.parser.Ast.AstResult;
 
+/**
+ * Interface to parse command line arguments.
+ *
+ * @author Janne Valkealahti
+ */
 public interface Parser {
 
+	/**
+	 * Parse given arguments into a {@link ParseResult}.
+	 *
+	 * @param arguments the command line arguments
+	 * @return a parsed results
+	 */
 	ParseResult parse(List<String> arguments);
 
+	/**
+	 * Default implementation of a {@link Parser}. Uses {@link Lexer} and
+	 * {@link Ast}.
+	 */
 	public static class DefaultParser implements Parser {
 
 		private final ParserConfiguration configuration;

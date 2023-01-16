@@ -50,6 +50,7 @@ public class NodeVisitor {
 	}
 
 	private void visitOptionNode(OptionNode node) {
+		List<SyntaxNode> children = node.getChildren();
 	}
 
 	private void visitCommandArgumentNode(CommandArgumentNode node) {
@@ -64,12 +65,3 @@ public class NodeVisitor {
 		}
 	}
 }
-
-// public void doAction(Object o) {
-//     return switch (o) {
-//         case A a -> doA(a);
-//         case B b -> doB(b);
-//         case C c -> doC(c);
-//         default -> log.warn("Unrecognized type of {}", o);
-//     };
-// }

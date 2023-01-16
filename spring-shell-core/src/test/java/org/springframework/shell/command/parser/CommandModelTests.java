@@ -32,7 +32,7 @@ class CommandModelTests {
 	}
 
 	@Test
-	void onePlainSubcCommand() {
+	void onePlainSubCommand() {
 		Map<String, CommandRegistration> registrations = new HashMap<>();
 		CommandRegistration root1sub1 = CommandRegistration.builder()
 			.command("root1", "sub1")
@@ -44,8 +44,10 @@ class CommandModelTests {
 				.and()
 			.build();
 		registrations.put("root1 sub1", root1sub1);
+
 		CommandModel model = new CommandModel(registrations);
 		Map<String, Token> tokens = model.getValidRootTokens();
+
 		assertThat(tokens).hasSize(1);
 		assertThat(tokens.get("root1")).satisfies(token -> {
 			assertThat(token).isNotNull();
