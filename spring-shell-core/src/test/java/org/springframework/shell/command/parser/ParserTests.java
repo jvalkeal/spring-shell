@@ -15,23 +15,6 @@
  */
 package org.springframework.shell.command.parser;
 
-/**
- * Class containing parser configuration options. These are mostly what default
- * implementations of {@link Parser}, {@link Lexer} and {@link Ast} supports.
- * Custom implementations of those may choose what options to support.
- *
- * @author Janne Valkealahti
- */
-public class ParserConfiguration {
+class ParserTests extends AbstractParsingTests {
 
-	private boolean enableDirectives;
-
-	public boolean isEnableDirectives() {
-		return enableDirectives;
-	}
-
-	public ParserConfiguration setEnableDirectives(boolean enableDirectives) {
-		this.enableDirectives = enableDirectives;
-		return this;
-	}
 }

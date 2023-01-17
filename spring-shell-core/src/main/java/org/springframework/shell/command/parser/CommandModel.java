@@ -20,13 +20,54 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.lang.Nullable;
 import org.springframework.shell.command.CommandRegistration;
 
+/**
+ * Helper class to make it easier to work with command registrations and how
+ * those are used with parser model.
+ *
+ * @author Janne Valkealahti
+ */
 public class CommandModel {
 
-	Map<String, CommandInfo> rootCommands = new HashMap<>();
+	private final Map<String, CommandInfo> rootCommands = new HashMap<>();
 
 	CommandModel(Map<String, CommandRegistration> registrations) {
+		buildModel(registrations);
+	}
+
+	@Nullable
+	CommandInfo getRootCommand(String command) {
+		return rootCommands.get(command);
+	}
+
+	Map<String, CommandInfo> getRootCommands() {
+		return rootCommands;
+	}
+
+	Map<String, Token> getValidRootTokens() {
+		Map<String, Token> tokens = new HashMap<>();
+
+		rootCommands.entrySet().forEach(e -> {
+			tokens.put(e.getKey(), new Token(e.getKey(), TokenType.COMMAND));
+			Map<String, Token> validTokens = e.getValue().getValidTokens();
+			tokens.putAll(validTokens);
+		});
+
+		// rootCommands.entrySet().forEach(e -> {
+		// 	tokens.put(e.getKey(), new Token(e.getKey(), TokenType.COMMAND));
+		// 	if (e.getValue().registration != null) {
+		// 		e.getValue().registration.getAliases().forEach(alias -> {
+		// 			String[] commands = alias.getCommand().split(" ");
+		// 			tokens.put(commands[0], new Token(commands[0], TokenType.COMMAND));
+		// 		});
+		// 	}
+		// });
+		return tokens;
+	}
+
+	private void buildModel(Map<String, CommandRegistration> registrations) {
 		registrations.entrySet().forEach(e -> {
 			String[] commands = e.getKey().split(" ");
 			CommandInfo parent = null;
@@ -46,6 +87,9 @@ public class CommandModel {
 		});
 	}
 
+	/**
+	 * Contains info about a command, its registration, its parent and childs.
+	 */
 	static class CommandInfo {
 		String command;
 		CommandRegistration registration;
@@ -58,35 +102,23 @@ public class CommandModel {
 			this.command = command;
 		}
 
+		/**
+		 * Get valid tokens for this {@code CommandInfo}.
+		 *
+		 * @return mapping from raw value to a token
+		 */
 		Map<String, Token> getValidTokens() {
 			Map<String, Token> tokens = new HashMap<>();
-			children.forEach(commandInfo -> {
-
-			});
-			registration.getOptions().forEach(commandOption -> {
-				for (String longName : commandOption.getLongNames()) {
-					tokens.put(longName, new Token(longName, TokenType.OPTION));
-				}
-			});
-			return tokens;
-		}
-	}
-
-	CommandInfo getRootCommand(String command) {
-		return rootCommands.get(command);
-	}
-
-	Map<String, Token> getValidRootTokens() {
-		Map<String, Token> tokens = new HashMap<>();
-		rootCommands.entrySet().forEach(e -> {
-			tokens.put(e.getKey(), new Token(e.getKey(), TokenType.COMMAND));
-			if (e.getValue().registration != null) {
-				e.getValue().registration.getAliases().forEach(alias -> {
-					String[] commands = alias.getCommand().split(" ");
-					tokens.put(commands[0], new Token(commands[0], TokenType.COMMAND));
+			// children.forEach(commandInfo -> {
+			// });
+			if (registration != null) {
+				registration.getOptions().forEach(commandOption -> {
+					for (String longName : commandOption.getLongNames()) {
+						tokens.put("--" + longName, new Token(longName, TokenType.OPTION));
+					}
 				});
 			}
-		});
-		return tokens;
+			return tokens;
+		}
 	}
 }

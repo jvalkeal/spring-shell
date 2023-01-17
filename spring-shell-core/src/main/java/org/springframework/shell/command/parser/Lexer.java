@@ -53,21 +53,26 @@ public interface Lexer {
 
 		@Override
 		public List<Token> tokenize(List<String> arguments) {
-
-			var foundDoubleDash = false;
-			var foundEndOfDirectives = !configuration.isEnableDirectives();
+			boolean foundDoubleDash = false;
+			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 
 			List<Token> tokenList = new ArrayList<Token>(arguments.size());
+
+			// starting from root level
+			Map<String, Token> validTokens = commandModel.getValidRootTokens();
+
+			CommandInfo currentCommand = null;
 
 			int i = -1;
 			for (String argument : arguments) {
 				i++;
 
+				// We've found bash style "--" meaning further option processing is
+				// stopped and remaining arguments are simply command arguments
 				if (foundDoubleDash) {
 					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
 					continue;
 				}
-
 				if (!foundDoubleDash && "--".equals(argument)) {
 						tokenList.add(Token.of(argument, TokenType.DOUBLEDASH, i));
 						foundDoubleDash = true;
@@ -82,32 +87,25 @@ public interface Lexer {
 						tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i));
 						continue;
 					}
+					foundEndOfDirectives = true;
 				}
 
-				// if (!configuration.RootCommand.HasAlias(arg))
-				// {
-				// 	foundEndOfDirectives = true;
-				// }
-
-
-				// Set<String> validTokens = commandModel.getValidRootTokens().keySet();
-				Map<String, Token> validRootTokens = commandModel.getValidRootTokens();
-				if (validRootTokens.containsKey(argument)) {
-					Token token = validRootTokens.get(argument);
+				if (validTokens.containsKey(argument)) {
+					Token token = validTokens.get(argument);
 					switch (token.getType()) {
-						case OPTION:
-							// tokenList.Add(Option(arg, (Option)token.Symbol!));
-							// tokenList.add(Token.of(argument, TokenType.OPTION, i));
-							break;
 						case COMMAND:
+							currentCommand = commandModel.getRootCommands().get(argument);
+							tokenList.add(Token.of(argument, TokenType.COMMAND, i));
+							validTokens = currentCommand.getValidTokens();
+							break;
+						case OPTION:
+							tokenList.add(Token.of(argument, TokenType.OPTION, i));
 							break;
 						default:
 							break;
 					}
 				}
 
-				CommandInfo info = commandModel.getRootCommand(argument);
-				tokenList.addAll(commandModel.getValidRootTokens().values());
 			}
 
 			return tokenList;
