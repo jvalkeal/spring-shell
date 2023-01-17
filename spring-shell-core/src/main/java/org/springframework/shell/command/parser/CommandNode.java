@@ -28,4 +28,8 @@ public class CommandNode extends NonterminalSyntaxNode {
 		return command;
 	}
 
+	@Override
+	public String toString() {
+		return "CommandNode [command=" + command + ", childred=" + getChildren() + ", token=" + getToken() + "]";
+	}
 }

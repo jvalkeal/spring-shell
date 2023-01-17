@@ -15,6 +15,16 @@
  */
 package org.springframework.shell.command.parser;
 
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 class ParserTests extends AbstractParsingTests {
 
+	@Test
+	void test() {
+		register(ROOT1);
+		ParseResult result = parse("root1");
+		assertThat(result).isNotNull();
+	}
 }

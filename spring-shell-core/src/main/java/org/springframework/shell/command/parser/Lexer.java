@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 
 /**
@@ -43,6 +46,7 @@ public interface Lexer {
 	 */
 	public static class DefaultLexer implements Lexer {
 
+		private final static Logger log = LoggerFactory.getLogger(DefaultLexer.class);
 		private final CommandModel commandModel;
 		private final ParserConfiguration configuration;
 
@@ -53,6 +57,7 @@ public interface Lexer {
 
 		@Override
 		public List<Token> tokenize(List<String> arguments) {
+			log.debug("Tokenizing arguments {}", arguments);
 			boolean foundDoubleDash = false;
 			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 
@@ -108,6 +113,7 @@ public interface Lexer {
 
 			}
 
+			log.debug("Generated token list {}", tokenList);
 			return tokenList;
 		}
 

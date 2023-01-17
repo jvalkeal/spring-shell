@@ -23,6 +23,9 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.parser.Ast.AstResult;
+import org.springframework.shell.command.parser.Ast.DefaultAst;
+import org.springframework.shell.command.parser.Parser.DefaultParser;
 
 abstract class AbstractParsingTests {
 
@@ -83,11 +86,36 @@ abstract class AbstractParsingTests {
 		return new Lexer.DefaultLexer(commandModel(), configuration);
 	}
 
+	Lexer lexer(CommandModel commandModel) {
+		return new Lexer.DefaultLexer(commandModel, new ParserConfiguration());
+	}
+
+	Lexer lexer(CommandModel commandModel, ParserConfiguration configuration) {
+		return new Lexer.DefaultLexer(commandModel, configuration);
+	}
+
 	List<Token> tokenize(String... arguments) {
 		return tokenize(lexer(), arguments);
 	}
 
 	List<Token> tokenize(Lexer lexer, String... arguments) {
 		return lexer.tokenize(Arrays.asList(arguments));
+	}
+
+	Ast ast() {
+		return new Ast.DefaultAst();
+	}
+
+	AstResult ast(List<Token> tokens) {
+		Ast ast = ast();
+		return ast.generate(tokens);
+	}
+
+	ParseResult parse(String... arguments) {
+		CommandModel commandModel = commandModel();
+		Lexer lexer = lexer(commandModel);
+		Ast ast = ast();
+		Parser parser = new Parser.DefaultParser(commandModel, lexer, ast);
+		return parser.parse(Arrays.asList(arguments));
 	}
 }

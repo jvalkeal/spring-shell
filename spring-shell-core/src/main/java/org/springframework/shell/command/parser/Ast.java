@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,23 +56,39 @@ public interface Ast {
 
 		@Override
 		public AstResult generate(List<Token> tokens) {
+			List<CommandNode> commandNodes = new ArrayList<>();
+			CommandNode commandNode = null;
+			OptionNode optionNode = null;
 			for (Token token : tokens) {
 				switch (token.getType()) {
+					case DIRECTIVE:
+						break;
 					case COMMAND:
-						CommandNode commandNode = new CommandNode(token, token.getValue());
+						commandNode = new CommandNode(token, token.getValue());
+						commandNodes.add(commandNode);
 						break;
 					case OPTION:
-						OptionNode optionNode = new OptionNode(token, token.getValue());
+						optionNode = new OptionNode(token, token.getValue());
+						commandNode.addChildNode(optionNode);
 						break;
 					case ARGUMENT:
+						if (optionNode != null) {
+							OptionArgumentNode optionArgumentNode = new OptionArgumentNode(token, optionNode);
+							optionNode.addChildNode(optionArgumentNode);
+						}
+						else {
+							CommandArgumentNode commandArgumentNode = new CommandArgumentNode(token, commandNode);
+							commandNode.addChildNode(commandArgumentNode);
+						}
 						break;
 					case DOUBLEDASH:
+						optionNode = null;
 						break;
 					default:
 						break;
 				}
 			}
-			return new DefaultAstResult(null);
+			return new DefaultAstResult(commandNodes.get(commandNodes.size() - 1));
 		}
 
 	}

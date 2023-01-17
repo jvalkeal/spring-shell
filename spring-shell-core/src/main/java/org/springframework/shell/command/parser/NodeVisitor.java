@@ -17,17 +17,25 @@ package org.springframework.shell.command.parser;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NodeVisitor {
 
+	private final static Logger log = LoggerFactory.getLogger(NodeVisitor.class);
+
+	private CommandNode retCommandNode;
 
 	ParseResult visit(CommandNode node) {
-
+		log.debug("visit {}", node);
+		retCommandNode = node;
 		visitChildren(node);
 
 		return null;
 	}
 
 	private void visitInternal(SyntaxNode node) {
+		log.debug("visitInternal {}", node);
 
 		if (node instanceof CommandNode n) {
 			visitCommandNode(n);
@@ -47,20 +55,26 @@ public class NodeVisitor {
 	}
 
 	private void visitCommandNode(CommandNode node) {
+		log.debug("visitCommandNode {}", node);
+		retCommandNode = node;
 	}
 
 	private void visitOptionNode(OptionNode node) {
+		log.debug("visitOptionNode {}", node);
 		List<SyntaxNode> children = node.getChildren();
 	}
 
 	private void visitCommandArgumentNode(CommandArgumentNode node) {
+		log.debug("visitCommandArgumentNode {}", node);
 	}
 
 	private void visitOptionArgumentNode(OptionArgumentNode node) {
+		log.debug("visitCommandArgumentNode {}", node);
 	}
 
-	private void visitChildren(NonterminalSyntaxNode parentNode) {
-		for (SyntaxNode syntaxNode : parentNode.getChildren()) {
+	private void visitChildren(NonterminalSyntaxNode node) {
+		log.debug("visitChildren {}", node);
+		for (SyntaxNode syntaxNode : node.getChildren()) {
 			visitInternal(syntaxNode);
 		}
 	}

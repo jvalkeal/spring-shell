@@ -33,5 +33,4 @@ public abstract class NonterminalSyntaxNode extends SyntaxNode {
 	void addChildNode(SyntaxNode node) {
 		this.children.add(node);
 	}
-
 }

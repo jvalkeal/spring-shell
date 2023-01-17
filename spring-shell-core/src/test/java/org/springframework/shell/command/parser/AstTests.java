@@ -15,6 +15,22 @@
  */
 package org.springframework.shell.command.parser;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.command.parser.Ast.AstResult;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 class AstTests extends AbstractParsingTests {
 
+	@Test
+	void createsCommandNode() {
+		register(ROOT1);
+		AstResult result = ast(tokenize("root1"));
+
+		assertThat(result).isNotNull();
+		assertThat(result.getCommandNode()).isNotNull();
+		assertThat(result.getCommandNode().getCommand()).isEqualTo("root1");
+		assertThat(result.getCommandNode().getToken()).isNotNull();
+	}
 }

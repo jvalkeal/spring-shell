@@ -52,4 +52,8 @@ public class Token {
 		return position;
 	}
 
+	@Override
+	public String toString() {
+		return "Token [type=" + type + ", position=" + position + ", value=" + value + "]";
+	}
 }
