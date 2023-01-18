@@ -15,23 +15,34 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+
 public class NodeVisitor {
 
 	private final static Logger log = LoggerFactory.getLogger(NodeVisitor.class);
 
-	private CommandNode retCommandNode;
+	private CommandModel commandModel;
+	private List<String> resolvedCommmand = new ArrayList<>();
+
+	public NodeVisitor(CommandModel commandModel) {
+		this.commandModel = commandModel;
+	}
 
 	ParseResult visit(CommandNode node) {
 		log.debug("visit {}", node);
-		retCommandNode = node;
+		resolvedCommmand.add(node.getCommand());
 		visitChildren(node);
 
-		return null;
+		CommandInfo info = commandModel.resolve(resolvedCommmand);
+		CommandRegistration registration = info.registration;
+		return new ParseResult(registration);
 	}
 
 	private void visitInternal(SyntaxNode node) {
@@ -56,7 +67,7 @@ public class NodeVisitor {
 
 	private void visitCommandNode(CommandNode node) {
 		log.debug("visitCommandNode {}", node);
-		retCommandNode = node;
+		resolvedCommmand.add(node.getCommand());
 	}
 
 	private void visitOptionNode(OptionNode node) {

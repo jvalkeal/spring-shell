@@ -21,6 +21,11 @@ import org.springframework.shell.command.parser.Ast.AstResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for default implementation in an {@link Ast}.
+ *
+ * @author Janne Valkealahti
+ */
 class AstTests extends AbstractParsingTests {
 
 	@Test

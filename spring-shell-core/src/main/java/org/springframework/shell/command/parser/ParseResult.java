@@ -15,6 +15,17 @@
  */
 package org.springframework.shell.command.parser;
 
+import org.springframework.shell.command.CommandRegistration;
+
 public class ParseResult {
 
+	private CommandRegistration commandRegistration;
+
+	ParseResult(CommandRegistration commandRegistration) {
+		this.commandRegistration = commandRegistration;
+	}
+
+	public CommandRegistration getCommandRegistration() {
+		return commandRegistration;
+	}
 }

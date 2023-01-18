@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.command.CommandRegistration;
@@ -40,6 +41,27 @@ public class CommandModel {
 	@Nullable
 	CommandInfo getRootCommand(String command) {
 		return rootCommands.get(command);
+	}
+
+	CommandInfo resolve(List<String> commands) {
+		CommandInfo info = null;
+		boolean onRoot = true;
+		for (String command : commands) {
+			if (onRoot) {
+				info = rootCommands.get(command);
+				onRoot = false;
+			}
+			else {
+				Optional<CommandInfo> nextInfo = info.children.stream()
+					.filter(i -> i.command.equals(command))
+					.findFirst();
+				if (nextInfo.isEmpty()) {
+					break;
+				}
+				info = nextInfo.get();
+			}
+		}
+		return info;
 	}
 
 	Map<String, CommandInfo> getRootCommands() {

@@ -19,12 +19,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for default implementations in/with a {@link Parser}.
+ *
+ * @author Janne Valkealahti
+ */
 class ParserTests extends AbstractParsingTests {
 
 	@Test
-	void test() {
+	void shouldFindRegistration() {
 		register(ROOT1);
 		ParseResult result = parse("root1");
 		assertThat(result).isNotNull();
+		assertThat(result.getCommandRegistration()).isNotNull();
 	}
 }

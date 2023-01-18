@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for default implementation in a {@link Lexer}.
+ *
+ * @author Janne Valkealahti
  */
 class LexerTests extends AbstractParsingTests {
 

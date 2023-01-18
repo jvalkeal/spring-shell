@@ -66,7 +66,7 @@ public interface Parser {
 			CommandNode commandNode = astResult.getCommandNode();
 
 			// 3. visit nodes to get parsing result
-			NodeVisitor visitor = new NodeVisitor();
+			NodeVisitor visitor = new NodeVisitor(commandModel);
 			return visitor.visit(commandNode);
 		}
 	}

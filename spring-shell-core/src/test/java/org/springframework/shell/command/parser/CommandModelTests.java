@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CommandModel}.
+ *
+ * @author Janne Valkealahti
  */
 class CommandModelTests extends AbstractParsingTests {
 
@@ -64,5 +67,13 @@ class CommandModelTests extends AbstractParsingTests {
 				assertThat(sub1.registration).isNotNull();
 			});
 		});
+	}
+
+	@Test
+	void shouldResolveCommand() {
+		register(ROOT2_SUB1);
+		CommandModel model = commandModel();
+
+		assertThat(model.resolve(Arrays.asList("root2", "sub1"))).isNotNull();
 	}
 }
