@@ -73,12 +73,13 @@ public interface Parser {
 			//    should then get top node which we can later visit
 			AstResult astResult = ast.generate(tokens);
 			CommandNode commandNode = astResult.getCommandNode();
+			DirectiveNode directiveNode = astResult.getDirectiveNode();
 
 			// 3. visit nodes
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
-			return visitor.visit(commandNode);
+			return visitor.visit(commandNode, directiveNode);
 		}
 	}
 
@@ -93,6 +94,7 @@ public interface Parser {
 		private List<OptionResult> options = new ArrayList<>();
 		private CommandOption currentOption;
 		private Object currentOptionArgument = null;
+		private String directive = null;
 
 		DefaultNodeVisitor(CommandModel commandModel) {
 			this.commandModel = commandModel;
@@ -102,7 +104,16 @@ public interface Parser {
 		protected ParseResult buildResult() {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			CommandRegistration registration = info.registration;
-			return new ParseResult(registration, options);
+			return new ParseResult(registration, options, directive);
+		}
+
+		@Override
+		protected void onEnterDirectiveNode(DirectiveNode node) {
+			directive = node.getName();
+		}
+
+		@Override
+		protected void onExitDirectiveNode(DirectiveNode node) {
 		}
 
 		@Override

@@ -24,10 +24,12 @@ public class ParseResult {
 
 	private CommandRegistration commandRegistration;
 	private List<OptionResult> optionResults;
+	private String directive;
 
-	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults) {
+	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults, String directive) {
 		this.commandRegistration = commandRegistration;
 		this.optionResults = optionResults;
+		this.directive = directive;
 	}
 
 	public CommandRegistration getCommandRegistration() {
@@ -36,6 +38,10 @@ public class ParseResult {
 
 	public List<OptionResult> getOptionResults() {
 		return optionResults;
+	}
+
+	public String getDirective() {
+		return directive;
 	}
 
 	public static class OptionResult {

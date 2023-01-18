@@ -18,6 +18,8 @@ package org.springframework.shell.command.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.lang.Nullable;
+
 /**
  * Interface to generate abstract syntax tree from tokens. Generic language
  * parser usually contains lexing and parsing where this {@code Ast} represents
@@ -47,6 +49,14 @@ public interface Ast {
 		 * @return resolver command node
 		 */
 		CommandNode getCommandNode();
+
+		/**
+		 * Gets a directive.
+		 *
+		 * @return resolved directive
+		 */
+		@Nullable
+		DirectiveNode getDirectiveNode();
 	}
 
 	/**
@@ -59,9 +69,13 @@ public interface Ast {
 			List<CommandNode> commandNodes = new ArrayList<>();
 			CommandNode commandNode = null;
 			OptionNode optionNode = null;
+			DirectiveNode directiveNode = null;
 			for (Token token : tokens) {
 				switch (token.getType()) {
 					case DIRECTIVE:
+						String raw = token.getValue();
+						String[] split = raw.substring(1, raw.length() - 1).split(":", 1);
+						directiveNode = new DirectiveNode(token, split[0], split.length > 1 ? split[1] : null);
 						break;
 					case COMMAND:
 						commandNode = new CommandNode(token, token.getValue());
@@ -88,7 +102,7 @@ public interface Ast {
 						break;
 				}
 			}
-			return new DefaultAstResult(commandNodes.get(commandNodes.size() - 1));
+			return new DefaultAstResult(commandNodes.get(commandNodes.size() - 1), directiveNode);
 		}
 
 	}
@@ -96,14 +110,21 @@ public interface Ast {
 	static class DefaultAstResult implements AstResult {
 
 		private final CommandNode commandNode;
+		private final DirectiveNode directiveNode;
 
-		DefaultAstResult(CommandNode commandNode) {
+		DefaultAstResult(CommandNode commandNode, DirectiveNode directiveNode) {
 			this.commandNode = commandNode;
+			this.directiveNode = directiveNode;
 		}
 
 		@Override
 		public CommandNode getCommandNode() {
 			return commandNode;
+		}
+
+		@Override
+		public DirectiveNode getDirectiveNode() {
+			return directiveNode;
 		}
 	}
 

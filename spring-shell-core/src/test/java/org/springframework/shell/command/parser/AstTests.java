@@ -78,4 +78,16 @@ class AstTests extends AbstractParsingTests {
 		OptionArgumentNode x3 = (OptionArgumentNode)x2;
 		assertThat(x3.getValue()).isEqualTo("value1");
 	}
+
+	@Test
+	void directiveWithCommand() {
+		register(ROOT1);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+		AstResult result = ast(tokenize(lexer(configuration), "[fake]", "root1"));
+
+		assertThat(result.getDirectiveNode()).isNotNull();
+		assertThat(result.getDirectiveNode().getName()).isEqualTo("fake");
+		assertThat(result.getDirectiveNode().getValue()).isNull();
+	}
+
 }

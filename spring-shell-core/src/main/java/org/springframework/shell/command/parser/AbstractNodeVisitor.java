@@ -29,13 +29,21 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	private final static Logger log = LoggerFactory.getLogger(AbstractNodeVisitor.class);
 
 	@Override
-	public final ParseResult visit(CommandNode node) {
-		log.debug("visit {}", node);
-		log.debug("onEnterRootCommandNode {}", node);
-		onEnterRootCommandNode(node);
-		visitChildren(node);
-		log.debug("onExitRootCommandNode {}", node);
-		onExitRootCommandNode(node);
+	public final ParseResult visit(SyntaxNode... node) {
+		for (SyntaxNode syntaxNode : node) {
+			log.debug("visit {}", syntaxNode);
+			if (syntaxNode instanceof CommandNode commandNode) {
+				log.debug("onEnterRootCommandNode {}", commandNode);
+				onEnterRootCommandNode(commandNode);
+				visitChildren(commandNode);
+				log.debug("onExitRootCommandNode {}", commandNode);
+				onExitRootCommandNode(commandNode);
+			}
+			else if (syntaxNode instanceof DirectiveNode directiveNode) {
+				enterDirectiveNode(directiveNode);
+				exitDirectiveNode(directiveNode);
+			}
+		}
 		return buildResult();
 	}
 
@@ -131,6 +139,23 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	 */
 	protected abstract void onExitOptionArgumentNode(OptionArgumentNode node);
 
+	/**
+	 * Called when {@link DirectiveNode} is entered. When node is fully visited,
+	 * {@link #onExitDirectiveNode(DirectiveNode)} is called.
+	 *
+	 * @param node the option node
+	 * @see #onExitDirectiveNode(DirectiveNode)
+	 */
+	protected abstract void onEnterDirectiveNode(DirectiveNode node);
+
+	/**
+	 * Called when {@link DirectiveNode} is exited.
+	 *
+	 * @param node the option node
+	 * @see #onEnterDirectiveNode(DirectiveNode)
+	 */
+	protected abstract void onExitDirectiveNode(DirectiveNode node);
+
 	private void visitChildren(NonterminalSyntaxNode node) {
 		log.debug("visitChildren {}", node);
 		for (SyntaxNode syntaxNode : node.getChildren()) {
@@ -176,6 +201,16 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	private void exitOptionArgumentNode(OptionArgumentNode node) {
 		log.debug("exitOptionArgumentNode {}", node);
 		onExitOptionArgumentNode(node);
+	}
+
+	private void enterDirectiveNode(DirectiveNode node) {
+		log.debug("enterDirectiveNode {}", node);
+		onEnterDirectiveNode(node);
+	}
+
+	private void exitDirectiveNode(DirectiveNode node) {
+		log.debug("exitDirectiveNode {}", node);
+		onExitDirectiveNode(node);
 	}
 
 	private void visitInternal(SyntaxNode node) {

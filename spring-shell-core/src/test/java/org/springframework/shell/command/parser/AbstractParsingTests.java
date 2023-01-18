@@ -116,4 +116,11 @@ abstract class AbstractParsingTests {
 		Parser parser = new Parser.DefaultParser(commandModel, lexer, ast);
 		return parser.parse(Arrays.asList(arguments));
 	}
+
+	ParseResult parse(Lexer lexer, String... arguments) {
+		CommandModel commandModel = commandModel();
+		Ast ast = ast();
+		Parser parser = new Parser.DefaultParser(commandModel, lexer, ast);
+		return parser.parse(Arrays.asList(arguments));
+	}
 }

@@ -52,4 +52,12 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result.getOptionResults()).isNotEmpty();
 		assertThat(result.getOptionResults().get(0).getValue()).isEqualTo("value1");
 	}
+
+	@Test
+	void directiveWithCommand() {
+		register(ROOT3);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
+		assertThat(result.getDirective()).isEqualTo("fake");
+	}
 }

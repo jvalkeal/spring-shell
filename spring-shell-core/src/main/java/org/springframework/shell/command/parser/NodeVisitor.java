@@ -23,10 +23,10 @@ package org.springframework.shell.command.parser;
 public interface NodeVisitor {
 
 	/**
-	 * Visit nodes starting from a give {@link CommandNode}.
+	 * Visit nodes starting from a given instances of {@link SyntaxNode}.
 	 *
-	 * @param node the starting command node
+	 * @param node the starting nodes
 	 * @return Parsing result from visit
 	 */
-	ParseResult visit(CommandNode node);
+	ParseResult visit(SyntaxNode... node);
 }
