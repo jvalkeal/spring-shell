@@ -31,5 +31,5 @@ public interface NodeVisitor {
 	 * @param terminalNodes terminal nodes
 	 * @return parser result
 	 */
-	ParseResult visit(List<NonterminalSyntaxNode> nonterminalNodes, List<TerminalSyntaxNode> terminalNodes);
+	ParseResult visit(List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes);
 }

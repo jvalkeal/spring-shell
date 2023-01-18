@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
-public class CommandArgumentNode extends SyntaxNode {
+public class CommandArgumentNode extends TerminalAstNode {
 
 	private final CommandNode parent;
 

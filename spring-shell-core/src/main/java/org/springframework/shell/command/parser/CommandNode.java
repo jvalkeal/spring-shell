@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
-public class CommandNode extends NonterminalSyntaxNode {
+public class CommandNode extends NonterminalAstNode {
 
 	private final String command;
 

@@ -31,9 +31,9 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	private final static Logger log = LoggerFactory.getLogger(AbstractNodeVisitor.class);
 
 	@Override
-	public final ParseResult visit(List<NonterminalSyntaxNode> nonterminalNodes,
-			List<TerminalSyntaxNode> terminalNodes) {
-		for (NonterminalSyntaxNode ntn : nonterminalNodes) {
+	public final ParseResult visit(List<NonterminalAstNode> nonterminalNodes,
+			List<TerminalAstNode> terminalNodes) {
+		for (NonterminalAstNode ntn : nonterminalNodes) {
 			log.debug("visit {}", ntn);
 			if (ntn instanceof CommandNode node) {
 				log.debug("onEnterRootCommandNode {}", node);
@@ -43,7 +43,7 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 				onExitRootCommandNode(node);
 			}
 		}
-		for (TerminalSyntaxNode tn : terminalNodes) {
+		for (TerminalAstNode tn : terminalNodes) {
 			if (tn instanceof DirectiveNode node) {
 				enterDirectiveNode(node);
 				exitDirectiveNode(node);
@@ -161,9 +161,9 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	 */
 	protected abstract void onExitDirectiveNode(DirectiveNode node);
 
-	private void visitChildren(NonterminalSyntaxNode node) {
+	private void visitChildren(NonterminalAstNode node) {
 		log.debug("visitChildren {}", node);
-		for (SyntaxNode syntaxNode : node.getChildren()) {
+		for (AstNode syntaxNode : node.getChildren()) {
 			visitInternal(syntaxNode);
 		}
 	}
@@ -218,7 +218,7 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 		onExitDirectiveNode(node);
 	}
 
-	private void visitInternal(SyntaxNode node) {
+	private void visitInternal(AstNode node) {
 		log.debug("visitInternal {}", node);
 		if (node instanceof CommandNode n) {
 			enterCommandNode(n);

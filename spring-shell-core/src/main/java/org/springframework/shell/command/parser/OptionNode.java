@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
-public class OptionNode extends NonterminalSyntaxNode {
+public class OptionNode extends NonterminalAstNode {
 
 	private final String name;
 

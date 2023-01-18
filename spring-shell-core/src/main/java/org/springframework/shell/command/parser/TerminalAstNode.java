@@ -15,9 +15,9 @@
  */
 package org.springframework.shell.command.parser;
 
-public abstract class TerminalSyntaxNode extends SyntaxNode {
+public abstract class TerminalAstNode extends AstNode {
 
-	public TerminalSyntaxNode(Token token) {
+	public TerminalAstNode(Token token) {
 		super(token);
 	}
 }

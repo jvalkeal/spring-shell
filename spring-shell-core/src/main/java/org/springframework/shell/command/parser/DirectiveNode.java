@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
-public class DirectiveNode extends TerminalSyntaxNode {
+public class DirectiveNode extends TerminalAstNode {
 
 	private final String name;
 	private final String value;

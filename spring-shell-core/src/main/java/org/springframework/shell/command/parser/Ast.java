@@ -46,14 +46,14 @@ public interface Ast {
 		 *
 		 * @return list of non terminal nodes
 		 */
-		List<NonterminalSyntaxNode> getNonterminalNodes();
+		List<NonterminalAstNode> getNonterminalNodes();
 
 		/**
 		 * Gets a list of terminal nodes.
 		 *
 		 * @return list of terminal nodes
 		 */
-		List<TerminalSyntaxNode> getTerminalNodes();
+		List<TerminalAstNode> getTerminalNodes();
 	}
 
 	/**
@@ -101,8 +101,8 @@ public interface Ast {
 				}
 			}
 
-			List<NonterminalSyntaxNode> nonterminalNodes = new ArrayList<>();
-			List<TerminalSyntaxNode> terminalNodes = new ArrayList<>();
+			List<NonterminalAstNode> nonterminalNodes = new ArrayList<>();
+			List<TerminalAstNode> terminalNodes = new ArrayList<>();
 
 			nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
 			if (directiveNode != null) {
@@ -116,21 +116,21 @@ public interface Ast {
 
 	static class DefaultAstResult implements AstResult {
 
-		private List<NonterminalSyntaxNode> nonterminalNodes;
-		private List<TerminalSyntaxNode> terminalNodes;
+		private List<NonterminalAstNode> nonterminalNodes;
+		private List<TerminalAstNode> terminalNodes;
 
-		public DefaultAstResult(List<NonterminalSyntaxNode> nonterminalNodes, List<TerminalSyntaxNode> terminalNodes) {
+		public DefaultAstResult(List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes) {
 			this.nonterminalNodes = nonterminalNodes;
 			this.terminalNodes = terminalNodes;
 		}
 
 		@Override
-		public List<NonterminalSyntaxNode> getNonterminalNodes() {
+		public List<NonterminalAstNode> getNonterminalNodes() {
 			return nonterminalNodes;
 		}
 
 		@Override
-		public List<TerminalSyntaxNode> getTerminalNodes() {
+		public List<TerminalAstNode> getTerminalNodes() {
 			return terminalNodes;
 		}
 	}

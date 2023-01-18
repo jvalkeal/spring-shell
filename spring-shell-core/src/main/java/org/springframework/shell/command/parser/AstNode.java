@@ -15,11 +15,11 @@
  */
 package org.springframework.shell.command.parser;
 
-public abstract class SyntaxNode {
+public abstract class AstNode {
 
 	private final Token token;
 
-	public SyntaxNode(Token token) {
+	public AstNode(Token token) {
 		this.token = token;
 	}
 

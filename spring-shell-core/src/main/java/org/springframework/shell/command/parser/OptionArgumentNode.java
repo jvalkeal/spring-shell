@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
-public class OptionArgumentNode extends SyntaxNode {
+public class OptionArgumentNode extends TerminalAstNode {
 
 	private final OptionNode parentOptionNode;
 	private final String value;

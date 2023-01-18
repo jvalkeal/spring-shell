@@ -18,19 +18,19 @@ package org.springframework.shell.command.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class NonterminalSyntaxNode extends SyntaxNode {
+public abstract class NonterminalAstNode extends AstNode {
 
-	private final List<SyntaxNode> children = new ArrayList<>();
+	private final List<AstNode> children = new ArrayList<>();
 
-	public NonterminalSyntaxNode(Token token) {
+	public NonterminalAstNode(Token token) {
 		super(token);
 	}
 
-	public List<SyntaxNode> getChildren() {
+	public List<AstNode> getChildren() {
 		return children;
 	}
 
-	void addChildNode(SyntaxNode node) {
+	void addChildNode(AstNode node) {
 		this.children.add(node);
 	}
 }
