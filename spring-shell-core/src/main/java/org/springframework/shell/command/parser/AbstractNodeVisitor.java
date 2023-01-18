@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,19 +31,22 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	private final static Logger log = LoggerFactory.getLogger(AbstractNodeVisitor.class);
 
 	@Override
-	public final ParseResult visit(SyntaxNode... node) {
-		for (SyntaxNode syntaxNode : node) {
-			log.debug("visit {}", syntaxNode);
-			if (syntaxNode instanceof CommandNode commandNode) {
-				log.debug("onEnterRootCommandNode {}", commandNode);
-				onEnterRootCommandNode(commandNode);
-				visitChildren(commandNode);
-				log.debug("onExitRootCommandNode {}", commandNode);
-				onExitRootCommandNode(commandNode);
+	public final ParseResult visit(List<NonterminalSyntaxNode> nonterminalNodes,
+			List<TerminalSyntaxNode> terminalNodes) {
+		for (NonterminalSyntaxNode ntn : nonterminalNodes) {
+			log.debug("visit {}", ntn);
+			if (ntn instanceof CommandNode node) {
+				log.debug("onEnterRootCommandNode {}", node);
+				onEnterRootCommandNode(node);
+				visitChildren(node);
+				log.debug("onExitRootCommandNode {}", node);
+				onExitRootCommandNode(node);
 			}
-			else if (syntaxNode instanceof DirectiveNode directiveNode) {
-				enterDirectiveNode(directiveNode);
-				exitDirectiveNode(directiveNode);
+		}
+		for (TerminalSyntaxNode tn : terminalNodes) {
+			if (tn instanceof DirectiveNode node) {
+				enterDirectiveNode(node);
+				exitDirectiveNode(node);
 			}
 		}
 		return buildResult();

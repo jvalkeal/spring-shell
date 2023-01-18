@@ -15,21 +15,9 @@
  */
 package org.springframework.shell.command.parser;
 
-import java.util.List;
+public abstract class TerminalSyntaxNode extends SyntaxNode {
 
-/**
- * Interface to vising nodes.
- *
- * @author Janne Valkealahti
- */
-public interface NodeVisitor {
-
-	/**
-	 * Visit lists of non terminal and terminal nodes.
-	 *
-	 * @param nonterminalNodes non terminal nodes
-	 * @param terminalNodes terminal nodes
-	 * @return parser result
-	 */
-	ParseResult visit(List<NonterminalSyntaxNode> nonterminalNodes, List<TerminalSyntaxNode> terminalNodes);
+	public TerminalSyntaxNode(Token token) {
+		super(token);
+	}
 }

@@ -72,14 +72,12 @@ public interface Parser {
 			// 2. generate syntax tree results from tokens
 			//    should then get top node which we can later visit
 			AstResult astResult = ast.generate(tokens);
-			CommandNode commandNode = astResult.getCommandNode();
-			DirectiveNode directiveNode = astResult.getDirectiveNode();
 
 			// 3. visit nodes
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
-			return visitor.visit(commandNode, directiveNode);
+			return visitor.visit(astResult.getNonterminalNodes(), astResult.getTerminalNodes());
 		}
 	}
 

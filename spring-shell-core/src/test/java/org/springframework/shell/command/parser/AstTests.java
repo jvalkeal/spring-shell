@@ -34,9 +34,12 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(tokenize("root1"));
 
 		assertThat(result).isNotNull();
-		assertThat(result.getCommandNode()).isNotNull();
-		assertThat(result.getCommandNode().getCommand()).isEqualTo("root1");
-		assertThat(result.getCommandNode().getToken()).isNotNull();
+		assertThat(result.getNonterminalNodes()).hasSize(1);
+		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+			CommandNode cn = (CommandNode)n;
+			assertThat(cn.getCommand()).isEqualTo("root1");
+		});
 	}
 
 	@Test
@@ -45,16 +48,19 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(tokenize("root3", "--arg1"));
 
 		assertThat(result).isNotNull();
-		assertThat(result.getCommandNode()).isNotNull();
-		assertThat(result.getCommandNode().getCommand()).isEqualTo("root3");
-		assertThat(result.getCommandNode().getToken()).isNotNull();
-		assertThat(result.getCommandNode().getChildren()).hasSize(1);
-		assertThat(result.getCommandNode().getChildren())
-			.filteredOn(sn -> sn instanceof OptionNode)
-			.extracting(sn -> {
-				return ((OptionNode)sn).getName();
-			})
-			.containsExactly("--arg1");
+		assertThat(result.getNonterminalNodes()).hasSize(1);
+		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+			CommandNode cn = (CommandNode)n;
+			assertThat(cn.getCommand()).isEqualTo("root3");
+			assertThat(cn.getChildren()).hasSize(1);
+			assertThat(cn.getChildren())
+				.filteredOn(on -> on instanceof OptionNode)
+				.extracting(on -> {
+					return ((OptionNode)on).getName();
+				})
+				.containsExactly("--arg1");
+		});
 	}
 
 	@Test
@@ -63,20 +69,25 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(tokenize("root3", "--arg1", "value1"));
 
 		assertThat(result).isNotNull();
-		assertThat(result.getCommandNode()).isNotNull();
-		assertThat(result.getCommandNode().getCommand()).isEqualTo("root3");
-		assertThat(result.getCommandNode().getToken()).isNotNull();
-		assertThat(result.getCommandNode().getChildren()).hasSize(1);
-		assertThat(result.getCommandNode().getChildren())
-			.filteredOn(sn -> sn instanceof OptionNode)
-			.extracting(sn -> {
-				return ((OptionNode)sn).getName();
-			})
-			.containsExactly("--arg1");
-		SyntaxNode x1 = result.getCommandNode().getChildren().get(0);
-		SyntaxNode x2 = ((OptionNode)x1).getChildren().get(0);
-		OptionArgumentNode x3 = (OptionArgumentNode)x2;
-		assertThat(x3.getValue()).isEqualTo("value1");
+
+		assertThat(result).isNotNull();
+		assertThat(result.getNonterminalNodes()).hasSize(1);
+		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+			CommandNode cn = (CommandNode)n;
+			assertThat(cn.getCommand()).isEqualTo("root3");
+			assertThat(cn.getChildren()).hasSize(1);
+			assertThat(cn.getChildren())
+				.filteredOn(on -> on instanceof OptionNode)
+				.extracting(on -> {
+					return ((OptionNode)on).getName();
+				})
+				.containsExactly("--arg1");
+			OptionNode on = (OptionNode) cn.getChildren().get(0);
+			assertThat(on.getChildren()).hasSize(1);
+			OptionArgumentNode oan = (OptionArgumentNode) on.getChildren().get(0);
+			assertThat(oan.getValue()).isEqualTo("value1");
+		});
 	}
 
 	@Test
@@ -85,9 +96,11 @@ class AstTests extends AbstractParsingTests {
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 		AstResult result = ast(tokenize(lexer(configuration), "[fake]", "root1"));
 
-		assertThat(result.getDirectiveNode()).isNotNull();
-		assertThat(result.getDirectiveNode().getName()).isEqualTo("fake");
-		assertThat(result.getDirectiveNode().getValue()).isNull();
+		assertThat(result.getTerminalNodes()).hasSize(1);
+		assertThat(result.getTerminalNodes().get(0)).isInstanceOf(DirectiveNode.class);
+		DirectiveNode dn = (DirectiveNode) result.getTerminalNodes().get(0);
+		assertThat(dn.getName()).isEqualTo("fake");
+		assertThat(dn.getValue()).isNull();
 	}
 
 }

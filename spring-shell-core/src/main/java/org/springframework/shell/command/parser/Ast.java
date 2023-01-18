@@ -18,8 +18,6 @@ package org.springframework.shell.command.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.lang.Nullable;
-
 /**
  * Interface to generate abstract syntax tree from tokens. Generic language
  * parser usually contains lexing and parsing where this {@code Ast} represents
@@ -44,19 +42,18 @@ public interface Ast {
 	public interface AstResult {
 
 		/**
-		 * Gets resolved {@link CommandNode}.
+		 * Gets a list of non terminal nodes.
 		 *
-		 * @return resolver command node
+		 * @return list of non terminal nodes
 		 */
-		CommandNode getCommandNode();
+		List<NonterminalSyntaxNode> getNonterminalNodes();
 
 		/**
-		 * Gets a directive.
+		 * Gets a list of terminal nodes.
 		 *
-		 * @return resolved directive
+		 * @return list of terminal nodes
 		 */
-		@Nullable
-		DirectiveNode getDirectiveNode();
+		List<TerminalSyntaxNode> getTerminalNodes();
 	}
 
 	/**
@@ -70,6 +67,7 @@ public interface Ast {
 			CommandNode commandNode = null;
 			OptionNode optionNode = null;
 			DirectiveNode directiveNode = null;
+
 			for (Token token : tokens) {
 				switch (token.getType()) {
 					case DIRECTIVE:
@@ -102,30 +100,38 @@ public interface Ast {
 						break;
 				}
 			}
-			return new DefaultAstResult(commandNodes.get(commandNodes.size() - 1), directiveNode);
+
+			List<NonterminalSyntaxNode> nonterminalNodes = new ArrayList<>();
+			List<TerminalSyntaxNode> terminalNodes = new ArrayList<>();
+
+			nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
+			if (directiveNode != null) {
+				terminalNodes.add(directiveNode);
+			}
+
+			return new DefaultAstResult(nonterminalNodes, terminalNodes);
 		}
 
 	}
 
 	static class DefaultAstResult implements AstResult {
 
-		private final CommandNode commandNode;
-		private final DirectiveNode directiveNode;
+		private List<NonterminalSyntaxNode> nonterminalNodes;
+		private List<TerminalSyntaxNode> terminalNodes;
 
-		DefaultAstResult(CommandNode commandNode, DirectiveNode directiveNode) {
-			this.commandNode = commandNode;
-			this.directiveNode = directiveNode;
+		public DefaultAstResult(List<NonterminalSyntaxNode> nonterminalNodes, List<TerminalSyntaxNode> terminalNodes) {
+			this.nonterminalNodes = nonterminalNodes;
+			this.terminalNodes = terminalNodes;
 		}
 
 		@Override
-		public CommandNode getCommandNode() {
-			return commandNode;
+		public List<NonterminalSyntaxNode> getNonterminalNodes() {
+			return nonterminalNodes;
 		}
 
 		@Override
-		public DirectiveNode getDirectiveNode() {
-			return directiveNode;
+		public List<TerminalSyntaxNode> getTerminalNodes() {
+			return terminalNodes;
 		}
 	}
-
 }
