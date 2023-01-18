@@ -28,6 +28,7 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 
 	private final static Logger log = LoggerFactory.getLogger(AbstractNodeVisitor.class);
 
+	@Override
 	public final ParseResult visit(CommandNode node) {
 		log.debug("visit {}", node);
 		onRootCommandNode(node);

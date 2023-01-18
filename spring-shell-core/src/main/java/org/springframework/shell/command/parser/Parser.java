@@ -117,6 +117,5 @@ public interface Parser {
 		@Override
 		protected void onOptionArgumentNode(OptionArgumentNode node) {
 		}
-
 	}
 }
