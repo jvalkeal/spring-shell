@@ -46,24 +46,89 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	 */
 	protected abstract ParseResult buildResult();
 
+	/**
+	 * Called when {@link CommandNode} for root is entered. When node is fully
+	 * visited, {@link #onExitRootCommandNode(CommandNode)} is called.
+	 *
+	 * @param node the command node
+	 * @see #onExitRootCommandNode(CommandNode)
+	 */
 	protected abstract void onEnterRootCommandNode(CommandNode node);
 
+	/**
+	 * Called when {@link CommandNode} for root is exited.
+	 *
+	 * @param node the command node
+	 * @see #onEnterRootCommandNode(CommandNode)
+	 */
 	protected abstract void onExitRootCommandNode(CommandNode node);
 
+	/**
+	 * Called when {@link CommandNode} is entered. When node is fully visited,
+	 * {@link #onExitCommandNode(CommandNode)} is called.
+	 *
+	 * @param node the command node
+	 * @see #onExitCommandNode(CommandNode)
+	 */
 	protected abstract void onEnterCommandNode(CommandNode node);
 
+	/**
+	 * Called when {@link CommandNode} is exited.
+	 *
+	 * @param node the command node
+	 * @see #onEnterCommandNode(CommandNode)
+	 */
 	protected abstract void onExitCommandNode(CommandNode node);
 
+	/**
+	 * Called when {@link OptionNode} is entered. When node is fully visited,
+	 * {@link #onExitOptionNode(OptionNode)} is called.
+	 *
+	 * @param node the option node
+	 * @see #onExitOptionNode(OptionNode)
+	 */
 	protected abstract void onEnterOptionNode(OptionNode node);
 
+	/**
+	 * Called when {@link OptionNode} is exited.
+	 *
+	 * @param node the option node
+	 * @see #onEnterOptionNode(OptionNode)
+	 */
 	protected abstract void onExitOptionNode(OptionNode node);
 
+	/**
+	 * Called when {@link CommandArgumentNode} is entered. When node is fully visited,
+	 * {@link #onExitCommandArgumentNode(CommandArgumentNode)} is called.
+	 *
+	 * @param node the command argument node
+	 * @see #onExitCommandArgumentNode(CommandArgumentNode)
+	 */
 	protected abstract void onEnterCommandArgumentNode(CommandArgumentNode node);
 
+	/**
+	 * Called when {@link CommandArgumentNode} is exited.
+	 *
+	 * @param node the command argument node
+	 * @see #onEnterCommandArgumentNode(CommandArgumentNode)
+	 */
 	protected abstract void onExitCommandArgumentNode(CommandArgumentNode node);
 
+	/**
+	 * Called when {@link OptionArgumentNode} is entered. When node is fully visited,
+	 * {@link #onExitOptionArgumentNode(OptionArgumentNode)} is called.
+	 *
+	 * @param node the option argument node
+	 * @see #onExitOptionArgumentNode(OptionArgumentNode)
+	 */
 	protected abstract void onEnterOptionArgumentNode(OptionArgumentNode node);
 
+	/**
+	 * Called when {@link OptionArgumentNode} is exited.
+	 *
+	 * @param node the command argument node
+	 * @see #onEnterOptionArgumentNode(OptionArgumentNode)
+	 */
 	protected abstract void onExitOptionArgumentNode(OptionArgumentNode node);
 
 	private void visitChildren(NonterminalSyntaxNode node) {
