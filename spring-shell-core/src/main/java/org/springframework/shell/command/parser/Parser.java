@@ -15,9 +15,12 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
+import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 
 /**
  * Interface to parse command line arguments.
@@ -61,13 +64,59 @@ public interface Parser {
 			// 1. tokenize arguments
 			List<Token> tokens = lexer.tokenize(arguments);
 
-			// 2. generate syntax tree
+			// 2. generate syntax tree results from tokens
+			//    should then get top node which we can later visit
 			AstResult astResult = ast.generate(tokens);
 			CommandNode commandNode = astResult.getCommandNode();
 
-			// 3. visit nodes to get parsing result
-			NodeVisitor visitor = new NodeVisitor(commandModel);
+			// 3. visit nodes
+			//    whoever uses this parser can then do further
+			//    things with final parsing results
+			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
 			return visitor.visit(commandNode);
 		}
+	}
+
+	/**
+	 * Default implementation of a {@link NodeVisitor}.
+	 */
+	static class DefaultNodeVisitor extends AbstractNodeVisitor {
+
+		private final CommandModel commandModel;
+		private List<String> resolvedCommmand = new ArrayList<>();
+
+		DefaultNodeVisitor(CommandModel commandModel) {
+			this.commandModel = commandModel;
+		}
+
+		@Override
+		protected ParseResult buildResult() {
+			CommandInfo info = commandModel.resolve(resolvedCommmand);
+			CommandRegistration registration = info.registration;
+			return new ParseResult(registration);
+		}
+
+		@Override
+		protected void onRootCommandNode(CommandNode node) {
+			resolvedCommmand.add(node.getCommand());
+		}
+
+		@Override
+		protected void onCommandNode(CommandNode node) {
+			resolvedCommmand.add(node.getCommand());
+		}
+
+		@Override
+		protected void onOptionNode(OptionNode node) {
+		}
+
+		@Override
+		protected void onCommandArgumentNode(CommandArgumentNode node) {
+		}
+
+		@Override
+		protected void onOptionArgumentNode(OptionArgumentNode node) {
+		}
+
 	}
 }
