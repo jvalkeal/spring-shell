@@ -28,4 +28,8 @@ public class OptionNode extends NonterminalSyntaxNode {
 		return name;
 	}
 
+	@Override
+	public String toString() {
+		return "OptionNode [name=" + name + ", children=" + getChildren() + ", token=" + getToken() + "]";
+	}
 }

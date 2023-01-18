@@ -95,7 +95,11 @@ public interface Lexer {
 					foundEndOfDirectives = true;
 				}
 
-				if (validTokens.containsKey(argument)) {
+				// XXX not nice
+				if (tokenList.size() > 0 && tokenList.get(tokenList.size() - 1).getType() == TokenType.OPTION) {
+					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+				}
+				else if (validTokens.containsKey(argument)) {
 					Token token = validTokens.get(argument);
 					switch (token.getType()) {
 						case COMMAND:
@@ -106,6 +110,9 @@ public interface Lexer {
 						case OPTION:
 							tokenList.add(Token.of(argument, TokenType.OPTION, i));
 							break;
+						// case ARGUMENT:
+						// 	tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+						// 	break;
 						default:
 							break;
 					}

@@ -15,17 +15,43 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.List;
+
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 
 public class ParseResult {
 
 	private CommandRegistration commandRegistration;
+	private List<OptionResult> optionResults;
 
-	ParseResult(CommandRegistration commandRegistration) {
+	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults) {
 		this.commandRegistration = commandRegistration;
+		this.optionResults = optionResults;
 	}
 
 	public CommandRegistration getCommandRegistration() {
 		return commandRegistration;
+	}
+
+	public List<OptionResult> getOptionResults() {
+		return optionResults;
+	}
+
+	public static class OptionResult {
+		private CommandOption option;
+		private Object value;
+		public OptionResult(CommandOption option, Object value) {
+			this.option = option;
+			this.value = value;
+		}
+
+		public CommandOption getOption() {
+			return option;
+		}
+
+		public Object getValue() {
+			return value;
+		}
 	}
 }

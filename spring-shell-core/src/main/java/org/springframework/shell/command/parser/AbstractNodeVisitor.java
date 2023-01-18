@@ -31,8 +31,11 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	@Override
 	public final ParseResult visit(CommandNode node) {
 		log.debug("visit {}", node);
-		onRootCommandNode(node);
+		log.debug("onEnterRootCommandNode {}", node);
+		onEnterRootCommandNode(node);
 		visitChildren(node);
+		log.debug("onExitRootCommandNode {}", node);
+		onExitRootCommandNode(node);
 		return buildResult();
 	}
 
@@ -43,60 +46,25 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 	 */
 	protected abstract ParseResult buildResult();
 
-	/**
-	 * Callback when root command node is visited.
-	 *
-	 * @param node the root command node
-	 */
-	protected abstract void onRootCommandNode(CommandNode node);
+	protected abstract void onEnterRootCommandNode(CommandNode node);
 
-	/**
-	 * Callback when command node is visited.
-	 *
-	 * @param node the command node
-	 */
-	protected abstract void onCommandNode(CommandNode node);
+	protected abstract void onExitRootCommandNode(CommandNode node);
 
-	/**
-	 * Callback when option node is visited.
-	 *
-	 * @param node the option node
-	 */
-	protected abstract void onOptionNode(OptionNode node);
+	protected abstract void onEnterCommandNode(CommandNode node);
 
-	/**
-	 * Callback when command argument node is visited.
-	 *
-	 * @param node the command argument node
-	 */
-	protected abstract void onCommandArgumentNode(CommandArgumentNode node);
+	protected abstract void onExitCommandNode(CommandNode node);
 
-	/**
-	 * Callback when option argument node is visited.
-	 *
-	 * @param node the option argument node
-	 */
-	protected abstract void onOptionArgumentNode(OptionArgumentNode node);
+	protected abstract void onEnterOptionNode(OptionNode node);
 
-	private void visitCommandNode(CommandNode node) {
-		log.debug("visitCommandNode {}", node);
-		onCommandNode(node);
-	}
+	protected abstract void onExitOptionNode(OptionNode node);
 
-	private void visitOptionNode(OptionNode node) {
-		log.debug("visitOptionNode {}", node);
-		onOptionNode(node);
-	}
+	protected abstract void onEnterCommandArgumentNode(CommandArgumentNode node);
 
-	private void visitCommandArgumentNode(CommandArgumentNode node) {
-		log.debug("visitCommandArgumentNode {}", node);
-		onCommandArgumentNode(node);
-	}
+	protected abstract void onExitCommandArgumentNode(CommandArgumentNode node);
 
-	private void visitOptionArgumentNode(OptionArgumentNode node) {
-		log.debug("visitCommandArgumentNode {}", node);
-		onOptionArgumentNode(node);
-	}
+	protected abstract void onEnterOptionArgumentNode(OptionArgumentNode node);
+
+	protected abstract void onExitOptionArgumentNode(OptionArgumentNode node);
 
 	private void visitChildren(NonterminalSyntaxNode node) {
 		log.debug("visitChildren {}", node);
@@ -105,21 +73,65 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
 		}
 	}
 
+	private void enterCommandNode(CommandNode node) {
+		log.debug("enterCommandNode {}", node);
+		onEnterCommandNode(node);
+	}
+
+	private void exitCommandNode(CommandNode node) {
+		log.debug("exitCommandNode {}", node);
+		onExitCommandNode(node);
+	}
+
+	private void enterOptionNode(OptionNode node) {
+		log.debug("enterOptionNode {}", node);
+		onEnterOptionNode(node);
+	}
+
+	private void exitOptionNode(OptionNode node) {
+		log.debug("exitOptionNode {}", node);
+		onExitOptionNode(node);
+	}
+
+	private void enterCommandArgumentNode(CommandArgumentNode node) {
+		log.debug("enterCommandArgumentNode {}", node);
+		onEnterCommandArgumentNode(node);
+	}
+
+	private void exitCommandArgumentNode(CommandArgumentNode node) {
+		log.debug("exitCommandArgumentNode {}", node);
+		onExitCommandArgumentNode(node);
+	}
+
+	private void enterOptionArgumentNode(OptionArgumentNode node) {
+		log.debug("enterOptionArgumentNode {}", node);
+		onEnterOptionArgumentNode(node);
+	}
+
+	private void exitOptionArgumentNode(OptionArgumentNode node) {
+		log.debug("exitOptionArgumentNode {}", node);
+		onExitOptionArgumentNode(node);
+	}
+
 	private void visitInternal(SyntaxNode node) {
 		log.debug("visitInternal {}", node);
 		if (node instanceof CommandNode n) {
-			visitCommandNode(n);
+			enterCommandNode(n);
 			visitChildren(n);
+			exitCommandNode(n);
 		}
 		else if (node instanceof OptionNode n) {
-			visitOptionNode(n);
+			enterOptionNode(n);
 			visitChildren(n);
+			exitOptionNode(n);
 		}
 		else if (node instanceof CommandArgumentNode n) {
-			visitCommandArgumentNode(n);
+			enterCommandArgumentNode(n);
+			exitCommandArgumentNode(n);
 		}
 		else if (node instanceof OptionArgumentNode n) {
-			visitOptionArgumentNode(n);
+			enterOptionArgumentNode(n);
+			exitOptionArgumentNode(n);
 		}
 	}
 }

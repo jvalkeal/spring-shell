@@ -30,6 +30,6 @@ public class CommandNode extends NonterminalSyntaxNode {
 
 	@Override
 	public String toString() {
-		return "CommandNode [command=" + command + ", childred=" + getChildren() + ", token=" + getToken() + "]";
+		return "CommandNode [command=" + command + ", children=" + getChildren() + ", token=" + getToken() + "]";
 	}
 }

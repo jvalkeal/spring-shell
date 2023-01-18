@@ -18,14 +18,20 @@ package org.springframework.shell.command.parser;
 public class OptionArgumentNode extends SyntaxNode {
 
 	private final OptionNode parentOptionNode;
+	private final String value;
 
-	public OptionArgumentNode(Token token, OptionNode parentOptionNode) {
+	public OptionArgumentNode(Token token, OptionNode parentOptionNode, String value) {
 		super(token);
 		this.parentOptionNode = parentOptionNode;
+		this.value = value;
 	}
 
 	public OptionNode getParentOptionNode() {
 		return parentOptionNode;
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 }

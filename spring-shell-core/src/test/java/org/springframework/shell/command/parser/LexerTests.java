@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.command.parser;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -83,6 +82,17 @@ class LexerTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void optionValueFromRoot() {
+		register(ROOT3);
+		List<Token> tokens = tokenize("root3", "--arg1", "value1");
+
+		assertThat(tokens).hasSize(3);
+
+		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.OPTION,
+				TokenType.ARGUMENT);
+	}
+
+	@Test
 	void doubleDashAddsCommandArguments() {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "--", "arg1");
@@ -91,7 +101,6 @@ class LexerTests extends AbstractParsingTests {
 
 		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND, TokenType.DOUBLEDASH,
 				TokenType.ARGUMENT);
-
 	}
 
 	@Test

@@ -73,7 +73,7 @@ public interface Ast {
 						break;
 					case ARGUMENT:
 						if (optionNode != null) {
-							OptionArgumentNode optionArgumentNode = new OptionArgumentNode(token, optionNode);
+							OptionArgumentNode optionArgumentNode = new OptionArgumentNode(token, optionNode, token.getValue());
 							optionNode.addChildNode(optionArgumentNode);
 						}
 						else {

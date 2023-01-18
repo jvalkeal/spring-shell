@@ -16,11 +16,16 @@
 package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+import org.springframework.shell.command.parser.ParseResult.OptionResult;
 
 /**
  * Interface to parse command line arguments.
@@ -84,6 +89,10 @@ public interface Parser {
 
 		private final CommandModel commandModel;
 		private List<String> resolvedCommmand = new ArrayList<>();
+		private CommandNode currentCommandNode;
+		private List<OptionResult> options = new ArrayList<>();
+		private CommandOption currentOption;
+		private Object currentOptionArgument = null;
 
 		DefaultNodeVisitor(CommandModel commandModel) {
 			this.commandModel = commandModel;
@@ -93,29 +102,63 @@ public interface Parser {
 		protected ParseResult buildResult() {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			CommandRegistration registration = info.registration;
-			return new ParseResult(registration);
+			return new ParseResult(registration, options);
 		}
 
 		@Override
-		protected void onRootCommandNode(CommandNode node) {
+		protected void onEnterRootCommandNode(CommandNode node) {
+			currentCommandNode = node;
 			resolvedCommmand.add(node.getCommand());
 		}
 
 		@Override
-		protected void onCommandNode(CommandNode node) {
+		protected void onExitRootCommandNode(CommandNode node) {
+		}
+
+		@Override
+		protected void onEnterCommandNode(CommandNode node) {
+			currentCommandNode = node;
 			resolvedCommmand.add(node.getCommand());
 		}
 
 		@Override
-		protected void onOptionNode(OptionNode node) {
+		protected void onExitCommandNode(CommandNode node) {
 		}
 
 		@Override
-		protected void onCommandArgumentNode(CommandArgumentNode node) {
+		protected void onEnterOptionNode(OptionNode node) {
+			CommandInfo info = commandModel.resolve(resolvedCommmand);
+			String name = node.getName();
+			info.registration.getOptions().forEach(option -> {
+				Set<String> longNames = Arrays.asList(option.getLongNames()).stream()
+					.map(n -> "--" + n)
+					.collect(Collectors.toSet());
+				if (longNames.contains(name)) {
+					currentOption = option;
+				}
+			});
 		}
 
 		@Override
-		protected void onOptionArgumentNode(OptionArgumentNode node) {
+		protected void onExitOptionNode(OptionNode node) {
+			options.add(new OptionResult(currentOption, currentOptionArgument));
+		}
+
+		@Override
+		protected void onEnterCommandArgumentNode(CommandArgumentNode node) {
+		}
+
+		@Override
+		protected void onExitCommandArgumentNode(CommandArgumentNode node) {
+		}
+
+		@Override
+		protected void onEnterOptionArgumentNode(OptionArgumentNode node) {
+			currentOptionArgument = node.getValue();
+		}
+
+		@Override
+		protected void onExitOptionArgumentNode(OptionArgumentNode node) {
 		}
 	}
 }
