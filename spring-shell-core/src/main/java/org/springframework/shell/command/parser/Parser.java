@@ -20,11 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+import org.springframework.shell.command.parser.ParseResult.ErrorResult;
 import org.springframework.shell.command.parser.ParseResult.OptionResult;
 
 /**
@@ -93,6 +95,7 @@ public interface Parser {
 		private CommandOption currentOption;
 		private Object currentOptionArgument = null;
 		private String directive = null;
+		// private List<CommandOption> resolvedOptions = new ArrayList<>();
 
 		DefaultNodeVisitor(CommandModel commandModel) {
 			this.commandModel = commandModel;
@@ -102,7 +105,27 @@ public interface Parser {
 		protected ParseResult buildResult() {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			CommandRegistration registration = info.registration;
-			return new ParseResult(registration, options, directive);
+
+			List<ErrorResult> errorResults = validate(registration);
+
+			return new ParseResult(registration, options, directive, errorResults);
+		}
+
+		List<ErrorResult> validate(CommandRegistration registration) {
+			List<ErrorResult> errorResults = new ArrayList<>();
+			List<CommandOption> requiredOptions = registration.getOptions().stream()
+				.filter(o -> o.isRequired())
+				.collect(Collectors.toList());
+			options.stream().map(or -> or.getOption()).forEach(o -> {
+				requiredOptions.remove(o);
+			});
+			requiredOptions.stream().forEach(o -> {
+				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
+				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
+						.collect(Collectors.joining(",")) : "";
+				errorResults.add(new ErrorResult(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
+			});
+			return errorResults;
 		}
 
 		@Override

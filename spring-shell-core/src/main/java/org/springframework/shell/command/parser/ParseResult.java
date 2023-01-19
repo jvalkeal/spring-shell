@@ -20,16 +20,27 @@ import java.util.List;
 import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 
+/**
+ * Results from a {@link Parser} containing needed information like resolved
+ * {@link CommandRegistration}, list of {@link CommandOption} instances, errors
+ * and directive.
+ *
+ * @author Janne Valkealahti
+ * @see Parser
+ */
 public class ParseResult {
 
 	private CommandRegistration commandRegistration;
 	private List<OptionResult> optionResults;
 	private String directive;
+	private List<ErrorResult> errorResults;
 
-	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults, String directive) {
+	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults, String directive,
+			List<ErrorResult> errorResults) {
 		this.commandRegistration = commandRegistration;
 		this.optionResults = optionResults;
 		this.directive = directive;
+		this.errorResults = errorResults;
 	}
 
 	public CommandRegistration getCommandRegistration() {
@@ -38,6 +49,10 @@ public class ParseResult {
 
 	public List<OptionResult> getOptionResults() {
 		return optionResults;
+	}
+
+	public List<ErrorResult> getErrorResults() {
+		return errorResults;
 	}
 
 	public String getDirective() {
@@ -58,6 +73,23 @@ public class ParseResult {
 
 		public Object getValue() {
 			return value;
+		}
+	}
+
+	public static class ErrorResult {
+		private ParserMessage message;
+		private int position;
+		private Object[] inserts;
+		public ErrorResult(ParserMessage message, int position, Object... inserts) {
+			this.message = message;
+			this.position = position;
+			this.inserts = inserts;
+		}
+		public ParserMessage getParserMessage() {
+			return message;
+		}
+		public String getMessage() {
+			return message.formatMessage(position, inserts);
 		}
 	}
 }

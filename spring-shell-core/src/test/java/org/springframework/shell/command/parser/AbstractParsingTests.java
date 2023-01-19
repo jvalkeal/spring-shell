@@ -61,6 +61,17 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT4 = CommandRegistration.builder()
+		.command("root4")
+		.withOption()
+			.longNames("arg1")
+			.required()
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	Map<String, CommandRegistration> registrations = new HashMap<>();
 
 	@BeforeEach

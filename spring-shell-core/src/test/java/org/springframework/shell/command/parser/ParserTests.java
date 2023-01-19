@@ -60,4 +60,17 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
 		assertThat(result.getDirective()).isEqualTo("fake");
 	}
+
+	@Test
+	void shouldHaveErrorResult() {
+		register(ROOT4);
+		ParseResult result = parse("root4");
+		assertThat(result).isNotNull();
+		assertThat(result.getErrorResults()).isNotEmpty();
+		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(100);
+		assertThat(result.getErrorResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
+		// "100E:(pos 0): Missing option, longnames='arg1', shortnames=''"
+		assertThat(result.getErrorResults().get(0).getMessage()).contains("Missing option", "arg1");
+	}
+
 }
