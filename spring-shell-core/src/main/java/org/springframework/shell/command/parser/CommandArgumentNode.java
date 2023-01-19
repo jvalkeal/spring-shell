@@ -15,7 +15,12 @@
  */
 package org.springframework.shell.command.parser;
 
-public class CommandArgumentNode extends TerminalAstNode {
+/**
+ * Node representing a command argument.
+ *
+ * @author Janne Valkealahti
+ */
+public final class CommandArgumentNode extends TerminalAstNode {
 
 	private final CommandNode parent;
 

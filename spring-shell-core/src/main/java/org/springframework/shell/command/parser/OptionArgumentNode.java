@@ -15,7 +15,12 @@
  */
 package org.springframework.shell.command.parser;
 
-public class OptionArgumentNode extends TerminalAstNode {
+/**
+ * Node representing an option argument.
+ *
+ * @author Janne Valkealahti
+ */
+public final class OptionArgumentNode extends TerminalAstNode {
 
 	private final OptionNode parentOptionNode;
 	private final String value;

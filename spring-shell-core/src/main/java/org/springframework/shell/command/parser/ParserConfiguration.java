@@ -24,6 +24,9 @@ package org.springframework.shell.command.parser;
  */
 public class ParserConfiguration {
 
+	/**
+	 * Defines if directives are supported, disabled on default.
+	 */
 	private boolean enableDirectives;
 
 	public boolean isEnableDirectives() {

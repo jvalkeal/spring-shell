@@ -18,7 +18,13 @@ package org.springframework.shell.command.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class NonterminalAstNode extends AstNode {
+/**
+ * {@code Nonterminal} node means that it can have children and doesn't
+ * necessarily terminal {@code ast tree branch}.
+ *
+ * @author Janne Valkealahti
+ */
+public abstract sealed class NonterminalAstNode extends AstNode permits CommandNode, OptionNode {
 
 	private final List<AstNode> children = new ArrayList<>();
 

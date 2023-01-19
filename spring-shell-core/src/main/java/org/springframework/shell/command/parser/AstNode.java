@@ -15,7 +15,13 @@
  */
 package org.springframework.shell.command.parser;
 
-public abstract class AstNode {
+/**
+ * Represents a node in an {@code abstract syntax tree} and knows about
+ * {@link Token}.
+ *
+ * @author Janne Valkealahti
+ */
+public abstract sealed class AstNode permits NonterminalAstNode, TerminalAstNode {
 
 	private final Token token;
 

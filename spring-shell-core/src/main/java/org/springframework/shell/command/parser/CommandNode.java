@@ -15,7 +15,12 @@
  */
 package org.springframework.shell.command.parser;
 
-public class CommandNode extends NonterminalAstNode {
+/**
+ * Node representing a command.
+ *
+ * @author Janne Valkealahti
+ */
+public final class CommandNode extends NonterminalAstNode {
 
 	private final String command;
 

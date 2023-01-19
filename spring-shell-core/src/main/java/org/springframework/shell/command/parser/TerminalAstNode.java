@@ -15,7 +15,13 @@
  */
 package org.springframework.shell.command.parser;
 
-public abstract class TerminalAstNode extends AstNode {
+/**
+ * {@code Terminal} node means that it is end of {@code ast tree branch}.
+ *
+ * @author Janne Valkealahti
+ */
+public abstract sealed class TerminalAstNode
+		extends AstNode permits DirectiveNode, OptionArgumentNode, CommandArgumentNode {
 
 	public TerminalAstNode(Token token) {
 		super(token);

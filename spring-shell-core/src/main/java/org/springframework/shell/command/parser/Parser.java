@@ -70,7 +70,7 @@ public interface Parser {
 			List<Token> tokens = lexer.tokenize(arguments);
 
 			// 2. generate syntax tree results from tokens
-			//    should then get top node which we can later visit
+			//    result from it is then feed into node visitor
 			AstResult astResult = ast.generate(tokens);
 
 			// 3. visit nodes
