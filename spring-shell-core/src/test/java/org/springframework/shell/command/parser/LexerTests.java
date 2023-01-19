@@ -104,6 +104,17 @@ class LexerTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void commandArgsWithoutOption() {
+		register(ROOT3);
+		List<Token> tokens = tokenize("root3", "value1", "value2");
+
+		assertThat(tokens).hasSize(3);
+
+		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND, TokenType.ARGUMENT,
+				TokenType.ARGUMENT);
+	}
+
+	@Test
 	void directiveWithCommand() {
 		register(ROOT1);
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
@@ -125,4 +136,13 @@ class LexerTests extends AbstractParsingTests {
 			assertThat(token.getPosition()).isEqualTo(1);
 		});
 	}
+
+	@Test
+	void ignoreDirectiveIfDisabled() {
+		register(ROOT1);
+		List<Token> tokens = tokenize("[fake]", "root1");
+
+		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND);
+	}
+
 }

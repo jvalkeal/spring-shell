@@ -84,8 +84,8 @@ public interface Lexer {
 						continue;
 				}
 
-				// finding a command marks no-more-directives as those
-				// are always before commands.
+				// take directive if its defined
+				// we can always be done with directives as those become before rest
 				if (!foundEndOfDirectives) {
 					if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
 							&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
@@ -95,8 +95,8 @@ public interface Lexer {
 					foundEndOfDirectives = true;
 				}
 
-				// XXX not nice
-				if (tokenList.size() > 0 && tokenList.get(tokenList.size() - 1).getType() == TokenType.OPTION) {
+				// logic for normal command, option, argument stuff
+				if (isLastTokenOfType(tokenList, TokenType.OPTION)) {
 					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
 				}
 				else if (validTokens.containsKey(argument)) {
@@ -110,12 +110,15 @@ public interface Lexer {
 						case OPTION:
 							tokenList.add(Token.of(argument, TokenType.OPTION, i));
 							break;
-						// case ARGUMENT:
-						// 	tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
-						// 	break;
 						default:
 							break;
 					}
+				}
+				else if (isLastTokenOfType(tokenList, TokenType.COMMAND)) {
+					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+				}
+				else if (isLastTokenOfType(tokenList, TokenType.ARGUMENT)) {
+					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
 				}
 
 			}
@@ -124,5 +127,13 @@ public interface Lexer {
 			return tokenList;
 		}
 
+		private static boolean isLastTokenOfType(List<Token> tokenList, TokenType type) {
+			if (tokenList.size() > 0) {
+				if (tokenList.get(tokenList.size() - 1).getType() == type) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }
