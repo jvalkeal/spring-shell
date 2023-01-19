@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.command.parser;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Ast.AstResult;
@@ -31,7 +33,8 @@ class AstTests extends AbstractParsingTests {
 	@Test
 	void createsCommandNode() {
 		register(ROOT1);
-		AstResult result = ast(tokenize("root1"));
+		Token root1 = token("root1", TokenType.COMMAND, 0);
+		AstResult result = ast(root1);
 
 		assertThat(result).isNotNull();
 		assertThat(result.getNonterminalNodes()).hasSize(1);
@@ -45,7 +48,9 @@ class AstTests extends AbstractParsingTests {
 	@Test
 	void createsOptionNodeNoOptionArg() {
 		register(ROOT3);
-		AstResult result = ast(tokenize("root3", "--arg1"));
+		Token root3 = token("root3", TokenType.COMMAND, 0);
+		Token arg1 = token("--arg1", TokenType.OPTION, 1);
+		AstResult result = ast(root3, arg1);
 
 		assertThat(result).isNotNull();
 		assertThat(result.getNonterminalNodes()).hasSize(1);
@@ -66,7 +71,10 @@ class AstTests extends AbstractParsingTests {
 	@Test
 	void createsOptionNodeWithOptionArg() {
 		register(ROOT3);
-		AstResult result = ast(tokenize("root3", "--arg1", "value1"));
+		Token root3 = token("root3", TokenType.COMMAND, 0);
+		Token arg1 = token("--arg1", TokenType.OPTION, 1);
+		Token value1 = token("value1", TokenType.ARGUMENT, 2);
+		AstResult result = ast(root3, arg1, value1);
 
 		assertThat(result).isNotNull();
 
@@ -93,8 +101,9 @@ class AstTests extends AbstractParsingTests {
 	@Test
 	void directiveWithCommand() {
 		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
-		AstResult result = ast(tokenize(lexer(configuration), "[fake]", "root1"));
+		Token directive = token("[fake]", TokenType.DIRECTIVE, 0);
+		Token root1 = token("root1", TokenType.COMMAND, 1);
+		AstResult result = ast(directive, root1);
 
 		assertThat(result.getTerminalNodes()).hasSize(1);
 		assertThat(result.getTerminalNodes().get(0)).isInstanceOf(DirectiveNode.class);

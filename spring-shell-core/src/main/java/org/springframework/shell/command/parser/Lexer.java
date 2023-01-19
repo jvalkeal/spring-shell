@@ -29,6 +29,11 @@ import org.springframework.shell.command.parser.CommandModel.CommandInfo;
  * contains lexing and parsing where this {@code Lexer} represents the former
  * lexing side.
  *
+ * Lexing takes a first step to analyse basic construct of elements out from
+ * given arguments. We get rough idea what each argument represents but don't
+ * look deeper if any of it is correct which happens later when tokens go
+ * through parsing operation.
+ *
  * @author Janne Valkealahti
  */
 public interface Lexer {

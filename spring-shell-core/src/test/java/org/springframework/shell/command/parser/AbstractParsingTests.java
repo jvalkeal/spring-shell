@@ -76,6 +76,11 @@ abstract class AbstractParsingTests {
 		return new CommandModel(registrations);
 	}
 
+
+	Token token(String value, TokenType type, int position) {
+		return new Token(value, type, position);
+	}
+
 	Lexer lexer() {
 		return new Lexer.DefaultLexer(commandModel(), new ParserConfiguration());
 	}
@@ -107,6 +112,11 @@ abstract class AbstractParsingTests {
 	AstResult ast(List<Token> tokens) {
 		Ast ast = ast();
 		return ast.generate(tokens);
+	}
+
+	AstResult ast(Token... tokens) {
+		Ast ast = ast();
+		return ast.generate(Arrays.asList(tokens));
 	}
 
 	ParseResult parse(String... arguments) {
