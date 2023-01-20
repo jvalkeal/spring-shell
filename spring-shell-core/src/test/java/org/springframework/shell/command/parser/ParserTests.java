@@ -71,7 +71,7 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse("root4");
 		assertThat(result).isNotNull();
 		assertThat(result.getErrorResults()).isNotEmpty();
-		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(100);
+		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(2000);
 		assertThat(result.getErrorResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
 		// "100E:(pos 0): Missing option, longnames='arg1', shortnames=''"
 		assertThat(result.getErrorResults().get(0).getMessage()).contains("Missing option", "arg1");
@@ -84,7 +84,7 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse("root4", "--arg1", "--arg2");
 		assertThat(result).isNotNull();
 		assertThat(result.getErrorResults()).isNotEmpty();
-		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(101);
+		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(2001);
 		assertThat(result.getErrorResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
 		// "101E:(pos 0): Unrecognised option '--arg2'"
 		// assertThat(result.getErrorResults().get(0).getMessage()).contains("xxx");
