@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.command.parser;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Ast.AstResult;
@@ -77,8 +75,6 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root3, arg1, value1);
 
 		assertThat(result).isNotNull();
-
-		assertThat(result).isNotNull();
 		assertThat(result.getNonterminalNodes()).hasSize(1);
 		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
 		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
@@ -95,6 +91,30 @@ class AstTests extends AbstractParsingTests {
 			assertThat(on.getChildren()).hasSize(1);
 			OptionArgumentNode oan = (OptionArgumentNode) on.getChildren().get(0);
 			assertThat(oan.getValue()).isEqualTo("value1");
+		});
+	}
+
+	@Test
+	void createOptionNodesWhenNoOptionArguments() {
+		register(ROOT3);
+		Token root3 = token("root3", TokenType.COMMAND, 0);
+		Token arg1 = token("--arg1", TokenType.OPTION, 1);
+		Token arg2 = token("--arg2", TokenType.OPTION, 2);
+		AstResult result = ast(root3, arg1, arg2);
+
+		assertThat(result).isNotNull();
+		assertThat(result.getNonterminalNodes()).hasSize(1);
+		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+			CommandNode cn = (CommandNode)n;
+			assertThat(cn.getCommand()).isEqualTo("root3");
+			assertThat(cn.getChildren()).hasSize(2);
+			assertThat(cn.getChildren())
+				.filteredOn(on -> on instanceof OptionNode)
+				.extracting(on -> {
+					return ((OptionNode)on).getName();
+				})
+				.containsExactly("--arg1", "--arg2");
 		});
 	}
 

@@ -100,11 +100,7 @@ public interface Lexer {
 					foundEndOfDirectives = true;
 				}
 
-				// logic for normal command, option, argument stuff
-				if (isLastTokenOfType(tokenList, TokenType.OPTION)) {
-					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
-				}
-				else if (validTokens.containsKey(argument)) {
+				if (validTokens.containsKey(argument)) {
 					Token token = validTokens.get(argument);
 					switch (token.getType()) {
 						case COMMAND:
@@ -119,8 +115,21 @@ public interface Lexer {
 							break;
 					}
 				}
+				else if (isLastTokenOfType(tokenList, TokenType.OPTION)) {
+					if (argument.startsWith("-")) {
+						tokenList.add(Token.of(argument, TokenType.OPTION, i));
+					}
+					else {
+						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+					}
+				}
 				else if (isLastTokenOfType(tokenList, TokenType.COMMAND)) {
-					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+					if (argument.startsWith("-")) {
+						tokenList.add(Token.of(argument, TokenType.OPTION, i));
+					}
+					else {
+						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+					}
 				}
 				else if (isLastTokenOfType(tokenList, TokenType.ARGUMENT)) {
 					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));

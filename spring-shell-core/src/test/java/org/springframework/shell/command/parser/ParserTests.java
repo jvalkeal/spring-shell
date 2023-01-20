@@ -32,6 +32,7 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse("root1");
 		assertThat(result).isNotNull();
 		assertThat(result.getCommandRegistration()).isNotNull();
+		assertThat(result.getErrorResults()).isEmpty();
 	}
 
 	@Test
@@ -41,6 +42,7 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result).isNotNull();
 		assertThat(result.getCommandRegistration()).isNotNull();
 		assertThat(result.getOptionResults()).isNotEmpty();
+		assertThat(result.getErrorResults()).isEmpty();
 	}
 
 	@Test
@@ -51,6 +53,7 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result.getCommandRegistration()).isNotNull();
 		assertThat(result.getOptionResults()).isNotEmpty();
 		assertThat(result.getOptionResults().get(0).getValue()).isEqualTo("value1");
+		assertThat(result.getErrorResults()).isEmpty();
 	}
 
 	@Test
@@ -59,6 +62,7 @@ class ParserTests extends AbstractParsingTests {
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
 		assertThat(result.getDirective()).isEqualTo("fake");
+		assertThat(result.getErrorResults()).isEmpty();
 	}
 
 	@Test
@@ -71,6 +75,19 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result.getErrorResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
 		// "100E:(pos 0): Missing option, longnames='arg1', shortnames=''"
 		assertThat(result.getErrorResults().get(0).getMessage()).contains("Missing option", "arg1");
+	}
+
+	@Test
+	void shouldHaveErrorResult2() {
+		register(ROOT4);
+		// ParseResult result = parse("root4", "--arg1", "value1", "--arg2", "value2");
+		ParseResult result = parse("root4", "--arg1", "--arg2");
+		assertThat(result).isNotNull();
+		assertThat(result.getErrorResults()).isNotEmpty();
+		assertThat(result.getErrorResults().get(0).getParserMessage().getCode()).isEqualTo(101);
+		assertThat(result.getErrorResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
+		// "101E:(pos 0): Unrecognised option '--arg2'"
+		// assertThat(result.getErrorResults().get(0).getMessage()).contains("xxx");
 	}
 
 }

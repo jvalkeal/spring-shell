@@ -95,7 +95,7 @@ public interface Parser {
 		private CommandOption currentOption;
 		private Object currentOptionArgument = null;
 		private String directive = null;
-		// private List<CommandOption> resolvedOptions = new ArrayList<>();
+		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
 
 		DefaultNodeVisitor(CommandModel commandModel) {
 			this.commandModel = commandModel;
@@ -113,10 +113,14 @@ public interface Parser {
 
 		List<ErrorResult> validate(CommandRegistration registration) {
 			List<ErrorResult> errorResults = new ArrayList<>();
+
+			// option missing
 			List<CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
 				.collect(Collectors.toList());
 			options.stream().map(or -> or.getOption()).forEach(o -> {
+				// XXX getOptions() build new CommandOption instances
+				// revisit changes did to CommandOption
 				requiredOptions.remove(o);
 			});
 			requiredOptions.stream().forEach(o -> {
@@ -125,6 +129,12 @@ public interface Parser {
 						.collect(Collectors.joining(",")) : "";
 				errorResults.add(new ErrorResult(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
 			});
+
+			// invalid option
+			invalidOptionNodes.forEach(on -> {
+				errorResults.add(new ErrorResult(ParserMessage.UNRECOGNISED_OPTION, 0, on.getName()));
+			});
+
 			return errorResults;
 		}
 
@@ -173,7 +183,13 @@ public interface Parser {
 
 		@Override
 		protected void onExitOptionNode(OptionNode node) {
-			options.add(new OptionResult(currentOption, currentOptionArgument));
+			if (currentOption != null) {
+				options.add(new OptionResult(currentOption, currentOptionArgument));
+			}
+			else {
+				invalidOptionNodes.add(node);
+			}
+			currentOption = null;
 		}
 
 		@Override

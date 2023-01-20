@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.command;
 
+import java.util.Arrays;
+
 import org.springframework.core.ResolvableType;
 import org.springframework.shell.completion.CompletionResolver;
 
@@ -239,5 +241,37 @@ public interface CommandOption {
 		public CompletionResolver getCompletion() {
 			return completion;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(longNames);
+			result = prime * result + Arrays.hashCode(shortNames);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			DefaultCommandOption other = (DefaultCommandOption) obj;
+			if (!Arrays.equals(longNames, other.longNames)) {
+				return false;
+			}
+			if (!Arrays.equals(shortNames, other.shortNames)) {
+				return false;
+			}
+			return true;
+		}
+
+
 	}
 }

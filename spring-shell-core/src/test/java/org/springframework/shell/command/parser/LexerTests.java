@@ -29,56 +29,162 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LexerTests extends AbstractParsingTests {
 
 	@Test
-	void oneRootNoOptionsNoChilds() {
+	void rootCommandNoOptions() {
 		register(ROOT1);
 		List<Token> tokens = tokenize("root1");
 
-		assertThat(tokens).hasSize(1);
-
-		assertThat(tokens.get(0)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
-			assertThat(token.getValue()).isEqualTo("root1");
-			assertThat(token.getPosition()).isEqualTo(0);
-		});
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root1");
+				});
 	}
 
 	@Test
-	void twoRootsOneWithChild() {
+	void rootCommandWithChildGetsRootForRoot() {
 		register(ROOT1);
 		register(ROOT2_SUB1);
 		List<Token> tokens = tokenize("root1");
 
-		assertThat(tokens).hasSize(1);
-
-		assertThat(tokens.get(0)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
-			assertThat(token.getValue()).isEqualTo("root1");
-			assertThat(token.getPosition()).isEqualTo(0);
-		});
+		assertThat(tokens).satisfiesExactly(
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(0)
+					.hasValue("root1");
+			});
 	}
 
 	@Test
-	void optionFromRoot() {
+	void definedOptionShouldBeOptionAfterCommand() {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "--arg1");
 
-		assertThat(tokens).hasSize(2);
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root3");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(1)
+						.hasValue("--arg1");
+				});
+	}
 
-		assertThat(tokens.get(0)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
-			assertThat(token.getValue()).isEqualTo("root3");
-			assertThat(token.getPosition()).isEqualTo(0);
-		});
+	@Test
+	void notDefinedOptionShouldBeOptionAfterCommand() {
+		register(ROOT3);
+		List<Token> tokens = tokenize("root3", "--arg2");
 
-		assertThat(tokens.get(1)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.OPTION);
-			assertThat(token.getValue()).isEqualTo("--arg1");
-			assertThat(token.getPosition()).isEqualTo(1);
-		});
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root3");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(1)
+						.hasValue("--arg2");
+				});
+	}
+
+	@Test
+	void notDefinedOptionShouldBeOptionAfterDefinedOption() {
+		register(ROOT3);
+		List<Token> tokens = tokenize("root3", "--arg1", "--arg2");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root3");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(1)
+						.hasValue("--arg1");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(2)
+						.hasValue("--arg2");
+				});
+	}
+
+	@Test
+	void optionsWithoutValuesFromRoot() {
+		register(ROOT5);
+		List<Token> tokens = tokenize("root5", "--arg1", "--arg2");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root5");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(1)
+						.hasValue("--arg1");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(2)
+						.hasValue("--arg2");
+				});
+	}
+
+	@Test
+	void optionsWithValuesFromRoot() {
+		register(ROOT5);
+		List<Token> tokens = tokenize("root5", "--arg1", "value1", "--arg2", "value2");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root5");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(1)
+						.hasValue("--arg1");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.ARGUMENT)
+						.hasPosition(2)
+						.hasValue("value1");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.OPTION)
+						.hasPosition(3)
+						.hasValue("--arg2");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.ARGUMENT)
+						.hasPosition(4)
+						.hasValue("value2");
+				});
 	}
 
 	@Test
