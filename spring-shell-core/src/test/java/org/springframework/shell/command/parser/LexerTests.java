@@ -192,8 +192,6 @@ class LexerTests extends AbstractParsingTests {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "--arg1", "value1");
 
-		assertThat(tokens).hasSize(3);
-
 		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.OPTION,
 				TokenType.ARGUMENT);
 	}
@@ -203,9 +201,7 @@ class LexerTests extends AbstractParsingTests {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "--", "arg1");
 
-		assertThat(tokens).hasSize(3);
-
-		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND, TokenType.DOUBLEDASH,
+		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.DOUBLEDASH,
 				TokenType.ARGUMENT);
 	}
 
@@ -214,9 +210,7 @@ class LexerTests extends AbstractParsingTests {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "value1", "value2");
 
-		assertThat(tokens).hasSize(3);
-
-		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND, TokenType.ARGUMENT,
+		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.ARGUMENT,
 				TokenType.ARGUMENT);
 	}
 
@@ -226,21 +220,19 @@ class LexerTests extends AbstractParsingTests {
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 		List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
 
-		assertThat(tokens).hasSize(2);
-
-		assertThat(tokens.get(0)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.DIRECTIVE);
-			assertThat(token.getValue()).isEqualTo("[fake]");
-			assertThat(token.getPosition()).isEqualTo(0);
-		});
-
-		assertThat(tokens.get(1)).satisfies(token -> {
-			assertThat(token).isNotNull();
-			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
-			assertThat(token.getValue()).isEqualTo("root1");
-			assertThat(token.getPosition()).isEqualTo(1);
-		});
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.DIRECTIVE)
+						.hasPosition(0)
+						.hasValue("[fake]");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(1)
+						.hasValue("root1");
+				});
 	}
 
 	@Test
@@ -248,7 +240,7 @@ class LexerTests extends AbstractParsingTests {
 		register(ROOT1);
 		List<Token> tokens = tokenize("[fake]", "root1");
 
-		assertThat(tokens).extracting(token -> token.getType()).containsExactly(TokenType.COMMAND);
+		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
 	}
 
 }
