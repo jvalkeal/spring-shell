@@ -128,7 +128,7 @@ abstract class AbstractParsingTests {
 	}
 
 	List<Token> tokenize(Lexer lexer, String... arguments) {
-		return lexer.tokenize(Arrays.asList(arguments));
+		return lexer.tokenize(Arrays.asList(arguments)).tokens();
 	}
 
 	Ast ast() {

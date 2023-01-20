@@ -33,10 +33,10 @@ public class ParseResult {
 	private CommandRegistration commandRegistration;
 	private List<OptionResult> optionResults;
 	private String directive;
-	private List<ErrorResult> errorResults;
+	private List<MessageResult> errorResults;
 
 	ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults, String directive,
-			List<ErrorResult> errorResults) {
+			List<MessageResult> errorResults) {
 		this.commandRegistration = commandRegistration;
 		this.optionResults = optionResults;
 		this.directive = directive;
@@ -51,7 +51,7 @@ public class ParseResult {
 		return optionResults;
 	}
 
-	public List<ErrorResult> getErrorResults() {
+	public List<MessageResult> getErrorResults() {
 		return errorResults;
 	}
 
@@ -73,23 +73,6 @@ public class ParseResult {
 
 		public Object getValue() {
 			return value;
-		}
-	}
-
-	public static class ErrorResult {
-		private ParserMessage message;
-		private int position;
-		private Object[] inserts;
-		public ErrorResult(ParserMessage message, int position, Object... inserts) {
-			this.message = message;
-			this.position = position;
-			this.inserts = inserts;
-		}
-		public ParserMessage getParserMessage() {
-			return message;
-		}
-		public String getMessage() {
-			return message.formatMessage(position, inserts);
 		}
 	}
 }

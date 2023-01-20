@@ -26,7 +26,6 @@ import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
-import org.springframework.shell.command.parser.ParseResult.ErrorResult;
 import org.springframework.shell.command.parser.ParseResult.OptionResult;
 
 /**
@@ -69,7 +68,7 @@ public interface Parser {
 		@Override
 		public ParseResult parse(List<String> arguments) {
 			// 1. tokenize arguments
-			List<Token> tokens = lexer.tokenize(arguments);
+			List<Token> tokens = lexer.tokenize(arguments).tokens();
 
 			// 2. generate syntax tree results from tokens
 			//    result from it is then feed into node visitor
@@ -106,13 +105,13 @@ public interface Parser {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			CommandRegistration registration = info.registration;
 
-			List<ErrorResult> errorResults = validate(registration);
+			List<MessageResult> errorResults = validate(registration);
 
 			return new ParseResult(registration, options, directive, errorResults);
 		}
 
-		List<ErrorResult> validate(CommandRegistration registration) {
-			List<ErrorResult> errorResults = new ArrayList<>();
+		List<MessageResult> validate(CommandRegistration registration) {
+			List<MessageResult> errorResults = new ArrayList<>();
 
 			// option missing
 			List<CommandOption> requiredOptions = registration.getOptions().stream()
@@ -127,12 +126,12 @@ public interface Parser {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
 				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
 						.collect(Collectors.joining(",")) : "";
-				errorResults.add(new ErrorResult(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
+				errorResults.add(new MessageResult(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
 			});
 
 			// invalid option
 			invalidOptionNodes.forEach(on -> {
-				errorResults.add(new ErrorResult(ParserMessage.UNRECOGNISED_OPTION, 0, on.getName()));
+				errorResults.add(new MessageResult(ParserMessage.UNRECOGNISED_OPTION, 0, on.getName()));
 			});
 
 			return errorResults;

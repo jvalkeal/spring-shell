@@ -42,9 +42,18 @@ public interface Lexer {
 	 * Tokenize given command line arguments into a list of tokens.
 	 *
 	 * @param arguments the command line arguments
-	 * @return list of tokens
+	 * @return lexer result having tokens and operation messages
 	 */
-	List<Token> tokenize(List<String> arguments);
+	LexerResult tokenize(List<String> arguments);
+
+	/**
+	 * Representing result from {@link Lexer} tokenisation.
+	 *
+	 * @param tokens list of tokens in this result
+	 * @param errorResults list of error results in this result
+	 */
+	public static record LexerResult(List<Token> tokens, List<MessageResult> errorResults) {
+	}
 
 	/**
 	 * Default implementation of a {@link Lexer}.
@@ -61,7 +70,7 @@ public interface Lexer {
 		}
 
 		@Override
-		public List<Token> tokenize(List<String> arguments) {
+		public LexerResult tokenize(List<String> arguments) {
 			log.debug("Tokenizing arguments {}", arguments);
 			boolean foundDoubleDash = false;
 			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
@@ -138,7 +147,7 @@ public interface Lexer {
 			}
 
 			log.debug("Generated token list {}", tokenList);
-			return tokenList;
+			return new LexerResult(tokenList, null);
 		}
 
 		private static boolean isLastTokenOfType(List<Token> tokenList, TokenType type) {
