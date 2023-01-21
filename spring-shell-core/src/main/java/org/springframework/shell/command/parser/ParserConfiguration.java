@@ -18,7 +18,8 @@ package org.springframework.shell.command.parser;
 /**
  * Class containing parser configuration options. These are mostly what default
  * implementations of {@link Parser}, {@link Lexer} and {@link Ast} supports.
- * Custom implementations of those may choose what options to support.
+ * Custom implementations of those may choose what configuration options to
+ * support.
  *
  * @author Janne Valkealahti
  */
@@ -27,7 +28,13 @@ public class ParserConfiguration {
 	/**
 	 * Defines if directives support is enabled, disabled on default.
 	 */
-	private boolean directives;
+	private boolean enableDirectives;
+
+	/**
+	 * Used in a case where directive support is disabled and parser should ignore
+	 * ones found instead of reporting error, disabled on default.
+	 */
+	private boolean ignoreDirectives;
 
 	/**
 	 * Defines if commands are parsed using case-insensitivity, disabled on default.
@@ -39,13 +46,21 @@ public class ParserConfiguration {
 	 */
 	private boolean optionsCaseInsensitive;
 
-	public boolean isDirectives() {
-		return directives;
+	public boolean isEnableDirectives() {
+		return enableDirectives;
 	}
 
-	public ParserConfiguration setDirectives(boolean directives) {
-		this.directives = directives;
+	public ParserConfiguration setEnableDirectives(boolean directives) {
+		this.enableDirectives = directives;
 		return this;
+	}
+
+	public boolean isIgnoreDirectives() {
+		return ignoreDirectives;
+	}
+
+	public void setIgnoreDirectives(boolean ignoreDirectives) {
+		this.ignoreDirectives = ignoreDirectives;
 	}
 
 	public boolean isCommandsCaseInsensitive() {

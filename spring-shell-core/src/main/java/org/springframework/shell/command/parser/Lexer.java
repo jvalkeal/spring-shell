@@ -76,7 +76,7 @@ public interface Lexer {
 
 			preValidate(errorResults, arguments);
 			boolean foundDoubleDash = false;
-			boolean foundEndOfDirectives = !configuration.isDirectives();
+			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 
 			List<Token> tokenList = new ArrayList<Token>(arguments.size());
 
@@ -84,6 +84,12 @@ public interface Lexer {
 			Map<String, Token> validTokens = commandModel.getValidRootTokens();
 
 			CommandInfo currentCommand = null;
+
+			// consume everything before command section starts
+			// currently there can only be directives and we need
+			// to differentiate is we silenty ignore those vs.
+			// whether directive support is enabled or not
+
 
 			int i = -1;
 			for (String argument : arguments) {

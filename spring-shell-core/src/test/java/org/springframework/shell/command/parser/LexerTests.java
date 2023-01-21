@@ -219,7 +219,7 @@ class LexerTests extends AbstractParsingTests {
 	@Test
 	void directiveWithCommand() {
 		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration().setDirectives(true);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 		List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
 
 		assertThat(tokens).satisfiesExactly(

@@ -61,7 +61,7 @@ class ParserTests extends AbstractParsingTests {
 	@Test
 	void directiveWithCommand() {
 		register(ROOT3);
-		ParserConfiguration configuration = new ParserConfiguration().setDirectives(true);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
 		assertThat(result.directive()).isEqualTo("fake");
 		assertThat(result.messageResults()).isEmpty();
