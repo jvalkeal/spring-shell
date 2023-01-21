@@ -20,4 +20,8 @@ public class ParserAssertions {
 	public static TokenAssert assertThat(Token actual) {
 		return new TokenAssert(actual);
 	}
+
+	public static ParserMessageAssert assertThat(ParserMessage message) {
+		return new ParserMessageAssert(message);
+	}
 }

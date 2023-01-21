@@ -17,29 +17,26 @@ package org.springframework.shell.command.parser;
 
 import org.assertj.core.api.AbstractAssert;
 
+import org.springframework.shell.command.parser.ParserMessage.Type;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TokenAssert extends AbstractAssert<TokenAssert, Token> {
+public class ParserMessageAssert extends AbstractAssert<ParserMessageAssert, ParserMessage> {
 
-	public TokenAssert(Token actual) {
-		super(actual, TokenAssert.class);
+	public ParserMessageAssert(ParserMessage actual) {
+		super(actual, ParserMessageAssert.class);
 	}
 
-	public TokenAssert isType(TokenType type) {
+	public ParserMessageAssert hasCode(int code) {
+		isNotNull();
+		assertThat(actual.getCode()).isEqualTo(code);
+		return this;
+	}
+
+	public ParserMessageAssert hasType(Type type) {
 		isNotNull();
 		assertThat(actual.getType()).isEqualTo(type);
 		return this;
 	}
 
-	public TokenAssert hasPosition(int position) {
-		isNotNull();
-		assertThat(actual.getPosition()).isEqualTo(position);
-		return this;
-	}
-
-	public TokenAssert hasValue(String value) {
-		isNotNull();
-		assertThat(actual.getValue()).isEqualTo(value);
-		return this;
-	}
 }
