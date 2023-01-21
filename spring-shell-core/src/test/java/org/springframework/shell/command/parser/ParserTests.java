@@ -73,8 +73,8 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse("root4");
 		assertThat(result).isNotNull();
 		assertThat(result.messageResults()).isNotEmpty();
-		assertThat(result.messageResults().get(0).getParserMessage().getCode()).isEqualTo(2000);
-		assertThat(result.messageResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
+		assertThat(result.messageResults().get(0).parserMessage().getCode()).isEqualTo(2000);
+		assertThat(result.messageResults().get(0).parserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
 		// "100E:(pos 0): Missing option, longnames='arg1', shortnames=''"
 		assertThat(result.messageResults().get(0).getMessage()).contains("Missing option", "arg1");
 	}
@@ -86,8 +86,8 @@ class ParserTests extends AbstractParsingTests {
 		ParseResult result = parse("root4", "--arg1", "--arg2");
 		assertThat(result).isNotNull();
 		assertThat(result.messageResults()).isNotEmpty();
-		assertThat(result.messageResults().get(0).getParserMessage().getCode()).isEqualTo(2001);
-		assertThat(result.messageResults().get(0).getParserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
+		assertThat(result.messageResults().get(0).parserMessage().getCode()).isEqualTo(2001);
+		assertThat(result.messageResults().get(0).parserMessage().getType()).isEqualTo(ParserMessage.Type.ERROR);
 		// "101E:(pos 0): Unrecognised option '--arg2'"
 		// assertThat(result.messageResults().get(0).getMessage()).contains("xxx");
 	}
@@ -95,7 +95,7 @@ class ParserTests extends AbstractParsingTests {
 	@Test
 	void lexerMessageShouldGetPropagated() {
 		ParseResult parse = parse("--");
-		assertThat(parse.messageResults()).extracting(ms -> ms.getParserMessage().getCode()).containsExactly(1000);
+		assertThat(parse.messageResults()).extracting(ms -> ms.parserMessage().getCode()).containsExactly(1000);
 	}
 
 }

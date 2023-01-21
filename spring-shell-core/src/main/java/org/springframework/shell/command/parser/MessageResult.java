@@ -16,31 +16,17 @@
 package org.springframework.shell.command.parser;
 
 /**
- *
+ * Encapsulating {@link ParserMessage} with its postion and {@code inserts}.
  *
  * @author Janne Valkealahti
  */
-public class MessageResult {
+public record MessageResult(ParserMessage parserMessage, int position, Object[] inserts) {
 
-	private ParserMessage message;
-	private int position;
-	private Object[] inserts;
-
-	public MessageResult(ParserMessage message, int position, Object... inserts) {
-		this.message = message;
-		this.position = position;
-		this.inserts = inserts;
-	}
-
-	public ParserMessage getParserMessage() {
-		return message;
-	}
-
-	public int getPosition() {
-		return position;
+	public static MessageResult of(ParserMessage parserMessage, int position, Object... inserts) {
+		return new MessageResult(parserMessage, position, inserts);
 	}
 
 	public String getMessage() {
-		return message.formatMessage(position, inserts);
+		return parserMessage.formatMessage(position, inserts);
 	}
 }

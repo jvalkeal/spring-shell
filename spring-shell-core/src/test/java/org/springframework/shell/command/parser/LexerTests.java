@@ -250,8 +250,8 @@ class LexerTests extends AbstractParsingTests {
 		LexerResult result = tokenizeAsResult("--");
 		assertThat(result.messageResults()).satisfiesExactly(
 				message -> {
-					assertThat(message.getParserMessage().getCode()).isEqualTo(1000);
-					assertThat(message.getPosition()).isEqualTo(0);
+					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+					assertThat(message.position()).isEqualTo(0);
 				});
 	}
 

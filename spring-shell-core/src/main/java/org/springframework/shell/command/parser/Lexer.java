@@ -157,7 +157,7 @@ public interface Lexer {
 			if (arguments.size() > 0) {
 				String arg = arguments.get(0);
 				if ("--".equals(arg)) {
-					errorResults.add(new MessageResult(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, arg));
+					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, arg));
 				}
 			}
 		}

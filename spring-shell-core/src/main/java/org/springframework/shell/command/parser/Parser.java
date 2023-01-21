@@ -151,12 +151,12 @@ public interface Parser {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
 				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
 						.collect(Collectors.joining(",")) : "";
-				errorResults.add(new MessageResult(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
+				errorResults.add(MessageResult.of(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
 			});
 
 			// invalid option
 			invalidOptionNodes.forEach(on -> {
-				errorResults.add(new MessageResult(ParserMessage.UNRECOGNISED_OPTION, 0, on.getName()));
+				errorResults.add(MessageResult.of(ParserMessage.UNRECOGNISED_OPTION, 0, on.getName()));
 			});
 
 			return errorResults;
