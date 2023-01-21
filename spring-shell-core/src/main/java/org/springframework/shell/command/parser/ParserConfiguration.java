@@ -59,23 +59,26 @@ public class ParserConfiguration {
 		return ignoreDirectives;
 	}
 
-	public void setIgnoreDirectives(boolean ignoreDirectives) {
+	public ParserConfiguration setIgnoreDirectives(boolean ignoreDirectives) {
 		this.ignoreDirectives = ignoreDirectives;
+		return this;
 	}
 
 	public boolean isCommandsCaseInsensitive() {
 		return commandsCaseInsensitive;
 	}
 
-	public void setCommandsCaseInsensitive(boolean commandsCaseInsensitive) {
+	public ParserConfiguration setCommandsCaseInsensitive(boolean commandsCaseInsensitive) {
 		this.commandsCaseInsensitive = commandsCaseInsensitive;
+		return this;
 	}
 
 	public boolean isOptionsCaseInsensitive() {
 		return optionsCaseInsensitive;
 	}
 
-	public void setOptionsCaseInsensitive(boolean optionsCaseInsensitive) {
+	public ParserConfiguration setOptionsCaseInsensitive(boolean optionsCaseInsensitive) {
 		this.optionsCaseInsensitive = optionsCaseInsensitive;
+		return this;
 	}
 }
