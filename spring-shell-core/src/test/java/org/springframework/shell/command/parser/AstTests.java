@@ -146,4 +146,22 @@ class AstTests extends AbstractParsingTests {
 		assertThat(dn.getValue()).isEqualTo("value");
 	}
 
+	@Test
+	void multipleDirectivesWithValueWithCommand() {
+		register(ROOT1);
+		Token directive1 = token("fake1:value1", TokenType.DIRECTIVE, 0);
+		Token directive2 = token("fake2:value2", TokenType.DIRECTIVE, 1);
+		Token root1 = token("root1", TokenType.COMMAND, 2);
+		AstResult result = ast(directive1, directive2, root1);
+
+		assertThat(result.terminalNodes()).hasSize(2);
+		assertThat(result.terminalNodes().get(0)).isInstanceOf(DirectiveNode.class);
+		DirectiveNode dn1 = (DirectiveNode) result.terminalNodes().get(0);
+		assertThat(dn1.getName()).isEqualTo("fake1");
+		assertThat(dn1.getValue()).isEqualTo("value1");
+		DirectiveNode dn2 = (DirectiveNode) result.terminalNodes().get(1);
+		assertThat(dn2.getName()).isEqualTo("fake2");
+		assertThat(dn2.getValue()).isEqualTo("value2");
+	}
+
 }

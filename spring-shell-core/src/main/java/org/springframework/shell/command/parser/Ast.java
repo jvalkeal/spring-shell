@@ -60,14 +60,15 @@ public interface Ast {
 			List<CommandNode> commandNodes = new ArrayList<>();
 			CommandNode commandNode = null;
 			OptionNode optionNode = null;
-			DirectiveNode directiveNode = null;
+			// DirectiveNode directiveNode = null;
+			List<DirectiveNode> directiveNodes = new ArrayList<>();
 
 			for (Token token : tokens) {
 				switch (token.getType()) {
 					case DIRECTIVE:
 						String raw = token.getValue();
 						String[] split = raw.split(":", 2);
-						directiveNode = new DirectiveNode(token, split[0], split.length > 1 ? split[1] : null);
+						directiveNodes.add(new DirectiveNode(token, split[0], split.length > 1 ? split[1] : null));
 						break;
 					case COMMAND:
 						commandNode = new CommandNode(token, token.getValue());
@@ -101,9 +102,12 @@ public interface Ast {
 			if (commandNodes.size() > 0) {
 				nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
 			}
-			if (directiveNode != null) {
-				terminalNodes.add(directiveNode);
+			for (DirectiveNode dn : directiveNodes) {
+				terminalNodes.add(dn);
 			}
+			// if (directiveNode != null) {
+			// 	terminalNodes.add(directiveNode);
+			// }
 
 			return new AstResult(nonterminalNodes, terminalNodes);
 		}

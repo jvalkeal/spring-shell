@@ -76,7 +76,7 @@ class ParserTests extends AbstractParsingTests {
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 
 		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
-		assertThat(result.directiveResult()).satisfies(d -> {
+		assertThat(result.directiveResults()).satisfiesExactly(d -> {
 			assertThat(d.name()).isEqualTo("fake");
 			assertThat(d.value()).isNull();
 		});
@@ -89,10 +89,28 @@ class ParserTests extends AbstractParsingTests {
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
 
 		ParseResult result = parse(lexer(configuration), "[fake:value]", "root3");
-		assertThat(result.directiveResult()).satisfies(d -> {
+		assertThat(result.directiveResults()).satisfiesExactly(d -> {
 			assertThat(d.name()).isEqualTo("fake");
 			assertThat(d.value()).isEqualTo("value");
 		});
+		assertThat(result.messageResults()).isEmpty();
+	}
+
+	@Test
+	void multipleDirectivesWithCommand() {
+		register(ROOT3);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+
+		ParseResult result = parse(lexer(configuration), "[foo][bar:value]", "root3");
+		assertThat(result.directiveResults()).satisfiesExactly(
+			d -> {
+				assertThat(d.name()).isEqualTo("foo");
+				assertThat(d.value()).isNull();
+			},
+			d -> {
+				assertThat(d.name()).isEqualTo("bar");
+				assertThat(d.value()).isEqualTo("value");
+			});
 		assertThat(result.messageResults()).isEmpty();
 	}
 
