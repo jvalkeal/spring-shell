@@ -35,9 +35,9 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root1);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getNonterminalNodes()).hasSize(1);
-		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
-		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+		assertThat(result.nonterminalNodes()).hasSize(1);
+		assertThat(result.nonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.nonterminalNodes().get(0)).satisfies(n -> {
 			CommandNode cn = (CommandNode)n;
 			assertThat(cn.getCommand()).isEqualTo("root1");
 		});
@@ -51,9 +51,9 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root3, arg1);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getNonterminalNodes()).hasSize(1);
-		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
-		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+		assertThat(result.nonterminalNodes()).hasSize(1);
+		assertThat(result.nonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.nonterminalNodes().get(0)).satisfies(n -> {
 			CommandNode cn = (CommandNode)n;
 			assertThat(cn.getCommand()).isEqualTo("root3");
 			assertThat(cn.getChildren()).hasSize(1);
@@ -75,9 +75,9 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root3, arg1, value1);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getNonterminalNodes()).hasSize(1);
-		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
-		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+		assertThat(result.nonterminalNodes()).hasSize(1);
+		assertThat(result.nonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.nonterminalNodes().get(0)).satisfies(n -> {
 			CommandNode cn = (CommandNode)n;
 			assertThat(cn.getCommand()).isEqualTo("root3");
 			assertThat(cn.getChildren()).hasSize(1);
@@ -103,9 +103,9 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root3, arg1, arg2);
 
 		assertThat(result).isNotNull();
-		assertThat(result.getNonterminalNodes()).hasSize(1);
-		assertThat(result.getNonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
-		assertThat(result.getNonterminalNodes().get(0)).satisfies(n -> {
+		assertThat(result.nonterminalNodes()).hasSize(1);
+		assertThat(result.nonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
+		assertThat(result.nonterminalNodes().get(0)).satisfies(n -> {
 			CommandNode cn = (CommandNode)n;
 			assertThat(cn.getCommand()).isEqualTo("root3");
 			assertThat(cn.getChildren()).hasSize(2);
@@ -125,9 +125,9 @@ class AstTests extends AbstractParsingTests {
 		Token root1 = token("root1", TokenType.COMMAND, 1);
 		AstResult result = ast(directive, root1);
 
-		assertThat(result.getTerminalNodes()).hasSize(1);
-		assertThat(result.getTerminalNodes().get(0)).isInstanceOf(DirectiveNode.class);
-		DirectiveNode dn = (DirectiveNode) result.getTerminalNodes().get(0);
+		assertThat(result.terminalNodes()).hasSize(1);
+		assertThat(result.terminalNodes().get(0)).isInstanceOf(DirectiveNode.class);
+		DirectiveNode dn = (DirectiveNode) result.terminalNodes().get(0);
 		assertThat(dn.getName()).isEqualTo("fake");
 		assertThat(dn.getValue()).isNull();
 	}

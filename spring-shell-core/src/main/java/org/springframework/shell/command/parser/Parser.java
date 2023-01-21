@@ -80,7 +80,7 @@ public interface Parser {
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
-			ParseResult parseResult = visitor.visit(astResult.getNonterminalNodes(), astResult.getTerminalNodes());
+			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
 			parseResult.getErrorResults().addAll(lexerResult.errorResults());
 			return parseResult;
 		}

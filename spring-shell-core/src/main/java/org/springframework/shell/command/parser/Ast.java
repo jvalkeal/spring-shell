@@ -42,23 +42,12 @@ public interface Ast {
 	AstResult generate(List<Token> tokens);
 
 	/**
-	 * Interface representing result from tokens to ast tree generation.
+	 * Representing result from tokens to ast tree generation.
+	 *
+	 * @param nonterminalNodes list of nonterminal nodes
+	 * @param terminalNodes list of terminal nodes
 	 */
-	public interface AstResult {
-
-		/**
-		 * Gets a list of non terminal nodes.
-		 *
-		 * @return list of non terminal nodes
-		 */
-		List<NonterminalAstNode> getNonterminalNodes();
-
-		/**
-		 * Gets a list of terminal nodes.
-		 *
-		 * @return list of terminal nodes
-		 */
-		List<TerminalAstNode> getTerminalNodes();
+	public record AstResult (List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes) {
 	}
 
 	/**
@@ -116,29 +105,8 @@ public interface Ast {
 				terminalNodes.add(directiveNode);
 			}
 
-			return new DefaultAstResult(nonterminalNodes, terminalNodes);
+			return new AstResult(nonterminalNodes, terminalNodes);
 		}
 
-	}
-
-	static class DefaultAstResult implements AstResult {
-
-		private List<NonterminalAstNode> nonterminalNodes;
-		private List<TerminalAstNode> terminalNodes;
-
-		public DefaultAstResult(List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes) {
-			this.nonterminalNodes = nonterminalNodes;
-			this.terminalNodes = terminalNodes;
-		}
-
-		@Override
-		public List<NonterminalAstNode> getNonterminalNodes() {
-			return nonterminalNodes;
-		}
-
-		@Override
-		public List<TerminalAstNode> getTerminalNodes() {
-			return terminalNodes;
-		}
 	}
 }
