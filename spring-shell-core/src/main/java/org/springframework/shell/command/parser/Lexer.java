@@ -76,7 +76,7 @@ public interface Lexer {
 
 			preValidate(errorResults, arguments);
 			boolean foundDoubleDash = false;
-			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
+			boolean foundEndOfDirectives = !configuration.isDirectives();
 
 			List<Token> tokenList = new ArrayList<Token>(arguments.size());
 

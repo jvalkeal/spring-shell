@@ -25,20 +25,42 @@ package org.springframework.shell.command.parser;
 public class ParserConfiguration {
 
 	/**
-	 * Defines if directives are supported, disabled on default.
+	 * Defines if directives support is enabled, disabled on default.
 	 */
-	private boolean enableDirectives;
+	private boolean directives;
 
+	/**
+	 * Defines if commands are parsed using case-insensitivity, disabled on default.
+	 */
 	private boolean commandsCaseInsensitive;
 
+	/**
+	 * Defines if options are parsed using case-insensitivity, disabled on default.
+	 */
 	private boolean optionsCaseInsensitive;
 
-	public boolean isEnableDirectives() {
-		return enableDirectives;
+	public boolean isDirectives() {
+		return directives;
 	}
 
-	public ParserConfiguration setEnableDirectives(boolean enableDirectives) {
-		this.enableDirectives = enableDirectives;
+	public ParserConfiguration setDirectives(boolean directives) {
+		this.directives = directives;
 		return this;
+	}
+
+	public boolean isCommandsCaseInsensitive() {
+		return commandsCaseInsensitive;
+	}
+
+	public void setCommandsCaseInsensitive(boolean commandsCaseInsensitive) {
+		this.commandsCaseInsensitive = commandsCaseInsensitive;
+	}
+
+	public boolean isOptionsCaseInsensitive() {
+		return optionsCaseInsensitive;
+	}
+
+	public void setOptionsCaseInsensitive(boolean optionsCaseInsensitive) {
+		this.optionsCaseInsensitive = optionsCaseInsensitive;
 	}
 }
