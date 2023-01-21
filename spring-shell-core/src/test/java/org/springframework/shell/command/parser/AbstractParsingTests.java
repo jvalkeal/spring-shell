@@ -36,6 +36,13 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT1_UP = CommandRegistration.builder()
+		.command("ROOT1")
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	static final CommandRegistration ROOT2 = CommandRegistration.builder()
 		.command("root2")
 		.withTarget()
@@ -125,9 +132,12 @@ abstract class AbstractParsingTests {
 	}
 
 	CommandModel commandModel() {
-		return new CommandModel(registrations);
+		return new CommandModel(registrations, new ParserConfiguration());
 	}
 
+	CommandModel commandModel(ParserConfiguration configuration) {
+		return new CommandModel(registrations, configuration);
+	}
 
 	Token token(String value, TokenType type, int position) {
 		return new Token(value, type, position);
@@ -138,7 +148,7 @@ abstract class AbstractParsingTests {
 	}
 
 	Lexer lexer(ParserConfiguration configuration) {
-		return new Lexer.DefaultLexer(commandModel(), configuration);
+		return new Lexer.DefaultLexer(commandModel(configuration), configuration);
 	}
 
 	Lexer lexer(CommandModel commandModel) {
@@ -191,6 +201,13 @@ abstract class AbstractParsingTests {
 		CommandModel commandModel = commandModel();
 		Ast ast = ast();
 		Parser parser = new Parser.DefaultParser(commandModel, lexer, ast);
+		return parser.parse(Arrays.asList(arguments));
+	}
+
+	ParseResult parse(ParserConfiguration configuration, String... arguments) {
+		CommandModel commandModel = commandModel(configuration);
+		Ast ast = ast();
+		Parser parser = new Parser.DefaultParser(commandModel, lexer(configuration), ast);
 		return parser.parse(Arrays.asList(arguments));
 	}
 }

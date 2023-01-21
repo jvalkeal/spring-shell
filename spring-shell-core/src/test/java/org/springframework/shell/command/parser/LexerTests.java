@@ -45,6 +45,22 @@ class LexerTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void commandWithCaseInsensitive() {
+		register(ROOT1);
+		ParserConfiguration configuration = new ParserConfiguration()
+				.setEnableDirectives(true);
+		List<Token> tokens = tokenize(lexer(configuration), "root1");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.COMMAND)
+						.hasPosition(0)
+						.hasValue("root1");
+				});
+	}
+
+	@Test
 	void rootCommandWithChildGetsRootForRoot() {
 		register(ROOT1);
 		register(ROOT2_SUB1);

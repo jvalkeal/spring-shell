@@ -37,14 +37,14 @@ public class ParserConfiguration {
 	private boolean ignoreDirectives;
 
 	/**
-	 * Defines if commands are parsed using case-insensitivity, disabled on default.
+	 * Defines if commands are parsed using case-sensitivity, enabled on default.
 	 */
-	private boolean commandsCaseInsensitive;
+	private boolean commandsCaseSensitive = true;
 
 	/**
-	 * Defines if options are parsed using case-insensitivity, disabled on default.
+	 * Defines if options are parsed using case-sensitivity, enabled on default.
 	 */
-	private boolean optionsCaseInsensitive;
+	private boolean optionsCaseSensitive = true;
 
 	public boolean isEnableDirectives() {
 		return enableDirectives;
@@ -64,21 +64,21 @@ public class ParserConfiguration {
 		return this;
 	}
 
-	public boolean isCommandsCaseInsensitive() {
-		return commandsCaseInsensitive;
+	public boolean isCommandsCaseSensitive() {
+		return commandsCaseSensitive;
 	}
 
-	public ParserConfiguration setCommandsCaseInsensitive(boolean commandsCaseInsensitive) {
-		this.commandsCaseInsensitive = commandsCaseInsensitive;
+	public ParserConfiguration setCommandsCaseSensitive(boolean commandsCaseSensitive) {
+		this.commandsCaseSensitive = commandsCaseSensitive;
 		return this;
 	}
 
-	public boolean isOptionsCaseInsensitive() {
-		return optionsCaseInsensitive;
+	public boolean isOptionsCaseSensitive() {
+		return optionsCaseSensitive;
 	}
 
-	public ParserConfiguration setOptionsCaseInsensitive(boolean optionsCaseInsensitive) {
-		this.optionsCaseInsensitive = optionsCaseInsensitive;
+	public ParserConfiguration setOptionsCaseSensitive(boolean optionsCaseSensitive) {
+		this.optionsCaseSensitive = optionsCaseSensitive;
 		return this;
 	}
 }

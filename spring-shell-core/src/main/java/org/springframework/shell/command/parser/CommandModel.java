@@ -33,8 +33,10 @@ import org.springframework.shell.command.CommandRegistration;
 public class CommandModel {
 
 	private final Map<String, CommandInfo> rootCommands = new HashMap<>();
+	private final ParserConfiguration configuration;
 
-	CommandModel(Map<String, CommandRegistration> registrations) {
+	CommandModel(Map<String, CommandRegistration> registrations, ParserConfiguration configuration) {
+		this.configuration = configuration;
 		buildModel(registrations);
 	}
 
@@ -46,7 +48,8 @@ public class CommandModel {
 	CommandInfo resolve(List<String> commands) {
 		CommandInfo info = null;
 		boolean onRoot = true;
-		for (String command : commands) {
+		for (String commandx : commands) {
+			String command = configuration.isCommandsCaseSensitive() ? commandx : commandx.toLowerCase();
 			if (onRoot) {
 				info = rootCommands.get(command);
 				onRoot = false;
@@ -95,13 +98,16 @@ public class CommandModel {
 			CommandInfo parent = null;
 			for (int i = 0; i < commands.length; i++) {
 				CommandRegistration registration = i + 1 == commands.length ? e.getValue() : null;
+				String key = configuration.isCommandsCaseSensitive() ? commands[i] : commands[i].toLowerCase();
 				if (parent == null) {
 					CommandInfo info = new CommandInfo(commands[i], registration, parent);
-					rootCommands.computeIfAbsent(commands[i], command -> info);
+					// rootCommands.computeIfAbsent(commands[i], command -> info);
+					rootCommands.computeIfAbsent(key, command -> info);
 					parent = info;
 				}
 				else {
-					CommandInfo info = new CommandInfo(commands[i], registration, parent);
+					// CommandInfo info = new CommandInfo(commands[i], registration, parent);
+					CommandInfo info = new CommandInfo(key, registration, parent);
 					parent.children.add(info);
 					parent = info;
 				}

@@ -44,6 +44,23 @@ class CommandModelTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void oneRootCommandCaseInsensitive() {
+		register(ROOT1_UP);
+		ParserConfiguration configuration = new ParserConfiguration()
+				.setCommandsCaseSensitive(false)
+				.setOptionsCaseSensitive(false);
+		CommandModel model = commandModel(configuration);
+
+		Map<String, Token> tokens = model.getValidRootTokens();
+		assertThat(tokens).hasSize(1);
+		assertThat(tokens.get("root1")).satisfies(token -> {
+			assertThat(token).isNotNull();
+			assertThat(token.getValue()).isEqualTo("root1");
+			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+		});
+	}
+
+	@Test
 	void onePlainSubCommand() {
 		register(ROOT2_SUB1);
 		CommandModel model = commandModel();

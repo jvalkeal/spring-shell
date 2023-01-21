@@ -38,6 +38,18 @@ class ParserTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void shouldFindRegistrationCaseInsensitive() {
+		register(ROOT1_UP);
+		ParserConfiguration configuration = new ParserConfiguration()
+				.setCommandsCaseSensitive(false)
+				.setOptionsCaseSensitive(false);
+		ParseResult result = parse(configuration, "root1");
+		assertThat(result).isNotNull();
+		assertThat(result.commandRegistration()).isNotNull();
+		assertThat(result.messageResults()).isEmpty();
+	}
+
+	@Test
 	void shouldFindOption() {
 		register(ROOT3);
 		ParseResult result = parse("root3", "--arg1");
