@@ -118,7 +118,6 @@ public interface Parser {
 		private List<String> resolvedCommmand = new ArrayList<>();
 		private List<OptionResult> options = new ArrayList<>();
 		private CommandOption currentOption;
-		// private Object currentOptionArgument = null;
 		private List<String> currentOptionArgument = new ArrayList<>();
 		private DirectiveResult directiveResult = null;
 		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
@@ -143,7 +142,6 @@ public interface Parser {
 		}
 
 		List<MessageResult> validate(CommandRegistration registration) {
-			// List<MessageResult> errorResults = new ArrayList<>();
 
 			// option missing
 			// XXX getOptions() build new CommandOption instances
