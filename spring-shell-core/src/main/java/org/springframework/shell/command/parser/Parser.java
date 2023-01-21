@@ -18,6 +18,7 @@ package org.springframework.shell.command.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -139,15 +140,25 @@ public interface Parser {
 			List<MessageResult> errorResults = new ArrayList<>();
 
 			// option missing
-			List<CommandOption> requiredOptions = registration.getOptions().stream()
+			// XXX getOptions() build new CommandOption instances
+			//     can't live with this hack
+			Map<String, CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
-				.collect(Collectors.toList());
+				.collect(Collectors.toMap(o -> {
+					String part1 = Stream.of(o.getLongNames()).sorted().collect(Collectors.joining());
+					String part2 = Stream.of(o.getShortNames()).map(s -> s.toString()).sorted().collect(Collectors.joining());
+					return part1 + part2;
+				}, o -> o))
+			;
+
 			options.stream().map(or -> or.option()).forEach(o -> {
-				// XXX getOptions() build new CommandOption instances
-				// revisit changes did to CommandOption
-				requiredOptions.remove(o);
+				String part1 = Stream.of(o.getLongNames()).sorted().collect(Collectors.joining());
+				String part2 = Stream.of(o.getShortNames()).map(s -> s.toString()).sorted().collect(Collectors.joining());
+				String key = part1 + part2;
+				requiredOptions.remove(key);
 			});
-			requiredOptions.stream().forEach(o -> {
+
+			requiredOptions.values().forEach(o -> {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
 				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
 						.collect(Collectors.joining(",")) : "";
