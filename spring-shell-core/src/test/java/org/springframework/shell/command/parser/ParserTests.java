@@ -110,6 +110,17 @@ class ParserTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void optionValueShouldBeIntegerArray() {
+		register(ROOT6_OPTION_INTARRAY);
+		ParseResult result = parse("root6", "--arg1", "1", "2");
+		assertThat(result).isNotNull();
+		assertThat(result.commandRegistration()).isNotNull();
+		assertThat(result.optionResults()).isNotEmpty();
+		assertThat(result.optionResults().get(0).value()).isEqualTo(new int[] { 1, 2 });
+		assertThat(result.messageResults()).isEmpty();
+	}
+
+	@Test
 	void optionValueFailsFromStringToInteger() {
 		register(ROOT6_OPTION_INT);
 		ParseResult result = parse("root6", "--arg1", "x");

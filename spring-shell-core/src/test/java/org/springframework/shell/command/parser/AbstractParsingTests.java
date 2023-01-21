@@ -101,6 +101,18 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT6_OPTION_INTARRAY = CommandRegistration.builder()
+		.command("root6")
+		.withOption()
+			.longNames("arg1")
+			.type(int[].class)
+			.required()
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	Map<String, CommandRegistration> registrations = new HashMap<>();
 
 	@BeforeEach

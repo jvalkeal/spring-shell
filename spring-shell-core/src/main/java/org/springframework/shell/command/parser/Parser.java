@@ -119,7 +119,8 @@ public interface Parser {
 		private CommandNode currentCommandNode;
 		private List<OptionResult> options = new ArrayList<>();
 		private CommandOption currentOption;
-		private Object currentOptionArgument = null;
+		// private Object currentOptionArgument = null;
+		private List<String> currentOptionArgument = new ArrayList<>();
 		private String directive = null;
 		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
 		private final List<MessageResult> errorResults = new ArrayList<>();
@@ -210,6 +211,7 @@ public interface Parser {
 
 		@Override
 		protected void onEnterOptionNode(OptionNode node) {
+			currentOptionArgument.clear();
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			String name = node.getName();
 			info.registration.getOptions().forEach(option -> {
@@ -225,9 +227,17 @@ public interface Parser {
 		@Override
 		protected void onExitOptionNode(OptionNode node) {
 			if (currentOption != null) {
-				Object value = currentOptionArgument;
+				// Object value = currentOptionArgument;
+				Object value = null;
+				if (currentOptionArgument.size() == 1) {
+					value = currentOptionArgument.get(0);
+				}
+				else if (currentOptionArgument.size() > 1) {
+					value = new ArrayList<>(currentOptionArgument);
+				}
 				try {
-					value = convertOptionType(currentOption, currentOptionArgument);
+					// value = convertOptionType(currentOption, currentOptionArgument);
+					value = convertOptionType(currentOption, value);
 				} catch (Exception e) {
 					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_OPTION_VALUE, 0, value, e.getMessage()));
 				}
@@ -251,7 +261,8 @@ public interface Parser {
 
 		@Override
 		protected void onEnterOptionArgumentNode(OptionArgumentNode node) {
-			currentOptionArgument = node.getValue();
+			// currentOptionArgument = node.getValue();
+			currentOptionArgument.add(node.getValue());
 		}
 
 		@Override
