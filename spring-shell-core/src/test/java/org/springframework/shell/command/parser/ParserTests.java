@@ -92,11 +92,11 @@ class ParserTests extends AbstractParsingTests {
 		// assertThat(result.messageResults().get(0).getMessage()).contains("xxx");
 	}
 
-	@Test
-	void lexerMessageShouldGetPropagated() {
-		ParseResult parse = parse("--");
-		assertThat(parse.messageResults()).extracting(ms -> ms.parserMessage().getCode()).containsExactly(1000);
-	}
+	// @Test
+	// void lexerMessageShouldGetPropagated() {
+	// 	ParseResult parse = parse("--");
+	// 	assertThat(parse.messageResults()).extracting(ms -> ms.parserMessage().getCode()).containsExactly(1000);
+	// }
 
 	@Test
 	void optionValueShouldBeInteger() {

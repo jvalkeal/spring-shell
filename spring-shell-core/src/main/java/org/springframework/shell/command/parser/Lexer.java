@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +83,11 @@ public interface Lexer {
 		 */
 		private ArgumentsSplit splitArguments(List<String> arguments, Map<String, Token> validTokens) {
 			int i = -1;
+			boolean foundSplit = false;
 			for (String argument : arguments) {
 				i++;
 				if (validTokens.containsKey(argument)) {
+					foundSplit = true;
 					break;
 				}
 			}
@@ -90,9 +95,24 @@ public interface Lexer {
 				return new ArgumentsSplit(Collections.emptyList(), Collections.emptyList());
 			}
 			else if (i == 0) {
-				return new ArgumentsSplit(Collections.emptyList(), arguments);
+				if (foundSplit) {
+					return new ArgumentsSplit(Collections.emptyList(), arguments);
+				}
+				return new ArgumentsSplit(arguments, Collections.emptyList());
 			}
 			return new ArgumentsSplit(arguments.subList(0, i), arguments.subList(i, arguments.size()));
+		}
+
+		private List<String> extractDirectives(List<String> arguments) {
+			List<String> ret = new ArrayList<>();
+			Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+			String raw = arguments.stream().collect(Collectors.joining());
+			Matcher matcher = pattern.matcher(raw);
+			while (matcher.find()) {
+				String group = matcher.group(1);
+				ret.add(group);
+			}
+			return ret;
 		}
 
 		@Override
@@ -115,18 +135,34 @@ public interface Lexer {
 			// whether directive support is enabled or not
 			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 			List<String> beforeArguments = split.before();
-			int i1 = -1;
-			for (String argument : beforeArguments) {
-				i1++;
-				if (!foundEndOfDirectives) {
-					if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
-							&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
-						tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i1));
-						continue;
-					}
-					foundEndOfDirectives = true;
+
+
+			// int i1 = -1;
+			int i1 = split.before().size() - 1;
+
+			if (configuration.isEnableDirectives()) {
+				List<String> rawDirectives = extractDirectives(beforeArguments);
+				for (String raw : rawDirectives) {
+					tokenList.add(Token.of(raw, TokenType.DIRECTIVE, 0));
 				}
 			}
+			else {
+				if (!configuration.isIgnoreDirectives() && beforeArguments.size() > 0) {
+					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, beforeArguments));
+				}
+			}
+
+			// for (String argument : beforeArguments) {
+			// 	i1++;
+			// 	if (!foundEndOfDirectives) {
+			// 		if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
+			// 				&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
+			// 			tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i1));
+			// 			continue;
+			// 		}
+			// 		foundEndOfDirectives = true;
+			// 	}
+			// }
 
 			// consume remaining arguments which should contain
 			// only ones starting from a first command

@@ -121,7 +121,7 @@ class AstTests extends AbstractParsingTests {
 	@Test
 	void directiveWithCommand() {
 		register(ROOT1);
-		Token directive = token("[fake]", TokenType.DIRECTIVE, 0);
+		Token directive = token("fake", TokenType.DIRECTIVE, 0);
 		Token root1 = token("root1", TokenType.COMMAND, 1);
 		AstResult result = ast(directive, root1);
 

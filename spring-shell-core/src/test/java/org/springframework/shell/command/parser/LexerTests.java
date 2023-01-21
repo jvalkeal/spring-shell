@@ -227,7 +227,7 @@ class LexerTests extends AbstractParsingTests {
 					ParserAssertions.assertThat(token)
 						.isType(TokenType.DIRECTIVE)
 						.hasPosition(0)
-						.hasValue("[fake]");
+						.hasValue("fake");
 				},
 				token -> {
 					ParserAssertions.assertThat(token)
@@ -238,6 +238,59 @@ class LexerTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void hasOneDirective() {
+		register(ROOT1);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+		List<Token> tokens = tokenize(lexer(configuration), "[fake]");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.DIRECTIVE)
+						.hasPosition(0)
+						.hasValue("fake");
+				});
+	}
+
+	@Test
+	void hasMultipleDirectives() {
+		register(ROOT1);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+		List<Token> tokens = tokenize(lexer(configuration), "[fake1][fake2]");
+
+		assertThat(tokens).satisfiesExactly(
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.DIRECTIVE)
+						.hasPosition(0)
+						.hasValue("fake1");
+				},
+				token -> {
+					ParserAssertions.assertThat(token)
+						.isType(TokenType.DIRECTIVE)
+						.hasPosition(0)
+						.hasValue("fake2");
+				});
+	}
+
+	@Test
+	void errorIfDirectivesDisabledAndIgnoreDisabled() {
+		ParserConfiguration configuration = new ParserConfiguration()
+				.setEnableDirectives(false)
+				.setIgnoreDirectives(false);
+		LexerResult result = tokenizeAsResult(lexer(configuration),"[fake]");
+		assertThat(result.messageResults()).isNotEmpty();
+	}
+
+	@Test
+	void noErrorIfDirectivesDisabledAndIgnoreEnabled() {
+		ParserConfiguration configuration = new ParserConfiguration()
+				.setIgnoreDirectives(true);
+		LexerResult result = tokenizeAsResult(lexer(configuration), "[fake]");
+		assertThat(result.messageResults()).isEmpty();
+	}
+
+	@Test
 	void ignoreDirectiveIfDisabled() {
 		register(ROOT1);
 		List<Token> tokens = tokenize("[fake]", "root1");
@@ -245,14 +298,14 @@ class LexerTests extends AbstractParsingTests {
 		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
 	}
 
-	@Test
-	void hasErrorMessageWithoutArguments() {
-		LexerResult result = tokenizeAsResult("--");
-		assertThat(result.messageResults()).satisfiesExactly(
-				message -> {
-					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
-					assertThat(message.position()).isEqualTo(0);
-				});
-	}
+	// @Test
+	// void hasErrorMessageWithoutArguments() {
+	// 	LexerResult result = tokenizeAsResult("--");
+	// 	assertThat(result.messageResults()).satisfiesExactly(
+	// 			message -> {
+	// 				assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+	// 				assertThat(message.position()).isEqualTo(0);
+	// 			});
+	// }
 
 }

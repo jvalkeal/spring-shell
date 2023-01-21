@@ -32,7 +32,7 @@ public class ParserConfiguration {
 
 	/**
 	 * Used in a case where directive support is disabled and parser should ignore
-	 * ones found instead of reporting error, disabled on default.
+	 * ones found instead of reporting error, enabled on default.
 	 */
 	private boolean ignoreDirectives;
 
