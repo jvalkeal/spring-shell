@@ -16,6 +16,7 @@
 package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -69,53 +70,84 @@ public interface Lexer {
 			this.configuration = configuration;
 		}
 
+		private record ArgumentsSplit(List<String> before, List<String> after) {
+		}
+
+		/**
+		 * Splits arguments from a point first valid command is found, where
+		 * {@code before} is everything before commands and {@code after} what's
+		 * remaining.
+		 */
+		private ArgumentsSplit splitArguments(List<String> arguments, Map<String, Token> validTokens) {
+			int i = -1;
+			for (String argument : arguments) {
+				i++;
+				if (validTokens.containsKey(argument)) {
+					break;
+				}
+			}
+			if (i < 0) {
+				return new ArgumentsSplit(Collections.emptyList(), Collections.emptyList());
+			}
+			else if (i == 0) {
+				return new ArgumentsSplit(Collections.emptyList(), arguments);
+			}
+			return new ArgumentsSplit(arguments.subList(0, i), arguments.subList(i, arguments.size()));
+		}
+
 		@Override
 		public LexerResult tokenize(List<String> arguments) {
 			log.debug("Tokenizing arguments {}", arguments);
 			List<MessageResult> errorResults = new ArrayList<>();
+			List<Token> tokenList = new ArrayList<Token>();
 
 			preValidate(errorResults, arguments);
-			boolean foundDoubleDash = false;
-			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
-
-			List<Token> tokenList = new ArrayList<Token>(arguments.size());
 
 			// starting from root level
 			Map<String, Token> validTokens = commandModel.getValidRootTokens();
 
-			CommandInfo currentCommand = null;
+			// we process arguments in two steps, ones before commands and commands
+			ArgumentsSplit split = splitArguments(arguments, validTokens);
 
 			// consume everything before command section starts
 			// currently there can only be directives and we need
-			// to differentiate is we silenty ignore those vs.
+			// to differentiate if we silenty ignore those vs.
 			// whether directive support is enabled or not
+			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
+			List<String> beforeArguments = split.before();
+			int i1 = -1;
+			for (String argument : beforeArguments) {
+				i1++;
+				if (!foundEndOfDirectives) {
+					if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
+							&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
+						tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i1));
+						continue;
+					}
+					foundEndOfDirectives = true;
+				}
+			}
 
+			// consume remaining arguments which should contain
+			// only ones starting from a first command
+			boolean foundDoubleDash = false;
+			List<String> afterArguments = split.after();
+			CommandInfo currentCommand = null;
 
-			int i = -1;
-			for (String argument : arguments) {
-				i++;
+			int i2 = i1;
+			for (String argument : afterArguments) {
+				i2++;
 
 				// We've found bash style "--" meaning further option processing is
 				// stopped and remaining arguments are simply command arguments
 				if (foundDoubleDash) {
-					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i2));
 					continue;
 				}
 				if (!foundDoubleDash && "--".equals(argument)) {
-						tokenList.add(Token.of(argument, TokenType.DOUBLEDASH, i));
+						tokenList.add(Token.of(argument, TokenType.DOUBLEDASH, i2));
 						foundDoubleDash = true;
 						continue;
-				}
-
-				// take directive if its defined
-				// we can always be done with directives as those become before rest
-				if (!foundEndOfDirectives) {
-					if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
-							&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
-						tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i));
-						continue;
-					}
-					foundEndOfDirectives = true;
 				}
 
 				if (validTokens.containsKey(argument)) {
@@ -123,11 +155,11 @@ public interface Lexer {
 					switch (token.getType()) {
 						case COMMAND:
 							currentCommand = commandModel.getRootCommands().get(argument);
-							tokenList.add(Token.of(argument, TokenType.COMMAND, i));
+							tokenList.add(Token.of(argument, TokenType.COMMAND, i2));
 							validTokens = currentCommand.getValidTokens();
 							break;
 						case OPTION:
-							tokenList.add(Token.of(argument, TokenType.OPTION, i));
+							tokenList.add(Token.of(argument, TokenType.OPTION, i2));
 							break;
 						default:
 							break;
@@ -135,22 +167,22 @@ public interface Lexer {
 				}
 				else if (isLastTokenOfType(tokenList, TokenType.OPTION)) {
 					if (argument.startsWith("-")) {
-						tokenList.add(Token.of(argument, TokenType.OPTION, i));
+						tokenList.add(Token.of(argument, TokenType.OPTION, i2));
 					}
 					else {
-						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i2));
 					}
 				}
 				else if (isLastTokenOfType(tokenList, TokenType.COMMAND)) {
 					if (argument.startsWith("-")) {
-						tokenList.add(Token.of(argument, TokenType.OPTION, i));
+						tokenList.add(Token.of(argument, TokenType.OPTION, i2));
 					}
 					else {
-						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+						tokenList.add(Token.of(argument, TokenType.ARGUMENT, i2));
 					}
 				}
 				else if (isLastTokenOfType(tokenList, TokenType.ARGUMENT)) {
-					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i));
+					tokenList.add(Token.of(argument, TokenType.ARGUMENT, i2));
 				}
 
 			}

@@ -19,7 +19,20 @@ import java.text.MessageFormat;
 
 /**
  * Contains all the messages that can be produced during parsing. Each message
- * has a kind (WARNING, ERROR) and a code number.
+ * has a kind (WARNING, ERROR) and a code number. Code is used to identify
+ * particular message and makes it easier to test what messages are produced.
+ * Code numbers are split so that ones within {@code 1xxx} are from lexer
+ * and {@code 2xxx} from parser.
+ *
+ * Messages with {@code ERROR} should be treated as terminating messages because
+ * those are most likely hard errors based on manual validation or exception
+ * thrown within lexing or parsing.
+ *
+ * Messages with {@code WARNING} can be ignored but can be used to provide
+ * info to user. For example parsing may detect some ambiguities with a command
+ * and option model related to what user tries to use as an input. This
+ * because there are limits how clever a parser can be as command model
+ * is beyond its control.
  *
  * @author Janne Valkealahti
  */
