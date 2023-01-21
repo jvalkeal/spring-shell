@@ -248,7 +248,7 @@ class LexerTests extends AbstractParsingTests {
 	@Test
 	void hasErrorMessageWithoutArguments() {
 		LexerResult result = tokenizeAsResult("--");
-		assertThat(result.errorResults()).satisfiesExactly(
+		assertThat(result.messageResults()).satisfiesExactly(
 				message -> {
 					assertThat(message.getParserMessage().getCode()).isEqualTo(1000);
 					assertThat(message.getPosition()).isEqualTo(0);

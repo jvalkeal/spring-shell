@@ -48,7 +48,7 @@ public interface Parser {
 	 * Default implementation of a {@link Parser}. Uses {@link Lexer} and
 	 * {@link Ast}.
 	 */
-	public static class DefaultParser implements Parser {
+	public class DefaultParser implements Parser {
 
 		private final ParserConfiguration configuration;
 		private final CommandModel commandModel;
@@ -81,7 +81,7 @@ public interface Parser {
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
 			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
-			parseResult.getErrorResults().addAll(lexerResult.errorResults());
+			parseResult.getErrorResults().addAll(lexerResult.messageResults());
 			return parseResult;
 		}
 	}
@@ -89,7 +89,7 @@ public interface Parser {
 	/**
 	 * Default implementation of a {@link NodeVisitor}.
 	 */
-	static class DefaultNodeVisitor extends AbstractNodeVisitor {
+	class DefaultNodeVisitor extends AbstractNodeVisitor {
 
 		private final CommandModel commandModel;
 		private List<String> resolvedCommmand = new ArrayList<>();

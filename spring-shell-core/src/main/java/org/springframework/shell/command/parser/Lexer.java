@@ -50,15 +50,15 @@ public interface Lexer {
 	 * Representing result from {@link Lexer} tokenisation.
 	 *
 	 * @param tokens list of tokens in this result
-	 * @param errorResults list of error results in this result
+	 * @param messageResults list of error results in this result
 	 */
-	public static record LexerResult(List<Token> tokens, List<MessageResult> errorResults) {
+	public record LexerResult(List<Token> tokens, List<MessageResult> messageResults) {
 	}
 
 	/**
 	 * Default implementation of a {@link Lexer}.
 	 */
-	public static class DefaultLexer implements Lexer {
+	public class DefaultLexer implements Lexer {
 
 		private final static Logger log = LoggerFactory.getLogger(DefaultLexer.class);
 		private final CommandModel commandModel;

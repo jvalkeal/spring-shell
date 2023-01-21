@@ -47,13 +47,13 @@ public interface Ast {
 	 * @param nonterminalNodes list of nonterminal nodes
 	 * @param terminalNodes list of terminal nodes
 	 */
-	public record AstResult (List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes) {
+	public record AstResult(List<NonterminalAstNode> nonterminalNodes, List<TerminalAstNode> terminalNodes) {
 	}
 
 	/**
 	 * Default implementation of an {@link Ast}.
 	 */
-	public static class DefaultAst implements Ast {
+	public class DefaultAst implements Ast {
 
 		@Override
 		public AstResult generate(List<Token> tokens) {
