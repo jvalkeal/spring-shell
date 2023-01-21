@@ -133,9 +133,7 @@ public interface Lexer {
 			// currently there can only be directives and we need
 			// to differentiate if we silenty ignore those vs.
 			// whether directive support is enabled or not
-			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 			List<String> beforeArguments = split.before();
-
 
 			// int i1 = -1;
 			int i1 = split.before().size() - 1;
@@ -151,18 +149,6 @@ public interface Lexer {
 					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, beforeArguments));
 				}
 			}
-
-			// for (String argument : beforeArguments) {
-			// 	i1++;
-			// 	if (!foundEndOfDirectives) {
-			// 		if (argument.length() > 2 && argument.charAt(0) == '[' && argument.charAt(1) != ']'
-			// 				&& argument.charAt(1) != ':' && argument.charAt(argument.length() - 1) == ']') {
-			// 			tokenList.add(Token.of(argument, TokenType.DIRECTIVE, i1));
-			// 			continue;
-			// 		}
-			// 		foundEndOfDirectives = true;
-			// 	}
-			// }
 
 			// consume remaining arguments which should contain
 			// only ones starting from a first command

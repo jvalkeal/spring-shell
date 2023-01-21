@@ -116,7 +116,6 @@ public interface Parser {
 		private final CommandModel commandModel;
 		private final ConversionService conversionService;
 		private List<String> resolvedCommmand = new ArrayList<>();
-		private CommandNode currentCommandNode;
 		private List<OptionResult> options = new ArrayList<>();
 		private CommandOption currentOption;
 		// private Object currentOptionArgument = null;
@@ -191,7 +190,6 @@ public interface Parser {
 
 		@Override
 		protected void onEnterRootCommandNode(CommandNode node) {
-			currentCommandNode = node;
 			resolvedCommmand.add(node.getCommand());
 		}
 
@@ -201,7 +199,6 @@ public interface Parser {
 
 		@Override
 		protected void onEnterCommandNode(CommandNode node) {
-			currentCommandNode = node;
 			resolvedCommmand.add(node.getCommand());
 		}
 
