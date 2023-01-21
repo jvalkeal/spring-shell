@@ -27,7 +27,7 @@ import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 import org.springframework.shell.command.parser.Lexer.LexerResult;
-import org.springframework.shell.command.parser.ParseResult.OptionResult;
+import org.springframework.shell.command.parser.Parser.ParseResult.OptionResult;
 
 /**
  * Interface to parse command line arguments.
@@ -43,6 +43,24 @@ public interface Parser {
 	 * @return a parsed results
 	 */
 	ParseResult parse(List<String> arguments);
+
+
+	/**
+	 * Results from a {@link Parser} containing needed information like resolved
+	 * {@link CommandRegistration}, list of {@link CommandOption} instances, errors
+	 * and directive.
+	 *
+	 * @param commandRegistration command registration
+	 * @param optionResults option results
+	 * @param directive directive result
+	 * @param messageResults message results
+	 */
+	public record ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults,
+			String directive, List<MessageResult> messageResults) {
+
+		public record OptionResult(CommandOption option, Object value) {
+		}
+	}
 
 	/**
 	 * Default implementation of a {@link Parser}. Uses {@link Lexer} and
@@ -81,7 +99,7 @@ public interface Parser {
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
 			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
-			parseResult.getErrorResults().addAll(lexerResult.messageResults());
+			parseResult.messageResults().addAll(lexerResult.messageResults());
 			return parseResult;
 		}
 	}
@@ -124,7 +142,7 @@ public interface Parser {
 			List<CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
 				.collect(Collectors.toList());
-			options.stream().map(or -> or.getOption()).forEach(o -> {
+			options.stream().map(or -> or.option()).forEach(o -> {
 				// XXX getOptions() build new CommandOption instances
 				// revisit changes did to CommandOption
 				requiredOptions.remove(o);

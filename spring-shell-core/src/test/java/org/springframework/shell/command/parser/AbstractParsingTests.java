@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.Lexer.LexerResult;
+import org.springframework.shell.command.parser.Parser.ParseResult;
 
 abstract class AbstractParsingTests {
 

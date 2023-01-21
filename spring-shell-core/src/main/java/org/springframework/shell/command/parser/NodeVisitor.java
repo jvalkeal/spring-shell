@@ -17,6 +17,8 @@ package org.springframework.shell.command.parser;
 
 import java.util.List;
 
+import org.springframework.shell.command.parser.Parser.ParseResult;
+
 /**
  * Interface to vising nodes.
  *
