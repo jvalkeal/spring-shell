@@ -66,7 +66,7 @@ public interface Ast {
 				switch (token.getType()) {
 					case DIRECTIVE:
 						String raw = token.getValue();
-						String[] split = raw.split(":", 1);
+						String[] split = raw.split(":", 2);
 						directiveNode = new DirectiveNode(token, split[0], split.length > 1 ? split[1] : null);
 						break;
 					case COMMAND:

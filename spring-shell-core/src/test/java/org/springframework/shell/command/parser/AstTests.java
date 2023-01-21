@@ -119,7 +119,7 @@ class AstTests extends AbstractParsingTests {
 	}
 
 	@Test
-	void directiveWithCommand() {
+	void directiveNoValueWithCommand() {
 		register(ROOT1);
 		Token directive = token("fake", TokenType.DIRECTIVE, 0);
 		Token root1 = token("root1", TokenType.COMMAND, 1);
@@ -130,6 +130,20 @@ class AstTests extends AbstractParsingTests {
 		DirectiveNode dn = (DirectiveNode) result.terminalNodes().get(0);
 		assertThat(dn.getName()).isEqualTo("fake");
 		assertThat(dn.getValue()).isNull();
+	}
+
+	@Test
+	void directiveWithValueWithCommand() {
+		register(ROOT1);
+		Token directive = token("fake:value", TokenType.DIRECTIVE, 0);
+		Token root1 = token("root1", TokenType.COMMAND, 1);
+		AstResult result = ast(directive, root1);
+
+		assertThat(result.terminalNodes()).hasSize(1);
+		assertThat(result.terminalNodes().get(0)).isInstanceOf(DirectiveNode.class);
+		DirectiveNode dn = (DirectiveNode) result.terminalNodes().get(0);
+		assertThat(dn.getName()).isEqualTo("fake");
+		assertThat(dn.getValue()).isEqualTo("value");
 	}
 
 }

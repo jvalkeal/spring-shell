@@ -55,11 +55,11 @@ public interface Parser {
 	 *
 	 * @param commandRegistration command registration
 	 * @param optionResults option results
-	 * @param directive directive result
+	 * @param directiveResult directive result
 	 * @param messageResults message results
 	 */
 	public record ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults,
-			String directive, List<MessageResult> messageResults) {
+			DirectiveResult directiveResult, List<MessageResult> messageResults) {
 
 		public record OptionResult(CommandOption option, Object value) {
 		}
@@ -121,7 +121,7 @@ public interface Parser {
 		private CommandOption currentOption;
 		// private Object currentOptionArgument = null;
 		private List<String> currentOptionArgument = new ArrayList<>();
-		private String directive = null;
+		private DirectiveResult directiveResult = null;
 		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
 		private final List<MessageResult> errorResults = new ArrayList<>();
 
@@ -140,7 +140,7 @@ public interface Parser {
 				errorResults.addAll(validate(registration));
 			}
 
-			return new ParseResult(registration, options, directive, errorResults);
+			return new ParseResult(registration, options, directiveResult, errorResults);
 		}
 
 		List<MessageResult> validate(CommandRegistration registration) {
@@ -182,7 +182,7 @@ public interface Parser {
 
 		@Override
 		protected void onEnterDirectiveNode(DirectiveNode node) {
-			directive = node.getName();
+			directiveResult = DirectiveResult.of(node.getName(), node.getValue());
 		}
 
 		@Override

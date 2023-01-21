@@ -59,11 +59,28 @@ class ParserTests extends AbstractParsingTests {
 	}
 
 	@Test
-	void directiveWithCommand() {
+	void directiveNoValueWithCommand() {
 		register(ROOT3);
 		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+
 		ParseResult result = parse(lexer(configuration), "[fake]", "root3");
-		assertThat(result.directive()).isEqualTo("fake");
+		assertThat(result.directiveResult()).satisfies(d -> {
+			assertThat(d.name()).isEqualTo("fake");
+			assertThat(d.value()).isNull();
+		});
+		assertThat(result.messageResults()).isEmpty();
+	}
+
+	@Test
+	void directiveWithValueWithCommand() {
+		register(ROOT3);
+		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+
+		ParseResult result = parse(lexer(configuration), "[fake:value]", "root3");
+		assertThat(result.directiveResult()).satisfies(d -> {
+			assertThat(d.name()).isEqualTo("fake");
+			assertThat(d.value()).isEqualTo("value");
+		});
 		assertThat(result.messageResults()).isEmpty();
 	}
 
