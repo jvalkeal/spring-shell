@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
+import org.springframework.shell.command.parser.Lexer.LexerResult;
 
 abstract class AbstractParsingTests {
 
@@ -129,6 +130,14 @@ abstract class AbstractParsingTests {
 
 	List<Token> tokenize(Lexer lexer, String... arguments) {
 		return lexer.tokenize(Arrays.asList(arguments)).tokens();
+	}
+
+	LexerResult tokenizeAsResult(String... arguments) {
+		return tokenizeAsResult(lexer(), arguments);
+	}
+
+	LexerResult tokenizeAsResult(Lexer lexer, String... arguments) {
+		return lexer.tokenize(Arrays.asList(arguments));
 	}
 
 	Ast ast() {

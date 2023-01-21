@@ -109,7 +109,9 @@ public interface Ast {
 			List<NonterminalAstNode> nonterminalNodes = new ArrayList<>();
 			List<TerminalAstNode> terminalNodes = new ArrayList<>();
 
-			nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
+			if (commandNodes.size() > 0) {
+				nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
+			}
 			if (directiveNode != null) {
 				terminalNodes.add(directiveNode);
 			}

@@ -90,4 +90,10 @@ class ParserTests extends AbstractParsingTests {
 		// assertThat(result.getErrorResults().get(0).getMessage()).contains("xxx");
 	}
 
+	@Test
+	void lexerMessageShouldGetPropagated() {
+		ParseResult parse = parse("--");
+		assertThat(parse.getErrorResults()).extracting(ms -> ms.getParserMessage().getCode()).containsExactly(1000);
+	}
+
 }

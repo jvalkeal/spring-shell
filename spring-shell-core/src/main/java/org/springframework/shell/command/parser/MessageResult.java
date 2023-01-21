@@ -36,6 +36,10 @@ public class MessageResult {
 		return message;
 	}
 
+	public int getPosition() {
+		return position;
+	}
+
 	public String getMessage() {
 		return message.formatMessage(position, inserts);
 	}

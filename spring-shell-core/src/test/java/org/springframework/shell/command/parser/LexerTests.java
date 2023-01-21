@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.command.parser.Lexer.LexerResult;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -241,6 +243,16 @@ class LexerTests extends AbstractParsingTests {
 		List<Token> tokens = tokenize("[fake]", "root1");
 
 		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
+	}
+
+	@Test
+	void hasErrorMessageWithoutArguments() {
+		LexerResult result = tokenizeAsResult("--");
+		assertThat(result.errorResults()).satisfiesExactly(
+				message -> {
+					assertThat(message.getParserMessage().getCode()).isEqualTo(1000);
+					assertThat(message.getPosition()).isEqualTo(0);
+				});
 	}
 
 }

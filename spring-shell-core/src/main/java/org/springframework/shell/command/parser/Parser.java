@@ -26,6 +26,7 @@ import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+import org.springframework.shell.command.parser.Lexer.LexerResult;
 import org.springframework.shell.command.parser.ParseResult.OptionResult;
 
 /**
@@ -68,7 +69,8 @@ public interface Parser {
 		@Override
 		public ParseResult parse(List<String> arguments) {
 			// 1. tokenize arguments
-			List<Token> tokens = lexer.tokenize(arguments).tokens();
+			LexerResult lexerResult = lexer.tokenize(arguments);
+			List<Token> tokens = lexerResult.tokens();
 
 			// 2. generate syntax tree results from tokens
 			//    result from it is then feed into node visitor
@@ -78,7 +80,9 @@ public interface Parser {
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel);
-			return visitor.visit(astResult.getNonterminalNodes(), astResult.getTerminalNodes());
+			ParseResult parseResult = visitor.visit(astResult.getNonterminalNodes(), astResult.getTerminalNodes());
+			parseResult.getErrorResults().addAll(lexerResult.errorResults());
+			return parseResult;
 		}
 	}
 
@@ -103,9 +107,12 @@ public interface Parser {
 		@Override
 		protected ParseResult buildResult() {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
-			CommandRegistration registration = info.registration;
+			CommandRegistration registration = info != null ? info.registration : null;
 
-			List<MessageResult> errorResults = validate(registration);
+			List<MessageResult> errorResults = new ArrayList<>();
+			if (registration != null) {
+				errorResults.addAll(validate(registration));
+			}
 
 			return new ParseResult(registration, options, directive, errorResults);
 		}

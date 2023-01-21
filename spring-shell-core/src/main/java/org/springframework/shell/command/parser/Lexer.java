@@ -72,6 +72,9 @@ public interface Lexer {
 		@Override
 		public LexerResult tokenize(List<String> arguments) {
 			log.debug("Tokenizing arguments {}", arguments);
+			List<MessageResult> errorResults = new ArrayList<>();
+
+			preValidate(errorResults, arguments);
 			boolean foundDoubleDash = false;
 			boolean foundEndOfDirectives = !configuration.isEnableDirectives();
 
@@ -147,7 +150,16 @@ public interface Lexer {
 			}
 
 			log.debug("Generated token list {}", tokenList);
-			return new LexerResult(tokenList, null);
+			return new LexerResult(tokenList, errorResults);
+		}
+
+		private void preValidate(List<MessageResult> errorResults, List<String> arguments) {
+			if (arguments.size() > 0) {
+				String arg = arguments.get(0);
+				if ("--".equals(arg)) {
+					errorResults.add(new MessageResult(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, arg));
+				}
+			}
 		}
 
 		private static boolean isLastTokenOfType(List<Token> tokenList, TokenType type) {
