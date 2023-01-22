@@ -314,14 +314,18 @@ class LexerTests extends AbstractParsingTests {
 		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
 	}
 
-	// @Test
-	// void hasErrorMessageWithoutArguments() {
-	// 	LexerResult result = tokenizeAsResult("--");
-	// 	assertThat(result.messageResults()).satisfiesExactly(
-	// 			message -> {
-	// 				assertThat(message.parserMessage().getCode()).isEqualTo(1000);
-	// 				assertThat(message.position()).isEqualTo(0);
-	// 			});
-	// }
+	@Test
+	void hasErrorMessageWithoutArguments() {
+		LexerResult result = tokenizeAsResult("--");
+		assertThat(result.messageResults()).satisfiesExactly(
+				message -> {
+					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+					assertThat(message.position()).isEqualTo(0);
+				},
+				message -> {
+					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+					assertThat(message.position()).isEqualTo(0);
+				});
+	}
 
 }
