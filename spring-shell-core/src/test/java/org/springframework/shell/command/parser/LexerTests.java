@@ -17,6 +17,7 @@ package org.springframework.shell.command.parser;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Lexer.LexerResult;
@@ -30,18 +31,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class LexerTests extends AbstractParsingTests {
 
-	@Test
-	void rootCommandNoOptions() {
-		register(ROOT1);
-		List<Token> tokens = tokenize("root1");
+	@Nested
+	class NoOptions {
 
-		assertThat(tokens).satisfiesExactly(
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.COMMAND)
-						.hasPosition(0)
-						.hasValue("root1");
-				});
+		@Test
+		void rootCommandNoOptions() {
+			register(ROOT1);
+			List<Token> tokens = tokenize("root1");
+
+			assertThat(tokens).satisfiesExactly(
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.COMMAND)
+							.hasPosition(0)
+							.hasValue("root1");
+					});
+		}
 	}
 
 	// @Test
@@ -230,13 +235,17 @@ class LexerTests extends AbstractParsingTests {
 				TokenType.ARGUMENT);
 	}
 
-	@Test
-	void doubleDashAddsCommandArguments() {
-		register(ROOT3);
-		List<Token> tokens = tokenize("root3", "--", "arg1");
+	@Nested
+	class DoubleDash {
 
-		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.DOUBLEDASH,
-				TokenType.ARGUMENT);
+		@Test
+		void doubleDashAddsCommandArguments() {
+			register(ROOT3);
+			List<Token> tokens = tokenize("root3", "--", "arg1");
+
+			assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND, TokenType.DOUBLEDASH,
+					TokenType.ARGUMENT);
+		}
 	}
 
 	@Test
@@ -248,100 +257,107 @@ class LexerTests extends AbstractParsingTests {
 				TokenType.ARGUMENT);
 	}
 
-	@Test
-	void directiveWithCommand() {
-		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
-		List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
+	@Nested
+	class Directives {
 
-		assertThat(tokens).satisfiesExactly(
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.DIRECTIVE)
-						.hasPosition(0)
-						.hasValue("fake");
-				},
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.COMMAND)
-						.hasPosition(1)
-						.hasValue("root1");
-				});
+		@Test
+		void directiveWithCommand() {
+			register(ROOT1);
+			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
+
+			assertThat(tokens).satisfiesExactly(
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.DIRECTIVE)
+							.hasPosition(0)
+							.hasValue("fake");
+					},
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.COMMAND)
+							.hasPosition(1)
+							.hasValue("root1");
+					});
+		}
+
+		@Test
+		void hasOneDirective() {
+			register(ROOT1);
+			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			List<Token> tokens = tokenize(lexer(configuration), "[fake]");
+
+			assertThat(tokens).satisfiesExactly(
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.DIRECTIVE)
+							.hasPosition(0)
+							.hasValue("fake");
+					});
+		}
+
+		@Test
+		void hasMultipleDirectives() {
+			register(ROOT1);
+			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			List<Token> tokens = tokenize(lexer(configuration), "[fake1][fake2]");
+
+			assertThat(tokens).satisfiesExactly(
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.DIRECTIVE)
+							.hasPosition(0)
+							.hasValue("fake1");
+					},
+					token -> {
+						ParserAssertions.assertThat(token)
+							.isType(TokenType.DIRECTIVE)
+							.hasPosition(0)
+							.hasValue("fake2");
+					});
+		}
+
+		@Test
+		void errorIfDirectivesDisabledAndIgnoreDisabled() {
+			ParserConfiguration configuration = new ParserConfiguration()
+					.setEnableDirectives(false)
+					.setIgnoreDirectives(false);
+			LexerResult result = tokenizeAsResult(lexer(configuration),"[fake]");
+			assertThat(result.messageResults()).isNotEmpty();
+		}
+
+		@Test
+		void noErrorIfDirectivesDisabledAndIgnoreEnabled() {
+			ParserConfiguration configuration = new ParserConfiguration()
+					.setIgnoreDirectives(true);
+			LexerResult result = tokenizeAsResult(lexer(configuration), "[fake]");
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+		@Test
+		void ignoreDirectiveIfDisabled() {
+			register(ROOT1);
+			List<Token> tokens = tokenize("[fake]", "root1");
+
+			assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
+		}
 	}
 
-	@Test
-	void hasOneDirective() {
-		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
-		List<Token> tokens = tokenize(lexer(configuration), "[fake]");
+	@Nested
+	class ParserMessages {
 
-		assertThat(tokens).satisfiesExactly(
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.DIRECTIVE)
-						.hasPosition(0)
-						.hasValue("fake");
-				});
+		@Test
+		void hasErrorMessageWithoutArguments() {
+			LexerResult result = tokenizeAsResult("--");
+			assertThat(result.messageResults()).satisfiesExactly(
+					message -> {
+						assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+						assertThat(message.position()).isEqualTo(0);
+					},
+					message -> {
+						assertThat(message.parserMessage().getCode()).isEqualTo(1000);
+						assertThat(message.position()).isEqualTo(0);
+					});
+		}
 	}
-
-	@Test
-	void hasMultipleDirectives() {
-		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
-		List<Token> tokens = tokenize(lexer(configuration), "[fake1][fake2]");
-
-		assertThat(tokens).satisfiesExactly(
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.DIRECTIVE)
-						.hasPosition(0)
-						.hasValue("fake1");
-				},
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.DIRECTIVE)
-						.hasPosition(0)
-						.hasValue("fake2");
-				});
-	}
-
-	@Test
-	void errorIfDirectivesDisabledAndIgnoreDisabled() {
-		ParserConfiguration configuration = new ParserConfiguration()
-				.setEnableDirectives(false)
-				.setIgnoreDirectives(false);
-		LexerResult result = tokenizeAsResult(lexer(configuration),"[fake]");
-		assertThat(result.messageResults()).isNotEmpty();
-	}
-
-	@Test
-	void noErrorIfDirectivesDisabledAndIgnoreEnabled() {
-		ParserConfiguration configuration = new ParserConfiguration()
-				.setIgnoreDirectives(true);
-		LexerResult result = tokenizeAsResult(lexer(configuration), "[fake]");
-		assertThat(result.messageResults()).isEmpty();
-	}
-
-	@Test
-	void ignoreDirectiveIfDisabled() {
-		register(ROOT1);
-		List<Token> tokens = tokenize("[fake]", "root1");
-
-		assertThat(tokens).extracting(Token::getType).containsExactly(TokenType.COMMAND);
-	}
-
-	@Test
-	void hasErrorMessageWithoutArguments() {
-		LexerResult result = tokenizeAsResult("--");
-		assertThat(result.messageResults()).satisfiesExactly(
-				message -> {
-					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
-					assertThat(message.position()).isEqualTo(0);
-				},
-				message -> {
-					assertThat(message.parserMessage().getCode()).isEqualTo(1000);
-					assertThat(message.position()).isEqualTo(0);
-				});
-	}
-
 }
