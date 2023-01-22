@@ -119,7 +119,6 @@ public interface Parser {
 			// 3. visit nodes
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
-			// XXX expose setting conversion service
 			NodeVisitor visitor = new DefaultNodeVisitor(commandModel, conversionService);
 			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
 			parseResult.messageResults().addAll(lexerResult.messageResults());
