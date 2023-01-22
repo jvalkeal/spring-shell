@@ -190,11 +190,11 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result.argumentResults()).satisfiesExactly(
 			ar -> {
 				assertThat(ar.value()).isEqualTo("arg1");
-				// assertThat(ar.position()).isEqualTo(1);
+				assertThat(ar.position()).isEqualTo(1);
 			},
 			ar -> {
 				assertThat(ar.value()).isEqualTo("arg2");
-				// assertThat(ar.position()).isEqualTo(2);
+				assertThat(ar.position()).isEqualTo(2);
 			}
 		);
 	}
@@ -207,11 +207,11 @@ class ParserTests extends AbstractParsingTests {
 		assertThat(result.argumentResults()).satisfiesExactly(
 			ar -> {
 				assertThat(ar.value()).isEqualTo("arg1");
-				// assertThat(ar.position()).isEqualTo(4);
+				assertThat(ar.position()).isEqualTo(4);
 			},
 			ar -> {
 				assertThat(ar.value()).isEqualTo("arg2");
-				// assertThat(ar.position()).isEqualTo(5);
+				assertThat(ar.position()).isEqualTo(5);
 			}
 		);
 	}

@@ -261,7 +261,7 @@ public interface Parser {
 
 		@Override
 		protected void onEnterCommandArgumentNode(CommandArgumentNode node) {
-			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), 0));
+			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), node.getToken().getPosition()));
 		}
 
 		@Override
