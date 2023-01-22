@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.command.parser;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Parser.ParseResult;
@@ -32,18 +33,6 @@ class ParserTests extends AbstractParsingTests {
 	void shouldFindRegistration() {
 		register(ROOT1);
 		ParseResult result = parse("root1");
-		assertThat(result).isNotNull();
-		assertThat(result.commandRegistration()).isNotNull();
-		assertThat(result.messageResults()).isEmpty();
-	}
-
-	@Test
-	void shouldFindRegistrationCaseInsensitive() {
-		register(ROOT1_UP);
-		ParserConfiguration configuration = new ParserConfiguration()
-				.setCommandsCaseSensitive(false)
-				.setOptionsCaseSensitive(false);
-		ParseResult result = parse(configuration, "root1");
 		assertThat(result).isNotNull();
 		assertThat(result.commandRegistration()).isNotNull();
 		assertThat(result.messageResults()).isEmpty();
@@ -214,6 +203,37 @@ class ParserTests extends AbstractParsingTests {
 				assertThat(ar.position()).isEqualTo(5);
 			}
 		);
+	}
+
+	@Nested
+	class ShortOptions {
+
+		@Test
+		void shouldFindShortOption() {
+			register(ROOT3_SHORT_OPTION_A);
+			ParseResult result = parse("root3", "-a");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.optionResults()).isNotEmpty();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+	}
+
+	@Nested
+	class CaseSensitivity {
+
+		@Test
+		void shouldFindRegistrationCaseInsensitive() {
+			register(ROOT1_UP);
+			ParserConfiguration configuration = new ParserConfiguration()
+					.setCommandsCaseSensitive(false)
+					.setOptionsCaseSensitive(false);
+			ParseResult result = parse(configuration, "root1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.messageResults()).isEmpty();
+		}
 	}
 
 }

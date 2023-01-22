@@ -226,10 +226,17 @@ public interface Parser {
 				Set<String> longNames = Arrays.asList(option.getLongNames()).stream()
 					.map(n -> "--" + n)
 					.collect(Collectors.toSet());
-				if (longNames.contains(name)) {
-					currentOption = option;
+				boolean match = longNames.contains(name);
+				if (!match) {
+					Set<String> shortNames = Arrays.asList(option.getShortNames()).stream()
+						.map(n -> "-" + Character.toString(n))
+						.collect(Collectors.toSet());
+					match = shortNames.contains(name);
 				}
-			});
+				if (match) {
+						currentOption = option;
+					}
+				});
 		}
 
 		@Override
