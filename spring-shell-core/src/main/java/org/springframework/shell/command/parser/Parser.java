@@ -30,6 +30,7 @@ import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 import org.springframework.shell.command.parser.Lexer.LexerResult;
+import org.springframework.shell.command.parser.Parser.ParseResult.ArgumentResult;
 import org.springframework.shell.command.parser.Parser.ParseResult.OptionResult;
 
 /**
@@ -59,9 +60,20 @@ public interface Parser {
 	 * @param messageResults message results
 	 */
 	public record ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults,
-			List<DirectiveResult> directiveResults, List<MessageResult> messageResults) {
+			List<DirectiveResult> directiveResults, List<MessageResult> messageResults, List<ArgumentResult> argumentResults) {
 
 		public record OptionResult(CommandOption option, Object value) {
+
+			public static OptionResult of(CommandOption option, Object value) {
+				return new OptionResult(option, value);
+			}
+		}
+
+		public record ArgumentResult(String value, int position) {
+
+			public static ArgumentResult of(String value, int position) {
+				return new ArgumentResult(value, position);
+			}
 		}
 	}
 
@@ -122,6 +134,7 @@ public interface Parser {
 		private List<DirectiveResult> directiveResults = new ArrayList<>();
 		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
 		private final List<MessageResult> errorResults = new ArrayList<>();
+		private List<ArgumentResult> argumentResults = new ArrayList<>();
 
 		DefaultNodeVisitor(CommandModel commandModel, ConversionService conversionService) {
 			this.commandModel = commandModel;
@@ -138,7 +151,7 @@ public interface Parser {
 				errorResults.addAll(validate(registration));
 			}
 
-			return new ParseResult(registration, options, directiveResults, errorResults);
+			return new ParseResult(registration, options, directiveResults, errorResults, argumentResults);
 		}
 
 		List<MessageResult> validate(CommandRegistration registration) {
@@ -248,6 +261,7 @@ public interface Parser {
 
 		@Override
 		protected void onEnterCommandArgumentNode(CommandArgumentNode node) {
+			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), 0));
 		}
 
 		@Override

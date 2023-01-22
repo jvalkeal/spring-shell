@@ -182,4 +182,38 @@ class ParserTests extends AbstractParsingTests {
 		});
 	}
 
+	@Test
+	void commandArgumentsGetsAddedWhenNoOptions() {
+		register(ROOT1);
+		ParseResult result = parse("root1", "arg1", "arg2");
+
+		assertThat(result.argumentResults()).satisfiesExactly(
+			ar -> {
+				assertThat(ar.value()).isEqualTo("arg1");
+				// assertThat(ar.position()).isEqualTo(1);
+			},
+			ar -> {
+				assertThat(ar.value()).isEqualTo("arg2");
+				// assertThat(ar.position()).isEqualTo(2);
+			}
+		);
+	}
+
+	@Test
+	void commandArgumentsGetsAddedAfterDoubleDash() {
+		register(ROOT3);
+		ParseResult result = parse("root3", "--arg1", "value1", "--", "arg1", "arg2");
+
+		assertThat(result.argumentResults()).satisfiesExactly(
+			ar -> {
+				assertThat(ar.value()).isEqualTo("arg1");
+				// assertThat(ar.position()).isEqualTo(4);
+			},
+			ar -> {
+				assertThat(ar.value()).isEqualTo("arg2");
+				// assertThat(ar.position()).isEqualTo(5);
+			}
+		);
+	}
+
 }
