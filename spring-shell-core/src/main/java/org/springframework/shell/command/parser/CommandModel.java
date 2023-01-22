@@ -35,7 +35,7 @@ public class CommandModel {
 	private final Map<String, CommandInfo> rootCommands = new HashMap<>();
 	private final ParserConfiguration configuration;
 
-	CommandModel(Map<String, CommandRegistration> registrations, ParserConfiguration configuration) {
+	public CommandModel(Map<String, CommandRegistration> registrations, ParserConfiguration configuration) {
 		this.configuration = configuration;
 		buildModel(registrations);
 	}

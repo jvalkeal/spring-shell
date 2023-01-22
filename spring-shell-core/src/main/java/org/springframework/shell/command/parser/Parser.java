@@ -87,16 +87,23 @@ public interface Parser {
 		private final CommandModel commandModel;
 		private final Lexer lexer;
 		private final Ast ast;
+		private ConversionService conversionService;
 
-		DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast) {
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast) {
 			this(commandModel, lexer, ast, new ParserConfiguration());
 		}
 
-		DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration) {
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration) {
+			this(commandModel, lexer, ast, configuration, null);
+		}
+
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration,
+				ConversionService conversionService) {
 			this.commandModel = commandModel;
 			this.lexer = lexer;
 			this.ast = ast;
 			this.configuration = configuration;
+			this.conversionService = conversionService != null ? conversionService : new DefaultConversionService();
 		}
 
 		@Override
@@ -113,7 +120,7 @@ public interface Parser {
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
 			// XXX expose setting conversion service
-			NodeVisitor visitor = new DefaultNodeVisitor(commandModel, new DefaultConversionService());
+			NodeVisitor visitor = new DefaultNodeVisitor(commandModel, conversionService);
 			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
 			parseResult.messageResults().addAll(lexerResult.messageResults());
 			return parseResult;
