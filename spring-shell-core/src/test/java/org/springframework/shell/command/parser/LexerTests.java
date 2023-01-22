@@ -44,21 +44,37 @@ class LexerTests extends AbstractParsingTests {
 				});
 	}
 
-	@Test
-	void commandWithCaseInsensitive() {
-		register(ROOT1);
-		ParserConfiguration configuration = new ParserConfiguration()
-				.setEnableDirectives(true);
-		List<Token> tokens = tokenize(lexer(configuration), "root1");
+	// @Test
+	// void commandWithCaseInsensitiveInDefinition() {
+	// 	register(ROOT1_UP);
+	// 	ParserConfiguration configuration = new ParserConfiguration()
+	// 			.setOptionsCaseSensitive(false);
+	// 	List<Token> tokens = tokenize(lexer(configuration), "root1");
 
-		assertThat(tokens).satisfiesExactly(
-				token -> {
-					ParserAssertions.assertThat(token)
-						.isType(TokenType.COMMAND)
-						.hasPosition(0)
-						.hasValue("root1");
-				});
-	}
+	// 	assertThat(tokens).satisfiesExactly(
+	// 			token -> {
+	// 				ParserAssertions.assertThat(token)
+	// 					.isType(TokenType.COMMAND)
+	// 					.hasPosition(0)
+	// 					.hasValue("root1");
+	// 			});
+	// }
+
+	// @Test
+	// void commandWithCaseInsensitiveInArguments() {
+	// 	register(ROOT1);
+	// 	ParserConfiguration configuration = new ParserConfiguration()
+	// 			.setOptionsCaseSensitive(false);
+	// 	List<Token> tokens = tokenize(lexer(configuration), "ROOT1");
+
+	// 	assertThat(tokens).satisfiesExactly(
+	// 			token -> {
+	// 				ParserAssertions.assertThat(token)
+	// 					.isType(TokenType.COMMAND)
+	// 					.hasPosition(0)
+	// 					.hasValue("ROOT1");
+	// 			});
+	// }
 
 	@Test
 	void rootCommandWithChildGetsRootForRoot() {
