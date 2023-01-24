@@ -176,7 +176,8 @@ public interface Lexer {
 					Token token = validTokens.get(argument);
 					switch (token.getType()) {
 						case COMMAND:
-							currentCommand = commandModel.getRootCommands().get(argument);
+							currentCommand = currentCommand == null ? commandModel.getRootCommands().get(argument) : currentCommand.getChildren(argument);
+							// currentCommand = commandModel.getRootCommands().get(argument);
 							tokenList.add(Token.of(argument, TokenType.COMMAND, i2));
 							validTokens = currentCommand.getValidTokens();
 							break;

@@ -44,6 +44,50 @@ class AstTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void createsMultipleCommandNodes() {
+		register(ROOT2_SUB1_SUB2);
+		Token root1 = token("root1", TokenType.COMMAND, 0);
+		Token sub1 = token("sub1", TokenType.COMMAND, 1);
+		Token sub2 = token("sub2", TokenType.COMMAND, 2);
+		Token arg1 = token("--arg1", TokenType.OPTION, 3);
+		Token value1 = token("xxx", TokenType.ARGUMENT, 4);
+		AstResult result = ast(root1, sub1, sub2, arg1, value1);
+
+		assertThat(result).isNotNull();
+
+		assertThat(result.nonterminalNodes()).satisfiesExactly(
+			n1 ->  {
+				assertThat(n1).isInstanceOf(CommandNode.class);
+				CommandNode cn1 = (CommandNode)n1;
+				assertThat(cn1.getCommand()).isEqualTo("root1");
+				assertThat(cn1.getChildren()).satisfiesExactly(
+					n2 -> {
+						assertThat(n2).isInstanceOf(CommandNode.class);
+						CommandNode cn2 = (CommandNode)n2;
+						assertThat(cn2.getCommand()).isEqualTo("sub1");
+						assertThat(cn2.getChildren()).satisfiesExactly(
+							n3 -> {
+								assertThat(n3).isInstanceOf(CommandNode.class);
+								CommandNode cn3 = (CommandNode)n3;
+								assertThat(cn3.getCommand()).isEqualTo("sub2");
+								assertThat(cn3.getChildren()).satisfiesExactly(
+									n4 -> {
+										assertThat(n4).isInstanceOf(OptionNode.class);
+										OptionNode on4 = (OptionNode)n4;
+										assertThat(on4.getChildren()).satisfiesExactly(
+											n5 -> {
+												assertThat(n5).isInstanceOf(OptionArgumentNode.class);
+											}
+										);
+									}
+								);
+							}
+						);
+					});
+			});
+	}
+
+	@Test
 	void createsOptionNodeNoOptionArg() {
 		register(ROOT3);
 		Token root3 = token("root3", TokenType.COMMAND, 0);

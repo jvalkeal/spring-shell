@@ -97,6 +97,90 @@ class LexerTests extends AbstractParsingTests {
 	}
 
 	@Test
+	void subCommandLevel1WithoutRoot() {
+		register(ROOT2_SUB1);
+		List<Token> tokens = tokenize("root2", "sub1");
+
+		assertThat(tokens).satisfiesExactly(
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(0)
+					.hasValue("root2");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(1)
+					.hasValue("sub1");
+			});
+	}
+
+	@Test
+	void subCommandLevel2WithoutRoot() {
+		register(ROOT2_SUB1_SUB2);
+		List<Token> tokens = tokenize("root2", "sub1", "sub2");
+
+		assertThat(tokens).satisfiesExactly(
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(0)
+					.hasValue("root2");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(1)
+					.hasValue("sub1");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(2)
+					.hasValue("sub2");
+			});
+	}
+
+	@Test
+	void subCommandLevel2WithoutRootWithOption() {
+		register(ROOT2_SUB1_SUB2);
+		List<Token> tokens = tokenize("root2", "sub1", "sub2", "--arg1", "xxx");
+
+		assertThat(tokens).satisfiesExactly(
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(0)
+					.hasValue("root2");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(1)
+					.hasValue("sub1");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.COMMAND)
+					.hasPosition(2)
+					.hasValue("sub2");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.OPTION)
+					.hasPosition(3)
+					.hasValue("--arg1");
+			},
+			token -> {
+				ParserAssertions.assertThat(token)
+					.isType(TokenType.ARGUMENT)
+					.hasPosition(4)
+					.hasValue("xxx");
+			});
+	}
+
+	@Test
 	void definedOptionShouldBeOptionAfterCommand() {
 		register(ROOT3);
 		List<Token> tokens = tokenize("root3", "--arg1");

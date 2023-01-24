@@ -149,6 +149,11 @@ public interface CommandParser {
 		return new DefaultCommandParser(conversionService);
 	}
 
+	static CommandParser of(ConversionService conversionService, Map<String, CommandRegistration> registrations,
+			ParserConfiguration configuration) {
+		return new AstCommandParser(registrations, configuration, conversionService);
+	}
+
 	/**
 	 * Default implementation of a {@link CommandParserResults}.
 	 */

@@ -60,6 +60,16 @@ abstract class AbstractParsingTests {
 				.and()
 			.build();
 
+	static final CommandRegistration ROOT2_SUB1_SUB2 = CommandRegistration.builder()
+			.command("root2", "sub1", "sub2")
+			.withOption()
+				.longNames("arg1")
+				.and()
+			.withTarget()
+				.consumer(ctx -> {})
+				.and()
+			.build();
+
 	static final CommandRegistration ROOT3 = CommandRegistration.builder()
 		.command("root3")
 		.withOption()

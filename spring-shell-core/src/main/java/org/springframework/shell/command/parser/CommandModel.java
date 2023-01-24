@@ -137,8 +137,9 @@ public class CommandModel {
 		 */
 		Map<String, Token> getValidTokens() {
 			Map<String, Token> tokens = new HashMap<>();
-			// children.forEach(commandInfo -> {
-			// });
+			children.forEach(commandInfo -> {
+				tokens.put(commandInfo.command, new Token(command, TokenType.COMMAND));
+			});
 			if (registration != null) {
 				registration.getOptions().forEach(commandOption -> {
 					for (String longName : commandOption.getLongNames()) {
@@ -147,6 +148,14 @@ public class CommandModel {
 				});
 			}
 			return tokens;
+		}
+
+		CommandInfo getChildren(String command) {
+			return children.stream()
+				.filter(c -> c.command.equals(command))
+				.findFirst()
+				.orElse(null)
+				;
 		}
 	}
 }

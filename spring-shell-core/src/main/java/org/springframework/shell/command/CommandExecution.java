@@ -38,6 +38,7 @@ import org.springframework.shell.command.CommandRegistration.TargetInfo;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.shell.command.invocation.ShellMethodArgumentResolverComposite;
+import org.springframework.shell.command.parser.ParserConfiguration;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -122,7 +123,12 @@ public interface CommandExecution {
 			}
 
 			List<CommandOption> options = registration.getOptions();
-			CommandParser parser = CommandParser.of(conversionService);
+			// CommandParser parser = CommandParser.of(conversionService);
+
+			// CommandParser parserx = CommandParser.of(conversionService);
+			// CommandParserResults resultsx = parserx.parse(options, args);
+
+			CommandParser parser = CommandParser.of(conversionService, commandCatalog.getRegistrations(), new ParserConfiguration());
 			CommandParserResults results = parser.parse(options, args);
 
 			// check help options to short circuit

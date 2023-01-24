@@ -67,7 +67,7 @@ class CommandModelTests extends AbstractParsingTests {
 
 		Map<String, Token> tokens = model.getValidRootTokens();
 
-		assertThat(tokens).hasSize(1);
+		assertThat(tokens).hasSize(2);
 		assertThat(tokens.get("root2")).satisfies(token -> {
 			assertThat(token).isNotNull();
 			assertThat(token.getValue()).isEqualTo("root2");

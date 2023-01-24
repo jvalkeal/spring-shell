@@ -200,12 +200,33 @@ class ParserTests extends AbstractParsingTests {
 		}
 	}
 
+	@Nested
 	class LongOptions {
 
 		@Test
 		void shouldFindLongOption() {
 			register(ROOT3);
 			ParseResult result = parse("root3", "--arg1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.optionResults()).isNotEmpty();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+		@Test
+		void shouldFindLongOptionTwoCommands() {
+			register(ROOT2_SUB1);
+			ParseResult result = parse("root2", "sub1", "--arg1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.optionResults()).isNotEmpty();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+		@Test
+		void shouldFindLongOptionThreeCommands() {
+			register(ROOT2_SUB1_SUB2);
+			ParseResult result = parse("root2", "sub1", "sub2", "--arg1", "xxx");
 			assertThat(result).isNotNull();
 			assertThat(result.commandRegistration()).isNotNull();
 			assertThat(result.optionResults()).isNotEmpty();

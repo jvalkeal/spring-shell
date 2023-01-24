@@ -243,7 +243,8 @@ public class Shell {
 		Object evaluate = null;
 		Exception e = null;
 		try {
-			evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
+			// evaluate = execution.evaluate(commandRegistration.get(), wordsForArgs.toArray(new String[0]));
+			evaluate = execution.evaluate(commandRegistration.get(), words.toArray(new String[0]));
 		}
 		catch (UndeclaredThrowableException ute) {
 			if (ute.getCause() instanceof InterruptedException || ute.getCause() instanceof ClosedByInterruptException) {
