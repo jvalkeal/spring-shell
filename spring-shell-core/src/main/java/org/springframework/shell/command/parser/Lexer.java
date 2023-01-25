@@ -135,7 +135,6 @@ public interface Lexer {
 			// whether directive support is enabled or not
 			List<String> beforeArguments = split.before();
 
-			// int i1 = -1;
 			int i1 = split.before().size() - 1;
 
 			if (configuration.isEnableDirectives()) {
@@ -176,8 +175,8 @@ public interface Lexer {
 					Token token = validTokens.get(argument);
 					switch (token.getType()) {
 						case COMMAND:
-							currentCommand = currentCommand == null ? commandModel.getRootCommands().get(argument) : currentCommand.getChildren(argument);
-							// currentCommand = commandModel.getRootCommands().get(argument);
+							currentCommand = currentCommand == null ? commandModel.getRootCommands().get(argument)
+									: currentCommand.getChildren(argument);
 							tokenList.add(Token.of(argument, TokenType.COMMAND, i2));
 							validTokens = currentCommand.getValidTokens();
 							break;

@@ -35,12 +35,12 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root1);
 
 		assertThat(result).isNotNull();
-		assertThat(result.nonterminalNodes()).hasSize(1);
-		assertThat(result.nonterminalNodes().get(0)).isInstanceOf(CommandNode.class);
-		assertThat(result.nonterminalNodes().get(0)).satisfies(n -> {
-			CommandNode cn = (CommandNode)n;
-			assertThat(cn.getCommand()).isEqualTo("root1");
-		});
+		assertThat(result.nonterminalNodes()).satisfiesExactly(
+			node -> {
+				assertThat(node).isInstanceOf(CommandNode.class);
+				CommandNode cn = (CommandNode)node;
+				assertThat(cn.getCommand()).isEqualTo("root1");
+			});
 	}
 
 	@Test
@@ -54,7 +54,6 @@ class AstTests extends AbstractParsingTests {
 		AstResult result = ast(root1, sub1, sub2, arg1, value1);
 
 		assertThat(result).isNotNull();
-
 		assertThat(result.nonterminalNodes()).satisfiesExactly(
 			n1 ->  {
 				assertThat(n1).isInstanceOf(CommandNode.class);
