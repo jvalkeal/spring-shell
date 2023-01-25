@@ -16,6 +16,7 @@
 package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class CommandModel {
 				onRoot = false;
 			}
 			else {
-				Optional<CommandInfo> nextInfo = info.children.stream()
+				Optional<CommandInfo> nextInfo = info.getChildren().stream()
 					.filter(i -> i.command.equals(command))
 					.findFirst();
 				if (nextInfo.isEmpty()) {
@@ -76,8 +77,8 @@ public class CommandModel {
 
 		rootCommands.entrySet().forEach(e -> {
 			tokens.put(e.getKey(), new Token(e.getKey(), TokenType.COMMAND));
-			Map<String, Token> validTokens = e.getValue().getValidTokens();
-			tokens.putAll(validTokens);
+			// Map<String, Token> validTokens = e.getValue().getValidTokens();
+			// tokens.putAll(validTokens);
 		});
 
 		// rootCommands.entrySet().forEach(e -> {
@@ -92,26 +93,70 @@ public class CommandModel {
 		return tokens;
 	}
 
+	void xxx(String command, CommandRegistration registration) {
+		String[] commands = command.split(" ");
+		for (int i = 0; i < commands.length; i++) {
+
+		}
+	}
+
+	// root1 sub1
+	// root1 sub2
+
+	private CommandInfo getOrCreate(String[] commands, CommandRegistration registration) {
+		CommandInfo ret = null;
+
+		CommandInfo parent = null;
+		int i = -1;
+		for (String command : commands) {
+			i++;
+			String key = configuration.isCommandsCaseSensitive() ? command : command.toLowerCase();
+
+			if (i == 0) {
+				parent = rootCommands.get(command);
+				if (parent == null) {
+					parent = new CommandInfo(key, i < commands.length - 1 ? null : registration, parent);
+					rootCommands.put(key, parent);
+				}
+				continue;
+			}
+
+			CommandInfo children = parent.getChildren(command);
+			if (children == null) {
+				children = new CommandInfo(key, i < commands.length - 1 ? null : registration, parent);
+				parent.addChildred(command, children);
+			}
+			parent = children;
+			// CommandInfo asdf = new CommandInfo(key, i < commands.length - 1 ? null : registration, parent);
+			// parent.addChildred(command, asdf);
+			// parent = asdf;
+
+		}
+
+		return ret;
+	}
+
 	private void buildModel(Map<String, CommandRegistration> registrations) {
 		registrations.entrySet().forEach(e -> {
 			String[] commands = e.getKey().split(" ");
-			CommandInfo parent = null;
-			for (int i = 0; i < commands.length; i++) {
-				CommandRegistration registration = i + 1 == commands.length ? e.getValue() : null;
-				String key = configuration.isCommandsCaseSensitive() ? commands[i] : commands[i].toLowerCase();
-				if (parent == null) {
-					CommandInfo info = new CommandInfo(commands[i], registration, parent);
-					// rootCommands.computeIfAbsent(commands[i], command -> info);
-					rootCommands.computeIfAbsent(key, command -> info);
-					parent = info;
-				}
-				else {
-					// CommandInfo info = new CommandInfo(commands[i], registration, parent);
-					CommandInfo info = new CommandInfo(key, registration, parent);
-					parent.children.add(info);
-					parent = info;
-				}
-			}
+			getOrCreate(commands, e.getValue());
+
+			// String[] commands = e.getKey().split(" ");
+			// CommandInfo parent = null;
+			// for (int i = 0; i < commands.length; i++) {
+			// 	CommandRegistration registration = i + 1 == commands.length ? e.getValue() : null;
+			// 	String key = configuration.isCommandsCaseSensitive() ? commands[i] : commands[i].toLowerCase();
+			// 	if (parent == null) {
+			// 		CommandInfo info = new CommandInfo(commands[i], registration, parent);
+			// 		rootCommands.computeIfAbsent(key, command -> info);
+			// 		parent = info;
+			// 	}
+			// 	else {
+			// 		CommandInfo info = new CommandInfo(key, registration, parent);
+			// 		parent.children.add(info);
+			// 		parent = info;
+			// 	}
+			// }
 		});
 	}
 
@@ -122,7 +167,8 @@ public class CommandModel {
 		String command;
 		CommandRegistration registration;
 		CommandInfo parent;
-		List<CommandInfo> children = new ArrayList<>();
+		// private List<CommandInfo> children = new ArrayList<>();
+		private Map<String, CommandInfo> children = new HashMap<>();
 
 		CommandInfo(String command, CommandRegistration registration, CommandInfo parent) {
 			this.registration = registration;
@@ -137,7 +183,7 @@ public class CommandModel {
 		 */
 		Map<String, Token> getValidTokens() {
 			Map<String, Token> tokens = new HashMap<>();
-			children.forEach(commandInfo -> {
+			children.values().forEach(commandInfo -> {
 				tokens.put(commandInfo.command, new Token(command, TokenType.COMMAND));
 			});
 			if (registration != null) {
@@ -150,12 +196,21 @@ public class CommandModel {
 			return tokens;
 		}
 
+		public Collection<CommandInfo> getChildren() {
+			return children.values();
+		}
+
+		public void addChildred(String command, CommandInfo children) {
+			this.children.put(command, children);
+		}
+
 		CommandInfo getChildren(String command) {
-			return children.stream()
-				.filter(c -> c.command.equals(command))
-				.findFirst()
-				.orElse(null)
-				;
+			return children.get(command);
+			// return children.stream()
+			// 	.filter(c -> c.command.equals(command))
+			// 	.findFirst()
+			// 	.orElse(null)
+			// 	;
 		}
 	}
 }

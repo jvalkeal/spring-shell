@@ -67,7 +67,7 @@ class CommandModelTests extends AbstractParsingTests {
 
 		Map<String, Token> tokens = model.getValidRootTokens();
 
-		assertThat(tokens).hasSize(2);
+		assertThat(tokens).hasSize(1);
 		assertThat(tokens.get("root2")).satisfies(token -> {
 			assertThat(token).isNotNull();
 			assertThat(token.getValue()).isEqualTo("root2");
@@ -76,13 +76,106 @@ class CommandModelTests extends AbstractParsingTests {
 
 		assertThat(model.getRootCommand("root2")).satisfies(root1 -> {
 			assertThat(root1).isNotNull();
-			assertThat(root1.children).hasSize(1);
+			assertThat(root1.getChildren()).hasSize(1);
 			assertThat(root1.registration).isNull();
-			assertThat(root1.children.get(0)).satisfies(sub1 -> {
-				assertThat(sub1).isNotNull();
-				assertThat(sub1.children).isEmpty();
-				assertThat(sub1.registration).isNotNull();
+			assertThat(root1.getChildren()).satisfiesExactly(
+				sub1 -> {
+					assertThat(sub1).isNotNull();
+					assertThat(sub1.getChildren()).isEmpty();
+					assertThat(sub1.registration).isNotNull();
+				});
+		});
+	}
+
+	@Test
+	void onePlainSubCommand2() {
+		register(ROOT2_SUB1);
+		register(ROOT2_SUB2);
+		CommandModel model = commandModel();
+
+		Map<String, Token> tokens = model.getValidRootTokens();
+
+		assertThat(tokens).hasSize(1);
+		assertThat(tokens.get("root2")).satisfies(token -> {
+			assertThat(token).isNotNull();
+			assertThat(token.getValue()).isEqualTo("root2");
+			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+		});
+
+		assertThat(model.getRootCommand("root2")).satisfies(root1 -> {
+			assertThat(root1.command).isEqualTo("root2");
+			assertThat(root1.getChildren()).hasSize(2);
+			assertThat(root1.registration).isNull();
+			assertThat(root1.getValidTokens()).satisfies(map -> {
+				assertThat(map).hasSize(2);
+				assertThat(map).hasEntrySatisfying("sub1", token -> {
+					assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+				});
+				assertThat(map).hasEntrySatisfying("sub2", token -> {
+					assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+				});
 			});
+			assertThat(root1.getChildren()).satisfiesExactlyInAnyOrder(
+				sub1 -> {
+					assertThat(sub1.command).isEqualTo("sub1");
+					assertThat(sub1).isNotNull();
+					assertThat(sub1.getChildren()).isEmpty();
+					assertThat(sub1.registration).isNotNull();
+				},
+				sub2 -> {
+					assertThat(sub2.command).isEqualTo("sub2");
+					assertThat(sub2).isNotNull();
+					assertThat(sub2.getChildren()).isEmpty();
+					assertThat(sub2.registration).isNotNull();
+				});
+		});
+	}
+
+	@Test
+	void onePlainSubCommand3() {
+		register(ROOT2_SUB1_SUB2);
+		register(ROOT2_SUB1_SUB3);
+		register(ROOT2_SUB1_SUB4);
+		CommandModel model = commandModel();
+
+		Map<String, Token> tokens = model.getValidRootTokens();
+
+		assertThat(tokens).hasSize(1);
+		assertThat(tokens.get("root2")).satisfies(token -> {
+			assertThat(token).isNotNull();
+			assertThat(token.getValue()).isEqualTo("root2");
+			assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+		});
+
+		assertThat(model.getRootCommand("root2")).satisfies(root1 -> {
+			assertThat(root1.command).isEqualTo("root2");
+			assertThat(root1.getChildren()).hasSize(1);
+			assertThat(root1.registration).isNull();
+			assertThat(root1.getValidTokens()).satisfies(map -> {
+				assertThat(map).hasSize(1);
+				assertThat(map).hasEntrySatisfying("sub1", token -> {
+					assertThat(token.getType()).isEqualTo(TokenType.COMMAND);
+				});
+			});
+			assertThat(root1.getChildren()).satisfiesExactlyInAnyOrder(
+				sub1 -> {
+					assertThat(sub1.command).isEqualTo("sub1");
+					assertThat(sub1.getChildren()).satisfiesExactlyInAnyOrder(
+						sub2 -> {
+							assertThat(sub2.getChildren()).isEmpty();
+						},
+						sub3 -> {
+							assertThat(sub3.getChildren()).isEmpty();
+						},
+						sub4 -> {
+							assertThat(sub4.getChildren()).isEmpty();
+						}
+					);
+					// assertThat(sub1).isNotNull();
+					// assertThat(sub1.getChildren()).isEmpty();
+					// assertThat(sub1.registration).isNotNull();
+				}
+			);
 		});
 	}
 
