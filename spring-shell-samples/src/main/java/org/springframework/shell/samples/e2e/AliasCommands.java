@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,35 @@ import org.springframework.shell.command.CommandRegistration;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.stereotype.Component;
 
-public class HiddenCommands {
+public class AliasCommands {
 
-	@Command(command = BaseE2ECommands.ANNO, hidden = true)
-	public static class HiddenCommandsAnnotation extends BaseE2ECommands {
+	@Command(command = BaseE2ECommands.ANNO, alias = BaseE2ECommands.ANNO, group = BaseE2ECommands.GROUP)
+	public static class AliasCommandsAnnotation extends BaseE2ECommands {
 
-		@Command(command = "hidden-1")
-		public String testHidden1Annotation() {
-			return "Hello from hidden command";
+		@Command(command = "alias-1", alias = "aliasfor-1")
+		public String testAlias1Annotation() {
+			return "Hello from alias command";
 		}
 	}
 
 	@Component
-	public static class HiddenCommandsRegistration extends BaseE2ECommands {
+	public static class AliasCommandsRegistration extends BaseE2ECommands {
 
 		@Bean
-		public CommandRegistration testHidden1Registration(CommandRegistration.BuilderSupplier builder) {
+		public CommandRegistration testAlias1Registration(CommandRegistration.BuilderSupplier builder) {
 			return builder.get()
-				.command(REG, "hidden-1")
+				.command(REG, "alias-1")
 				.group(GROUP)
-				.hidden()
+				.withAlias()
+					.command(REG, "aliasfor-1")
+					.and()
 				.withTarget()
 					.function(ctx -> {
-						return "Hello from hidden command";
+						return "Hello from alias command";
 					})
 					.and()
 				.build();
 		}
 	}
+
 }

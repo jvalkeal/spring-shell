@@ -122,4 +122,14 @@ public class CommandCatalogAutoConfiguration {
 			return builder;
 		};
 	}
+
+	// @Bean
+	// public CommandCatalogCustomizer annotatedCommandCommandCatalogCustomizer(ApplicationContext applicationContext,
+	// 		Supplier<CommandRegistration.Builder> builder) {
+	// 	return catalog -> {
+	// 		AnnotatedCommandResolver resolver = new AnnotatedCommandResolver(applicationContext, builder);
+	// 		Collection<CommandRegistration> registrations = resolver.resolve();
+	// 		registrations.forEach(registration -> catalog.register(registration));
+	// 	};
+	// }
 }
