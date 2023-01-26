@@ -21,8 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.aot.hint.annotation.Reflective;
-
 /**
  * Annotation for handling exceptions in specific command classes and/or its methods.
  *
@@ -31,7 +29,6 @@ import org.springframework.aot.hint.annotation.Reflective;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-@Reflective
 public @interface ExceptionResolver {
 
 	/**

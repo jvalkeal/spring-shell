@@ -21,8 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.aot.hint.annotation.Reflective;
-
 /**
  * Annotation marking a method parameter to be a candicate for an option.
  *
@@ -31,7 +29,6 @@ import org.springframework.aot.hint.annotation.Reflective;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 @Documented
-@Reflective
 public @interface Option {
 
 	/**
