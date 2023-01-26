@@ -62,12 +62,8 @@ public class InteractiveCompletionCommands {
 
 		@Command(command = "interactive-completion-1")
 		public String testRequiredValueAnnotation(
-				@Option(longNames = "arg1", required = true)
-				@OptionValues(ref = "test1CompletionProvider")
-				String arg1,
-				@Option(longNames = "arg2", required = true)
-				@OptionValues(ref = "test2CompletionProvider")
-				String arg2
+				@Option(longNames = "arg1", required = true) @OptionValues(ref = "test1CompletionProvider") String arg1,
+				@Option(longNames = "arg2", required = true) @OptionValues(ref = "test2CompletionProvider")	String arg2
 		) {
 				return "Hello " + arg1;
 		}
