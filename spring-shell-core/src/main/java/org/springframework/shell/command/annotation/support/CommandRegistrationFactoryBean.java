@@ -159,9 +159,6 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 		InteractionMode deduceInteractionMode = CommandAnnotationUtils.deduceInteractionMode(classAnn, methodAnn);
 		builder.interactionMode(deduceInteractionMode);
 
-		// Supplier<Availability> availabilityIndicator = findAvailabilityIndicator(keys, bean, method);
-		// builder.availability(availabilityIndicator)
-
 		// alias
 		String[] deduceAlias = CommandAnnotationUtils.deduceAlias(classAnn, methodAnn);
 		if (deduceAlias.length > 0) {
@@ -225,8 +222,8 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 				optionSpec.shortNames(shortNames.toArray(new Character[0]));
 				optionSpec.position(mp.getParameterIndex());
 				optionSpec.description(so.description());
-				if (so.arityMin() >= 0 || so.arityMax() >= 0) {
-					optionSpec.arity(Math.max(0, so.arityMin()), Math.max(so.arityMin(), so.arityMax()));
+				if (so.arity() != OptionArity.NONE) {
+					optionSpec.arity(so.arity());
 				}
 				else {
 					if (ClassUtils.isAssignable(boolean.class, parameterType)) {
@@ -252,9 +249,7 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 						boolean requiredDeduce = optionAnn.getBoolean("required");
 						optionSpec.required(requiredDeduce);
 					}
-					// optionSpec.required();
 				}
-
 
 				OptionValues ovAnn = mp.getParameterAnnotation(OptionValues.class);
 				if (ovAnn != null && StringUtils.hasText(ovAnn.ref())) {

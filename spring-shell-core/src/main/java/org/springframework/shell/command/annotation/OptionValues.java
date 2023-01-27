@@ -21,10 +21,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation marking a method parameter which completion proposals should be
+ * used.
+ *
+ * @author Janne Valkealahti
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 @Documented
 public @interface OptionValues {
 
+	/**
+	 * Reference to a bean name
+	 * @return a bean name
+	 */
 	String ref() default "";
 }

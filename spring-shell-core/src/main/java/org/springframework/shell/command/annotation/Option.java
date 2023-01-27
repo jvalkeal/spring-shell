@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.shell.command.CommandRegistration.OptionArity;
+
 /**
  * Annotation marking a method parameter to be a candicate for an option.
  *
@@ -57,7 +59,7 @@ public @interface Option {
 	/**
 	 * Define option default value.
 	 *
-	 * @return
+	 * @return default value
 	 */
 	String defaultValue() default "";
 
@@ -68,10 +70,10 @@ public @interface Option {
 	 */
 	String description() default "";
 
-	int arityMin() default -1;
-	int arityMax() default -1;
-
-	// OptionArity arity();
-
-	boolean bindPosition() default false;
+	/**
+	 * Define option arity.
+	 *
+	 * @return option arity
+	 */
+	OptionArity arity() default OptionArity.NONE;
 }

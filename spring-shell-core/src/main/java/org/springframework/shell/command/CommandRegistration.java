@@ -276,7 +276,8 @@ public interface CommandRegistration {
 		ZERO_OR_ONE,
 		EXACTLY_ONE,
 		ZERO_OR_MORE,
-		ONE_OR_MORE
+		ONE_OR_MORE,
+		NONE;
 	}
 
 	/**
