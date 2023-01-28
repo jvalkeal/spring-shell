@@ -170,6 +170,17 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT6_OPTION_DEFAULT_VALUE = CommandRegistration.builder()
+		.command("root6")
+		.withOption()
+			.longNames("arg1")
+			.defaultValue("defaultvalue")
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	Map<String, CommandRegistration> registrations = new HashMap<>();
 
 	@BeforeEach

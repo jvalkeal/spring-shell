@@ -280,4 +280,18 @@ class ParserTests extends AbstractParsingTests {
 		}
 	}
 
+	@Nested
+	class DefaultValues {
+
+		@Test
+		void shouldAddOptionIfItHasDefaultValue() {
+			register(ROOT6_OPTION_DEFAULT_VALUE);
+			ParseResult result = parse("root6");
+			assertThat(result.optionResults()).satisfiesExactly(
+				r -> {
+					assertThat(r.value()).isEqualTo("defaultvalue");
+				}
+			);
+		}
+	}
 }

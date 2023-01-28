@@ -17,6 +17,7 @@ package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -156,7 +157,17 @@ public interface Parser {
 			List<MessageResult> errorResults = new ArrayList<>();
 			if (registration != null) {
 				errorResults.addAll(validate(registration));
+
+				Set<CommandOption> xxx = optionResults.stream().map(or -> or.option()).collect(Collectors.toSet());
+				registration.getOptions().stream()
+					.filter(o -> o.getDefaultValue() != null)
+					.filter(o -> !xxx.contains(o))
+					.forEach(o -> {
+						Object value = convertOptionType(o, o.getDefaultValue());
+						optionResults.add(OptionResult.of(o, value));
+					});
 			}
+
 
 			return new ParseResult(registration, optionResults, directiveResults, errorResults, argumentResults);
 		}
@@ -166,16 +177,31 @@ public interface Parser {
 			// option missing
 			// XXX getOptions() build new CommandOption instances
 			//     can't live with this hack
-			Map<String, CommandOption> requiredOptions = registration.getOptions().stream()
+			// Map<String, CommandOption> requiredOptions = registration.getOptions().stream()
+			// 	.filter(o -> o.isRequired())
+			// 	.collect(Collectors.toMap(o -> commandOptionId(o), o -> o))
+			// ;
+
+			// optionResults.stream().map(or -> or.option()).forEach(o -> {
+			// 	requiredOptions.remove(commandOptionId(o));
+			// });
+
+			// requiredOptions.values().forEach(o -> {
+			// 	String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
+			// 	String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
+			// 			.collect(Collectors.joining(",")) : "";
+			// 	errorResults.add(MessageResult.of(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
+			// });
+
+			HashSet<CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
-				.collect(Collectors.toMap(o -> commandOptionId(o), o -> o))
-			;
+				.collect(Collectors.toCollection(() -> new HashSet<>()));
 
 			optionResults.stream().map(or -> or.option()).forEach(o -> {
-				requiredOptions.remove(commandOptionId(o));
+				requiredOptions.remove(o);
 			});
 
-			requiredOptions.values().forEach(o -> {
+			requiredOptions.forEach(o -> {
 				String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
 				String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
 						.collect(Collectors.joining(",")) : "";
