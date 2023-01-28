@@ -240,7 +240,11 @@ class ParserTests extends AbstractParsingTests {
 			assertThat(result).isNotNull();
 			assertThat(result.commandRegistration()).isNotNull();
 			assertThat(result.optionResults()).isNotEmpty();
-			assertThat(result.optionResults().get(0).value()).isEqualTo("value1");
+			assertThat(result.optionResults()).satisfiesExactly(
+				r -> {
+					assertThat(r.value()).isEqualTo("value1");
+				}
+			);
 			assertThat(result.messageResults()).isEmpty();
 		}
 	}

@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -116,6 +117,12 @@ public interface CommandExecution {
 		}
 
 		public Object evaluate(CommandRegistration registration, String[] args) {
+			// XXX
+			List<String> concat = new ArrayList<>();
+			concat.addAll(Arrays.asList(registration.getCommand().split(" ")));
+			concat.addAll(Arrays.asList(args));
+			args = concat.toArray(new String[0]);
+			// XXX
 			// fast fail with availability before doing anything else
 			Availability availability = registration.getAvailability();
 			if (availability != null && !availability.isAvailable()) {

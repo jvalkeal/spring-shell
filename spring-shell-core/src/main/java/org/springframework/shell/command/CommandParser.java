@@ -32,6 +32,7 @@ import org.springframework.shell.Utils;
 import org.springframework.shell.command.parser.Ast;
 import org.springframework.shell.command.parser.CommandModel;
 import org.springframework.shell.command.parser.ParserConfiguration;
+import org.springframework.shell.command.parser.ParserMessage;
 import org.springframework.shell.command.parser.Ast.DefaultAst;
 import org.springframework.shell.command.parser.Lexer.DefaultLexer;
 import org.springframework.shell.command.parser.Parser.DefaultParser;
@@ -237,6 +238,12 @@ public interface CommandParser {
 
 			result.optionResults().forEach(or -> {
 				results.add(CommandParserResult.of(or.option(), or.value()));
+			});
+
+			result.messageResults().forEach(mr -> {
+				if (mr.parserMessage() == ParserMessage.MANDATORY_OPTION_MISSING) {
+					errors.add(new MissingOptionException(mr.getMessage(), null));
+				}
 			});
 
 			return new DefaultCommandParserResults(results, positional, errors);
