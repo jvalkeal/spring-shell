@@ -58,6 +58,7 @@ public interface Parser {
 	 * @param optionResults option results
 	 * @param directiveResults directive result
 	 * @param messageResults message results
+	 * @param argumentResults argument results
 	 */
 	public record ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults,
 			List<DirectiveResult> directiveResults, List<MessageResult> messageResults, List<ArgumentResult> argumentResults) {
@@ -134,7 +135,7 @@ public interface Parser {
 		private final CommandModel commandModel;
 		private final ConversionService conversionService;
 		private List<String> resolvedCommmand = new ArrayList<>();
-		private List<OptionResult> options = new ArrayList<>();
+		private List<OptionResult> optionResults = new ArrayList<>();
 		private CommandOption currentOption;
 		private List<String> currentOptionArgument = new ArrayList<>();
 		private List<DirectiveResult> directiveResults = new ArrayList<>();
@@ -157,7 +158,7 @@ public interface Parser {
 				errorResults.addAll(validate(registration));
 			}
 
-			return new ParseResult(registration, options, directiveResults, errorResults, argumentResults);
+			return new ParseResult(registration, optionResults, directiveResults, errorResults, argumentResults);
 		}
 
 		List<MessageResult> validate(CommandRegistration registration) {
@@ -167,18 +168,11 @@ public interface Parser {
 			//     can't live with this hack
 			Map<String, CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
-				.collect(Collectors.toMap(o -> {
-					String part1 = Stream.of(o.getLongNames()).sorted().collect(Collectors.joining());
-					String part2 = Stream.of(o.getShortNames()).map(s -> s.toString()).sorted().collect(Collectors.joining());
-					return part1 + part2;
-				}, o -> o))
+				.collect(Collectors.toMap(o -> commandOptionId(o), o -> o))
 			;
 
-			options.stream().map(or -> or.option()).forEach(o -> {
-				String part1 = Stream.of(o.getLongNames()).sorted().collect(Collectors.joining());
-				String part2 = Stream.of(o.getShortNames()).map(s -> s.toString()).sorted().collect(Collectors.joining());
-				String key = part1 + part2;
-				requiredOptions.remove(key);
+			optionResults.stream().map(or -> or.option()).forEach(o -> {
+				requiredOptions.remove(commandOptionId(o));
 			});
 
 			requiredOptions.values().forEach(o -> {
@@ -264,7 +258,7 @@ public interface Parser {
 				}
 				// Object value = convertOptionType(currentOption, currentOptionArgument);
 				// options.add(new OptionResult(currentOption, currentOptionArgument));
-				options.add(new OptionResult(currentOption, value));
+				optionResults.add(new OptionResult(currentOption, value));
 			}
 			else {
 				invalidOptionNodes.add(node);
@@ -289,6 +283,13 @@ public interface Parser {
 
 		@Override
 		protected void onExitOptionArgumentNode(OptionArgumentNode node) {
+		}
+
+		private static String commandOptionId(CommandOption option) {
+			String part1 = Stream.of(option.getLongNames()).sorted().collect(Collectors.joining());
+			String part2 = Stream.of(option.getShortNames()).map(s -> s.toString()).sorted()
+					.collect(Collectors.joining());
+			return part1 + part2;
 		}
 
 		private Object convertOptionType(CommandOption option, Object value) {
