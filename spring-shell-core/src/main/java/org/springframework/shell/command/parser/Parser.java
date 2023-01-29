@@ -17,8 +17,10 @@ package org.springframework.shell.command.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -158,22 +160,38 @@ public interface Parser {
 				errorResults.addAll(validate(registration));
 
 				// add options with default values
-				Set<CommandOption> withDefaultValues = optionResults.stream()
+				Set<CommandOption> resolvedOptions1 = optionResults.stream()
 					.map(or -> or.option())
 					.collect(Collectors.toSet());
 				registration.getOptions().stream()
 					.filter(o -> o.getDefaultValue() != null)
-					.filter(o -> !withDefaultValues.contains(o))
+					.filter(o -> !resolvedOptions1.contains(o))
 					.forEach(o -> {
 						Object value = convertOptionType(o, o.getDefaultValue());
 						optionResults.add(OptionResult.of(o, value));
 					});
+
+				Map<Integer, CommandOption> positionMap = new HashMap<>();
+				registration.getOptions().stream()
+					.forEach(o -> {
+						if (o.getPosition() > -1) {
+							positionMap.put(o.getPosition(), o);
+						}
+					});
+
+				argumentResults.forEach(ar -> {
+					CommandOption option = positionMap.get(ar.position());
+					if (option != null) {
+						Object value = convertOptionType(option, ar.value());
+						optionResults.add(OptionResult.of(option, value));
+					}
+				});
 			}
 
 			return new ParseResult(registration, optionResults, directiveResults, errorResults, argumentResults);
 		}
 
-		List<MessageResult> validate(CommandRegistration registration) {
+		private List<MessageResult> validate(CommandRegistration registration) {
 
 			// option missing
 			HashSet<CommandOption> requiredOptions = registration.getOptions().stream()
@@ -271,9 +289,11 @@ public interface Parser {
 			currentOption = null;
 		}
 
+		private int caPos = 0;
 		@Override
 		protected void onEnterCommandArgumentNode(CommandArgumentNode node) {
-			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), node.getToken().getPosition()));
+			// argumentResults.add(ArgumentResult.of(node.getToken().getValue(), node.getToken().getPosition()));
+			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), caPos++));
 		}
 
 		@Override
