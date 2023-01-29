@@ -246,6 +246,10 @@ public interface CommandParser {
 				}
 			});
 
+			result.argumentResults().forEach(ar -> {
+				positional.add(ar.value());
+			});
+
 			return new DefaultCommandParserResults(results, positional, errors);
 		}
 	}

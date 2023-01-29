@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -158,16 +157,18 @@ public interface Parser {
 			if (registration != null) {
 				errorResults.addAll(validate(registration));
 
-				Set<CommandOption> xxx = optionResults.stream().map(or -> or.option()).collect(Collectors.toSet());
+				// add options with default values
+				Set<CommandOption> withDefaultValues = optionResults.stream()
+					.map(or -> or.option())
+					.collect(Collectors.toSet());
 				registration.getOptions().stream()
 					.filter(o -> o.getDefaultValue() != null)
-					.filter(o -> !xxx.contains(o))
+					.filter(o -> !withDefaultValues.contains(o))
 					.forEach(o -> {
 						Object value = convertOptionType(o, o.getDefaultValue());
 						optionResults.add(OptionResult.of(o, value));
 					});
 			}
-
 
 			return new ParseResult(registration, optionResults, directiveResults, errorResults, argumentResults);
 		}
@@ -175,24 +176,6 @@ public interface Parser {
 		List<MessageResult> validate(CommandRegistration registration) {
 
 			// option missing
-			// XXX getOptions() build new CommandOption instances
-			//     can't live with this hack
-			// Map<String, CommandOption> requiredOptions = registration.getOptions().stream()
-			// 	.filter(o -> o.isRequired())
-			// 	.collect(Collectors.toMap(o -> commandOptionId(o), o -> o))
-			// ;
-
-			// optionResults.stream().map(or -> or.option()).forEach(o -> {
-			// 	requiredOptions.remove(commandOptionId(o));
-			// });
-
-			// requiredOptions.values().forEach(o -> {
-			// 	String ln = o.getLongNames() != null ? Stream.of(o.getLongNames()).collect(Collectors.joining(",")) : "";
-			// 	String sn = o.getShortNames() != null ? Stream.of(o.getShortNames()).map(n -> Character.toString(n))
-			// 			.collect(Collectors.joining(",")) : "";
-			// 	errorResults.add(MessageResult.of(ParserMessage.MANDATORY_OPTION_MISSING, 0, ln, sn));
-			// });
-
 			HashSet<CommandOption> requiredOptions = registration.getOptions().stream()
 				.filter(o -> o.isRequired())
 				.collect(Collectors.toCollection(() -> new HashSet<>()));
@@ -268,7 +251,6 @@ public interface Parser {
 		@Override
 		protected void onExitOptionNode(OptionNode node) {
 			if (currentOption != null) {
-				// Object value = currentOptionArgument;
 				Object value = null;
 				if (currentOptionArgument.size() == 1) {
 					value = currentOptionArgument.get(0);
@@ -277,13 +259,10 @@ public interface Parser {
 					value = new ArrayList<>(currentOptionArgument);
 				}
 				try {
-					// value = convertOptionType(currentOption, currentOptionArgument);
 					value = convertOptionType(currentOption, value);
 				} catch (Exception e) {
 					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_OPTION_VALUE, 0, value, e.getMessage()));
 				}
-				// Object value = convertOptionType(currentOption, currentOptionArgument);
-				// options.add(new OptionResult(currentOption, currentOptionArgument));
 				optionResults.add(new OptionResult(currentOption, value));
 			}
 			else {
@@ -309,13 +288,6 @@ public interface Parser {
 
 		@Override
 		protected void onExitOptionArgumentNode(OptionArgumentNode node) {
-		}
-
-		private static String commandOptionId(CommandOption option) {
-			String part1 = Stream.of(option.getLongNames()).sorted().collect(Collectors.joining());
-			String part2 = Stream.of(option.getShortNames()).map(s -> s.toString()).sorted()
-					.collect(Collectors.joining());
-			return part1 + part2;
 		}
 
 		private Object convertOptionType(CommandOption option, Object value) {
