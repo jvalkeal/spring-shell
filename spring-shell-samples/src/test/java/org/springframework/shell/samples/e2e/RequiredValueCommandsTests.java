@@ -41,6 +41,7 @@ class RequiredValueCommandsTests extends AbstractSampleTests {
 	})
 	void shouldRequireOption(String command, boolean interactive) {
 		BaseShellSession<?> session = createSession(command, interactive);
-		assertScreenContainsText(session, "Missing mandatory option");
+		// assertScreenContainsText(session, "Missing mandatory option");
+		assertScreenContainsText(session, "Missing option");
 	}
 }

@@ -38,13 +38,14 @@ public class CommandParserExceptionResolver implements CommandExceptionResolver 
 			AttributedStringBuilder builder = new AttributedStringBuilder();
 			cpee.getParserExceptions().stream().forEach(e -> {
 				if (e instanceof MissingOptionException moe) {
-					CommandOption option = moe.getOption();
-					if (option.getLongNames().length > 0) {
-						handleLong(builder, option);
-					}
-					else if (option.getShortNames().length > 0) {
-						handleShort(builder, option);
-					}
+					builder.append(e.getMessage());
+					// CommandOption option = moe.getOption();
+					// if (option.getLongNames().length > 0) {
+					// 	handleLong(builder, option);
+					// }
+					// else if (option.getShortNames().length > 0) {
+					// 	handleShort(builder, option);
+					// }
 				}
 				else if (e instanceof NotEnoughArgumentsOptionException neaoe) {
 					CommandOption option = neaoe.getOption();
