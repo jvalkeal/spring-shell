@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.springframework.shell.command.CommandRegistration.TargetInfo;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.shell.command.invocation.ShellMethodArgumentResolverComposite;
+import org.springframework.shell.command.parser.ParserConfiguration;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -115,6 +117,13 @@ public interface CommandExecution {
 		}
 
 		public Object evaluate(CommandRegistration registration, String[] args) {
+			// XXX
+			List<String> concat = new ArrayList<>();
+			concat.addAll(Arrays.asList(registration.getCommand().split(" ")));
+			concat.addAll(Arrays.asList(args));
+			args = concat.toArray(new String[0]);
+			// XXX
+
 			// fast fail with availability before doing anything else
 			Availability availability = registration.getAvailability();
 			if (availability != null && !availability.isAvailable()) {
@@ -122,7 +131,12 @@ public interface CommandExecution {
 			}
 
 			List<CommandOption> options = registration.getOptions();
-			CommandParser parser = CommandParser.of(conversionService);
+			// XXX
+			// CommandParser parser = CommandParser.of(conversionService);
+			// CommandParserResults results = parserx.parse(options, args);
+			CommandParser parser = CommandParser.of(conversionService, commandCatalog.getRegistrations(), new ParserConfiguration());
+			// XXX
+
 			CommandParserResults results = parser.parse(options, args);
 
 			// check help options to short circuit
