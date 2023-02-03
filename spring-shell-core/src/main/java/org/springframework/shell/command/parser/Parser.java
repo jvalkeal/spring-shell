@@ -144,6 +144,7 @@ public interface Parser {
 		private List<DirectiveResult> directiveResults = new ArrayList<>();
 		private List<OptionNode> invalidOptionNodes = new ArrayList<>();
 		private List<ArgumentResult> argumentResults = new ArrayList<>();
+		private int commandArgumentPos = 0;
 
 		DefaultNodeVisitor(CommandModel commandModel, ConversionService conversionService) {
 			this.commandModel = commandModel;
@@ -175,26 +176,24 @@ public interface Parser {
 						optionResults.add(OptionResult.of(o, value));
 					});
 
-				List<CommandOption> xxx = registration.getOptions().stream()
+				List<CommandOption> optionsForArguments = registration.getOptions().stream()
 					.filter(o -> !resolvedOptions1.contains(o))
 					.filter(o -> o.getPosition() > -1)
 					.filter(o -> o.getArityMin() > -1)
 					.sorted(Comparator.comparingInt(o -> o.getPosition()))
-					.collect(Collectors.toList())
-					;
+					.collect(Collectors.toList());
 
-				List<String> ddd = argumentResults.stream()
+				List<String> argumentValues = argumentResults.stream()
 					.sorted(Comparator.comparingInt(ar -> ar.position()))
 					.map(ar -> ar.value())
-					.collect(Collectors.toList())
-					;
+					.collect(Collectors.toList());
 
 				int i = 0;
-				for (CommandOption o : xxx) {
+				for (CommandOption o : optionsForArguments) {
 					int j = i + o.getArityMax();
-					j = Math.min(ddd.size(), j);
+					j = Math.min(argumentValues.size(), j);
 
-					List<String> asdf = ddd.subList(i, j);
+					List<String> asdf = argumentValues.subList(i, j);
 					if (asdf.isEmpty()) {
 						optionResults.add(OptionResult.of(o, null));
 					}
@@ -203,10 +202,9 @@ public interface Parser {
 						optionResults.add(OptionResult.of(o, value));
 					}
 
-					if (j == ddd.size()) {
+					if (j == argumentValues.size()) {
 						break;
 					}
-
 					i = j;
 				}
 
@@ -246,6 +244,7 @@ public interface Parser {
 
 		@Override
 		protected void onEnterOptionNode(OptionNode node) {
+			commandArgumentPos = 0;
 			currentOptions.clear();
 			currentOptionArgument.clear();
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
@@ -319,11 +318,9 @@ public interface Parser {
 			}
 		}
 
-		private int caPos = 0;
 		@Override
 		protected void onEnterCommandArgumentNode(CommandArgumentNode node) {
-			// argumentResults.add(ArgumentResult.of(node.getToken().getValue(), node.getToken().getPosition()));
-			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), caPos++));
+			argumentResults.add(ArgumentResult.of(node.getToken().getValue(), commandArgumentPos++));
 		}
 
 		@Override
