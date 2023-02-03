@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.parser.ParserConfig.Feature;
 
 /**
  * Helper class to make it easier to work with command registrations and how
@@ -33,9 +34,9 @@ import org.springframework.shell.command.CommandRegistration;
 public class CommandModel {
 
 	private final Map<String, CommandInfo> rootCommands = new HashMap<>();
-	private final ParserConfiguration configuration;
+	private final ParserConfig configuration;
 
-	public CommandModel(Map<String, CommandRegistration> registrations, ParserConfiguration configuration) {
+	public CommandModel(Map<String, CommandRegistration> registrations, ParserConfig configuration) {
 		this.configuration = configuration;
 		buildModel(registrations);
 	}
@@ -49,7 +50,7 @@ public class CommandModel {
 		CommandInfo info = null;
 		boolean onRoot = true;
 		for (String commandx : commands) {
-			String command = configuration.isCommandsCaseSensitive() ? commandx : commandx.toLowerCase();
+			String command = configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS) ? commandx : commandx.toLowerCase();
 			if (onRoot) {
 				info = rootCommands.get(command);
 				onRoot = false;
@@ -109,7 +110,7 @@ public class CommandModel {
 		int i = -1;
 		for (String command : commands) {
 			i++;
-			String key = configuration.isCommandsCaseSensitive() ? command : command.toLowerCase();
+			String key = configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS) ? command : command.toLowerCase();
 
 			if (i == 0) {
 				parent = rootCommands.get(command);

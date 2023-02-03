@@ -193,10 +193,10 @@ abstract class AbstractParsingTests {
 	}
 
 	CommandModel commandModel() {
-		return new CommandModel(registrations, new ParserConfiguration());
+		return new CommandModel(registrations, new ParserConfig());
 	}
 
-	CommandModel commandModel(ParserConfiguration configuration) {
+	CommandModel commandModel(ParserConfig configuration) {
 		return new CommandModel(registrations, configuration);
 	}
 
@@ -205,18 +205,18 @@ abstract class AbstractParsingTests {
 	}
 
 	Lexer lexer() {
-		return new Lexer.DefaultLexer(commandModel(), new ParserConfiguration());
+		return new Lexer.DefaultLexer(commandModel(), new ParserConfig());
 	}
 
-	Lexer lexer(ParserConfiguration configuration) {
+	Lexer lexer(ParserConfig configuration) {
 		return new Lexer.DefaultLexer(commandModel(configuration), configuration);
 	}
 
 	Lexer lexer(CommandModel commandModel) {
-		return new Lexer.DefaultLexer(commandModel, new ParserConfiguration());
+		return new Lexer.DefaultLexer(commandModel, new ParserConfig());
 	}
 
-	Lexer lexer(CommandModel commandModel, ParserConfiguration configuration) {
+	Lexer lexer(CommandModel commandModel, ParserConfig configuration) {
 		return new Lexer.DefaultLexer(commandModel, configuration);
 	}
 
@@ -265,7 +265,7 @@ abstract class AbstractParsingTests {
 		return parser.parse(Arrays.asList(arguments));
 	}
 
-	ParseResult parse(ParserConfiguration configuration, String... arguments) {
+	ParseResult parse(ParserConfig configuration, String... arguments) {
 		CommandModel commandModel = commandModel(configuration);
 		Ast ast = ast();
 		Parser parser = new Parser.DefaultParser(commandModel, lexer(configuration), ast);

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.command.parser.CommandModel.CommandInfo;
+import org.springframework.shell.command.parser.ParserConfig.Feature;
 
 /**
  * Interface to tokenize arguments into tokens. Generic language parser usually
@@ -66,9 +67,9 @@ public interface Lexer {
 
 		private final static Logger log = LoggerFactory.getLogger(DefaultLexer.class);
 		private final CommandModel commandModel;
-		private final ParserConfiguration configuration;
+		private final ParserConfig configuration;
 
-		public DefaultLexer(CommandModel commandModel, ParserConfiguration configuration) {
+		public DefaultLexer(CommandModel commandModel, ParserConfig configuration) {
 			this.commandModel = commandModel;
 			this.configuration = configuration;
 		}
@@ -137,14 +138,14 @@ public interface Lexer {
 
 			int i1 = split.before().size() - 1;
 
-			if (configuration.isEnableDirectives()) {
+			if (configuration.isEnabled(Feature.ALLOW_DIRECTIVES)) {
 				List<String> rawDirectives = extractDirectives(beforeArguments);
 				for (String raw : rawDirectives) {
 					tokenList.add(Token.of(raw, TokenType.DIRECTIVE, 0));
 				}
 			}
 			else {
-				if (!configuration.isIgnoreDirectives() && beforeArguments.size() > 0) {
+				if (!configuration.isEnabled(Feature.IGNORE_DIRECTIVES) && beforeArguments.size() > 0) {
 					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, beforeArguments));
 				}
 			}

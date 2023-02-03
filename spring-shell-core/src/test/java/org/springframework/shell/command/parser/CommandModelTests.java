@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.command.parser.ParserConfig.Feature;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -46,9 +48,9 @@ class CommandModelTests extends AbstractParsingTests {
 	@Test
 	void oneRootCommandCaseInsensitive() {
 		register(ROOT1_UP);
-		ParserConfiguration configuration = new ParserConfiguration()
-				.setCommandsCaseSensitive(false)
-				.setOptionsCaseSensitive(false);
+		ParserConfig configuration = new ParserConfig()
+				.disable(Feature.CASE_SENSITIVE_COMMANDS)
+				.disable(Feature.CASE_SENSITIVE_OPTIONS);
 		CommandModel model = commandModel(configuration);
 
 		Map<String, Token> tokens = model.getValidRootTokens();

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Parser.ParseResult;
+import org.springframework.shell.command.parser.ParserConfig.Feature;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -158,7 +159,7 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void directiveNoValueWithCommand() {
 			register(ROOT3);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
 			ParseResult result = parse(lexer(configuration), "[fake]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(d -> {
@@ -171,7 +172,7 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void directiveWithValueWithCommand() {
 			register(ROOT3);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
 			ParseResult result = parse(lexer(configuration), "[fake:value]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(d -> {
@@ -184,7 +185,7 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void multipleDirectivesWithCommand() {
 			register(ROOT3);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
 			ParseResult result = parse(lexer(configuration), "[foo][bar:value]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(
@@ -270,9 +271,9 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void shouldFindRegistrationCaseInsensitive() {
 			register(ROOT1_UP);
-			ParserConfiguration configuration = new ParserConfiguration()
-					.setCommandsCaseSensitive(false)
-					.setOptionsCaseSensitive(false);
+			ParserConfig configuration = new ParserConfig()
+					.disable(Feature.CASE_SENSITIVE_COMMANDS)
+					.disable(Feature.CASE_SENSITIVE_OPTIONS);
 			ParseResult result = parse(configuration, "root1");
 			assertThat(result).isNotNull();
 			assertThat(result.commandRegistration()).isNotNull();

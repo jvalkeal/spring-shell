@@ -39,7 +39,7 @@ import org.springframework.shell.command.CommandRegistration.TargetInfo;
 import org.springframework.shell.command.CommandRegistration.TargetInfo.TargetType;
 import org.springframework.shell.command.invocation.InvocableShellMethod;
 import org.springframework.shell.command.invocation.ShellMethodArgumentResolverComposite;
-import org.springframework.shell.command.parser.ParserConfiguration;
+import org.springframework.shell.command.parser.ParserConfig;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -134,7 +134,7 @@ public interface CommandExecution {
 			// XXX
 			// CommandParser parser = CommandParser.of(conversionService);
 			// CommandParserResults results = parserx.parse(options, args);
-			CommandParser parser = CommandParser.of(conversionService, commandCatalog.getRegistrations(), new ParserConfiguration());
+			CommandParser parser = CommandParser.of(conversionService, commandCatalog.getRegistrations(), new ParserConfig());
 			// XXX
 
 			CommandParserResults results = parser.parse(options, args);

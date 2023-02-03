@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.command.parser.Lexer.LexerResult;
+import org.springframework.shell.command.parser.ParserConfig.Feature;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +53,7 @@ class LexerTests extends AbstractParsingTests {
 	// @Test
 	// void commandWithCaseInsensitiveInDefinition() {
 	// 	register(ROOT1_UP);
-	// 	ParserConfiguration configuration = new ParserConfiguration()
+	// 	ParserConfig configuration = new ParserConfig()
 	// 			.setOptionsCaseSensitive(false);
 	// 	List<Token> tokens = tokenize(lexer(configuration), "root1");
 
@@ -68,7 +69,7 @@ class LexerTests extends AbstractParsingTests {
 	// @Test
 	// void commandWithCaseInsensitiveInArguments() {
 	// 	register(ROOT1);
-	// 	ParserConfiguration configuration = new ParserConfiguration()
+	// 	ParserConfig configuration = new ParserConfig()
 	// 			.setOptionsCaseSensitive(false);
 	// 	List<Token> tokens = tokenize(lexer(configuration), "ROOT1");
 
@@ -347,7 +348,7 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void directiveWithCommand() {
 			register(ROOT1);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 			List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
 
 			assertThat(tokens).satisfiesExactly(
@@ -368,7 +369,7 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void hasOneDirective() {
 			register(ROOT1);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 			List<Token> tokens = tokenize(lexer(configuration), "[fake]");
 
 			assertThat(tokens).satisfiesExactly(
@@ -383,7 +384,7 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void hasMultipleDirectives() {
 			register(ROOT1);
-			ParserConfiguration configuration = new ParserConfiguration().setEnableDirectives(true);
+			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 			List<Token> tokens = tokenize(lexer(configuration), "[fake1][fake2]");
 
 			assertThat(tokens).satisfiesExactly(
@@ -403,17 +404,17 @@ class LexerTests extends AbstractParsingTests {
 
 		@Test
 		void errorIfDirectivesDisabledAndIgnoreDisabled() {
-			ParserConfiguration configuration = new ParserConfiguration()
-					.setEnableDirectives(false)
-					.setIgnoreDirectives(false);
+			ParserConfig configuration = new ParserConfig()
+					.disable(Feature.ALLOW_DIRECTIVES)
+					.disable(Feature.IGNORE_DIRECTIVES);
 			LexerResult result = tokenizeAsResult(lexer(configuration),"[fake]");
 			assertThat(result.messageResults()).isNotEmpty();
 		}
 
 		@Test
 		void noErrorIfDirectivesDisabledAndIgnoreEnabled() {
-			ParserConfiguration configuration = new ParserConfiguration()
-					.setIgnoreDirectives(true);
+			ParserConfig configuration = new ParserConfig()
+					.enable(Feature.IGNORE_DIRECTIVES);
 			LexerResult result = tokenizeAsResult(lexer(configuration), "[fake]");
 			assertThat(result.messageResults()).isEmpty();
 		}

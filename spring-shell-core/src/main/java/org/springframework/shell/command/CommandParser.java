@@ -32,7 +32,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.shell.Utils;
 import org.springframework.shell.command.parser.Ast;
 import org.springframework.shell.command.parser.CommandModel;
-import org.springframework.shell.command.parser.ParserConfiguration;
+import org.springframework.shell.command.parser.ParserConfig;
 import org.springframework.shell.command.parser.ParserMessage;
 import org.springframework.shell.command.parser.Ast.DefaultAst;
 import org.springframework.shell.command.parser.Lexer.DefaultLexer;
@@ -153,7 +153,7 @@ public interface CommandParser {
 
 	// XXX
 	static CommandParser of(ConversionService conversionService, Map<String, CommandRegistration> registrations,
-			ParserConfiguration configuration) {
+			ParserConfig configuration) {
 		return new AstCommandParser(registrations, configuration, conversionService);
 	}
 
@@ -216,10 +216,10 @@ public interface CommandParser {
 	static class AstCommandParser implements CommandParser {
 
 		private final Map<String, CommandRegistration> registrations;
-		private final ParserConfiguration configuration;
+		private final ParserConfig configuration;
 		private final ConversionService conversionService;
 
-		public AstCommandParser(Map<String, CommandRegistration> registrations, ParserConfiguration configuration,
+		public AstCommandParser(Map<String, CommandRegistration> registrations, ParserConfig configuration,
 				ConversionService conversionService) {
 			this.registrations = registrations;
 			this.configuration = configuration;

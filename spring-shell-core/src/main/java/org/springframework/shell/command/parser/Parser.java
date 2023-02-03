@@ -87,21 +87,21 @@ public interface Parser {
 	 */
 	public class DefaultParser implements Parser {
 
-		private final ParserConfiguration configuration;
+		private final ParserConfig configuration;
 		private final CommandModel commandModel;
 		private final Lexer lexer;
 		private final Ast ast;
 		private ConversionService conversionService;
 
 		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast) {
-			this(commandModel, lexer, ast, new ParserConfiguration());
+			this(commandModel, lexer, ast, new ParserConfig());
 		}
 
-		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration) {
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig configuration) {
 			this(commandModel, lexer, ast, configuration, null);
 		}
 
-		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfiguration configuration,
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig configuration,
 				ConversionService conversionService) {
 			this.commandModel = commandModel;
 			this.lexer = lexer;
