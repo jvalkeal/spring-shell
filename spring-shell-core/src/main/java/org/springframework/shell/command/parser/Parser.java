@@ -58,12 +58,13 @@ public interface Parser {
 	 *
 	 * @param commandRegistration command registration
 	 * @param optionResults option results
-	 * @param directiveResults directive result
-	 * @param messageResults message results
 	 * @param argumentResults argument results
+	 * @param messageResults message results
+	 * @param directiveResults directive result
 	 */
 	public record ParseResult(CommandRegistration commandRegistration, List<OptionResult> optionResults,
-			List<DirectiveResult> directiveResults, List<MessageResult> messageResults, List<ArgumentResult> argumentResults) {
+			List<ArgumentResult> argumentResults, List<MessageResult> messageResults,
+			List<DirectiveResult> directiveResults) {
 
 		public record OptionResult(CommandOption option, Object value) {
 
@@ -211,7 +212,7 @@ public interface Parser {
 
 			}
 
-			return new ParseResult(registration, optionResults, directiveResults, messageResults, argumentResults);
+			return new ParseResult(registration, optionResults, argumentResults, messageResults, directiveResults);
 		}
 
 		@Override
