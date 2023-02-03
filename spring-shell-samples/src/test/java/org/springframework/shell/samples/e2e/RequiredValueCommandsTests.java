@@ -33,8 +33,6 @@ class RequiredValueCommandsTests extends AbstractSampleTests {
 	@E2ESource(command = "required-value")
 	void shouldRequireOption(String command, boolean interactive) {
 		BaseShellSession<?> session = createSession(command, interactive);
-		// XXX
-		// assertScreenContainsText(session, "Missing mandatory option");
-		assertScreenContainsText(session, "Missing option");
+		assertScreenContainsText(session, "Missing mandatory option");
 	}
 }

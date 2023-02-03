@@ -39,7 +39,7 @@ import java.text.MessageFormat;
 public enum ParserMessage {
 
 	ILLEGAL_CONTENT_BEFORE_COMMANDS(Type.ERROR, 1000, "Illegal content before commands ''{0}''"),
-	MANDATORY_OPTION_MISSING(Type.ERROR, 2000, "Missing option, longnames=''{0}'', shortnames=''{1}''"),
+	MANDATORY_OPTION_MISSING(Type.ERROR, 2000, "Missing mandatory option, longnames=''{0}'', shortnames=''{1}''"),
 	UNRECOGNISED_OPTION(Type.ERROR, 2001, "Unrecognised option ''{0}''"),
 	ILLEGAL_OPTION_VALUE(Type.ERROR, 2002, "Illegal option value ''{0}'', reason ''{1}''")
 	;
