@@ -130,7 +130,7 @@ class ParserTests extends AbstractParsingTests {
 				ParserAssertions.assertThat(message.parserMessage()).hasCode(2000).hasType(ParserMessage.Type.ERROR);
 			});
 			// "100E:(pos 0): Missing option, longnames='arg1', shortnames=''"
-			assertThat(result.messageResults().get(0).getMessage()).contains("Missing option", "arg1");
+			assertThat(result.messageResults().get(0).getMessage()).contains("Missing mandatory option", "arg1");
 		}
 
 		@Test
