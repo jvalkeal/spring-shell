@@ -265,10 +265,10 @@ abstract class AbstractParsingTests {
 		return parser.parse(Arrays.asList(arguments));
 	}
 
-	ParseResult parse(ParserConfig configuration, String... arguments) {
-		CommandModel commandModel = commandModel(configuration);
+	ParseResult parse(ParserConfig config, String... arguments) {
+		CommandModel commandModel = commandModel(config);
 		Ast ast = ast();
-		Parser parser = new Parser.DefaultParser(commandModel, lexer(configuration), ast);
+		Parser parser = new Parser.DefaultParser(commandModel, lexer(config), ast, config);
 		return parser.parse(Arrays.asList(arguments));
 	}
 }

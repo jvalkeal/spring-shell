@@ -269,7 +269,7 @@ class ParserTests extends AbstractParsingTests {
 	class CaseSensitivity {
 
 		@Test
-		void shouldFindRegistrationCaseInsensitive() {
+		void shouldFindRegistrationRegUpperCommandLower() {
 			register(ROOT1_UP);
 			ParserConfig config = new ParserConfig()
 					.disable(Feature.CASE_SENSITIVE_COMMANDS)
@@ -279,6 +279,50 @@ class ParserTests extends AbstractParsingTests {
 			assertThat(result.commandRegistration()).isNotNull();
 			assertThat(result.messageResults()).isEmpty();
 		}
+
+		@Test
+		void shouldFindRegistrationRegUpperCommandUpper() {
+			register(ROOT1_UP);
+			ParserConfig config = new ParserConfig()
+					.disable(Feature.CASE_SENSITIVE_COMMANDS)
+					.disable(Feature.CASE_SENSITIVE_OPTIONS);
+			ParseResult result = parse(config, "Root1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+		@Test
+		void shouldFindRegistrationRegLowerCommandUpper() {
+			register(ROOT1);
+			ParserConfig config = new ParserConfig()
+					.disable(Feature.CASE_SENSITIVE_COMMANDS)
+					.disable(Feature.CASE_SENSITIVE_OPTIONS);
+			ParseResult result = parse(config, "Root1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
+		@Test
+		void shouldFindLongOptionRegLowerCommandUpper() {
+			register(ROOT3);
+			ParserConfig config = new ParserConfig()
+					.disable(Feature.CASE_SENSITIVE_COMMANDS)
+					.disable(Feature.CASE_SENSITIVE_OPTIONS)
+					;
+			ParseResult result = parse(config, "root3", "--Arg1", "value1");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.optionResults()).isNotEmpty();
+			assertThat(result.optionResults()).satisfiesExactly(
+				r -> {
+					assertThat(r.value()).isEqualTo("value1");
+				}
+			);
+			assertThat(result.messageResults()).isEmpty();
+		}
+
 	}
 
 	@Nested

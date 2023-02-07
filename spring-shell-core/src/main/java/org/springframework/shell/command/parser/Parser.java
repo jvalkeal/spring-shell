@@ -34,6 +34,7 @@ import org.springframework.shell.command.parser.CommandModel.CommandInfo;
 import org.springframework.shell.command.parser.Lexer.LexerResult;
 import org.springframework.shell.command.parser.Parser.ParseResult.ArgumentResult;
 import org.springframework.shell.command.parser.Parser.ParseResult.OptionResult;
+import org.springframework.shell.command.parser.ParserConfig.Feature;
 
 /**
  * Interface to parse command line arguments.
@@ -87,7 +88,7 @@ public interface Parser {
 	 */
 	public class DefaultParser implements Parser {
 
-		private final ParserConfig configuration;
+		private final ParserConfig config;
 		private final CommandModel commandModel;
 		private final Lexer lexer;
 		private final Ast ast;
@@ -97,16 +98,16 @@ public interface Parser {
 			this(commandModel, lexer, ast, new ParserConfig());
 		}
 
-		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig configuration) {
-			this(commandModel, lexer, ast, configuration, null);
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig config) {
+			this(commandModel, lexer, ast, config, null);
 		}
 
-		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig configuration,
+		public DefaultParser(CommandModel commandModel, Lexer lexer, Ast ast, ParserConfig config,
 				ConversionService conversionService) {
 			this.commandModel = commandModel;
 			this.lexer = lexer;
 			this.ast = ast;
-			this.configuration = configuration;
+			this.config = config;
 			this.conversionService = conversionService != null ? conversionService : new DefaultConversionService();
 		}
 
@@ -123,7 +124,7 @@ public interface Parser {
 			// 3. visit nodes
 			//    whoever uses this parser can then do further
 			//    things with final parsing results
-			NodeVisitor visitor = new DefaultNodeVisitor(commandModel, conversionService);
+			NodeVisitor visitor = new DefaultNodeVisitor(commandModel, conversionService, config);
 			ParseResult parseResult = visitor.visit(astResult.nonterminalNodes(), astResult.terminalNodes());
 			parseResult.messageResults().addAll(lexerResult.messageResults());
 			return parseResult;
@@ -137,6 +138,7 @@ public interface Parser {
 
 		private final CommandModel commandModel;
 		private final ConversionService conversionService;
+		private final ParserConfig config;
 		private final List<MessageResult> commonMessageResults = new ArrayList<>();
 		private List<String> resolvedCommmand = new ArrayList<>();
 		private List<OptionResult> optionResults = new ArrayList<>();
@@ -146,9 +148,10 @@ public interface Parser {
 		private List<ArgumentResult> argumentResults = new ArrayList<>();
 		private int commandArgumentPos = 0;
 
-		DefaultNodeVisitor(CommandModel commandModel, ConversionService conversionService) {
+		DefaultNodeVisitor(CommandModel commandModel, ConversionService conversionService, ParserConfig config) {
 			this.commandModel = commandModel;
 			this.conversionService = conversionService;
+			this.config = config;
 		}
 
 		@Override
@@ -255,7 +258,8 @@ public interface Parser {
 					Set<String> longNames = Arrays.asList(option.getLongNames()).stream()
 						.map(n -> "--" + n)
 						.collect(Collectors.toSet());
-					boolean match = longNames.contains(name);
+					String nameToMatch = config.isEnabled(Feature.CASE_SENSITIVE_OPTIONS) ? name : name.toLowerCase();
+					boolean match = longNames.contains(nameToMatch);
 					if (match) {
 						currentOptions.add(option);
 					}

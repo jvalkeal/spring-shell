@@ -86,6 +86,9 @@ public interface Lexer {
 			int i = -1;
 			boolean foundSplit = false;
 			for (String argument : arguments) {
+				if (!configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)) {
+					argument = argument.toLowerCase();
+				}
 				i++;
 				if (validTokens.containsKey(argument)) {
 					foundSplit = true;
@@ -158,6 +161,9 @@ public interface Lexer {
 
 			int i2 = i1;
 			for (String argument : afterArguments) {
+				// if (!configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)) {
+				// 	argument = argument.toLowerCase();
+				// }
 				i2++;
 
 				// We've found bash style "--" meaning further option processing is
@@ -172,11 +178,17 @@ public interface Lexer {
 						continue;
 				}
 
-				if (validTokens.containsKey(argument)) {
-					Token token = validTokens.get(argument);
+				String argumentToCheck = argument;
+				if (!configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)
+						|| !configuration.isEnabled(Feature.CASE_SENSITIVE_OPTIONS)) {
+					argumentToCheck = argument.toLowerCase();
+				}
+
+				if (validTokens.containsKey(argumentToCheck)) {
+					Token token = validTokens.get(argumentToCheck);
 					switch (token.getType()) {
 						case COMMAND:
-							currentCommand = currentCommand == null ? commandModel.getRootCommands().get(argument)
+							currentCommand = currentCommand == null ? commandModel.getRootCommands().get(argumentToCheck)
 									: currentCommand.getChildren(argument);
 							tokenList.add(Token.of(argument, TokenType.COMMAND, i2));
 							validTokens = currentCommand.getValidTokens();
