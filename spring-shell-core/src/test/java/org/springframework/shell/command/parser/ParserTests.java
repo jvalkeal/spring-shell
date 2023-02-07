@@ -159,9 +159,9 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void directiveNoValueWithCommand() {
 			register(ROOT3);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
-			ParseResult result = parse(lexer(configuration), "[fake]", "root3");
+			ParseResult result = parse(lexer(config), "[fake]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(d -> {
 				assertThat(d.name()).isEqualTo("fake");
 				assertThat(d.value()).isNull();
@@ -172,9 +172,9 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void directiveWithValueWithCommand() {
 			register(ROOT3);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
-			ParseResult result = parse(lexer(configuration), "[fake:value]", "root3");
+			ParseResult result = parse(lexer(config), "[fake:value]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(d -> {
 				assertThat(d.name()).isEqualTo("fake");
 				assertThat(d.value()).isEqualTo("value");
@@ -185,9 +185,9 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void multipleDirectivesWithCommand() {
 			register(ROOT3);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
 
-			ParseResult result = parse(lexer(configuration), "[foo][bar:value]", "root3");
+			ParseResult result = parse(lexer(config), "[foo][bar:value]", "root3");
 			assertThat(result.directiveResults()).satisfiesExactly(
 				d -> {
 					assertThat(d.name()).isEqualTo("foo");
@@ -271,10 +271,10 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void shouldFindRegistrationCaseInsensitive() {
 			register(ROOT1_UP);
-			ParserConfig configuration = new ParserConfig()
+			ParserConfig config = new ParserConfig()
 					.disable(Feature.CASE_SENSITIVE_COMMANDS)
 					.disable(Feature.CASE_SENSITIVE_OPTIONS);
-			ParseResult result = parse(configuration, "root1");
+			ParseResult result = parse(config, "root1");
 			assertThat(result).isNotNull();
 			assertThat(result.commandRegistration()).isNotNull();
 			assertThat(result.messageResults()).isEmpty();
