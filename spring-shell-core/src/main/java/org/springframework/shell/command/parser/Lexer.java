@@ -67,11 +67,11 @@ public interface Lexer {
 
 		private final static Logger log = LoggerFactory.getLogger(DefaultLexer.class);
 		private final CommandModel commandModel;
-		private final ParserConfig configuration;
+		private final ParserConfig config;
 
-		public DefaultLexer(CommandModel commandModel, ParserConfig configuration) {
+		public DefaultLexer(CommandModel commandModel, ParserConfig config) {
 			this.commandModel = commandModel;
-			this.configuration = configuration;
+			this.config = config;
 		}
 
 		private record ArgumentsSplit(List<String> before, List<String> after) {
@@ -86,7 +86,7 @@ public interface Lexer {
 			int i = -1;
 			boolean foundSplit = false;
 			for (String argument : arguments) {
-				if (!configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)) {
+				if (!config.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)) {
 					argument = argument.toLowerCase();
 				}
 				i++;
@@ -141,14 +141,14 @@ public interface Lexer {
 
 			int i1 = split.before().size() - 1;
 
-			if (configuration.isEnabled(Feature.ALLOW_DIRECTIVES)) {
+			if (config.isEnabled(Feature.ALLOW_DIRECTIVES)) {
 				List<String> rawDirectives = extractDirectives(beforeArguments);
 				for (String raw : rawDirectives) {
 					tokenList.add(Token.of(raw, TokenType.DIRECTIVE, 0));
 				}
 			}
 			else {
-				if (!configuration.isEnabled(Feature.IGNORE_DIRECTIVES) && beforeArguments.size() > 0) {
+				if (!config.isEnabled(Feature.IGNORE_DIRECTIVES) && beforeArguments.size() > 0) {
 					errorResults.add(MessageResult.of(ParserMessage.ILLEGAL_CONTENT_BEFORE_COMMANDS, 0, beforeArguments));
 				}
 			}
@@ -179,8 +179,8 @@ public interface Lexer {
 				}
 
 				String argumentToCheck = argument;
-				if (!configuration.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)
-						|| !configuration.isEnabled(Feature.CASE_SENSITIVE_OPTIONS)) {
+				if (!config.isEnabled(Feature.CASE_SENSITIVE_COMMANDS)
+						|| !config.isEnabled(Feature.CASE_SENSITIVE_OPTIONS)) {
 					argumentToCheck = argument.toLowerCase();
 				}
 

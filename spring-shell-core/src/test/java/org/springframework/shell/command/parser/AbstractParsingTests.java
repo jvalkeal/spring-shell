@@ -208,8 +208,8 @@ abstract class AbstractParsingTests {
 		return new Lexer.DefaultLexer(commandModel(), new ParserConfig());
 	}
 
-	Lexer lexer(ParserConfig configuration) {
-		return new Lexer.DefaultLexer(commandModel(configuration), configuration);
+	Lexer lexer(ParserConfig config) {
+		return new Lexer.DefaultLexer(commandModel(config), config);
 	}
 
 	Lexer lexer(CommandModel commandModel) {

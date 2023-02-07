@@ -373,8 +373,8 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void directiveWithCommand() {
 			register(ROOT1);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
-			List<Token> tokens = tokenize(lexer(configuration), "[fake]", "root1");
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			List<Token> tokens = tokenize(lexer(config), "[fake]", "root1");
 
 			assertThat(tokens).satisfiesExactly(
 					token -> {
@@ -394,8 +394,8 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void hasOneDirective() {
 			register(ROOT1);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
-			List<Token> tokens = tokenize(lexer(configuration), "[fake]");
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			List<Token> tokens = tokenize(lexer(config), "[fake]");
 
 			assertThat(tokens).satisfiesExactly(
 					token -> {
@@ -409,8 +409,8 @@ class LexerTests extends AbstractParsingTests {
 		@Test
 		void hasMultipleDirectives() {
 			register(ROOT1);
-			ParserConfig configuration = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
-			List<Token> tokens = tokenize(lexer(configuration), "[fake1][fake2]");
+			ParserConfig config = new ParserConfig().enable(Feature.ALLOW_DIRECTIVES);
+			List<Token> tokens = tokenize(lexer(config), "[fake1][fake2]");
 
 			assertThat(tokens).satisfiesExactly(
 					token -> {
@@ -429,18 +429,18 @@ class LexerTests extends AbstractParsingTests {
 
 		@Test
 		void errorIfDirectivesDisabledAndIgnoreDisabled() {
-			ParserConfig configuration = new ParserConfig()
+			ParserConfig config = new ParserConfig()
 					.disable(Feature.ALLOW_DIRECTIVES)
 					.disable(Feature.IGNORE_DIRECTIVES);
-			LexerResult result = tokenizeAsResult(lexer(configuration),"[fake]");
+			LexerResult result = tokenizeAsResult(lexer(config),"[fake]");
 			assertThat(result.messageResults()).isNotEmpty();
 		}
 
 		@Test
 		void noErrorIfDirectivesDisabledAndIgnoreEnabled() {
-			ParserConfig configuration = new ParserConfig()
+			ParserConfig config = new ParserConfig()
 					.enable(Feature.IGNORE_DIRECTIVES);
-			LexerResult result = tokenizeAsResult(lexer(configuration), "[fake]");
+			LexerResult result = tokenizeAsResult(lexer(config), "[fake]");
 			assertThat(result.messageResults()).isEmpty();
 		}
 
