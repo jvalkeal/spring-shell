@@ -233,7 +233,8 @@ class CommandRegistrationFactoryBean implements FactoryBean<CommandRegistration>
 						optionSpec.arity(OptionArity.ZERO);
 					}
 					else {
-						optionSpec.arity(OptionArity.EXACTLY_ONE);
+						// XXX
+						// optionSpec.arity(OptionArity.EXACTLY_ONE);
 					}
 				}
 
