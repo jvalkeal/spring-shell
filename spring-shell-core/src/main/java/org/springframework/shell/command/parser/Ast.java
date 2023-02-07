@@ -60,7 +60,6 @@ public interface Ast {
 			List<CommandNode> commandNodes = new ArrayList<>();
 			CommandNode commandNode = null;
 			OptionNode optionNode = null;
-			// DirectiveNode directiveNode = null;
 			List<DirectiveNode> directiveNodes = new ArrayList<>();
 
 			for (Token token : tokens) {
@@ -79,7 +78,6 @@ public interface Ast {
 							commandNode.addChildNode(n);
 							commandNode = n;
 						}
-						// commandNode = new CommandNode(token, token.getValue());
 						commandNodes.add(commandNode);
 						break;
 					case OPTION:
@@ -108,18 +106,13 @@ public interface Ast {
 			List<TerminalAstNode> terminalNodes = new ArrayList<>();
 
 			if (commandNodes.size() > 0) {
-				// nonterminalNodes.add(commandNodes.get(commandNodes.size() - 1));
 				nonterminalNodes.add(commandNodes.get(0));
 			}
 			for (DirectiveNode dn : directiveNodes) {
 				terminalNodes.add(dn);
 			}
-			// if (directiveNode != null) {
-			// 	terminalNodes.add(directiveNode);
-			// }
 
 			return new AstResult(nonterminalNodes, terminalNodes);
 		}
-
 	}
 }
