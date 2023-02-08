@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,6 +30,13 @@ import java.util.stream.Stream;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.shell.Utils;
+import org.springframework.shell.command.parser.Ast;
+import org.springframework.shell.command.parser.Ast.DefaultAst;
+import org.springframework.shell.command.parser.CommandModel;
+import org.springframework.shell.command.parser.Lexer.DefaultLexer;
+import org.springframework.shell.command.parser.Parser.DefaultParser;
+import org.springframework.shell.command.parser.Parser.ParseResult;
+import org.springframework.shell.command.parser.ParserConfig;
 import org.springframework.util.StringUtils;
 
 /**
@@ -142,6 +150,12 @@ public interface CommandParser {
 		return new DefaultCommandParser(conversionService);
 	}
 
+	// XXX
+	static CommandParser of(ConversionService conversionService, Map<String, CommandRegistration> registrations,
+			ParserConfig configuration) {
+		return new AstCommandParser(registrations, configuration, conversionService);
+	}
+
 	/**
 	 * Default implementation of a {@link CommandParserResults}.
 	 */
@@ -194,6 +208,49 @@ public interface CommandParser {
 		@Override
 		public Object value() {
 			return value;
+		}
+	}
+
+	// XXX
+	static class AstCommandParser implements CommandParser {
+
+		private final Map<String, CommandRegistration> registrations;
+		private final ParserConfig configuration;
+		private final ConversionService conversionService;
+
+		public AstCommandParser(Map<String, CommandRegistration> registrations, ParserConfig configuration,
+				ConversionService conversionService) {
+			this.registrations = registrations;
+			this.configuration = configuration;
+			this.conversionService = conversionService;
+		}
+
+		@Override
+		public CommandParserResults parse(List<CommandOption> options, String[] args) {
+			CommandModel commandModel = new CommandModel(registrations, configuration);
+			org.springframework.shell.command.parser.Lexer lexer = new DefaultLexer(commandModel, configuration);
+			Ast ast = new DefaultAst();
+			org.springframework.shell.command.parser.Parser parser = new DefaultParser(commandModel, lexer, ast,
+					configuration, conversionService);
+			ParseResult result = parser.parse(Arrays.asList(args));
+
+			List<CommandParserResult> results = new ArrayList<>();
+			List<String> positional = new ArrayList<>();
+			List<CommandParserException> errors = new ArrayList<>();
+
+			result.optionResults().forEach(or -> {
+				results.add(CommandParserResult.of(or.option(), or.value()));
+			});
+
+			result.messageResults().forEach(mr -> {
+				errors.add(new CommandParserException(mr.getMessage()));
+			});
+
+			result.argumentResults().forEach(ar -> {
+				positional.add(ar.value());
+			});
+
+			return new DefaultCommandParserResults(results, positional, errors);
 		}
 	}
 
