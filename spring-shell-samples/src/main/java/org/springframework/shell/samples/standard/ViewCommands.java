@@ -16,8 +16,8 @@
 package org.springframework.shell.samples.standard;
 
 import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.component.xxx.Box;
-import org.springframework.shell.component.xxx.ViewApplication;
+import org.springframework.shell.component.xxx.BoxView;
+import org.springframework.shell.component.xxx.ViewComponent;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 @Command(command = "view")
@@ -25,11 +25,11 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "box")
 	public void box() {
-		ViewApplication app = new ViewApplication(getTerminal());
-		Box box = new Box();
+		ViewComponent component = new ViewComponent(getTerminal());
+		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
-		app.setRoot(box, true);
-		app.run();
+		component.setRoot(box, true);
+		component.run();
 	}
 }

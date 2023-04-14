@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.component.xxx;
 
-public abstract class AbstractViewComponent implements ViewComponent {
+public abstract class AbstractView implements View {
 
 	private int x = 0;
 	private int y = 0;
@@ -31,8 +31,8 @@ public abstract class AbstractViewComponent implements ViewComponent {
 	}
 
 	@Override
-	public final void draw(VirtualScreen virtualScreen) {
-		drawInternal(virtualScreen);
+	public final void draw(VirtualDisplay display) {
+		drawInternal(display);
 	}
 
 	@Override
@@ -55,6 +55,6 @@ public abstract class AbstractViewComponent implements ViewComponent {
 		return height;
 	}
 
-	protected void drawInternal(VirtualScreen virtualScreen) {
+	protected void drawInternal(VirtualDisplay display) {
 	}
 }

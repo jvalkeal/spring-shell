@@ -15,17 +15,101 @@
  */
 package org.springframework.shell.component.xxx;
 
-public interface ViewComponent {
+import java.util.Collections;
+import java.util.List;
 
-	void draw(VirtualScreen virtualScreen);
+import org.jline.keymap.BindingReader;
+import org.jline.keymap.KeyMap;
+import org.jline.terminal.Attributes;
+import org.jline.terminal.Size;
+import org.jline.terminal.Terminal;
+import org.jline.utils.AttributedString;
+import org.jline.utils.Display;
+import org.jline.utils.InfoCmp.Capability;
 
-	void setRect(int x, int y, int width, int height);
+import org.springframework.util.Assert;
 
-	int getX();
+public class ViewComponent {
 
-	int getY();
+	public final static String OPERATION_EXIT = "EXIT";
 
-	int getWidth();
+	private final Terminal terminal;
+	private final BindingReader bindingReader;
+	private final KeyMap<String> keyMap = new KeyMap<>();
+	private final VirtualDisplay virtualDisplay = new VirtualDisplay();
+	private View rootView;
 
-	int getHeight();
+	public ViewComponent(Terminal terminal) {
+		Assert.notNull(terminal, "terminal must be set");
+		this.terminal = terminal;
+		this.bindingReader = new BindingReader(terminal.reader());
+	}
+
+	public void setRoot(View root, boolean fullScreen) {
+		this.rootView = root;
+	}
+
+	public void run() {
+		bindKeyMap(keyMap);
+		loop();
+	}
+
+	protected void bindKeyMap(KeyMap<String> keyMap) {
+		keyMap.bind(OPERATION_EXIT, "\r");
+	}
+
+	protected void render(int rows, int columns) {
+		if (rootView == null) {
+			return;
+		}
+		rootView.setRect(0, 0, columns, rows);
+		rootView.draw(virtualDisplay);
+	}
+
+	protected void loop() {
+		Display display = new Display(terminal, true);
+		Attributes attr = terminal.enterRawMode();
+		Size size = new Size();
+
+		try {
+			terminal.puts(Capability.keypad_xmit);
+			terminal.puts(Capability.cursor_invisible);
+			terminal.writer().flush();
+			size.copy(terminal.getSize());
+			display.clear();
+			display.reset();
+
+			while (true) {
+				display.resize(size.getRows(), size.getColumns());
+				virtualDisplay.resize(size.getRows(), size.getColumns());
+				render(size.getRows(), size.getColumns());
+				List<AttributedString> newLines = virtualDisplay.getScreenLines();
+				display.update(newLines, 0);
+				boolean exit = read(bindingReader, keyMap);
+				if (exit) {
+					break;
+				}
+			}
+		}
+		finally {
+			terminal.setAttributes(attr);
+			terminal.puts(Capability.keypad_local);
+			terminal.puts(Capability.cursor_visible);
+			display.update(Collections.emptyList(), 0);
+		}
+	}
+
+	protected boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
+		String operation = bindingReader.readBinding(keyMap);
+		if (operation == null) {
+			return true;
+		}
+		switch (operation) {
+			case OPERATION_EXIT:
+				return true;
+		}
+
+		return false;
+	}
+
 }
