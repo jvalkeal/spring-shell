@@ -15,28 +15,17 @@
  */
 package org.springframework.shell.component.xxx;
 
-import org.junit.jupiter.api.Test;
+public interface View {
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+	void draw(VirtualDisplay display);
 
-public class VirtualScreenTests {
+	void setRect(int x, int y, int width, int height);
 
-	@Test
-	void zeroDataSizeDoesntBreak() {
-		VirtualScreen screen = new VirtualScreen();
-		assertThat(screen.getData()).isEmpty();
-		assertThat(screen.getScreenLines()).isEmpty();
-	}
+	int getX();
 
-	@Test
-	void cantResizeNegative() {
-		VirtualScreen screen = new VirtualScreen();
-		assertThatThrownBy(() -> {
-			screen.resize(-1, 0);
-		}).hasMessageContaining("negative rows");
-		assertThatThrownBy(() -> {
-			screen.resize(0, -1);
-		}).hasMessageContaining("negative columns");
-	}
+	int getY();
+
+	int getWidth();
+
+	int getHeight();
 }

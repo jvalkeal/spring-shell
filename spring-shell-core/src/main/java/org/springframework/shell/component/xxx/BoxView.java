@@ -15,12 +15,14 @@
  */
 package org.springframework.shell.component.xxx;
 
-public class Box extends AbstractViewComponent {
+import org.springframework.util.StringUtils;
+
+public class BoxView extends AbstractView {
 
 	private String title = null;
 	private boolean showBorder = false;
 
-	public void drawInternal(VirtualScreen virtualScreen) {
+	public void drawInternal(VirtualDisplay display) {
 		if (getWidth() <= 0 || getHeight() <= 0) {
 			return;
 		}
@@ -28,18 +30,23 @@ public class Box extends AbstractViewComponent {
 		if (showBorder && getWidth() >= 2 && getHeight() >= 2) {
 
 			for (int i = getX() + 1; i < getX() + getWidth() - 1; i++) {
-				virtualScreen.setContent(i, getY(), '-');
-				virtualScreen.setContent(i, getY() + getHeight() - 1, '-');
+				display.setContent(i, getY(), '─');
+				display.setContent(i, getY() + getHeight() - 1, '─');
 			}
-
 
 			for (int i = getY() + 1; i < getY() + getHeight() - 1; i++) {
-				virtualScreen.setContent(getX(), i, '|');
-				virtualScreen.setContent(getX() + getWidth() - 1, i, '|');
+				display.setContent(getX(), i, '│');
+				display.setContent(getX() + getWidth() - 1, i, '│');
 			}
 
+			display.setContent(getX(), getY(), '┌');
+			display.setContent(getX() + getWidth() - 1, getY(), '┐');
+			display.setContent(getX(), getY() + getHeight() - 1, '└');
+			display.setContent(getX() + getWidth() - 1, getY() + getHeight() - 1, '┘');
 
-
+			if (StringUtils.hasText(title)) {
+				display.print(title, getX() + 1, getY(), getWidth() - 2);
+			}
 		}
 	}
 

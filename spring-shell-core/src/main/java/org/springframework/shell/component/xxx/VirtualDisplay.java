@@ -29,17 +29,17 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class VirtualScreen {
+public class VirtualDisplay {
 
 	private int rows = 0;
 	private int columns = 0;
 	private char[][] data;
 
-	public VirtualScreen() {
+	public VirtualDisplay() {
 		this(0, 0);
 	}
 
-	public VirtualScreen(int rows, int columns) {
+	public VirtualDisplay(int rows, int columns) {
 		resize(rows, columns);
 	}
 
@@ -66,6 +66,13 @@ public class VirtualScreen {
 
 	public char[][] getData() {
 		return data;
+	}
+
+	public void print(String text, int x, int y, int width) {
+		for (int i = 0; i < text.length() && i < width; i++) {
+			char c = text.charAt(i);
+			setContent(x + i, y, c);
+		}
 	}
 
 	public List<AttributedString> getScreenLines() {
