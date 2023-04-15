@@ -17,6 +17,13 @@ package org.springframework.shell.component.xxx;
 
 import org.springframework.util.StringUtils;
 
+/**
+ * {@code BoxView} is a {@link View} with an empty background and optional
+ * border and title. All "boxed" views can use this as their base
+ * implementation by either subclassing or wrapping.
+ *
+ * @author Janne Valkealahti
+ */
 public class BoxView extends AbstractView {
 
 	private String title = null;

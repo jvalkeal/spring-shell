@@ -15,23 +15,6 @@
  */
 package org.springframework.shell.component.xxx;
 
-/**
- * {@code View} is an interface representing something what can be drawn into
- * a {@link VirtualDisplay} within its bounds.
- *
- * @author Janne Valkealahti
- */
-public interface View {
+class GridViewTests {
 
-	void draw(VirtualDisplay display);
-
-	void setRect(int x, int y, int width, int height);
-
-	int getX();
-
-	int getY();
-
-	int getWidth();
-
-	int getHeight();
 }
