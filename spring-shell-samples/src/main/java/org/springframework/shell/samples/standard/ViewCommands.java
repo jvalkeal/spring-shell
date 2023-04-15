@@ -29,6 +29,10 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
+		box.setDrawFunction((display, rect) -> {
+			display.print("hello", 2, 2, 5);
+			return rect;
+		});
 		component.setRoot(box, true);
 		component.run();
 	}

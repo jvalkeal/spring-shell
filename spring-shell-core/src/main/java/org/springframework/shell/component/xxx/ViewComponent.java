@@ -18,6 +18,7 @@ package org.springframework.shell.component.xxx;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
@@ -131,6 +132,12 @@ public class ViewComponent {
 		log.debug("Read got operation {}", operation);
 		if (operation == null) {
 			return true;
+		}
+		if (rootView != null) {
+			Consumer<String> inputConsumer = rootView.getInputConsumer();
+			if (inputConsumer != null) {
+				inputConsumer.accept(operation);
+			}
 		}
 		switch (operation) {
 			case OPERATION_EXIT:
