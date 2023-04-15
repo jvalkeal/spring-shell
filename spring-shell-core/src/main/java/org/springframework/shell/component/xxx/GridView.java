@@ -15,51 +15,27 @@
  */
 package org.springframework.shell.component.xxx;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Base implementation of a {@link View}.
+ * {@code GridView} is a layout container with no initial {@link View views}.
+ *
+ * Loosely based on ideas from other grid layouts having features like rows and
+ * columns, column and row spanning, dynamic layouts based on overall container
+ * size using "CSS media queries" type of structure.
  *
  * @author Janne Valkealahti
  */
-public abstract class AbstractView implements View {
+public class GridView extends AbstractView {
 
-	private int x = 0;
-	private int y = 0;
-	private int width = 0;
-	private int height = 0;
+	private BoxView boxView;
+	private List<GridItem> items = new ArrayList<>();
 
-	@Override
-	public void setRect(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public GridView() {
+		this.boxView = new BoxView();
 	}
 
-	@Override
-	public final void draw(VirtualDisplay display) {
-		drawInternal(display);
-	}
-
-	@Override
-	public int getX() {
-		return x;
-	}
-
-	@Override
-	public int getY() {
-		return y;
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
-	}
-
-	protected void drawInternal(VirtualDisplay display) {
+	public record GridItem(View view, int row, int column, int width, int height) {
 	}
 }
