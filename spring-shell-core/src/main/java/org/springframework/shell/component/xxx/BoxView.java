@@ -55,6 +55,11 @@ public class BoxView extends AbstractView {
 				display.print(title, getX() + 1, getY(), getWidth() - 2);
 			}
 		}
+
+		if (getDrawFunction() != null) {
+			Rectangle rect = new Rectangle(getX(), getY(), getWidth(), getHeight());
+			rect = getDrawFunction().apply(display, rect);
+		}
 	}
 
 	public boolean isShowBorder() {

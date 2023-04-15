@@ -15,6 +15,10 @@
  */
 package org.springframework.shell.component.xxx;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
  * Base implementation of a {@link View}.
  *
@@ -26,6 +30,8 @@ public abstract class AbstractView implements View {
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
+	private Consumer<String> inputConsumer;
+	private BiFunction<VirtualDisplay, Rectangle, Rectangle> drawFunction;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -58,6 +64,24 @@ public abstract class AbstractView implements View {
 	@Override
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public void setInputConsumer(Consumer<String> inputConsumer) {
+		this.inputConsumer = inputConsumer;
+	}
+
+	@Override
+	public Consumer<String> getInputConsumer() {
+		return inputConsumer;
+	}
+
+	public void setDrawFunction(BiFunction<VirtualDisplay, Rectangle, Rectangle> drawFunction) {
+		this.drawFunction = drawFunction;
+	}
+
+	public BiFunction<VirtualDisplay, Rectangle, Rectangle> getDrawFunction() {
+		return drawFunction;
 	}
 
 	protected void drawInternal(VirtualDisplay display) {

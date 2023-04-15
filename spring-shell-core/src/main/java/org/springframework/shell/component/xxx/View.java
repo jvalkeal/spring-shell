@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.xxx;
 
+import java.util.function.Consumer;
+
 /**
  * {@code View} is an interface representing something what can be drawn into
  * a {@link VirtualDisplay} within its bounds.
@@ -34,4 +36,11 @@ public interface View {
 	int getWidth();
 
 	int getHeight();
+
+	void setInputConsumer(Consumer<String> inputConsumer);
+
+	Consumer<String> getInputConsumer();
+
+	record Rectangle(int x, int y, int width, int height) {
+	};
 }
