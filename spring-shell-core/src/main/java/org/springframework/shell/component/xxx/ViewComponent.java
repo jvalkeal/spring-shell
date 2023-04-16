@@ -61,6 +61,10 @@ public class ViewComponent {
 		this.rootView = root;
 	}
 
+	public void redraw() {
+		display();
+	}
+
 	public void run() {
 		bindKeyMap(keyMap);
 		display = new Display(terminal, true);

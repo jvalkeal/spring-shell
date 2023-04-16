@@ -25,22 +25,49 @@ import java.util.function.Consumer;
  */
 public interface View {
 
+	/**
+	 * Draw view into {@link VirtualDisplay}. This is a main access point to draw
+	 * visible things in a screen.
+	 *
+	 * @param display the virtual display
+	 */
 	void draw(VirtualDisplay display);
 
+	/**
+	 * Sets bounded box where this {@link View} should operate.
+	 *
+	 * @param x a x coord of a bounded box
+	 * @param y an y coord of a bounded box
+	 * @param width a width of a bounded box
+	 * @param height a height of a bounded box
+	 */
 	void setRect(int x, int y, int width, int height);
 
-	int getX();
+	/**
+	 * Gets rectanle of a bounded box for this {@link View}.
+	 *
+	 * @return the rectanle of a bounded box
+	 */
+	Rectangle getRect();
 
-	int getY();
-
-	int getWidth();
-
-	int getHeight();
-
+	/**
+	 * Sets an input consumer for an {@code operation}.
+	 *
+	 * @param inputConsumer an input consumer
+	 */
 	void setInputConsumer(Consumer<String> inputConsumer);
 
+	/**
+	 * Gets an input consumer.
+	 *
+	 * @return the input consumer
+	 */
 	Consumer<String> getInputConsumer();
 
+	/**
+	 * Record representing coordinates {@code x}, {@code y} and its {@code width}
+	 * and {@code height}.
+	 */
 	record Rectangle(int x, int y, int width, int height) {
 	};
 }

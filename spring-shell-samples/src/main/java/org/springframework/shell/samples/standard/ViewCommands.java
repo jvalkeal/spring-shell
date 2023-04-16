@@ -15,6 +15,13 @@
  */
 package org.springframework.shell.samples.standard;
 
+import java.time.Duration;
+import java.util.Date;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.xxx.BoxView;
 import org.springframework.shell.component.xxx.ViewComponent;
@@ -23,17 +30,31 @@ import org.springframework.shell.standard.AbstractShellComponent;
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
 
+	@Autowired
+	private TaskScheduler scheduler;
+
 	@Command(command = "box")
 	public void box() {
+		AtomicReference<String> data = new AtomicReference<>();
 		ViewComponent component = new ViewComponent(getTerminal());
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
 		box.setDrawFunction((display, rect) -> {
-			display.print("hello", 2, 2, 5);
+			String text = data.get();
+			if (text != null) {
+				display.print(text, rect.x(), rect.y(), text.length());
+			}
 			return rect;
 		});
 		component.setRoot(box, true);
+
+		ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(() -> {
+			data.set(new Date().toString());
+			component.redraw();
+		}, Duration.ofSeconds(1));
+
 		component.run();
+		task.cancel(true);
 	}
 }
