@@ -22,18 +22,32 @@ import java.util.List;
  * {@code GridView} is a layout container with no initial {@link View views}.
  *
  * Loosely based on ideas from other grid layouts having features like rows and
- * columns, column and row spanning, dynamic layouts based on overall container
- * size using "CSS media queries" type of structure.
+ * columns, column and row spanning, dynamic layouts based on container size
+ * using "CSS media queries" type of structure.
  *
  * @author Janne Valkealahti
  */
-public class GridView extends AbstractView {
+public class GridView extends BoxView {
 
-	private BoxView boxView;
 	private List<GridItem> items = new ArrayList<>();
 
 	public GridView() {
-		this.boxView = new BoxView();
+	}
+
+	public GridView setColumns(int... columns) {
+		return this;
+	}
+
+	public GridView setRows(int... rows) {
+		return this;
+	}
+
+	public GridView addItem(View view, int row, int column, int rowSpan, int colSpan, int minGridHeight, int minGridWidth) {
+		return this;
+	}
+
+	@Override
+	protected void drawInternal(VirtualDisplay display) {
 	}
 
 	public record GridItem(View view, int row, int column, int width, int height) {

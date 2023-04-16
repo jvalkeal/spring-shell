@@ -28,49 +28,129 @@ public class BoxView extends AbstractView {
 
 	private String title = null;
 	private boolean showBorder = false;
+	private int innerX;
+	private int innerY;
+	private int innerWidth;
+	private int innerHeight;
+	private int paddingTop;
+	private int paddingBottom;
+	private int paddingLeft;
+	private int paddingRight;
 
-	public void drawInternal(VirtualDisplay display) {
-		if (getWidth() <= 0 || getHeight() <= 0) {
-			return;
-		}
-
-		if (showBorder && getWidth() >= 2 && getHeight() >= 2) {
-
-			for (int i = getX() + 1; i < getX() + getWidth() - 1; i++) {
-				display.setContent(i, getY(), '─');
-				display.setContent(i, getY() + getHeight() - 1, '─');
-			}
-
-			for (int i = getY() + 1; i < getY() + getHeight() - 1; i++) {
-				display.setContent(getX(), i, '│');
-				display.setContent(getX() + getWidth() - 1, i, '│');
-			}
-
-			display.setContent(getX(), getY(), '┌');
-			display.setContent(getX() + getWidth() - 1, getY(), '┐');
-			display.setContent(getX(), getY() + getHeight() - 1, '└');
-			display.setContent(getX() + getWidth() - 1, getY() + getHeight() - 1, '┘');
-
-			if (StringUtils.hasText(title)) {
-				display.print(title, getX() + 1, getY(), getWidth() - 2);
-			}
-		}
-
-		if (getDrawFunction() != null) {
-			Rectangle rect = new Rectangle(getX(), getY(), getWidth(), getHeight());
-			rect = getDrawFunction().apply(display, rect);
-		}
+	/**
+	 *
+	 * @param paddingTop
+	 * @param paddingBottom
+	 * @param paddingLeft
+	 * @param paddingRight
+	 * @return
+	 */
+	public BoxView setBorderPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+		this.paddingTop = paddingTop;
+		this.paddingBottom = paddingBottom;
+		this.paddingLeft = paddingLeft;
+		this.paddingRight = paddingRight;
+		return this;
 	}
 
-	public boolean isShowBorder() {
-		return showBorder;
-	}
-
+	/**
+	 *
+	 * @param showBorder
+	 */
 	public void setShowBorder(boolean showBorder) {
 		this.showBorder = showBorder;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
+	public boolean isShowBorder() {
+		return showBorder;
+	}
+
+	/**
+	 *
+	 * @param title
+	 */
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	protected void drawInternal(VirtualDisplay display) {
+		Rectangle rect = getRect();
+		if (rect.width() <= 0 || rect.height() <= 0) {
+			return;
+		}
+
+		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
+
+			for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
+				display.setContent(i, rect.y(), '─');
+				display.setContent(i, rect.y() + rect.height() - 1, '─');
+			}
+
+			for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
+				display.setContent(rect.x(), i, '│');
+				display.setContent(rect.x() + rect.width() - 1, i, '│');
+			}
+
+			display.setContent(rect.x(), rect.y(), '┌');
+			display.setContent(rect.x() + rect.width() - 1, rect.y(), '┐');
+			display.setContent(rect.x(), rect.y() + rect.height() - 1, '└');
+			display.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, '┘');
+
+			if (StringUtils.hasText(title)) {
+				display.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
+			}
+		}
+
+		if (getDrawFunction() != null) {
+			Rectangle r = getDrawFunction().apply(display, rect);
+			innerX = r.x();
+			innerY = r.y();
+			innerWidth = r.width();
+			innerHeight = r.height();
+		}
+		else {
+			Rectangle r = getInnerRect();
+			innerX = r.x();
+			innerY = r.y();
+			innerWidth = r.width();
+			innerHeight = r.height();
+		}
+	}
+
+	/**
+	 *
+	 *
+	 * @return
+	 */
+	protected Rectangle getInnerRect() {
+		if (innerX >= 0) {
+			return new Rectangle(innerX, innerY, innerWidth, innerHeight);
+		}
+		Rectangle rect = getRect();
+		int x = rect.x();
+		int y = rect.y();
+		int width = rect.width();
+		int height = rect.height();
+		if (isShowBorder()) {
+			x++;
+			y++;
+			width -= 2;
+			height -= 2;
+		}
+		x = x + paddingLeft;
+		y = y + paddingTop;
+		width = width - paddingLeft - paddingRight;
+		height = height - paddingTop - paddingBottom;
+		if (width < 0) {
+			width = 0;
+		}
+		if (height < 0) {
+			height = 0;
+		}
+		return new Rectangle(x, y, width, height);
 	}
 }
