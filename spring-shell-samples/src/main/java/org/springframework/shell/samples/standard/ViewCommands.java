@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.xxx.BoxView;
+import org.springframework.shell.component.xxx.GridView;
 import org.springframework.shell.component.xxx.ViewComponent;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -35,6 +36,79 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "box")
 	public void box() {
+		ViewComponent component = new ViewComponent(getTerminal());
+		BoxView box = new BoxView();
+		box.setTitle("Title");
+		box.setShowBorder(true);
+		component.setRoot(box, true);
+		component.run();
+	}
+
+	@Command(command = "gridx")
+	public void gridx() {
+		ViewComponent component = new ViewComponent(getTerminal());
+
+		BoxView menu = new BoxView();
+		menu.setTitle("Menu");
+		menu.setShowBorder(true);
+
+		GridView grid = new GridView();
+		grid.setTitle("Grid");
+		grid.setShowBorder(true);
+
+		grid.setRowSize(1);
+		grid.setColumnSize(1);
+		grid.setShowBorder(true);
+		grid.addItem(menu, 0, 0, 1, 1, 0, 0);
+		component.setRoot(grid, true);
+		component.run();
+	}
+
+	@Command(command = "grid")
+	public void grid() {
+		ViewComponent component = new ViewComponent(getTerminal());
+
+		BoxView menu = new BoxView();
+		menu.setTitle("Menu");
+		menu.setShowBorder(true);
+
+		BoxView main = new BoxView();
+		main.setTitle("Main content");
+		main.setShowBorder(true);
+
+		BoxView sideBar = new BoxView();
+		sideBar.setTitle("Side Bar");
+		sideBar.setShowBorder(true);
+
+		BoxView header = new BoxView();
+		header.setTitle("Header");
+		header.setShowBorder(true);
+
+		BoxView footer = new BoxView();
+		footer.setTitle("Footer");
+		footer.setShowBorder(true);
+
+		GridView grid = new GridView();
+		grid.setRowSize(3, 0, 3);
+		grid.setColumnSize(30, 0, 30);
+		grid.setShowBorder(true);
+		grid.addItem(header, 0, 0, 1, 3, 0, 0);
+		grid.addItem(footer, 2, 0, 1, 3, 0, 0);
+
+		grid.addItem(menu, 0, 0, 0, 0, 0, 0);
+		grid.addItem(main, 1, 0, 1, 3, 0, 0);
+		grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
+
+		grid.addItem(menu, 1, 0, 1, 1, 0, 100);
+		grid.addItem(main, 1, 1, 1, 1, 0, 100);
+		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
+
+		component.setRoot(grid, true);
+		component.run();
+	}
+
+	@Command(command = { "demo", "clock" })
+	void demoClock() {
 		AtomicReference<String> data = new AtomicReference<>();
 		ViewComponent component = new ViewComponent(getTerminal());
 		BoxView box = new BoxView();

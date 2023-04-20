@@ -22,11 +22,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BoxViewTests {
 
-	private VirtualDisplay display;
+	private Screen display;
 
 	@BeforeEach
 	void setup() {
-		display = new VirtualDisplay(24, 80);
+		display = new Screen(24, 80);
 	}
 
 	@Test

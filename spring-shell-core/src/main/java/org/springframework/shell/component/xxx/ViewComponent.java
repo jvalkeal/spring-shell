@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
 import org.jline.terminal.Attributes;
+import org.jline.terminal.MouseEvent;
 import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
@@ -36,17 +37,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import static org.jline.keymap.KeyMap.ctrl;
+import static org.jline.keymap.KeyMap.key;
 
 public class ViewComponent {
 
 	private final static Logger log = LoggerFactory.getLogger(ViewComponent.class);
 	public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REPAINT = "REPAINT";
+	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
 
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
 	private final KeyMap<String> keyMap = new KeyMap<>();
-	private final VirtualDisplay virtualDisplay = new VirtualDisplay();
+	private final Screen virtualDisplay = new Screen();
 	private Display display;
 	private Size size;
 	private View rootView;
@@ -74,7 +77,8 @@ public class ViewComponent {
 
 	protected void bindKeyMap(KeyMap<String> keyMap) {
 		keyMap.bind(OPERATION_EXIT, "\r");
-		keyMap.bind(OPERATION_REPAINT, "r", ctrl('R'), ctrl('L'));
+		// keyMap.bind(OPERATION_REPAINT, "r", ctrl('R'), ctrl('L'));
+		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 	}
 
 	protected void render(int rows, int columns) {
@@ -109,6 +113,7 @@ public class ViewComponent {
 		try {
 			terminal.puts(Capability.keypad_xmit);
 			terminal.puts(Capability.cursor_invisible);
+			terminal.trackMouse(Terminal.MouseTracking.Normal);
 			terminal.writer().flush();
 			size.copy(terminal.getSize());
 			display.clear();
@@ -124,6 +129,7 @@ public class ViewComponent {
 		}
 		finally {
 			terminal.setAttributes(attr);
+			terminal.trackMouse(Terminal.MouseTracking.Off);
 			terminal.puts(Capability.keypad_local);
 			terminal.puts(Capability.cursor_visible);
 			display.update(Collections.emptyList(), 0);
@@ -131,8 +137,8 @@ public class ViewComponent {
 	}
 
 	protected boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
-		// String operation = bindingReader.readBinding(keyMap);
-		String operation = bindingReader.readBinding(keyMap, null, false);
+		String operation = bindingReader.readBinding(keyMap);
+		// String operation = bindingReader.readBinding(keyMap, null, false);
 		log.debug("Read got operation {}", operation);
 		if (operation == null) {
 			return true;
@@ -146,14 +152,32 @@ public class ViewComponent {
 		switch (operation) {
 			case OPERATION_EXIT:
 				return true;
-			case OPERATION_REPAINT:
-				// size.copy(terminal.getSize());
-				// display.clear();
+			case OPERATION_MOUSE_EVENT:
+				mouseEvent();
 				break;
+			// case OPERATION_REPAINT:
+			// 	// size.copy(terminal.getSize());
+			// 	// display.clear();
+			// 	break;
 
 		}
 
 		return false;
 	}
+
+    void mouseEvent() {
+        MouseEvent event = terminal.readMouseEvent();
+		log.info("MOUSE: {}", event);
+        // if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+        //         && event.getButton() == MouseEvent.Button.Button1) {
+        //     int x = event.getX();
+        //     int y = event.getY();
+        // }
+        // else if (event.getType() == MouseEvent.Type.Wheel) {
+        //     if (event.getButton() == MouseEvent.Button.WheelDown) {
+        //     } else if (event.getButton() == MouseEvent.Button.WheelUp) {
+        //     }
+        // }
+    }
 
 }
