@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.jline.utils.AttributedString;
 
+import org.springframework.shell.component.xxx.View.Dimension;
 import org.springframework.util.Assert;
 
 /**
@@ -29,17 +30,17 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class VirtualDisplay {
+public class Screen {
 
 	private int rows = 0;
 	private int columns = 0;
 	private char[][] data;
 
-	public VirtualDisplay() {
+	public Screen() {
 		this(0, 0);
 	}
 
-	public VirtualDisplay(int rows, int columns) {
+	public Screen(int rows, int columns) {
 		resize(rows, columns);
 	}
 
@@ -49,6 +50,10 @@ public class VirtualDisplay {
 		this.rows = rows;
 		this.columns = columns;
 		reset();
+	}
+
+	public Dimension getSize() {
+		return new Dimension(columns, rows);
 	}
 
 	public void reset() {

@@ -30,7 +30,7 @@ public abstract class AbstractView implements View {
 	private int width = 0;
 	private int height = 0;
 	private Consumer<String> inputConsumer;
-	private BiFunction<VirtualDisplay, Rectangle, Rectangle> drawFunction;
+	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -46,8 +46,13 @@ public abstract class AbstractView implements View {
 	}
 
 	@Override
-	public final void draw(VirtualDisplay display) {
-		drawInternal(display);
+	public final void draw(Screen screen) {
+		drawInternal(screen);
+	}
+
+	@Override
+	public boolean hasFocus() {
+		return false;
 	}
 
 	@Override
@@ -60,14 +65,26 @@ public abstract class AbstractView implements View {
 		return inputConsumer;
 	}
 
-	public void setDrawFunction(BiFunction<VirtualDisplay, Rectangle, Rectangle> drawFunction) {
+	/**
+	 * Sets a callback function which is invoked after a {@link View} has been
+	 * drawn.
+	 *
+	 * @param drawFunction the draw function
+	 */
+	public void setDrawFunction(BiFunction<Screen, Rectangle, Rectangle> drawFunction) {
 		this.drawFunction = drawFunction;
 	}
 
-	public BiFunction<VirtualDisplay, Rectangle, Rectangle> getDrawFunction() {
+	/**
+	 * Gets a draw function.
+	 *
+	 * @return null if function is not set
+	 * @see #setDrawFunction(BiFunction)
+	 */
+	public BiFunction<Screen, Rectangle, Rectangle> getDrawFunction() {
 		return drawFunction;
 	}
 
-	protected void drawInternal(VirtualDisplay display) {
+	protected void drawInternal(Screen screen) {
 	}
 }

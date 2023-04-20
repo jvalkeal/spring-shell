@@ -24,14 +24,14 @@ class VirtualDisplayTests {
 
 	@Test
 	void zeroDataSizeDoesntBreak() {
-		VirtualDisplay display = new VirtualDisplay();
+		Screen display = new Screen();
 		assertThat(display.getData()).isEmpty();
 		assertThat(display.getScreenLines()).isEmpty();
 	}
 
 	@Test
 	void cantResizeNegative() {
-		VirtualDisplay display = new VirtualDisplay();
+		Screen display = new Screen();
 		assertThatThrownBy(() -> {
 			display.resize(-1, 0);
 		}).hasMessageContaining("negative rows");
@@ -42,7 +42,7 @@ class VirtualDisplayTests {
 
 	@Test
 	void printInBoxShows() {
-		VirtualDisplay display = new VirtualDisplay(1, 10);
+		Screen display = new Screen(1, 10);
 		display.print("test", 0, 0, 4);
 		char[][] data = display.getData();
 		String line = new String(data[0]);

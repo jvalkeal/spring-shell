@@ -28,7 +28,7 @@ public class BoxView extends AbstractView {
 
 	private String title = null;
 	private boolean showBorder = false;
-	private int innerX;
+	private int innerX = -1;
 	private int innerY;
 	private int innerWidth;
 	private int innerHeight;
@@ -51,6 +51,12 @@ public class BoxView extends AbstractView {
 		this.paddingLeft = paddingLeft;
 		this.paddingRight = paddingRight;
 		return this;
+	}
+
+	@Override
+	public void setRect(int x, int y, int width, int height) {
+		this.innerX = -1;
+		super.setRect(x, y, width, height);
 	}
 
 	/**
@@ -77,7 +83,7 @@ public class BoxView extends AbstractView {
 		this.title = title;
 	}
 
-	protected void drawInternal(VirtualDisplay display) {
+	protected void drawInternal(Screen screen) {
 		Rectangle rect = getRect();
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
@@ -86,27 +92,27 @@ public class BoxView extends AbstractView {
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 
 			for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
-				display.setContent(i, rect.y(), '─');
-				display.setContent(i, rect.y() + rect.height() - 1, '─');
+				screen.setContent(i, rect.y(), '─');
+				screen.setContent(i, rect.y() + rect.height() - 1, '─');
 			}
 
 			for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
-				display.setContent(rect.x(), i, '│');
-				display.setContent(rect.x() + rect.width() - 1, i, '│');
+				screen.setContent(rect.x(), i, '│');
+				screen.setContent(rect.x() + rect.width() - 1, i, '│');
 			}
 
-			display.setContent(rect.x(), rect.y(), '┌');
-			display.setContent(rect.x() + rect.width() - 1, rect.y(), '┐');
-			display.setContent(rect.x(), rect.y() + rect.height() - 1, '└');
-			display.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, '┘');
+			screen.setContent(rect.x(), rect.y(), '┌');
+			screen.setContent(rect.x() + rect.width() - 1, rect.y(), '┐');
+			screen.setContent(rect.x(), rect.y() + rect.height() - 1, '└');
+			screen.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, '┘');
 
 			if (StringUtils.hasText(title)) {
-				display.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
+				screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
 			}
 		}
 
 		if (getDrawFunction() != null) {
-			Rectangle r = getDrawFunction().apply(display, rect);
+			Rectangle r = getDrawFunction().apply(screen, rect);
 			innerX = r.x();
 			innerY = r.y();
 			innerWidth = r.width();

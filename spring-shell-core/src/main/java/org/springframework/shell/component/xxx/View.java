@@ -19,19 +19,19 @@ import java.util.function.Consumer;
 
 /**
  * {@code View} is an interface representing something what can be drawn into
- * a {@link VirtualDisplay} within its bounds.
+ * a {@link Screen} within its bounds.
  *
  * @author Janne Valkealahti
  */
 public interface View {
 
 	/**
-	 * Draw view into {@link VirtualDisplay}. This is a main access point to draw
+	 * Draw view into {@link Screen}. This is a main access point to draw
 	 * visible things in a screen.
 	 *
-	 * @param display the virtual display
+	 * @param screen the screen
 	 */
-	void draw(VirtualDisplay display);
+	void draw(Screen screen);
 
 	/**
 	 * Sets bounded box where this {@link View} should operate.
@@ -49,6 +49,8 @@ public interface View {
 	 * @return the rectanle of a bounded box
 	 */
 	Rectangle getRect();
+
+	boolean hasFocus();
 
 	/**
 	 * Sets an input consumer for an {@code operation}.
@@ -69,5 +71,11 @@ public interface View {
 	 * and {@code height}.
 	 */
 	record Rectangle(int x, int y, int width, int height) {
+	};
+
+	/**
+	 * Record representing dimensions {@code width} and {@code height}.
+	 */
+	record Dimension(int width, int height) {
 	};
 }
