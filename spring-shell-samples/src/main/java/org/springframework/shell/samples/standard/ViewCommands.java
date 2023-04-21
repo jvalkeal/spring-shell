@@ -49,15 +49,22 @@ public class ViewCommands extends AbstractShellComponent {
 		ViewComponent component = new ViewComponent(getTerminal());
 
 		BoxView menu = new BoxView();
-		menu.setTitle("Menu");
-		menu.setShowBorder(true);
+		// menu.setTitle("Menu");
+		// menu.setShowBorder(true);
+
+		// menu.setDrawFunction((display, rect) -> {
+		// 	display.print("Hi", rect.x(), rect.y(), 2);
+		// 	return rect;
+		// });
+
 
 		GridView grid = new GridView();
 		grid.setTitle("Grid");
-		grid.setShowBorder(true);
+		// grid.setShowBorder(true);
+		grid.borders = true;
 
-		grid.setRowSize(1);
-		grid.setColumnSize(1);
+		grid.setRowSize(0);
+		grid.setColumnSize(0);
 		grid.setShowBorder(true);
 		grid.addItem(menu, 0, 0, 1, 1, 0, 0);
 		component.setRoot(grid, true);
@@ -69,35 +76,36 @@ public class ViewCommands extends AbstractShellComponent {
 		ViewComponent component = new ViewComponent(getTerminal());
 
 		BoxView menu = new BoxView();
-		menu.setTitle("Menu");
-		menu.setShowBorder(true);
+		// menu.setTitle("Menu");
+		// menu.setShowBorder(true);
 
 		BoxView main = new BoxView();
-		main.setTitle("Main content");
-		main.setShowBorder(true);
+		// main.setTitle("Main content");
+		// main.setShowBorder(true);
 
 		BoxView sideBar = new BoxView();
-		sideBar.setTitle("Side Bar");
-		sideBar.setShowBorder(true);
+		// sideBar.setTitle("Side Bar");
+		// sideBar.setShowBorder(true);
 
 		BoxView header = new BoxView();
-		header.setTitle("Header");
-		header.setShowBorder(true);
+		// header.setTitle("Header");
+		// header.setShowBorder(true);
 
 		BoxView footer = new BoxView();
-		footer.setTitle("Footer");
-		footer.setShowBorder(true);
+		// footer.setTitle("Footer");
+		// footer.setShowBorder(true);
 
 		GridView grid = new GridView();
 		grid.setRowSize(3, 0, 3);
 		grid.setColumnSize(30, 0, 30);
-		grid.setShowBorder(true);
+		// grid.setShowBorder(true);
+		grid.borders = true;
 		grid.addItem(header, 0, 0, 1, 3, 0, 0);
 		grid.addItem(footer, 2, 0, 1, 3, 0, 0);
 
-		grid.addItem(menu, 0, 0, 0, 0, 0, 0);
-		grid.addItem(main, 1, 0, 1, 3, 0, 0);
-		grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
+		// grid.addItem(menu, 0, 0, 0, 0, 0, 0);
+		// grid.addItem(main, 1, 0, 1, 3, 0, 0);
+		// grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
 
 		grid.addItem(menu, 1, 0, 1, 1, 0, 100);
 		grid.addItem(main, 1, 1, 1, 1, 0, 100);

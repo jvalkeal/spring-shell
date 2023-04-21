@@ -36,9 +36,10 @@ class GridViewTests {
 		menu.setShowBorder(true);
 
 		GridView grid = new GridView();
+		grid.borders = true;
 		grid.setRowSize(1);
 		grid.setColumnSize(1);
-		grid.setShowBorder(true);
+		// grid.setShowBorder(true);
 		grid.addItem(menu, 0, 0, 1, 1, 0, 0);
 		grid.setRect(0, 0, 80, 24);
 		grid.draw(display);
