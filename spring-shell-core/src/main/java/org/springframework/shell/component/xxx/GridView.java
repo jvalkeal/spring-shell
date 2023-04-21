@@ -16,6 +16,8 @@
 package org.springframework.shell.component.xxx;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class GridView extends BoxView {
 	private int gapColumns;
 	private int rowOffset;
 	private int columnOffset;
-	private boolean borders;
+	public boolean borders;
 
 	public GridView setColumnSize(int... columns) {
 		this.columnSize = columns;
@@ -64,7 +66,6 @@ public class GridView extends BoxView {
 
 	@Override
 	protected void drawInternal(Screen screen) {
-		super.drawInternal(screen);
 		Rectangle rect = getInnerRect();
 		int x = rect.x();
 		int y = rect.y();
@@ -141,10 +142,14 @@ public class GridView extends BoxView {
 	// columnPos := make([]int, columns)
 	// columnWidth := make([]int, columns)
 
-		int[] rowPos = new int[rows];
-		int[] rowHeight = new int[rows];
-		int[] columnPos = new int[columns];
-		int[] columnWidth = new int[columns];
+		// int[] rowPos = new int[rows];
+		// int[] rowHeight = new int[rows];
+		// int[] columnPos = new int[columns];
+		// int[] columnWidth = new int[columns];
+		int[] rowPos = new int[rowSize.length];
+		int[] rowHeight = new int[rowSize.length];
+		int[] columnPos = new int[columnSize.length];
+		int[] columnWidth = new int[columnSize.length];
 
 	// // How much space do we distribute?
 	// remainingWidth := width
@@ -314,28 +319,28 @@ public class GridView extends BoxView {
 	// 	columnWidth[index] = columnAbs
 	// }
 
-	for (int index = 0; index < columns; index++) {
-		int column = 0;
-		if (index < this.columnSize.length) {
-			column = this.columnSize[index];
+		for (int index = 0; index < columns; index++) {
+			int column = 0;
+			if (index < this.columnSize.length) {
+				column = this.columnSize[index];
+			}
+			if (column > 0) {
+				continue;
+			}
+			else if (column == 0) {
+				column = 1;
+			}
+			else {
+				column = -column;
+			}
+			int columnAbs = column * remainingWidth / proportionalWidth;
+			remainingWidth -= columnAbs;
+			proportionalWidth -= column;
+			if (columnAbs < this.minWidth) {
+				columnAbs = this.minWidth;
+			}
+			columnWidth[index] = columnAbs;
 		}
-		if (column > 0) {
-			continue;
-		}
-		else if (column == 0) {
-			column = 1;
-		}
-		else {
-			column = -column;
-		}
-		int columnAbs = column * remainingWidth / proportionalWidth;
-		remainingWidth -= columnAbs;
-		proportionalWidth -= column;
-		if (columnAbs < this.minWidth) {
-			columnAbs = this.minWidth;
-		}
-		columnWidth[index] = columnAbs;
-	}
 
 	// // Calculate row/column positions.
 	// var columnX, rowY int
@@ -436,9 +441,9 @@ public class GridView extends BoxView {
 			item.w = pw;
 			item.h = ph;
 			item.visible = true;
-			if (primitive.hasFocus()) {
-				focus = item;
-			}
+			// if (primitive.hasFocus()) {
+			// 	focus = item;
+			// }
 		}
 
 	// // Calculate screen offsets.
@@ -530,20 +535,20 @@ public class GridView extends BoxView {
 	// 	}
 	// }
 
-		if (focus != null) {
-			if (focus.y + focus.h - offsetY >= height) {
-				offsetY = focus.y - height + focus.h;
-			}
-			if (focus.y - offsetY < 0) {
-				offsetY = focus.y;
-			}
-			if (focus.x + focus.w - offsetX >= width) {
-				offsetX = focus.x - width + focus.w;
-			}
-			if (focus.x - offsetX < 0) {
-				offsetX = focus.x;
-			}
-		}
+		// if (focus != null) {
+		// 	if (focus.y + focus.h - offsetY >= height) {
+		// 		offsetY = focus.y - height + focus.h;
+		// 	}
+		// 	if (focus.y - offsetY < 0) {
+		// 		offsetY = focus.y;
+		// 	}
+		// 	if (focus.x + focus.w - offsetX >= width) {
+		// 		offsetX = focus.x - width + focus.w;
+		// 	}
+		// 	if (focus.x - offsetX < 0) {
+		// 		offsetX = focus.x;
+		// 	}
+		// }
 
 	// // Adjust row/column offsets based on this value.
 	// var from, to int
@@ -672,6 +677,7 @@ public class GridView extends BoxView {
 				item.x = 0;
 			}
 			if (item.y < 0) {
+				item.h += item.y;
 				item.y = 0;
 			}
 			if (item.w <= 0 || item.h <= 0) {
@@ -696,6 +702,8 @@ public class GridView extends BoxView {
 
 	// 	// Draw border around primitive.
 	// 	if g.borders {
+			if (this.borders) {
+
 	// 		for bx := item.x; bx < item.x+item.w; bx++ { // Top/bottom lines.
 	// 			if bx < 0 || bx >= screenWidth {
 	// 				continue
@@ -709,6 +717,19 @@ public class GridView extends BoxView {
 	// 				PrintJoinedSemigraphics(screen, bx, by, Borders.Horizontal, borderStyle)
 	// 			}
 	// 		}
+				for (int bx = item.x; bx < item.x + item.w; bx++) {
+					if (bx < 0 || bx >= screenWidth) {
+						continue;
+					}
+					int by = item.y - 1;
+					if (by >= 0 && by < screenHeight) {
+						printJoinedSemigraphics(screen, bx, by, '-');
+					}
+					by = item.y + item.h;
+					if (by >= 0 && by < screenHeight) {
+						printJoinedSemigraphics(screen, bx, by, '-');
+					}
+				}
 	// 		for by := item.y; by < item.y+item.h; by++ { // Left/right lines.
 	// 			if by < 0 || by >= screenHeight {
 	// 				continue
@@ -722,6 +743,20 @@ public class GridView extends BoxView {
 	// 				PrintJoinedSemigraphics(screen, bx, by, Borders.Vertical, borderStyle)
 	// 			}
 	// 		}
+				for (int by = item.y; by < item.y + item.h; by++) {
+					if (by < 0 || by >= screenHeight) {
+						continue;
+					}
+					int bx = item.x - 1;
+					if (bx >= 0 && bx < screenWidth) {
+						printJoinedSemigraphics(screen, bx, by, '|');
+					}
+					bx = item.x + item.w;
+					if (bx >= 0 && bx < screenWidth) {
+						printJoinedSemigraphics(screen, bx, by, '|');
+					}
+				}
+
 	// 		bx, by := item.x-1, item.y-1 // Top-left corner.
 	// 		if bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight {
 	// 			PrintJoinedSemigraphics(screen, bx, by, Borders.TopLeft, borderStyle)
@@ -738,15 +773,39 @@ public class GridView extends BoxView {
 	// 		if bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight {
 	// 			PrintJoinedSemigraphics(screen, bx, by, Borders.BottomRight, borderStyle)
 	// 		}
+				int bx = item.x - 1;
+				int by = item.y - 1;
+				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
+					printJoinedSemigraphics(screen, bx, by, '┌');
+				}
+				bx = item.x + item.w;
+				by = item.y - 1;
+				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
+					printJoinedSemigraphics(screen, bx, by, '┐');
+				}
+				bx = item.x - 1;
+				by = item.y + item.h;
+				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
+					printJoinedSemigraphics(screen, bx, by, '└');
+				}
+				bx = item.x + item.w;
+				by = item.y + item.h;
+				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
+					printJoinedSemigraphics(screen, bx, by, '┘');
+				}
 	// 	}
 	// }
+			}
 
 		}
 
-
 	}
 
-	private static class GridItemx {
+	void printJoinedSemigraphics(Screen screen, int x, int y, char c) {
+		screen.setContent(x, y, c);
+	}
+
+	private static class GridItemx implements Comparable<GridItemx> {
 		View view;
 		int row;
 		int column;
@@ -767,6 +826,15 @@ public class GridView extends BoxView {
 			this.minGridHeight = minGridHeight;
 			this.minGridWidth = minGridWidth;
 			this.visible = visible;
+		}
+
+		@Override
+		public int compareTo(GridItemx o) {
+			int compare = Integer.compare(row, o.row);
+			if (compare == 0) {
+				return Integer.compare(column, o.column);
+			}
+			return compare;
 		}
 	}
 
