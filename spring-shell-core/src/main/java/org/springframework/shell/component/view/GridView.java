@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.shell.component.xxx.Screen.ScreenItem;
+import org.springframework.shell.component.view.Screen.ScreenItem;
 
 /**
  * {@code GridView} is a layout container with no initial {@link View views}.

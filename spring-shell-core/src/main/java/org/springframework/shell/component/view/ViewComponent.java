@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -62,6 +62,7 @@ public class ViewComponent {
 
 	public void setRoot(View root, boolean fullScreen) {
 		this.rootView = root;
+		this.rootView.focus();
 	}
 
 	public void redraw() {

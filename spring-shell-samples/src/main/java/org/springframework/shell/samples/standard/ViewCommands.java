@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.shell.command.annotation.Command;
-import org.springframework.shell.component.xxx.BoxView;
-import org.springframework.shell.component.xxx.GridView;
-import org.springframework.shell.component.xxx.ViewComponent;
+import org.springframework.shell.component.view.BoxView;
+import org.springframework.shell.component.view.GridView;
+import org.springframework.shell.component.view.ViewComponent;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 @Command(command = "view")

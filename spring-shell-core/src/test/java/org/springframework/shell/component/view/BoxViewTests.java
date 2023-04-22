@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.component.view.BoxView;
+import org.springframework.shell.component.view.Screen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
