@@ -39,9 +39,9 @@ import org.springframework.util.Assert;
 import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
 
-public class ViewComponent {
+public class ViewHandler {
 
-	private final static Logger log = LoggerFactory.getLogger(ViewComponent.class);
+	private final static Logger log = LoggerFactory.getLogger(ViewHandler.class);
 	public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REPAINT = "REPAINT";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
@@ -54,7 +54,7 @@ public class ViewComponent {
 	private Size size;
 	private View rootView;
 
-	public ViewComponent(Terminal terminal) {
+	public ViewHandler(Terminal terminal) {
 		Assert.notNull(terminal, "terminal must be set");
 		this.terminal = terminal;
 		this.bindingReader = new BindingReader(terminal.reader());

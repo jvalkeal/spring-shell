@@ -25,7 +25,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.ViewComponent;
+import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 @Command(command = "view")
@@ -36,7 +36,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "box")
 	public void box() {
-		ViewComponent component = new ViewComponent(getTerminal());
+		ViewHandler component = new ViewHandler(getTerminal());
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
@@ -46,7 +46,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "grid")
 	public void grid() {
-		ViewComponent component = new ViewComponent(getTerminal());
+		ViewHandler component = new ViewHandler(getTerminal());
 
 		BoxView menu = new BoxView();
 		// menu.setTitle("Menu");
