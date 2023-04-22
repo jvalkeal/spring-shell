@@ -32,7 +32,7 @@ import java.util.Map.Entry;
  */
 public class GridView extends BoxView {
 
-	private List<GridItemx> gridItems = new ArrayList<>();
+	private List<GridItem> gridItems = new ArrayList<>();
 	private int[] columnSize;
 	private int[] rowSize;
 	private int minWidth;
@@ -55,7 +55,7 @@ public class GridView extends BoxView {
 
 	public GridView addItem(View view, int row, int column, int rowSpan, int colSpan, int minGridHeight,
 			int minGridWidth) {
-		GridItemx gridItem = new GridItemx(view, row, column, colSpan, rowSpan, minGridHeight,
+		GridItem gridItem = new GridItem(view, row, column, colSpan, rowSpan, minGridHeight,
 				minGridWidth, false);
 		gridItems.add(gridItem);
 		return this;
@@ -72,13 +72,13 @@ public class GridView extends BoxView {
 		int screenWidth = size.width();
 		int screenHeight = size.height();
 
-		Map<View, GridItemx> items = new HashMap<>();
-		for (GridItemx item : gridItems) {
+		Map<View, GridItem> items = new HashMap<>();
+		for (GridItem item : gridItems) {
 			item.visible = false;
 			if (item.width <= 0 || item.height <= 0 || width < item.minGridWidth || height < item.minGridHeight) {
 				continue;
 			}
-			GridItemx previousItem = items.get(item.view);
+			GridItem previousItem = items.get(item.view);
 			if (previousItem != null && item.minGridWidth < previousItem.minGridWidth
 					&& item.minGridHeight < previousItem.minGridHeight) {
 				continue;
@@ -88,7 +88,7 @@ public class GridView extends BoxView {
 
 		int rows = rowSize.length;
 		int columns = columnSize.length;
-		for (GridItemx item : items.values()) {
+		for (GridItem item : items.values()) {
 			int rowEnd = item.row + item.height;
 			if (rowEnd > rows) {
 				rows = rowEnd;
@@ -239,10 +239,10 @@ public class GridView extends BoxView {
 		}
 
 		// Calculate primitive positions.
-		GridItemx focus = null;
-		for (Entry<View, GridItemx> entry : items.entrySet()) {
+		GridItem focus = null;
+		for (Entry<View, GridItem> entry : items.entrySet()) {
 			View primitive = entry.getKey();
-			GridItemx item = entry.getValue();
+			GridItem item = entry.getValue();
 			int px = columnPos[item.column];
 			int py = rowPos[item.row];
 			int pw = 0, ph = 0;
@@ -363,9 +363,9 @@ public class GridView extends BoxView {
 		}
 
 		// Draw primitives and borders.
-		for (Entry<View, GridItemx> entry : items.entrySet()) {
+		for (Entry<View, GridItem> entry : items.entrySet()) {
 			View primitive = entry.getKey();
-			GridItemx item = entry.getValue();
+			GridItem item = entry.getValue();
 
 			// Final primitive position.
 			if (!item.visible) {
@@ -468,7 +468,7 @@ public class GridView extends BoxView {
 		screen.setContent(x, y, c);
 	}
 
-	private static class GridItemx {
+	private static class GridItem {
 		View view;
 		int row;
 		int column;
@@ -481,7 +481,7 @@ public class GridView extends BoxView {
 		// corner of the grid. Undefined if visible is false.
 		int x, y, w, h;
 
-		GridItemx(View view, int row, int column, int width, int height, int minGridHeight, int minGridWidth,
+		GridItem(View view, int row, int column, int width, int height, int minGridHeight, int minGridWidth,
 				boolean visible) {
 			this.view = view;
 			this.row = row;
