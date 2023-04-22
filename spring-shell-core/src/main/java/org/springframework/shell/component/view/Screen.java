@@ -26,9 +26,9 @@ import org.springframework.shell.component.view.View.Dimension;
 import org.springframework.util.Assert;
 
 /**
- * {@code VirtualScreen} is a buffer bound by size of rows and columns where
- * arbitraty data can be written before it is translated to more meaninful
- * representation used in a shell.
+ * {@code Screen} is a buffer bound by size of rows and columns where arbitraty
+ * data can be written before it is translated to more meaninful representation
+ * used in a shell.
  *
  * @author Janne Valkealahti
  */
@@ -36,12 +36,7 @@ public class Screen {
 
 	private int rows = 0;
 	private int columns = 0;
-	private char[][] data;
-
 	private ScreenItem[][] content;
-
-	public record ScreenItem(CharSequence content, AttributedStyle style) {
-	}
 
 	public Screen() {
 		this(0, 0);
@@ -64,12 +59,6 @@ public class Screen {
 	}
 
 	public void reset() {
-		this.data = new char[rows][columns];
-		for (int i = 0; i < data.length; i++) {
-			for (int j = 0; j < data[i].length; j++) {
-				data[i][j] = ' ';
-			}
-		}
 		this.content = new ScreenItem[rows][columns];
 		for (int i = 0; i < content.length; i++) {
 			for (int j = 0; j < content[i].length; j++) {
@@ -78,16 +67,8 @@ public class Screen {
 		}
 	}
 
-	public void setContent(int x, int y, char c) {
-		data[y][x] = c;
-	}
-
-	public void setContent2(int x, int y, ScreenItem item) {
+	public void setContent(int x, int y, ScreenItem item) {
 		content[y][x] = item;
-	}
-
-	public char[][] getData() {
-		return data;
 	}
 
 	public ScreenItem[][] getContent() {
@@ -97,26 +78,11 @@ public class Screen {
 	public void print(String text, int x, int y, int width) {
 		for (int i = 0; i < text.length() && i < width; i++) {
 			char c = text.charAt(i);
-			setContent(x + i, y, c);
-		}
-	}
-
-	public void print2(String text, int x, int y, int width) {
-		for (int i = 0; i < text.length() && i < width; i++) {
-			char c = text.charAt(i);
-			setContent2(x + i, y, new ScreenItem(new String(new char[] { c }), null));
+			setContent(x + i, y, new ScreenItem(new String(new char[] { c }), null));
 		}
 	}
 
 	public List<AttributedString> getScreenLines() {
-		List<AttributedString> newLines = new ArrayList<>();
-		for (int i = 0; i < data.length; i++) {
-			newLines.add(new AttributedString(new String(data[i])));
-		}
-		return newLines;
-	}
-
-	public List<AttributedString> getScreenLines2() {
 		List<AttributedString> newLines = new ArrayList<>();
 		for (int i = 0; i < content.length; i++) {
 			AttributedStringBuilder builder = new AttributedStringBuilder();
@@ -132,5 +98,8 @@ public class Screen {
 			newLines.add(builder.toAttributedString());
 		}
 		return newLines;
+	}
+
+	public record ScreenItem(CharSequence content, AttributedStyle style) {
 	}
 }

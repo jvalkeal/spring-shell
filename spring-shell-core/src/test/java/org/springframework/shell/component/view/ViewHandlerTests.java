@@ -15,22 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import org.assertj.core.api.AssertProvider;
-import org.junit.jupiter.api.Test;
+class ViewHandlerTests {
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
-class ScreenAssertTests {
-
-	@Test
-	void shouldThrowWithInvalidBounds() {
-		Screen screen = new Screen(5, 5);
-		assertThatExceptionOfType(AssertionError.class)
-			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 0, 0));
-	}
-
-	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
-		return () -> new ScreenAssert(screen);
-	}
 }
