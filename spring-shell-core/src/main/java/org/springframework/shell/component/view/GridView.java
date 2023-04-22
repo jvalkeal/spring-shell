@@ -467,8 +467,7 @@ public class GridView extends BoxView {
 	}
 
 	void printJoinedSemigraphics(Screen screen, int x, int y, char c) {
-		screen.setContent(x, y, c);
-		screen.setContent2(x, y, new ScreenItem(new String(new char[]{c}), null));
+		screen.setContent(x, y, new ScreenItem(new String(new char[]{c}), null));
 	}
 
 	private static class GridItem {

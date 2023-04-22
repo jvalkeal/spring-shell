@@ -39,6 +39,11 @@ import org.springframework.util.Assert;
 import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
 
+/**
+ * Component handling {@link View} structures.
+ *
+ * @author Janne Valkealahti
+ */
 public class ViewHandler {
 
 	private final static Logger log = LoggerFactory.getLogger(ViewHandler.class);
@@ -100,7 +105,7 @@ public class ViewHandler {
 		virtualDisplay.resize(size.getRows(), size.getColumns());
 		render(size.getRows(), size.getColumns());
 		// List<AttributedString> newLines = virtualDisplay.getScreenLines();
-		List<AttributedString> newLines = virtualDisplay.getScreenLines2();
+		List<AttributedString> newLines = virtualDisplay.getScreenLines();
 		display.update(newLines, 0);
 	}
 
