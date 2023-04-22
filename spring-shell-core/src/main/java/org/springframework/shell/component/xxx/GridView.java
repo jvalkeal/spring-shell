@@ -58,7 +58,7 @@ public class GridView extends BoxView {
 
 	public GridView addItem(View view, int row, int column, int rowSpan, int colSpan, int minGridHeight,
 			int minGridWidth) {
-		GridItemx gridItem = new GridItemx(view, row, column, rowSpan, colSpan, minGridHeight,
+		GridItemx gridItem = new GridItemx(view, row, column, colSpan, rowSpan, minGridHeight,
 				minGridWidth, false);
 		gridItems.add(gridItem);
 		return this;
@@ -142,14 +142,14 @@ public class GridView extends BoxView {
 	// columnPos := make([]int, columns)
 	// columnWidth := make([]int, columns)
 
-		// int[] rowPos = new int[rows];
-		// int[] rowHeight = new int[rows];
-		// int[] columnPos = new int[columns];
-		// int[] columnWidth = new int[columns];
-		int[] rowPos = new int[rowSize.length];
-		int[] rowHeight = new int[rowSize.length];
-		int[] columnPos = new int[columnSize.length];
-		int[] columnWidth = new int[columnSize.length];
+		int[] rowPos = new int[rows];
+		int[] rowHeight = new int[rows];
+		int[] columnPos = new int[columns];
+		int[] columnWidth = new int[columns];
+		// int[] rowPos = new int[rowSize.length];
+		// int[] rowHeight = new int[rowSize.length];
+		// int[] columnPos = new int[columnSize.length];
+		// int[] columnWidth = new int[columnSize.length];
 
 	// // How much space do we distribute?
 	// remainingWidth := width
@@ -814,6 +814,8 @@ public class GridView extends BoxView {
 		int minGridHeight;
 		int minGridWidth;
 		boolean visible;
+		// The last position of the item relative to the top-left
+		// corner of the grid. Undefined if visible is false.
 		int x, y, w, h;
 
 		GridItemx(View view, int row, int column, int width, int height, int minGridHeight, int minGridWidth,
