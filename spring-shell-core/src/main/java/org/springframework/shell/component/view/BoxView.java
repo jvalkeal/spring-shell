@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import org.jline.utils.AttributedStyle;
 
-import org.springframework.shell.component.xxx.Screen.ScreenItem;
+import org.springframework.shell.component.view.Screen.ScreenItem;
 import org.springframework.util.StringUtils;
 
 /**

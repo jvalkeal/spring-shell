@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import org.assertj.core.api.AbstractAssert;
+
+import org.springframework.shell.component.view.Screen;
 
 /**
  * Asserts for {@link Screen}.

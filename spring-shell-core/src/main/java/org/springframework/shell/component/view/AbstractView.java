@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -48,6 +48,10 @@ public abstract class AbstractView implements View {
 	@Override
 	public final void draw(Screen screen) {
 		drawInternal(screen);
+	}
+
+	@Override
+	public void focus() {
 	}
 
 	@Override

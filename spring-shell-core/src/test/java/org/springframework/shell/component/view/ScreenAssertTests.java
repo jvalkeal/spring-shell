@@ -13,39 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.xxx;
+package org.springframework.shell.component.view;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.Screen;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-class GridViewTests {
-
-	private Screen display;
-
-	@BeforeEach
-	void setup() {
-		display = new Screen(24, 80);
-	}
+public class ScreenAssertTests {
 
 	@Test
-	void test1() {
-		BoxView menu = new BoxView();
-		menu.setTitle("Menu");
-		menu.setShowBorder(true);
-
-		GridView grid = new GridView();
-		grid.borders = true;
-		grid.setRowSize(1);
-		grid.setColumnSize(1);
-		// grid.setShowBorder(true);
-		grid.addItem(menu, 0, 0, 1, 1, 0, 0);
-		grid.setRect(0, 0, 80, 24);
-		grid.draw(display);
-
-		char[][] content = display.getData();
-		assertThat(content).isNotNull();
+	void shouldThrowWithInvalidBounds() {
+		Screen screen = new Screen(5, 5);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 0, 0));
 	}
 
+	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
+		return () -> new ScreenAssert(screen);
+	}
 }
