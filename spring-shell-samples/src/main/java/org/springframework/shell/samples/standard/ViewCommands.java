@@ -31,8 +31,8 @@ import org.springframework.shell.standard.AbstractShellComponent;
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
 
-	@Autowired
-	private TaskScheduler scheduler;
+	// @Autowired
+	// private TaskScheduler scheduler;
 
 	@Command(command = "box")
 	public void box() {
@@ -88,28 +88,28 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
-	@Command(command = { "demo", "clock" })
-	void demoClock() {
-		AtomicReference<String> data = new AtomicReference<>();
-		ViewComponent component = new ViewComponent(getTerminal());
-		BoxView box = new BoxView();
-		box.setTitle("Title");
-		box.setShowBorder(true);
-		box.setDrawFunction((display, rect) -> {
-			String text = data.get();
-			if (text != null) {
-				display.print(text, rect.x(), rect.y(), text.length());
-			}
-			return rect;
-		});
-		component.setRoot(box, true);
+	// @Command(command = { "demo", "clock" })
+	// void demoClock() {
+	// 	AtomicReference<String> data = new AtomicReference<>();
+	// 	ViewComponent component = new ViewComponent(getTerminal());
+	// 	BoxView box = new BoxView();
+	// 	box.setTitle("Title");
+	// 	box.setShowBorder(true);
+	// 	box.setDrawFunction((display, rect) -> {
+	// 		String text = data.get();
+	// 		if (text != null) {
+	// 			display.print(text, rect.x(), rect.y(), text.length());
+	// 		}
+	// 		return rect;
+	// 	});
+	// 	component.setRoot(box, true);
 
-		ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(() -> {
-			data.set(new Date().toString());
-			component.redraw();
-		}, Duration.ofSeconds(1));
+	// 	ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(() -> {
+	// 		data.set(new Date().toString());
+	// 		component.redraw();
+	// 	}, Duration.ofSeconds(1));
 
-		component.run();
-		task.cancel(true);
-	}
+	// 	component.run();
+	// 	task.cancel(true);
+	// }
 }
