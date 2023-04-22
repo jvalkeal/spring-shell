@@ -103,9 +103,9 @@ public class ViewCommands extends AbstractShellComponent {
 		grid.addItem(header, 0, 0, 1, 3, 0, 0);
 		grid.addItem(footer, 2, 0, 1, 3, 0, 0);
 
-		// grid.addItem(menu, 0, 0, 0, 0, 0, 0);
-		// grid.addItem(main, 1, 0, 1, 3, 0, 0);
-		// grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
+		grid.addItem(menu, 0, 0, 0, 0, 0, 0);
+		grid.addItem(main, 1, 0, 1, 3, 0, 0);
+		grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
 
 		grid.addItem(menu, 1, 0, 1, 1, 0, 100);
 		grid.addItem(main, 1, 1, 1, 1, 0, 100);
