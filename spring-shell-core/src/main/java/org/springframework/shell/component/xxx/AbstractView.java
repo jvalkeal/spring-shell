@@ -85,6 +85,5 @@ public abstract class AbstractView implements View {
 		return drawFunction;
 	}
 
-	protected void drawInternal(Screen screen) {
-	}
+	protected abstract void drawInternal(Screen screen);
 }

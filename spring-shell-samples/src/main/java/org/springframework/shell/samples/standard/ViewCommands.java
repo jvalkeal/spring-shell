@@ -44,33 +44,6 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
-	@Command(command = "gridx")
-	public void gridx() {
-		ViewComponent component = new ViewComponent(getTerminal());
-
-		BoxView menu = new BoxView();
-		// menu.setTitle("Menu");
-		// menu.setShowBorder(true);
-
-		// menu.setDrawFunction((display, rect) -> {
-		// 	display.print("Hi", rect.x(), rect.y(), 2);
-		// 	return rect;
-		// });
-
-
-		GridView grid = new GridView();
-		grid.setTitle("Grid");
-		// grid.setShowBorder(true);
-		grid.borders = true;
-
-		grid.setRowSize(0);
-		grid.setColumnSize(0);
-		grid.setShowBorder(true);
-		grid.addItem(menu, 0, 0, 1, 1, 0, 0);
-		component.setRoot(grid, true);
-		component.run();
-	}
-
 	@Command(command = "grid")
 	public void grid() {
 		ViewComponent component = new ViewComponent(getTerminal());
