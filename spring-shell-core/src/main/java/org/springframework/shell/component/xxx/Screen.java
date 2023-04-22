@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 import org.springframework.shell.component.xxx.View.Dimension;
 import org.springframework.util.Assert;
@@ -35,6 +37,11 @@ public class Screen {
 	private int rows = 0;
 	private int columns = 0;
 	private char[][] data;
+
+	private ScreenItem[][] content;
+
+	public record ScreenItem(CharSequence content, AttributedStyle style) {
+	}
 
 	public Screen() {
 		this(0, 0);
@@ -63,14 +70,28 @@ public class Screen {
 				data[i][j] = ' ';
 			}
 		}
+		this.content = new ScreenItem[rows][columns];
+		for (int i = 0; i < content.length; i++) {
+			for (int j = 0; j < content[i].length; j++) {
+				content[i][j] = null;
+			}
+		}
 	}
 
 	public void setContent(int x, int y, char c) {
 		data[y][x] = c;
 	}
 
+	public void setContent2(int x, int y, ScreenItem item) {
+		content[y][x] = item;
+	}
+
 	public char[][] getData() {
 		return data;
+	}
+
+	public ScreenItem[][] getContent() {
+		return content;
 	}
 
 	public void print(String text, int x, int y, int width) {
@@ -80,10 +101,35 @@ public class Screen {
 		}
 	}
 
+	public void print2(String text, int x, int y, int width) {
+		for (int i = 0; i < text.length() && i < width; i++) {
+			char c = text.charAt(i);
+			setContent2(x + i, y, new ScreenItem(new String(new char[] { c }), null));
+		}
+	}
+
 	public List<AttributedString> getScreenLines() {
 		List<AttributedString> newLines = new ArrayList<>();
 		for (int i = 0; i < data.length; i++) {
 			newLines.add(new AttributedString(new String(data[i])));
+		}
+		return newLines;
+	}
+
+	public List<AttributedString> getScreenLines2() {
+		List<AttributedString> newLines = new ArrayList<>();
+		for (int i = 0; i < content.length; i++) {
+			AttributedStringBuilder builder = new AttributedStringBuilder();
+			for (int j = 0; j < content[i].length; j++) {
+				ScreenItem item = content[i][j];
+				if (item != null) {
+					builder.append(content[i][j].content(), content[i][j].style());
+				}
+				else {
+					builder.append(' ');
+				}
+			}
+			newLines.add(builder.toAttributedString());
 		}
 		return newLines;
 	}

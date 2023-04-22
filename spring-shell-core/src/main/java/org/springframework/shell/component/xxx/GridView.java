@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.shell.component.xxx.Screen.ScreenItem;
+
 /**
  * {@code GridView} is a layout container with no initial {@link View views}.
  *
@@ -466,6 +468,7 @@ public class GridView extends BoxView {
 
 	void printJoinedSemigraphics(Screen screen, int x, int y, char c) {
 		screen.setContent(x, y, c);
+		screen.setContent2(x, y, new ScreenItem(new String(new char[]{c}), null));
 	}
 
 	private static class GridItem {

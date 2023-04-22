@@ -98,7 +98,8 @@ public class ViewComponent {
 		rootView.setRect(0, 0, size.getColumns(), size.getRows());
 		virtualDisplay.resize(size.getRows(), size.getColumns());
 		render(size.getRows(), size.getColumns());
-		List<AttributedString> newLines = virtualDisplay.getScreenLines();
+		// List<AttributedString> newLines = virtualDisplay.getScreenLines();
+		List<AttributedString> newLines = virtualDisplay.getScreenLines2();
 		display.update(newLines, 0);
 	}
 

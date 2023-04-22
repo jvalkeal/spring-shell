@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.component.xxx;
 
+import org.jline.utils.AttributedStyle;
+
+import org.springframework.shell.component.xxx.Screen.ScreenItem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -94,20 +97,29 @@ public class BoxView extends AbstractView {
 			for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
 				screen.setContent(i, rect.y(), '─');
 				screen.setContent(i, rect.y() + rect.height() - 1, '─');
+				screen.setContent2(i, rect.y(), new ScreenItem(new String(new char[] { '═' }), AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)));
+				screen.setContent2(i, rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '═' }), null));
 			}
 
 			for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
 				screen.setContent(rect.x(), i, '│');
 				screen.setContent(rect.x() + rect.width() - 1, i, '│');
+				screen.setContent2(rect.x(), i, new ScreenItem(new String(new char[] { '║' }), null));
+				screen.setContent2(rect.x() + rect.width() - 1, i, new ScreenItem(new String(new char[] { '║' }), null));
 			}
 
 			screen.setContent(rect.x(), rect.y(), '┌');
 			screen.setContent(rect.x() + rect.width() - 1, rect.y(), '┐');
 			screen.setContent(rect.x(), rect.y() + rect.height() - 1, '└');
 			screen.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, '┘');
+			screen.setContent2(rect.x(), rect.y(), new ScreenItem(new String(new char[] { '┌' }), null));
+			screen.setContent2(rect.x() + rect.width() - 1, rect.y(), new ScreenItem(new String(new char[] { '┐' }), null));
+			screen.setContent2(rect.x(), rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '└' }), null));
+			screen.setContent2(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '┘' }), null));
 
 			if (StringUtils.hasText(title)) {
 				screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
+				screen.print2(title, rect.x() + 1, rect.y(), rect.width() - 2);
 			}
 		}
 
