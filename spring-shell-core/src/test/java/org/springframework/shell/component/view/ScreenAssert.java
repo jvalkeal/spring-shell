@@ -18,6 +18,9 @@ package org.springframework.shell.component.view;
 import org.assertj.core.api.AbstractAssert;
 
 import org.springframework.shell.component.view.Screen;
+import org.springframework.shell.component.view.Screen.ScreenItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Asserts for {@link Screen}.
@@ -42,49 +45,64 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 	 */
 	public ScreenAssert hasBorder(int x, int y, int width, int height) {
 		isNotNull();
-		// char[][] content = actual.getData();
-		// checkBounds(content, x, y, width, height);
-		// char[][] borders = getBorders(content);
-		// char[] topBorder = borders[0];
-		// if (topBorder.length != width) {
-		// 	failWithMessage("Top Border size doesn't match");
-		// }
+		ScreenItem[][] content = actual.getContent();
+		checkBounds(content, x, y, width, height);
+		ScreenItem[][] borders = getBorders(content);
+		ScreenItem[] topBorder = borders[0];
+		ScreenItem[] rightBorder = borders[1];
+		ScreenItem[] bottomBorder = borders[2];
+		ScreenItem[] leftBorder = borders[3];
+		if (topBorder.length != width) {
+			failWithMessage("Top Border size doesn't match");
+		}
+		assertThat(topBorder).satisfies(b -> {
+			assertThat(b).isNotNull().allMatch(sc -> sc.getType() == Screen.Type.BORDER);
+		});
+		assertThat(rightBorder).satisfies(b -> {
+			assertThat(b).isNotNull().allMatch(sc -> sc.getType() == Screen.Type.BORDER);
+		});
+		assertThat(bottomBorder).satisfies(b -> {
+			assertThat(b).isNotNull().allMatch(sc -> sc.getType() == Screen.Type.BORDER);
+		});
+		assertThat(leftBorder).satisfies(b -> {
+			assertThat(b).isNotNull().allMatch(sc -> sc.getType() == Screen.Type.BORDER);
+		});
 		return this;
 	}
 
-	private char[][] getBorders(char[][] content) {
-		char[] topBorder = getTopBorder(content);
-		char[] rightBorder = getRightBorder(content);
-		char[] bottomBorder = getBottomBorder(content);
-		char[] leftBorder = getLeftBorder(content);
-		return new char[][] { topBorder, rightBorder, bottomBorder, leftBorder };
+	private ScreenItem[][] getBorders(ScreenItem[][] content) {
+		ScreenItem[] topBorder = getTopBorder(content);
+		ScreenItem[] rightBorder = getRightBorder(content);
+		ScreenItem[] bottomBorder = getBottomBorder(content);
+		ScreenItem[] leftBorder = getLeftBorder(content);
+		return new ScreenItem[][] { topBorder, rightBorder, bottomBorder, leftBorder };
 	}
 
-	private char[] getTopBorder(char[][] content) {
+	private ScreenItem[] getTopBorder(ScreenItem[][] content) {
 		return content[0];
 	}
 
-	private char[] getRightBorder(char[][] content) {
-		char[] array = new char[content[0].length];
+	private ScreenItem[] getRightBorder(ScreenItem[][] content) {
+		ScreenItem[] array = new ScreenItem[content[0].length];
 		for (int i = 0; i < content.length; i++) {
 			array[i] = content[i][content[i].length - 1];
 		}
 		return array;
 	}
 
-	private char[] getBottomBorder(char[][] content) {
+	private ScreenItem[] getBottomBorder(ScreenItem[][] content) {
 		return content[content.length - 1];
 	}
 
-	private char[] getLeftBorder(char[][] content) {
-		char[] array = new char[content[0].length];
+	private ScreenItem[] getLeftBorder(ScreenItem[][] content) {
+		ScreenItem[] array = new ScreenItem[content[0].length];
 		for (int i = 0; i < content.length; i++) {
 			array[i] = content[i][0];
 		}
 		return array;
 	}
 
-	private void checkBounds(char[][] content, int x, int y, int width, int height) {
+	private void checkBounds(ScreenItem[][] content, int x, int y, int width, int height) {
 		if (x < 0 || y < 0 || width < 1 || height < 1) {
 			failWithMessage("Can't assert with negative bounded rectangle, was x=%s y=%s width=%s height=%s", x, y,
 					width, height);
