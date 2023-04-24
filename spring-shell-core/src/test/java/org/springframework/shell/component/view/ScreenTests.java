@@ -15,15 +15,17 @@
  */
 package org.springframework.shell.component.view;
 
+import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.shell.component.view.Screen;
-import org.springframework.shell.component.view.Screen.ScreenItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ScreenTests {
+
+	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
+		return () -> new ScreenAssert(screen);
+	}
 
 	@Test
 	void zeroDataSizeDoesntBreak() {
@@ -45,15 +47,8 @@ class ScreenTests {
 
 	@Test
 	void printInBoxShows() {
-		// Screen display = new Screen(10, 10);
-		// display.printBorder(0, 0, 10, 10);
-
-		// display.print("test", 0, 0, 4);
-		// ScreenItem[][] content = display.getContent();
-
-		// display.print("test", 0, 0, 4);
-		// char[][] data = display.getData();
-		// String line = new String(data[0]);
-		// assertThat(line).contains("test");
+		Screen screen = new Screen(10, 10);
+		screen.printBorder(0, 0, 10, 10);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 10, 10);
 	}
 }

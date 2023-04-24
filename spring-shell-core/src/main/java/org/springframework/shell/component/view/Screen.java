@@ -33,6 +33,13 @@ import org.springframework.util.Assert;
  */
 public class Screen {
 
+	private static final int BORDER_LEFT = 1;
+	private static final int BORDER_TOP = 2;
+	private static final int BORDER_RIGHT = 4;
+	private static final int BORDER_BOTTOM = 8;
+	private static char[] BOX_CHARS = new char[] { ' ', '╴', '╵', '┌', '╶', '─', '┐', '┬', '╷', '└', '│', '├', '┘', '┴',
+			'┤', '┼' };
+
 	private int rows = 0;
 	private int columns = 0;
 	private ScreenItem[][] content;
@@ -82,13 +89,6 @@ public class Screen {
 		}
 	}
 
-	static int BORDER_LEFT = 1;
-	static int BORDER_TOP = 2;
-	static int BORDER_RIGHT = 4;
-	static int BORDER_BOTTOM = 8;
-
-	static char[] boxc = new char[] { ' ', '╴', '╵', '┌', '╶', '─', '┐', '┬', '╷', '└', '│', '├', '┘', '┴', '┤', '┼' };
-
 	public List<AttributedString> getScreenLines() {
 		List<AttributedString> newLines = new ArrayList<>();
 		for (int i = 0; i < content.length; i++) {
@@ -99,32 +99,8 @@ public class Screen {
 					if (item.type == Type.TEXT) {
 						builder.append(content[i][j].getContent(), content[i][j].getStyle());
 					}
-					// ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼
 					else if (item.type == Type.BORDER) {
-						builder.append(boxc[item.borderx]);
-						// if (item.border[0] == Border.HORIZONTAL && item.border[1] == Border.VERTICAL) {
-						// 	if (i == 0 && j == 0) {
-						// 		builder.append('┌');
-						// 	}
-						// 	else if (i == 0 && j == content[i].length - 1) {
-						// 		builder.append('┐');
-						// 	}
-						// 	else if (i == content.length - 1 && j == content[i].length - 1) {
-						// 		builder.append('┘');
-						// 	}
-						// 	else if (i == content.length - 1 && j == 0) {
-						// 		builder.append('└');
-						// 	}
-						// 	else {
-						// 		builder.append('┼');
-						// 	}
-						// }
-						// else if (item.border[0] == Border.HORIZONTAL) {
-						// 	builder.append('─');
-						// }
-						// else if (item.border[1] == Border.VERTICAL) {
-						// 	builder.append('│');
-						// }
+						builder.append(BOX_CHARS[item.getBorder()]);
 					}
 				}
 				else {
@@ -137,52 +113,40 @@ public class Screen {
 	}
 
 	public void printBorder(int x, int y, int width, int height) {
-		printBorderHorizontal(x, y, width, Border.HORIZONTAL);
-		printBorderHorizontal(x, y + height - 1, width, Border.HORIZONTAL);
-		printBorderVertical(x, y, height, Border.VERTICAL);
-		printBorderVertical(x + width - 1, y, height, Border.VERTICAL);
+		printBorderHorizontal(x, y, width);
+		printBorderHorizontal(x, y + height - 1, width);
+		printBorderVertical(x, y, height);
+		printBorderVertical(x + width - 1, y, height);
 	}
 
-	public void printBorderHorizontal(int x, int y, int width, Border border) {
+	public void printBorderHorizontal(int x, int y, int width) {
 		for (int i = x; i < x + width; i++) {
 			ScreenItem item = content[y][i];
 			if (item == null) {
 				item = ScreenItem.border();
 				content[y][i] = item;
 			}
-			item.border[0] = Border.HORIZONTAL;
-			if (i == x) {
-				item.borderx |= BORDER_LEFT;
+			if (i > x) {
+				item.addBorder(BORDER_RIGHT);
 			}
-			else if (i == x + width - 1) {
-				item.borderx |= BORDER_RIGHT;
-			}
-			else {
-				item.borderx |= BORDER_LEFT;
-				item.borderx |= BORDER_RIGHT;
+			if (i < x + width - 1) {
+				item.addBorder(BORDER_LEFT);
 			}
 		}
 	}
 
-	// ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼
-
-	public void printBorderVertical(int x, int y, int height, Border border) {
+	public void printBorderVertical(int x, int y, int height) {
 		for (int i = y; i < y + height; i++) {
 			ScreenItem item = content[i][x];
 			if (item == null) {
 				item = ScreenItem.border();
 				content[i][x] = item;
 			}
-			item.border[1] = Border.VERTICAL;
-			if (i == y) {
-				item.borderx |= BORDER_TOP;
+			if (i > y) {
+				item.addBorder(BORDER_BOTTOM);
 			}
-			else if (i == y + height - 1) {
-				item.borderx |= BORDER_BOTTOM;
-			}
-			else {
-				item.borderx |= BORDER_TOP;
-				item.borderx |= BORDER_BOTTOM;
+			if (i < y + height - 1) {
+				item.addBorder(BORDER_TOP);
 			}
 		}
 	}
@@ -195,28 +159,19 @@ public class Screen {
 		BORDER
 	}
 
-	public enum Border {
-		HORIZONTAL,
-		VERTICAL,
-		// TOPLEFT,
-		// TOPRIGHT,
-		// BOTTOMLEFT,
-		// BOTTOMRIGHT
-	}
-
 	public static class ScreenItem {
 
 		Type type;
 		CharSequence content;
 		AttributedStyle style;
-		Border[] border = new Border[2];
-		int borderx = 0;
+		private int border = 0;
 
 		public ScreenItem(Type type, CharSequence content, AttributedStyle style) {
 			this.type = type;
 			this.content = content;
 			this.style = style;
 		}
+
 		public static ScreenItem of(char c) {
 			return new ScreenItem(Type.TEXT, new String(new char[]{c}), null);
 		}
@@ -240,20 +195,17 @@ public class Screen {
 		public AttributedStyle getStyle() {
 			return style;
 		}
+
+		public int getBorder() {
+			return border;
+		}
+
+		public void setBorder(int border) {
+			this.border = border;
+		}
+
+		public void addBorder(int border) {
+			this.border |= border;
+		}
 	}
-
-	// public record ScreenItem(Type type, CharSequence content, AttributedStyle style) {
-
-	// 	public static ScreenItem of(char c) {
-	// 		return new ScreenItem(Type.TEXT, new String(new char[]{c}), null);
-	// 	}
-
-	// 	public static ScreenItem border() {
-	// 		return new ScreenItem(Type.BORDER, null, null);
-	// 	}
-
-	// 	public static ScreenItem of(CharSequence content) {
-	// 		return new ScreenItem(Type.TEXT, content, null);
-	// 	}
-	// }
 }
