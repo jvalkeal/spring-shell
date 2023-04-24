@@ -26,9 +26,8 @@ import org.springframework.shell.component.view.View.Dimension;
 import org.springframework.util.Assert;
 
 /**
- * {@code Screen} is a buffer bound by size of rows and columns where arbitraty
- * data can be written before it is translated to more meaninful representation
- * used in a shell.
+ * {@code Screen} represents a virtual area bounded by {@code rows} and {@code columns}.
+ * Think it as a shell screen you want to draw or write something.
  *
  * @author Janne Valkealahti
  */
@@ -60,9 +59,10 @@ public class Screen {
 
 	public void reset() {
 		this.content = new ScreenItem[rows][columns];
-		for (int i = 0; i < content.length; i++) {
-			for (int j = 0; j < content[i].length; j++) {
-				content[i][j] = null;
+		for (int i = 0; i < rows; i++) {
+			this.content[i] = new ScreenItem[columns];
+			for (int j = 0; j < columns; j++) {
+				this.content[i][j] = null;
 			}
 		}
 	}
@@ -78,9 +78,16 @@ public class Screen {
 	public void print(String text, int x, int y, int width) {
 		for (int i = 0; i < text.length() && i < width; i++) {
 			char c = text.charAt(i);
-			setContent(x + i, y, new ScreenItem(new String(new char[] { c }), null));
+			setContent(x + i, y, ScreenItem.of(c));
 		}
 	}
+
+	static int BORDER_LEFT = 1;
+	static int BORDER_TOP = 2;
+	static int BORDER_RIGHT = 4;
+	static int BORDER_BOTTOM = 8;
+
+	static char[] boxc = new char[] { ' ', '╴', '╵', '┌', '╶', '─', '┐', '┬', '╷', '└', '│', '├', '┘', '┴', '┤', '┼' };
 
 	public List<AttributedString> getScreenLines() {
 		List<AttributedString> newLines = new ArrayList<>();
@@ -89,7 +96,36 @@ public class Screen {
 			for (int j = 0; j < content[i].length; j++) {
 				ScreenItem item = content[i][j];
 				if (item != null) {
-					builder.append(content[i][j].content(), content[i][j].style());
+					if (item.type == Type.TEXT) {
+						builder.append(content[i][j].getContent(), content[i][j].getStyle());
+					}
+					// ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼
+					else if (item.type == Type.BORDER) {
+						builder.append(boxc[item.borderx]);
+						// if (item.border[0] == Border.HORIZONTAL && item.border[1] == Border.VERTICAL) {
+						// 	if (i == 0 && j == 0) {
+						// 		builder.append('┌');
+						// 	}
+						// 	else if (i == 0 && j == content[i].length - 1) {
+						// 		builder.append('┐');
+						// 	}
+						// 	else if (i == content.length - 1 && j == content[i].length - 1) {
+						// 		builder.append('┘');
+						// 	}
+						// 	else if (i == content.length - 1 && j == 0) {
+						// 		builder.append('└');
+						// 	}
+						// 	else {
+						// 		builder.append('┼');
+						// 	}
+						// }
+						// else if (item.border[0] == Border.HORIZONTAL) {
+						// 	builder.append('─');
+						// }
+						// else if (item.border[1] == Border.VERTICAL) {
+						// 	builder.append('│');
+						// }
+					}
 				}
 				else {
 					builder.append(' ');
@@ -100,6 +136,124 @@ public class Screen {
 		return newLines;
 	}
 
-	public record ScreenItem(CharSequence content, AttributedStyle style) {
+	public void printBorder(int x, int y, int width, int height) {
+		printBorderHorizontal(x, y, width, Border.HORIZONTAL);
+		printBorderHorizontal(x, y + height - 1, width, Border.HORIZONTAL);
+		printBorderVertical(x, y, height, Border.VERTICAL);
+		printBorderVertical(x + width - 1, y, height, Border.VERTICAL);
 	}
+
+	public void printBorderHorizontal(int x, int y, int width, Border border) {
+		for (int i = x; i < x + width; i++) {
+			ScreenItem item = content[y][i];
+			if (item == null) {
+				item = ScreenItem.border();
+				content[y][i] = item;
+			}
+			item.border[0] = Border.HORIZONTAL;
+			if (i == x) {
+				item.borderx |= BORDER_LEFT;
+			}
+			else if (i == x + width - 1) {
+				item.borderx |= BORDER_RIGHT;
+			}
+			else {
+				item.borderx |= BORDER_LEFT;
+				item.borderx |= BORDER_RIGHT;
+			}
+		}
+	}
+
+	// ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼
+
+	public void printBorderVertical(int x, int y, int height, Border border) {
+		for (int i = y; i < y + height; i++) {
+			ScreenItem item = content[i][x];
+			if (item == null) {
+				item = ScreenItem.border();
+				content[i][x] = item;
+			}
+			item.border[1] = Border.VERTICAL;
+			if (i == y) {
+				item.borderx |= BORDER_TOP;
+			}
+			else if (i == y + height - 1) {
+				item.borderx |= BORDER_BOTTOM;
+			}
+			else {
+				item.borderx |= BORDER_TOP;
+				item.borderx |= BORDER_BOTTOM;
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	public enum Type {
+		TEXT,
+		BORDER
+	}
+
+	public enum Border {
+		HORIZONTAL,
+		VERTICAL,
+		// TOPLEFT,
+		// TOPRIGHT,
+		// BOTTOMLEFT,
+		// BOTTOMRIGHT
+	}
+
+	public static class ScreenItem {
+
+		Type type;
+		CharSequence content;
+		AttributedStyle style;
+		Border[] border = new Border[2];
+		int borderx = 0;
+
+		public ScreenItem(Type type, CharSequence content, AttributedStyle style) {
+			this.type = type;
+			this.content = content;
+			this.style = style;
+		}
+		public static ScreenItem of(char c) {
+			return new ScreenItem(Type.TEXT, new String(new char[]{c}), null);
+		}
+
+		public static ScreenItem border() {
+			return new ScreenItem(Type.BORDER, null, null);
+		}
+
+		public static ScreenItem of(CharSequence content) {
+			return new ScreenItem(Type.TEXT, content, null);
+		}
+
+		public Type getType() {
+			return type;
+		}
+
+		public CharSequence getContent() {
+			return content;
+		}
+
+		public AttributedStyle getStyle() {
+			return style;
+		}
+	}
+
+	// public record ScreenItem(Type type, CharSequence content, AttributedStyle style) {
+
+	// 	public static ScreenItem of(char c) {
+	// 		return new ScreenItem(Type.TEXT, new String(new char[]{c}), null);
+	// 	}
+
+	// 	public static ScreenItem border() {
+	// 		return new ScreenItem(Type.BORDER, null, null);
+	// 	}
+
+	// 	public static ScreenItem of(CharSequence content) {
+	// 		return new ScreenItem(Type.TEXT, content, null);
+	// 	}
+	// }
 }
