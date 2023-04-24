@@ -462,12 +462,14 @@ public class GridView extends BoxView {
 				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
 					printJoinedSemigraphics(screen, bx, by, '┘');
 				}
+				// screen.printBorder(item.x, item.y, item.w, item.h);
+				screen.printBorder(item.x - 1, item.y - 1, item.w + 2, item.h + 2);
 			}
 		}
 	}
 
 	void printJoinedSemigraphics(Screen screen, int x, int y, char c) {
-		screen.setContent(x, y, new ScreenItem(new String(new char[]{c}), null));
+		// screen.setContent(x, y, ScreenItem.of(c));
 	}
 
 	private static class GridItem {

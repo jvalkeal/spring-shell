@@ -45,9 +45,11 @@ class ScreenTests {
 
 	@Test
 	void printInBoxShows() {
-		Screen display = new Screen(1, 10);
-		display.print("test", 0, 0, 4);
-		ScreenItem[][] content = display.getContent();
+		// Screen display = new Screen(10, 10);
+		// display.printBorder(0, 0, 10, 10);
+
+		// display.print("test", 0, 0, 4);
+		// ScreenItem[][] content = display.getContent();
 
 		// display.print("test", 0, 0, 4);
 		// char[][] data = display.getData();

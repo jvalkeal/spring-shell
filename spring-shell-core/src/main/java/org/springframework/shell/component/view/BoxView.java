@@ -94,20 +94,22 @@ public class BoxView extends AbstractView {
 
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 
-			for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
-				screen.setContent(i, rect.y(), new ScreenItem(new String(new char[] { '═' }), AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)));
-				screen.setContent(i, rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '═' }), null));
-			}
+			// for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
+			// 	screen.setContent(i, rect.y(), ScreenItem.of('═'));
+			// 	screen.setContent(i, rect.y() + rect.height() - 1, ScreenItem.of('═'));
+			// }
 
-			for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
-				screen.setContent(rect.x(), i, new ScreenItem(new String(new char[] { '║' }), null));
-				screen.setContent(rect.x() + rect.width() - 1, i, new ScreenItem(new String(new char[] { '║' }), null));
-			}
+			// for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
+			// 	screen.setContent(rect.x(), i, ScreenItem.of('║'));
+			// 	screen.setContent(rect.x() + rect.width() - 1, i, ScreenItem.of('║'));
+			// }
 
-			screen.setContent(rect.x(), rect.y(), new ScreenItem(new String(new char[] { '┌' }), null));
-			screen.setContent(rect.x() + rect.width() - 1, rect.y(), new ScreenItem(new String(new char[] { '┐' }), null));
-			screen.setContent(rect.x(), rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '└' }), null));
-			screen.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, new ScreenItem(new String(new char[] { '┘' }), null));
+			// screen.setContent(rect.x(), rect.y(), ScreenItem.of('┌'));
+			// screen.setContent(rect.x() + rect.width() - 1, rect.y(), ScreenItem.of('┐'));
+			// screen.setContent(rect.x(), rect.y() + rect.height() - 1, ScreenItem.of('└'));
+			// screen.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, ScreenItem.of('┘'));
+
+			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 
 			if (StringUtils.hasText(title)) {
 				screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
