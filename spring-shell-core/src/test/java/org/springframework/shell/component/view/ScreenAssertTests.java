@@ -35,7 +35,13 @@ class ScreenAssertTests {
 		Screen screen = new Screen(5, 5);
 		screen.printBorder(0, 0, 5, 5);
 		assertThatExceptionOfType(AssertionError.class)
-			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(1, 1, 3,3));
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 5, 4));
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 5, 4));
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 4, 4));
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(1, 1, 3, 3));
 	}
 
 	@Test
