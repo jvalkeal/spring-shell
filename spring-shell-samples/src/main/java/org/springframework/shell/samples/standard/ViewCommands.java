@@ -15,13 +15,6 @@
  */
 package org.springframework.shell.samples.standard;
 
-import java.time.Duration;
-import java.util.Date;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
@@ -30,9 +23,6 @@ import org.springframework.shell.standard.AbstractShellComponent;
 
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
-
-	// @Autowired
-	// private TaskScheduler scheduler;
 
 	@Command(command = "box")
 	public void box() {
@@ -53,20 +43,12 @@ public class ViewCommands extends AbstractShellComponent {
 		// menu.setShowBorder(true);
 
 		BoxView main = new BoxView();
-		// main.setTitle("Main content");
-		// main.setShowBorder(true);
 
 		BoxView sideBar = new BoxView();
-		// sideBar.setTitle("Side Bar");
-		// sideBar.setShowBorder(true);
 
 		BoxView header = new BoxView();
-		// header.setTitle("Header");
-		// header.setShowBorder(true);
 
 		BoxView footer = new BoxView();
-		// footer.setTitle("Footer");
-		// footer.setShowBorder(true);
 
 		GridView grid = new GridView();
 		grid.setRowSize(3, 0, 3);
@@ -88,28 +70,7 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
-	// @Command(command = { "demo", "clock" })
-	// void demoClock() {
-	// 	AtomicReference<String> data = new AtomicReference<>();
-	// 	ViewComponent component = new ViewComponent(getTerminal());
-	// 	BoxView box = new BoxView();
-	// 	box.setTitle("Title");
-	// 	box.setShowBorder(true);
-	// 	box.setDrawFunction((display, rect) -> {
-	// 		String text = data.get();
-	// 		if (text != null) {
-	// 			display.print(text, rect.x(), rect.y(), text.length());
-	// 		}
-	// 		return rect;
-	// 	});
-	// 	component.setRoot(box, true);
-
-	// 	ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(() -> {
-	// 		data.set(new Date().toString());
-	// 		component.redraw();
-	// 	}, Duration.ofSeconds(1));
-
-	// 	component.run();
-	// 	task.cancel(true);
-	// }
+	@Command(command = "showcase")
+	public void showcase() {
+	}
 }

@@ -15,9 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import org.jline.utils.AttributedStyle;
-
-import org.springframework.shell.component.view.Screen.ScreenItem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -40,13 +37,20 @@ public class BoxView extends AbstractView {
 	private int paddingLeft;
 	private int paddingRight;
 
+	@Override
+	public void setRect(int x, int y, int width, int height) {
+		this.innerX = -1;
+		super.setRect(x, y, width, height);
+	}
+
 	/**
+	 * Sets a paddings for this view.
 	 *
-	 * @param paddingTop
-	 * @param paddingBottom
-	 * @param paddingLeft
-	 * @param paddingRight
-	 * @return
+	 * @param paddingTop the top padding
+	 * @param paddingBottom the bottom padding
+	 * @param paddingLeft the left padding
+	 * @param paddingRight the right padding
+	 * @return a BoxView for chaining
 	 */
 	public BoxView setBorderPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
 		this.paddingTop = paddingTop;
@@ -56,13 +60,8 @@ public class BoxView extends AbstractView {
 		return this;
 	}
 
-	@Override
-	public void setRect(int x, int y, int width, int height) {
-		this.innerX = -1;
-		super.setRect(x, y, width, height);
-	}
-
 	/**
+	 * Defines if border is shown.
 	 *
 	 * @param showBorder
 	 */
@@ -71,16 +70,19 @@ public class BoxView extends AbstractView {
 	}
 
 	/**
+	 * Returns if border is shown.
 	 *
-	 * @return
+	 * @return true if border is shown
 	 */
 	public boolean isShowBorder() {
 		return showBorder;
 	}
 
 	/**
+	 * Sets a title. {@code title} is shown within a top-level border boundary and
+	 * will not be visible if border itself is not visible.
 	 *
-	 * @param title
+	 * @param title the border title
 	 */
 	public void setTitle(String title) {
 		this.title = title;
@@ -91,31 +93,12 @@ public class BoxView extends AbstractView {
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
-
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
-
-			// for (int i = rect.x() + 1; i < rect.y() + rect.width() - 1; i++) {
-			// 	screen.setContent(i, rect.y(), ScreenItem.of('═'));
-			// 	screen.setContent(i, rect.y() + rect.height() - 1, ScreenItem.of('═'));
-			// }
-
-			// for (int i = rect.y() + 1; i < rect.y() + rect.height() - 1; i++) {
-			// 	screen.setContent(rect.x(), i, ScreenItem.of('║'));
-			// 	screen.setContent(rect.x() + rect.width() - 1, i, ScreenItem.of('║'));
-			// }
-
-			// screen.setContent(rect.x(), rect.y(), ScreenItem.of('┌'));
-			// screen.setContent(rect.x() + rect.width() - 1, rect.y(), ScreenItem.of('┐'));
-			// screen.setContent(rect.x(), rect.y() + rect.height() - 1, ScreenItem.of('└'));
-			// screen.setContent(rect.x() + rect.width() - 1, rect.y() + rect.height() - 1, ScreenItem.of('┘'));
-
 			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
-
 			if (StringUtils.hasText(title)) {
 				screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
 			}
 		}
-
 		if (getDrawFunction() != null) {
 			Rectangle r = getDrawFunction().apply(screen, rect);
 			innerX = r.x();
@@ -133,9 +116,9 @@ public class BoxView extends AbstractView {
 	}
 
 	/**
+	 * Gets an inner rectangle of this view.
 	 *
-	 *
-	 * @return
+	 * @return an inner rectangle of this view
 	 */
 	protected Rectangle getInnerRect() {
 		if (innerX >= 0) {
