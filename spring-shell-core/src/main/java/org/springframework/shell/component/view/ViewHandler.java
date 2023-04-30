@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,16 +26,19 @@ import org.jline.terminal.MouseEvent;
 import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
-import org.jline.terminal.Terminal.SignalHandler;
 import org.jline.utils.AttributedString;
 import org.jline.utils.Display;
 import org.jline.utils.InfoCmp.Capability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
-import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
 
 /**
@@ -48,7 +50,7 @@ public class ViewHandler {
 
 	private final static Logger log = LoggerFactory.getLogger(ViewHandler.class);
 	public final static String OPERATION_EXIT = "EXIT";
-	public final static String OPERATION_REPAINT = "REPAINT";
+	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
 
 	private final Terminal terminal;
@@ -59,21 +61,32 @@ public class ViewHandler {
 	private Size size;
 	private View rootView;
 
+	private EventLoop eventLoop = new EventLoop();
+
+	/**
+	 *
+	 * @param terminal the terminal
+	 */
 	public ViewHandler(Terminal terminal) {
 		Assert.notNull(terminal, "terminal must be set");
 		this.terminal = terminal;
 		this.bindingReader = new BindingReader(terminal.reader());
 	}
 
+	/**
+	 * Sets a root view of this handler.
+	 *
+	 * @param root the root view
+	 * @param fullScreen if root view should request full screen
+	 */
 	public void setRoot(View root, boolean fullScreen) {
 		this.rootView = root;
 		this.rootView.focus();
 	}
 
-	public void redraw() {
-		display();
-	}
-
+	/**
+	 * Run and start execution loop. This method blocks until run loop exits.
+	 */
 	public void run() {
 		bindKeyMap(keyMap);
 		display = new Display(terminal, true);
@@ -81,13 +94,16 @@ public class ViewHandler {
 		loop();
 	}
 
-	protected void bindKeyMap(KeyMap<String> keyMap) {
+	private void redraw() {
+		display();
+	}
+
+	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyMap.bind(OPERATION_EXIT, "\r");
-		// keyMap.bind(OPERATION_REPAINT, "r", ctrl('R'), ctrl('L'));
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 	}
 
-	protected void render(int rows, int columns) {
+	private void render(int rows, int columns) {
 		if (rootView == null) {
 			return;
 		}
@@ -104,17 +120,38 @@ public class ViewHandler {
 		rootView.setRect(0, 0, size.getColumns(), size.getRows());
 		virtualDisplay.resize(size.getRows(), size.getColumns());
 		render(size.getRows(), size.getColumns());
-		// List<AttributedString> newLines = virtualDisplay.getScreenLines();
 		List<AttributedString> newLines = virtualDisplay.getScreenLines();
 		display.update(newLines, 0);
 	}
 
-	protected void loop() {
+	private void dispatchWinch() {
+		Message<String> message = MessageBuilder.withPayload("WINCH")
+			.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+			.build();
+		eventLoop.dispatch(message);
+	}
+
+	private void registerEventHandling() {
+		Disposable subscribe = eventLoop.events()
+			.filter(m -> {
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SIGNAL);
+			})
+			.doOnNext(m -> {
+				display();
+			})
+			.subscribe();
+	}
+
+	private void loop() {
 		Attributes attr = terminal.enterRawMode();
+
+		eventLoop.start();
+
+		registerEventHandling();
 
 		terminal.handle(Signal.WINCH, signal -> {
 			log.debug("Handling signal {}", signal);
-			display();
+			dispatchWinch();
 		});
 
 		try {
@@ -135,6 +172,7 @@ public class ViewHandler {
 			}
 		}
 		finally {
+			eventLoop.stop();
 			terminal.setAttributes(attr);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
 			terminal.puts(Capability.keypad_local);
@@ -143,7 +181,7 @@ public class ViewHandler {
 		}
 	}
 
-	protected boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
+	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
 		String operation = bindingReader.readBinding(keyMap);
 		// String operation = bindingReader.readBinding(keyMap, null, false);
 		log.debug("Read got operation {}", operation);
@@ -162,17 +200,12 @@ public class ViewHandler {
 			case OPERATION_MOUSE_EVENT:
 				mouseEvent();
 				break;
-			// case OPERATION_REPAINT:
-			// 	// size.copy(terminal.getSize());
-			// 	// display.clear();
-			// 	break;
-
 		}
 
 		return false;
 	}
 
-    void mouseEvent() {
+    private void mouseEvent() {
         MouseEvent event = terminal.readMouseEvent();
 		log.info("MOUSE: {}", event);
         // if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
