@@ -35,7 +35,6 @@ import reactor.core.Disposable;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -52,6 +51,7 @@ public class ViewHandler {
 	public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
+	public final static String OPERATION_CHAR = "CHAR";
 
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
@@ -64,6 +64,7 @@ public class ViewHandler {
 	private EventLoop eventLoop = new EventLoop();
 
 	/**
+	 * Constructs a handler with a given terminal.
 	 *
 	 * @param terminal the terminal
 	 */
@@ -81,7 +82,7 @@ public class ViewHandler {
 	 */
 	public void setRoot(View root, boolean fullScreen) {
 		this.rootView = root;
-		this.rootView.focus();
+		this.rootView.focus(root, true);
 	}
 
 	/**
@@ -94,6 +95,10 @@ public class ViewHandler {
 		loop();
 	}
 
+	public EventLoop getEventLoop() {
+		return eventLoop;
+	}
+
 	private void redraw() {
 		display();
 	}
@@ -101,6 +106,11 @@ public class ViewHandler {
 	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
+
+		// skip 127 - DEL
+		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
+			keyMap.bind(OPERATION_CHAR, Character.toString(i));
+		}
 	}
 
 	private void render(int rows, int columns) {
@@ -183,7 +193,6 @@ public class ViewHandler {
 
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
 		String operation = bindingReader.readBinding(keyMap);
-		// String operation = bindingReader.readBinding(keyMap, null, false);
 		log.debug("Read got operation {}", operation);
 		if (operation == null) {
 			return true;
@@ -200,14 +209,36 @@ public class ViewHandler {
 			case OPERATION_MOUSE_EVENT:
 				mouseEvent();
 				break;
+			case OPERATION_CHAR:
+				String lastBinding = bindingReader.getLastBinding();
+				dispatchChar(lastBinding);
+				break;
 		}
 
 		return false;
 	}
 
+	private void dispatchChar(String binding) {
+		log.trace("Dispatching {} with {}", OPERATION_CHAR, binding);
+		Message<String> message = MessageBuilder
+			.withPayload(binding)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.BINDING)
+			.build();
+		eventLoop.dispatch(message);
+	}
+
+	private void dispatchMouse(MouseEvent event) {
+		Message<MouseEvent> message = MessageBuilder
+			.withPayload(event)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.MOUSE)
+			.build();
+		eventLoop.dispatch(message);
+	}
+
     private void mouseEvent() {
         MouseEvent event = terminal.readMouseEvent();
 		log.info("MOUSE: {}", event);
+		dispatchMouse(event);
         // if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
         //         && event.getButton() == MouseEvent.Button.Button1) {
         //     int x = event.getX();

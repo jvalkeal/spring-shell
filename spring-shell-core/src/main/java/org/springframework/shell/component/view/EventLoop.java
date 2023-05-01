@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.event;
+package org.springframework.shell.component.view;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.function.Function;
 
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -33,32 +37,87 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * {@code EventLoop} is a central controller handling various events like
+ * keyboard, mouse, terminal signals, redraw, etc.
  *
+ * Main point of handling everything centrally is to support usual terminal
+ * UI things like scheduled animation loops, redraw requests, etc, in order
+ * while still supporting events with priorities.
+ *
+ * Event is always a spring messaging {@link Message}. Event payload
+ * and headers depend on a message itself.
  *
  * @author Janne Valkealahti
  */
 public class EventLoop {
 
+	private final static Logger log = LoggerFactory.getLogger(EventLoop.class);
 	public final static String TYPE = "type";
 	public final static String TYPE_SIGNAL = "signal";
 	public final static String TYPE_TICK = "tick";
-	// public final static String TYPE_RERDRAW = "redraw";
-
 	private boolean running;
 	private Many<Message<?>> bus;
 	private Flux<? extends Message<?>> busFlux;
+	private List<EventLoopProcessor> processors;
 
-	private List<EventLoopProcessor> processors = new ArrayList<>();
+	public EventLoop(){
+		this(null);
+	}
 
+	public EventLoop(List<EventLoopProcessor> processors) {
+		this.processors = new ArrayList<>();
+		if (processors != null) {
+			this.processors.addAll(processors);
+		}
+	}
+
+	/**
+	 * Type of an event.
+	 */
 	public enum Type {
-		SIGNAL
+
+		/**
+		 * Signals dispatched from a terminal.
+		 */
+		SIGNAL,
+
+		/**
+		 * Character bindings from a terminal.
+		 */
+		BINDING,
+
+		/**
+		 * Mouse bindings from a terminal.
+		 */
+		MOUSE,
+
+		/**
+		 * System bindinds like redraw.
+		 */
+		SYSTEM
 	}
 
-	public EventLoop() {
-	}
+	/**
+	 * Contract to process event loop messages, possibly translating an event into
+	 * some other type of event or events.
+	 */
+	public interface EventLoopProcessor {
 
-	interface EventLoopProcessor {
+		/**
+		 * Checks if this processor can process an event.
+		 *
+		 * @param message the message
+		 * @return true if processor can process an event
+		 */
 		boolean canProcess(Message<?> message);
+
+		/**
+		 * Process a message and transform it into a new {@link Flux} of {@link Message}
+		 * instances.
+		 *
+		 * @param message the message to process
+		 * @return a flux of messages
+		 */
 		Flux<? extends Message<?>> process(Message<?> message);
 	}
 
@@ -109,6 +168,10 @@ public class EventLoop {
 		});
 		busFlux = flatMap.share();
 
+		this.toSchduleOnStart.forEach(f -> {
+			f.subscribe();
+		});
+
 		running = true;
 	}
 
@@ -132,10 +195,32 @@ public class EventLoop {
 
 	public void dispatchTicks() {
 		Message<String> message = MessageBuilder
-			.withPayload("WINCH")
+			.withPayload("")
 			.setHeader("type", "tick")
 			.build();
 		dispatch(message);
+	}
+
+	// public void scheduleEvents1(Publisher<Message<?>> xxx) {
+	// }
+
+	private List<Flux<Message<?>>> toSchduleOnStart = new ArrayList<>();
+	private List<Disposable> disposeOnStop = new ArrayList<>();
+
+	public void scheduleEvents2(Flux<Message<?>> messages) {
+		Flux<Message<?>> f = messages
+			.doOnNext(m -> {
+				dispatch(m);
+			});
+		if (running) {
+			Disposable subscribe = f.subscribe();
+			disposeOnStop.add(subscribe);
+			log.info("xxx asdf1");
+		}
+		else {
+			this.toSchduleOnStart.add(f);
+			log.info("xxx asdf2");
+		}
 	}
 
 	private void checkConditions() {
