@@ -50,7 +50,19 @@ public interface View {
 	 */
 	Rectangle getRect();
 
-	void focus();
+	/**
+	 * Called when {@code View} gets or loses a focus.
+	 *
+	 * @param view the view receiving focus
+	 * @param focus flag if focus is received
+	 */
+	void focus(View view, boolean focus);
+
+	/**
+	 * Gets if this {@code View} has a focus.
+	 *
+	 * @return true if view has a focus
+	 */
 	boolean hasFocus();
 
 	/**

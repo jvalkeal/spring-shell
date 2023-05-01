@@ -15,6 +15,15 @@
  */
 package org.springframework.shell.samples.standard;
 
+import java.time.Duration;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
@@ -23,6 +32,8 @@ import org.springframework.shell.standard.AbstractShellComponent;
 
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
+
+	private final static Logger log = LoggerFactory.getLogger(ViewCommands.class);
 
 	@Command(command = "box")
 	public void box() {
@@ -72,5 +83,33 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "showcase")
 	public void showcase() {
+		ViewHandler component = new ViewHandler(getTerminal());
+		BoxView box = new BoxView();
+		box.setTitle("Title");
+		box.setShowBorder(true);
+
+		Flux<Message<?>> asdf = Flux.interval(Duration.ofSeconds(1)).map(l -> {
+			Message<String> message = MessageBuilder
+				.withPayload("")
+				.setHeader("xxx", "tick")
+				.build();
+			return message;
+		});
+		component.getEventLoop().scheduleEvents2(asdf);
+
+		Flux<? extends Message<?>> events = component.getEventLoop().events();
+		events.doOnNext(m -> {
+			log.info("xxx1");
+			if (m.getHeaders().containsKey("xxx")) {
+				log.info("xxx2");
+				String t = new Date().toString();
+				box.setTitle(t);
+			}
+		})
+		.subscribe();
+
+		component.setRoot(box, true);
+
+		component.run();
 	}
 }

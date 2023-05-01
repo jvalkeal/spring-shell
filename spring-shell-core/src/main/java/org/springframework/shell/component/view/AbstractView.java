@@ -51,7 +51,7 @@ public abstract class AbstractView implements View {
 	}
 
 	@Override
-	public void focus() {
+	public void focus(View view, boolean focus) {
 	}
 
 	@Override
