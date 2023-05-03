@@ -88,25 +88,29 @@ public class ViewCommands extends AbstractShellComponent {
 		box.setTitle("Title");
 		box.setShowBorder(true);
 
-		Flux<Message<?>> asdf = Flux.interval(Duration.ofSeconds(1)).map(l -> {
-			Message<String> message = MessageBuilder
-				.withPayload("")
-				.setHeader("xxx", "tick")
-				.build();
-			return message;
-		});
-		component.getEventLoop().scheduleEvents2(asdf);
+		// Flux<Message<?>> asdf = Flux.interval(Duration.ofSeconds(1)).map(l -> {
+		// 	Message<String> message = MessageBuilder
+		// 		.withPayload("")
+		// 		.setHeader("xxx", "tick")
+		// 		.build();
+		// 	return message;
+		// });
+		// component.getEventLoop().scheduleEvents2(asdf);
 
-		Flux<? extends Message<?>> events = component.getEventLoop().events();
-		events.doOnNext(m -> {
-			log.info("xxx1");
-			if (m.getHeaders().containsKey("xxx")) {
-				log.info("xxx2");
-				String t = new Date().toString();
-				box.setTitle(t);
-			}
-		})
-		.subscribe();
+		// Flux<? extends Message<?>> events = component.getEventLoop().events();
+		// events.doOnNext(m -> {
+		// 	log.info("xxx1");
+		// 	if (m.getHeaders().containsKey("xxx")) {
+		// 		log.info("xxx2");
+		// 		String t = new Date().toString();
+		// 		box.setTitle(t);
+		// 	}
+		// })
+		// .subscribe();
+
+		box.setInputConsumer(input -> {
+			log.info("xxx3 {}", input);
+		});
 
 		component.setRoot(box, true);
 

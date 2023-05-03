@@ -51,7 +51,7 @@ public class ViewHandler {
 	public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
-	public final static String OPERATION_CHAR = "CHAR";
+	public final static String OPERATION_KEY_EVENT = "CHAR";
 
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
@@ -109,7 +109,7 @@ public class ViewHandler {
 
 		// skip 127 - DEL
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
-			keyMap.bind(OPERATION_CHAR, Character.toString(i));
+			keyMap.bind(OPERATION_KEY_EVENT, Character.toString(i));
 		}
 	}
 
@@ -142,7 +142,7 @@ public class ViewHandler {
 	}
 
 	private void registerEventHandling() {
-		Disposable subscribe = eventLoop.events()
+		Disposable subscribe1 = eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SIGNAL);
 			})
@@ -150,6 +150,27 @@ public class ViewHandler {
 				display();
 			})
 			.subscribe();
+
+		Disposable subscribe2 = eventLoop.events()
+			.filter(m -> {
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
+			})
+			.doOnNext(m -> {
+				Object payload = m.getPayload();
+				if (payload instanceof String p) {
+					xxx(p);
+				}
+			})
+			.subscribe();
+	}
+
+	private void xxx(String binding) {
+		if (rootView != null) {
+			Consumer<String> inputConsumer = rootView.getInputConsumer();
+			if (inputConsumer != null) {
+				inputConsumer.accept(binding);
+			}
+		}
 	}
 
 	private void loop() {
@@ -197,19 +218,13 @@ public class ViewHandler {
 		if (operation == null) {
 			return true;
 		}
-		if (rootView != null) {
-			Consumer<String> inputConsumer = rootView.getInputConsumer();
-			if (inputConsumer != null) {
-				inputConsumer.accept(operation);
-			}
-		}
 		switch (operation) {
 			case OPERATION_EXIT:
 				return true;
 			case OPERATION_MOUSE_EVENT:
 				mouseEvent();
 				break;
-			case OPERATION_CHAR:
+			case OPERATION_KEY_EVENT:
 				String lastBinding = bindingReader.getLastBinding();
 				dispatchChar(lastBinding);
 				break;
@@ -219,10 +234,10 @@ public class ViewHandler {
 	}
 
 	private void dispatchChar(String binding) {
-		log.trace("Dispatching {} with {}", OPERATION_CHAR, binding);
+		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
 		Message<String> message = MessageBuilder
 			.withPayload(binding)
-			.setHeader(EventLoop.TYPE, EventLoop.Type.BINDING)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.KEY)
 			.build();
 		eventLoop.dispatch(message);
 	}

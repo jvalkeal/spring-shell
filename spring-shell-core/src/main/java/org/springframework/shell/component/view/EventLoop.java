@@ -60,15 +60,43 @@ public class EventLoop {
 	private Flux<? extends Message<?>> busFlux;
 	private List<EventLoopProcessor> processors;
 
+	/**
+	 * Construct event loop with no procesors.
+	 */
 	public EventLoop(){
 		this(null);
 	}
 
+	/**
+	 * Construct event loop with a given processors.
+	 */
 	public EventLoop(List<EventLoopProcessor> processors) {
 		this.processors = new ArrayList<>();
 		if (processors != null) {
 			this.processors.addAll(processors);
 		}
+		init();
+	}
+
+	private void init() {
+		Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
+		bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
+		Flux<Message<?>> f1 = bus.asFlux();
+
+		Flux<? extends Message<?>> flatMap = f1.flatMap(m -> {
+			Flux<? extends Message<?>> xxx = null;
+			for (EventLoopProcessor processor : processors) {
+				if (processor.canProcess(m)) {
+					xxx = processor.process(m);
+					break;
+				}
+			}
+			if (xxx != null) {
+				return xxx;
+			}
+			return Mono.just(m);
+		});
+		busFlux = flatMap.share();
 	}
 
 	/**
@@ -82,9 +110,9 @@ public class EventLoop {
 		SIGNAL,
 
 		/**
-		 * Character bindings from a terminal.
+		 * Key bindings from a terminal.
 		 */
-		BINDING,
+		KEY,
 
 		/**
 		 * Mouse bindings from a terminal.
@@ -147,26 +175,26 @@ public class EventLoop {
 			return;
 		}
 
-		processors.add(new TickProcessor());
+		// processors.add(new TickProcessor());
 
-		Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
-		bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
-		Flux<Message<?>> f1 = bus.asFlux();
+		// Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
+		// bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
+		// Flux<Message<?>> f1 = bus.asFlux();
 
-		Flux<? extends Message<?>> flatMap = f1.flatMap(m -> {
-			Flux<? extends Message<?>> xxx = null;
-			for (EventLoopProcessor processor : processors) {
-				if (processor.canProcess(m)) {
-					xxx = processor.process(m);
-					break;
-				}
-			}
-			if (xxx != null) {
-				return xxx;
-			}
-			return Mono.just(m);
-		});
-		busFlux = flatMap.share();
+		// Flux<? extends Message<?>> flatMap = f1.flatMap(m -> {
+		// 	Flux<? extends Message<?>> xxx = null;
+		// 	for (EventLoopProcessor processor : processors) {
+		// 		if (processor.canProcess(m)) {
+		// 			xxx = processor.process(m);
+		// 			break;
+		// 		}
+		// 	}
+		// 	if (xxx != null) {
+		// 		return xxx;
+		// 	}
+		// 	return Mono.just(m);
+		// });
+		// busFlux = flatMap.share();
 
 		this.toSchduleOnStart.forEach(f -> {
 			f.subscribe();
