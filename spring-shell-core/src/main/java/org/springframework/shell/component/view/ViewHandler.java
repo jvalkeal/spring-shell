@@ -17,7 +17,9 @@ package org.springframework.shell.component.view;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
@@ -33,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
 
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
@@ -81,8 +84,20 @@ public class ViewHandler {
 	 * @param fullScreen if root view should request full screen
 	 */
 	public void setRoot(View root, boolean fullScreen) {
+		// this.rootView.focus(root, true);
+		setFocus(root);
 		this.rootView = root;
-		this.rootView.focus(root, true);
+	}
+
+	private View focus = null;
+	private void setFocus(@Nullable View view) {
+		if (focus != null) {
+			focus.focus(focus, false);
+		}
+		focus = view;
+		if (focus != null) {
+			focus.focus(focus, true);
+		}
 	}
 
 	/**
@@ -162,14 +177,43 @@ public class ViewHandler {
 				}
 			})
 			.subscribe();
+
+		Disposable subscribe3 = eventLoop.events()
+			.filter(m -> {
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.MOUSE);
+			})
+			.doOnNext(m -> {
+				Object payload = m.getPayload();
+				if (payload instanceof MouseEvent p) {
+					xxxm(p);
+				}
+			})
+			.subscribe();
 	}
 
 	private void xxx(String binding) {
 		if (rootView != null) {
-			Consumer<String> inputConsumer = rootView.getInputConsumer();
-			if (inputConsumer != null) {
-				inputConsumer.accept(binding);
+			// Consumer<String> inputConsumer = rootView.getInputConsumer();
+			// if (inputConsumer != null) {
+			// 	inputConsumer.accept(binding);
+			// }
+		}
+	}
+
+	private void xxxm(MouseEvent e) {
+		if (rootView != null) {
+			// Function<MouseEvent, MouseEvent> mouseHandler = rootView.getMouseHandler();
+			BiFunction<MouseEvent, Consumer<View>, MouseEvent> mouseHandler = rootView.getMouseHandler();
+			if (mouseHandler != null) {
+				Consumer<View> asdf = v -> {
+					setFocus(v);
+				};
+				MouseEvent apply = mouseHandler.apply(e, asdf);
 			}
+			// Consumer<String> inputConsumer = rootView.getInputConsumer();
+			// if (inputConsumer != null) {
+			// 	inputConsumer.accept(binding);
+			// }
 		}
 	}
 

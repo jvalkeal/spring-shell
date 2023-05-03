@@ -27,6 +27,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
+import org.springframework.shell.component.view.InputView;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -78,6 +79,14 @@ public class ViewCommands extends AbstractShellComponent {
 		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
 
 		component.setRoot(grid, true);
+		component.run();
+	}
+
+	@Command(command = "input")
+	public void input() {
+		ViewHandler component = new ViewHandler(getTerminal());
+		InputView input = new InputView();
+		component.setRoot(input, true);
 		component.run();
 	}
 

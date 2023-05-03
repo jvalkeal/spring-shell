@@ -17,4 +17,9 @@ package org.springframework.shell.component.view;
 
 public class InputView extends BoxView {
 
+
+    @Override
+    protected void drawInternal(Screen screen) {
+        super.drawInternal(screen);
+    }
 }
