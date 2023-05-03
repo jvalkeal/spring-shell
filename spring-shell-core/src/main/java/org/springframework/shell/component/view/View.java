@@ -15,7 +15,11 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import org.jline.terminal.MouseEvent;
 
 /**
  * {@code View} is an interface representing something what can be drawn into
@@ -79,11 +83,30 @@ public interface View {
 	 */
 	Consumer<String> getInputConsumer();
 
+	// Function<MouseEvent, MouseEvent> getMouseHandler();
+	BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler();
+
 	/**
 	 * Record representing coordinates {@code x}, {@code y} and its {@code width}
 	 * and {@code height}.
 	 */
 	record Rectangle(int x, int y, int width, int height) {
+
+		boolean contains(int X, int Y) {
+			int w = this.width;
+			int h = this.height;
+			if ((w | h) < 0) {
+				return false;
+			}
+			int x = this.x;
+			int y = this.y;
+			if (X < x || Y < y) {
+				return false;
+			}
+			w += x;
+			h += y;
+			return ((w < x || w > X) && (h < y || h > Y));
+		}
 	};
 
 	/**

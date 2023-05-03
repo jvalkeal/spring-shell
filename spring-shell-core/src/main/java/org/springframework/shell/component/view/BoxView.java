@@ -15,6 +15,12 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import org.jline.terminal.MouseEvent;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,6 +48,40 @@ public class BoxView extends AbstractView {
 		this.innerX = -1;
 		super.setRect(x, y, width, height);
 	}
+
+	// @Override
+	// public Function<MouseEvent, MouseEvent> getMouseHandler() {
+	// 	return event -> {
+	// 		if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+	// 				&& event.getButton() == MouseEvent.Button.Button1) {
+	// 			int x = event.getX();
+	// 			int y = event.getY();
+	// 			if (getRect().contains(x, y)) {
+
+	// 			}
+	// 		}
+
+	// 		return event;
+	// 	};
+	// }
+
+	@Override
+	public BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler() {
+		return (event, view) -> {
+			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+					&& event.getButton() == MouseEvent.Button.Button1) {
+				int x = event.getX();
+				int y = event.getY();
+				if (getRect().contains(x, y)) {
+					view.accept(this);
+					return null;
+				}
+			}
+
+			return event;
+		};
+	}
+
 
 	/**
 	 * Sets a paddings for this view.

@@ -17,6 +17,11 @@ package org.springframework.shell.component.view;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import org.jline.terminal.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of a {@link View}.
@@ -25,12 +30,14 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractView implements View {
 
+	private final static Logger log = LoggerFactory.getLogger(AbstractView.class);
 	private int x = 0;
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
 	private Consumer<String> inputConsumer;
 	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
+	private boolean hasFocus;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -52,11 +59,18 @@ public abstract class AbstractView implements View {
 
 	@Override
 	public void focus(View view, boolean focus) {
+		log.debug("Focus view={} focus={}", view, focus);
+		if (view == this && focus) {
+			hasFocus = true;
+		}
+		if (!focus) {
+			hasFocus = false;
+		}
 	}
 
 	@Override
 	public boolean hasFocus() {
-		return false;
+		return hasFocus;
 	}
 
 	@Override
@@ -67,6 +81,16 @@ public abstract class AbstractView implements View {
 	@Override
 	public Consumer<String> getInputConsumer() {
 		return inputConsumer;
+	}
+
+	// @Override
+	// public Function<MouseEvent, MouseEvent> getMouseHandler() {
+	// 	return Function.identity();
+	// }
+
+	@Override
+	public BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler() {
+		return (event, view) -> event;
 	}
 
 	/**
