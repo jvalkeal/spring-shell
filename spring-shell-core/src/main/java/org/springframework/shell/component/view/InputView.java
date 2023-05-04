@@ -28,18 +28,25 @@ import org.slf4j.LoggerFactory;
  */
 public class InputView extends BoxView {
 
-    private final static Logger log = LoggerFactory.getLogger(InputView.class);
+	private final static Logger log = LoggerFactory.getLogger(InputView.class);
+	private String text = "";
 
-    @Override
-    protected void drawInternal(Screen screen) {
-        super.drawInternal(screen);
-    }
+	@Override
+	protected void drawInternal(Screen screen) {
+		Rectangle rect = getRect();
+		if (text != null) {
+			screen.print(text, rect.x(), rect.y(), text.length());
+			screen.setShowCursor(true);
+			screen.setCursorPosition(new Position(rect.x() + text.length(), rect.y()));
+		}
+	}
 
-    @Override
-    public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
-        return (event, view) -> {
-            log.debug("KeyEvent {}", event);
-            return event;
-        };
-    }
+	@Override
+	public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
+		return (event, view) -> {
+			log.debug("KeyEvent {}", event);
+			text = text + event.binding();
+			return event;
+		};
+	}
 }

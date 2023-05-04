@@ -30,17 +30,17 @@ public class TextView extends BoxView {
 
 	private final static Logger log = LoggerFactory.getLogger(TextView.class);
 
-    @Override
-    protected void drawInternal(Screen screen) {
-        super.drawInternal(screen);
-    }
+	@Override
+	protected void drawInternal(Screen screen) {
+		super.drawInternal(screen);
+	}
 
-    @Override
-    public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
-        return (event, view) -> {
-            log.debug("KeyEvent {}", event);
-            return event;
-        };
-    }
+	// @Override
+	// public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
+	// 	return (event, view) -> {
+	// 		log.debug("KeyEvent {}", event);
+	// 		return event;
+	// 	};
+	// }
 
 }

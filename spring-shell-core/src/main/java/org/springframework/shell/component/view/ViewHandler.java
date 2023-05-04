@@ -126,9 +126,12 @@ public class ViewHandler {
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
+		keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
+		keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
 		keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
 		keyMap.bind("CTRL_r", ctrl('r'));
 		keyMap.bind("ALT_r", alt('r'));
+		keyMap.bind("ESC", "\033");
 
 
 		// skip 127 - DEL
@@ -155,7 +158,16 @@ public class ViewHandler {
 		virtualDisplay.resize(size.getRows(), size.getColumns());
 		render(size.getRows(), size.getColumns());
 		List<AttributedString> newLines = virtualDisplay.getScreenLines();
-		display.update(newLines, 0);
+
+		int xxx = 0;
+		if (virtualDisplay.isShowCursor()) {
+			terminal.puts(Capability.cursor_visible);
+			xxx = size.cursorPos(virtualDisplay.getCursorPosition().y(), virtualDisplay.getCursorPosition().x());
+			log.debug("XXX cursor pos {}", xxx);
+		}
+
+		// display.update(newLines, 0);
+		display.update(newLines, xxx);
 	}
 
 	private void dispatchWinch() {
@@ -296,6 +308,15 @@ public class ViewHandler {
 				break;
 			case "ALT_r":
 				dispatchChar("r", false, true);
+				break;
+			case "PPAGE":
+				dispatchChar("PPAGE", false, false);
+				break;
+			case "NPAGE":
+				dispatchChar("NPAGE", false, false);
+				break;
+			case "ESC":
+				dispatchChar("ESC", false, false);
 				break;
 
 		}
