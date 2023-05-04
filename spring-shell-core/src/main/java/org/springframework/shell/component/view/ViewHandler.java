@@ -172,7 +172,7 @@ public class ViewHandler {
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
-				if (payload instanceof String p) {
+				if (payload instanceof KeyEvent p) {
 					xxx(p);
 				}
 			})
@@ -191,8 +191,15 @@ public class ViewHandler {
 			.subscribe();
 	}
 
-	private void xxx(String binding) {
+	private void xxx(KeyEvent binding) {
 		if (rootView != null) {
+			BiFunction<KeyEvent, Consumer<View>, KeyEvent> inputHandler = rootView.getInputHandler();
+			if (inputHandler != null) {
+				Consumer<View> asdf = v -> {
+					setFocus(v);
+				};
+				KeyEvent apply = inputHandler.apply(binding, asdf);
+			}
 			// Consumer<String> inputConsumer = rootView.getInputConsumer();
 			// if (inputConsumer != null) {
 			// 	inputConsumer.accept(binding);
@@ -279,8 +286,10 @@ public class ViewHandler {
 
 	private void dispatchChar(String binding) {
 		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
-		Message<String> message = MessageBuilder
-			.withPayload(binding)
+		KeyEvent event = new KeyEvent(binding);
+		Message<KeyEvent> message = MessageBuilder
+			// .withPayload(binding)
+			.withPayload(event)
 			.setHeader(EventLoop.TYPE, EventLoop.Type.KEY)
 			.build();
 		eventLoop.dispatch(message);

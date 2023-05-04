@@ -177,25 +177,6 @@ public class EventLoop {
 
 		// processors.add(new TickProcessor());
 
-		// Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
-		// bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
-		// Flux<Message<?>> f1 = bus.asFlux();
-
-		// Flux<? extends Message<?>> flatMap = f1.flatMap(m -> {
-		// 	Flux<? extends Message<?>> xxx = null;
-		// 	for (EventLoopProcessor processor : processors) {
-		// 		if (processor.canProcess(m)) {
-		// 			xxx = processor.process(m);
-		// 			break;
-		// 		}
-		// 	}
-		// 	if (xxx != null) {
-		// 		return xxx;
-		// 	}
-		// 	return Mono.just(m);
-		// });
-		// busFlux = flatMap.share();
-
 		this.toSchduleOnStart.forEach(f -> {
 			f.subscribe();
 		});
@@ -228,9 +209,6 @@ public class EventLoop {
 			.build();
 		dispatch(message);
 	}
-
-	// public void scheduleEvents1(Publisher<Message<?>> xxx) {
-	// }
 
 	private List<Flux<Message<?>>> toSchduleOnStart = new ArrayList<>();
 	private List<Disposable> disposeOnStop = new ArrayList<>();

@@ -15,31 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
+public record KeyEvent(String binding) {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- *
- *
- * @author Janne Valkealahti
- */
-public class InputView extends BoxView {
-
-    private final static Logger log = LoggerFactory.getLogger(InputView.class);
-
-    @Override
-    protected void drawInternal(Screen screen) {
-        super.drawInternal(screen);
-    }
-
-    @Override
-    public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
-        return (event, view) -> {
-            log.debug("KeyEvent {}", event);
-            return event;
-        };
-    }
 }
