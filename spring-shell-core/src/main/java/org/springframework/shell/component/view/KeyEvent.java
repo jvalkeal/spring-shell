@@ -15,6 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-public record KeyEvent(String binding) {
+public record KeyEvent(String binding, boolean ctrl, boolean alt) {
 
 }

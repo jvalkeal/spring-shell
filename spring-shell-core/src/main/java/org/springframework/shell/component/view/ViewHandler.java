@@ -41,6 +41,8 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
+import static org.jline.keymap.KeyMap.alt;
+import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
 
 /**
@@ -118,9 +120,16 @@ public class ViewHandler {
 		display();
 	}
 
+	// CTRL_ALT_x
+
 	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
+
+		keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
+		keyMap.bind("CTRL_r", ctrl('r'));
+		keyMap.bind("ALT_r", alt('r'));
+
 
 		// skip 127 - DEL
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
@@ -277,16 +286,26 @@ public class ViewHandler {
 				break;
 			case OPERATION_KEY_EVENT:
 				String lastBinding = bindingReader.getLastBinding();
-				dispatchChar(lastBinding);
+				dispatchChar(lastBinding, false, false);
 				break;
+			case "CTRL_ALT_r":
+				dispatchChar("r", true, true);
+				break;
+			case "CTRL_r":
+				dispatchChar("r", true, false);
+				break;
+			case "ALT_r":
+				dispatchChar("r", false, true);
+				break;
+
 		}
 
 		return false;
 	}
 
-	private void dispatchChar(String binding) {
+	private void dispatchChar(String binding, boolean ctrl, boolean alt) {
 		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
-		KeyEvent event = new KeyEvent(binding);
+		KeyEvent event = new KeyEvent(binding, ctrl, alt);
 		Message<KeyEvent> message = MessageBuilder
 			// .withPayload(binding)
 			.withPayload(event)
