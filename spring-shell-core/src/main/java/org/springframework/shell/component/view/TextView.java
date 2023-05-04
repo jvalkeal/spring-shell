@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Janne Valkealahti
  */
-public class InputView extends BoxView {
+public class TextView extends BoxView {
 
-    private final static Logger log = LoggerFactory.getLogger(InputView.class);
+	private final static Logger log = LoggerFactory.getLogger(TextView.class);
 
     @Override
     protected void drawInternal(Screen screen) {
@@ -42,4 +42,5 @@ public class InputView extends BoxView {
             return event;
         };
     }
+
 }

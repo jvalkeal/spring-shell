@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.jline.terminal.MouseEvent;
 
@@ -70,21 +69,16 @@ public interface View {
 	boolean hasFocus();
 
 	/**
-	 * Sets an input consumer for an {@code operation}.
 	 *
-	 * @param inputConsumer an input consumer
+	 * @return
 	 */
-	void setInputConsumer(Consumer<String> inputConsumer);
+	BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler();
 
 	/**
-	 * Gets an input consumer.
 	 *
-	 * @return the input consumer
+	 * @return
 	 */
-	Consumer<String> getInputConsumer();
-
-	// Function<MouseEvent, MouseEvent> getMouseHandler();
-	BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler();
+	BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler();
 
 	/**
 	 * Record representing coordinates {@code x}, {@code y} and its {@code width}

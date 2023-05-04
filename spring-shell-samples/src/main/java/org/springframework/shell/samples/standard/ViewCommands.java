@@ -28,6 +28,7 @@ import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.InputView;
+import org.springframework.shell.component.view.TextView;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -90,6 +91,14 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
+	@Command(command = "text")
+	public void text() {
+		ViewHandler component = new ViewHandler(getTerminal());
+		TextView root = new TextView();
+		component.setRoot(root, true);
+		component.run();
+	}
+
 	@Command(command = "showcase")
 	public void showcase() {
 		ViewHandler component = new ViewHandler(getTerminal());
@@ -117,9 +126,9 @@ public class ViewCommands extends AbstractShellComponent {
 		// })
 		// .subscribe();
 
-		box.setInputConsumer(input -> {
-			log.info("xxx3 {}", input);
-		});
+		// box.setInputConsumer(input -> {
+		// 	log.info("xxx3 {}", input);
+		// });
 
 		component.setRoot(box, true);
 

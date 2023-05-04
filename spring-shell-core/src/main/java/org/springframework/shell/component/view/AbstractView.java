@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -35,7 +34,6 @@ public abstract class AbstractView implements View {
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
-	private Consumer<String> inputConsumer;
 	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
 	private boolean hasFocus;
 
@@ -74,22 +72,12 @@ public abstract class AbstractView implements View {
 	}
 
 	@Override
-	public void setInputConsumer(Consumer<String> inputConsumer) {
-		this.inputConsumer = inputConsumer;
-	}
-
-	@Override
-	public Consumer<String> getInputConsumer() {
-		return inputConsumer;
-	}
-
-	// @Override
-	// public Function<MouseEvent, MouseEvent> getMouseHandler() {
-	// 	return Function.identity();
-	// }
-
-	@Override
 	public BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler() {
+		return (event, view) -> event;
+	}
+
+	@Override
+	public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
 		return (event, view) -> event;
 	}
 

@@ -49,22 +49,6 @@ public class BoxView extends AbstractView {
 		super.setRect(x, y, width, height);
 	}
 
-	// @Override
-	// public Function<MouseEvent, MouseEvent> getMouseHandler() {
-	// 	return event -> {
-	// 		if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-	// 				&& event.getButton() == MouseEvent.Button.Button1) {
-	// 			int x = event.getX();
-	// 			int y = event.getY();
-	// 			if (getRect().contains(x, y)) {
-
-	// 			}
-	// 		}
-
-	// 		return event;
-	// 	};
-	// }
-
 	@Override
 	public BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler() {
 		return (event, view) -> {
