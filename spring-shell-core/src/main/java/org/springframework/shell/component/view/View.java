@@ -108,4 +108,10 @@ public interface View {
 	 */
 	record Dimension(int width, int height) {
 	};
+
+	/**
+	 * Record representing position {@code x} and {@code y}.
+	 */
+	record Position(int x, int y) {
+	};
 }

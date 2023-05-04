@@ -23,6 +23,7 @@ import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
 import org.springframework.shell.component.view.View.Dimension;
+import org.springframework.shell.component.view.View.Position;
 import org.springframework.util.Assert;
 
 /**
@@ -43,6 +44,8 @@ public class Screen {
 	private int rows = 0;
 	private int columns = 0;
 	private ScreenItem[][] content;
+	private boolean showCursor;
+	private Position cursorPosition = new Position(0, 0);
 
 	public Screen() {
 		this(0, 0);
@@ -50,6 +53,22 @@ public class Screen {
 
 	public Screen(int rows, int columns) {
 		resize(rows, columns);
+	}
+
+	public void setShowCursor(boolean showCursor) {
+		this.showCursor = showCursor;
+	}
+
+	public boolean isShowCursor() {
+		return showCursor;
+	}
+
+	public void setCursorPosition(Position cursorPosition) {
+		this.cursorPosition = cursorPosition;
+	}
+
+	public Position getCursorPosition() {
+		return cursorPosition;
 	}
 
 	public void resize(int rows, int columns) {
