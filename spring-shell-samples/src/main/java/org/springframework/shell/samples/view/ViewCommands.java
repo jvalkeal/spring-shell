@@ -15,15 +15,9 @@
  */
 package org.springframework.shell.samples.view;
 
-import java.time.Duration;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Flux;
 
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
@@ -32,6 +26,11 @@ import org.springframework.shell.component.view.TextView;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
+/**
+ * Commands showing some default features of a build-in views.
+ *
+ * @author Janne Valkealahti
+ */
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
 
@@ -99,41 +98,6 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
-	@Command(command = "showcase")
-	public void showcase() {
-		ViewHandler component = new ViewHandler(getTerminal());
-		BoxView box = new BoxView();
-		box.setTitle("Title");
-		box.setShowBorder(true);
-
-		// Flux<Message<?>> asdf = Flux.interval(Duration.ofSeconds(1)).map(l -> {
-		// 	Message<String> message = MessageBuilder
-		// 		.withPayload("")
-		// 		.setHeader("xxx", "tick")
-		// 		.build();
-		// 	return message;
-		// });
-		// component.getEventLoop().scheduleEvents2(asdf);
-
-		// Flux<? extends Message<?>> events = component.getEventLoop().events();
-		// events.doOnNext(m -> {
-		// 	log.info("xxx1");
-		// 	if (m.getHeaders().containsKey("xxx")) {
-		// 		log.info("xxx2");
-		// 		String t = new Date().toString();
-		// 		box.setTitle(t);
-		// 	}
-		// })
-		// .subscribe();
-
-		// box.setInputConsumer(input -> {
-		// 	log.info("xxx3 {}", input);
-		// });
-
-		component.setRoot(box, true);
-
-		component.run();
-	}
 
 	@Command(command = "test")
 	public void test() {
