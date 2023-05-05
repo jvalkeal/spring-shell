@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.standard;
+package org.springframework.shell.samples.view;
 
 import java.time.Duration;
 import java.util.Date;
