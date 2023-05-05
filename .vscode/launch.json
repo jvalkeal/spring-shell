@@ -119,6 +119,14 @@
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
             "projectName": "spring-shell-samples",
             "args": "view showcase"
+        },
+        {
+            "type": "java",
+            "name": "Sample view test",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view test"
         }
     ]
 }

@@ -134,4 +134,28 @@ public class ViewCommands extends AbstractShellComponent {
 
 		component.run();
 	}
+
+	@Command(command = "test")
+	public void test() {
+		ViewHandler component = new ViewHandler(getTerminal());
+
+		BoxView box1 = new BoxView();
+		BoxView box2 = new BoxView();
+		BoxView box3 = new BoxView();
+		BoxView box4 = new BoxView();
+
+		GridView grid = new GridView();
+		grid.borders = true;
+		grid.setRowSize(2);
+		grid.setColumnSize(1);
+		grid.setShowBorder(false);
+		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
+		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
+		grid.addItem(box3, 1, 0, 1, 1, 0, 0);
+		grid.addItem(box4, 1, 1, 1, 1, 0, 0);
+
+		component.setRoot(grid, true);
+		component.run();
+	}
+
 }
