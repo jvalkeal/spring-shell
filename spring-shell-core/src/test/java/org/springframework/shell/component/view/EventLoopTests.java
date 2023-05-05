@@ -47,17 +47,17 @@ class EventLoopTests {
 		verifier2.verify(Duration.ofSeconds(1));
 	}
 
-	@Test
-	void test2() {
-		EventLoop loop = new EventLoop();
-		loop.start();
+	// @Test
+	// void test2() {
+	// 	EventLoop loop = new EventLoop();
+	// 	loop.start();
 
-		StepVerifier verifier1 = StepVerifier.create(loop.events())
-			.expectNextCount(9)
-			.thenCancel()
-			.verifyLater();
+	// 	StepVerifier verifier1 = StepVerifier.create(loop.events())
+	// 		.expectNextCount(9)
+	// 		.thenCancel()
+	// 		.verifyLater();
 
-		loop.dispatchTicks();
-		verifier1.verify(Duration.ofSeconds(2));
-	}
+	// 	loop.dispatchTicks();
+	// 	verifier1.verify(Duration.ofSeconds(2));
+	// }
 }

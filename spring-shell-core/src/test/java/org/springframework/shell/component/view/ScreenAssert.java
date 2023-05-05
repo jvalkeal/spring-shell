@@ -45,6 +45,50 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 	 * @return this assertion object
 	 */
 	public ScreenAssert hasBorder(int x, int y, int width, int height) {
+		return hasBorderType(x, y, width, height, true);
+	}
+
+	/**
+	 * Verifies that a given bounded box is legal for a screen and that characters
+	 * along border doesn't look like border characters.
+	 *
+	 * @param x a x position in a screen
+	 * @param y a y position in a screen
+	 * @param width  a width in a screen
+	 * @param height a height in a screen
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasNoBorder(int x, int y, int width, int height) {
+		return hasBorderType(x, y, width, height, false);
+	}
+
+	/**
+	 * Verifies that a given text can be found from a screen coordinates following
+	 * horizontal width.
+	 *
+	 * @param text a text to verify
+	 * @param x a x position of a text
+	 * @param y a y position of a text
+	 * @param width a width of a text to check
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasHorizontalText(String text, int x, int y, int width) {
+		isNotNull();
+		ScreenItem[][] content = actual.getContent();
+		checkBounds(content, x, y, width, 1);
+		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i].content != null) {
+				buf.append(items[i].content);
+			}
+		}
+		String actualText = buf.toString();
+		assertThat(actualText).isEqualTo(text);
+		return this;
+	}
+
+	private ScreenAssert hasBorderType(int x, int y, int width, int height, boolean border) {
 		isNotNull();
 		ScreenItem[][] content = actual.getContent();
 		checkBounds(content, x, y, width, height);
@@ -57,54 +101,70 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 			failWithMessage("Top Border size doesn't match");
 		}
 		assertThat(topBorder).allSatisfy(b -> {
-			assertThat(b).isNotNull();
-			assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			if (border) {
+				assertThat(b).isNotNull();
+				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			}
+			else {
+				if (b != null) {
+					assertThat(b.getType()).isNotEqualTo(Screen.Type.BORDER);
+				}
+			}
 		});
 		assertThat(rightBorder).allSatisfy(b -> {
-			assertThat(b).isNotNull();
-			assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			if (border) {
+				assertThat(b).isNotNull();
+				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			}
+			else {
+				if (b != null) {
+					assertThat(b.getType()).isNotEqualTo(Screen.Type.BORDER);
+				}
+			}
 		});
 		assertThat(bottomBorder).allSatisfy(b -> {
-			assertThat(b).isNotNull();
-			assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			if (border) {
+				assertThat(b).isNotNull();
+				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			}
+			else {
+				if (b != null) {
+					assertThat(b.getType()).isNotEqualTo(Screen.Type.BORDER);
+				}
+			}
 		});
 		assertThat(leftBorder).allSatisfy(b -> {
-			assertThat(b).isNotNull();
-			assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			if (border) {
+				assertThat(b).isNotNull();
+				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
+			}
+			else {
+				if (b != null) {
+					assertThat(b.getType()).isNotEqualTo(Screen.Type.BORDER);
+				}
+			}
 		});
 		return this;
 	}
 
 	private ScreenItem[][] getBorders(ScreenItem[][] content, int x, int y, int width, int height) {
-		ScreenItem[] topBorder = getTopBorder(content, y, width);
-		ScreenItem[] rightBorder = getRightBorder(content, x, height);
-		ScreenItem[] bottomBorder = getBottomBorder(content, y, height, width);
-		ScreenItem[] leftBorder = getLeftBorder(content, x, width, height);
+		ScreenItem[] topBorder = getHorizontalBorder(content, y, x, width);
+		ScreenItem[] rightBorder = getVerticalBorder(content, x + width - 1, y, height);
+		ScreenItem[] bottomBorder = getHorizontalBorder(content, y + height - 1, x, width);
+		ScreenItem[] leftBorder = getVerticalBorder(content, x, x, height);
 		return new ScreenItem[][] { topBorder, rightBorder, bottomBorder, leftBorder };
 	}
 
-	private ScreenItem[] getTopBorder(ScreenItem[][] content, int y, int width) {
-		return Arrays.copyOfRange(content[y], 0, width);
+	private ScreenItem[] getHorizontalBorder(ScreenItem[][] content, int row, int start, int width) {
+		return Arrays.copyOfRange(content[row], start, start + width);
 	}
 
-	private ScreenItem[] getRightBorder(ScreenItem[][] content, int x, int height) {
-		ScreenItem[] array = new ScreenItem[content.length];
-		for (int i = 0; i < content.length; i++) {
-			array[i] = content[x][i];
+	private ScreenItem[] getVerticalBorder(ScreenItem[][] content, int column, int start, int height) {
+		ScreenItem[] array = new ScreenItem[height];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = content[start][column];
 		}
-		return Arrays.copyOfRange(array, 0, height);
-	}
-
-	private ScreenItem[] getBottomBorder(ScreenItem[][] content, int y, int height, int width) {
-		return Arrays.copyOfRange(content[y + height - 1], 0, width);
-	}
-
-	private ScreenItem[] getLeftBorder(ScreenItem[][] content, int x, int width, int height) {
-		ScreenItem[] array = new ScreenItem[content.length];
-		for (int i = 0; i < content.length; i++) {
-			array[i] = content[x + width - 1][i];
-		}
-		return Arrays.copyOfRange(array, 0, height);
+		return array;
 	}
 
 	private void checkBounds(ScreenItem[][] content, int x, int y, int width, int height) {

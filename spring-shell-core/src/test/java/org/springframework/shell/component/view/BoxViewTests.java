@@ -15,21 +15,19 @@
  */
 package org.springframework.shell.component.view;
 
+import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.Screen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoxViewTests {
 
-	private Screen display;
+	private Screen screen;
 
 	@BeforeEach
 	void setup() {
-		display = new Screen(24, 80);
+		screen = new Screen(24, 80);
 	}
 
 	@Test
@@ -37,14 +35,8 @@ class BoxViewTests {
 		BoxView view = new BoxView();
 		view.setShowBorder(true);
 		view.setRect(0, 0, 80, 24);
-		view.draw(display);
-		// char[][] data = display.getData();
-		// assertThat(data[0][0]).isNotEqualTo(' ');
-		// assertThat(data[0][79]).isNotEqualTo(' ');
-		// assertThat(data[23][0]).isNotEqualTo(' ');
-		// assertThat(data[23][79]).isNotEqualTo(' ');
-		// assertThat(data[0][1]).isNotEqualTo(' ');
-		// assertThat(data[1][0]).isNotEqualTo(' ');
+		view.draw(screen);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
 	}
 
 	@Test
@@ -52,14 +44,8 @@ class BoxViewTests {
 		BoxView view = new BoxView();
 		view.setShowBorder(false);
 		view.setRect(0, 0, 80, 24);
-		view.draw(display);
-		// char[][] data = display.getData();
-		// assertThat(data[0][0]).isEqualTo(' ');
-		// assertThat(data[0][79]).isEqualTo(' ');
-		// assertThat(data[23][0]).isEqualTo(' ');
-		// assertThat(data[23][79]).isEqualTo(' ');
-		// assertThat(data[0][1]).isEqualTo(' ');
-		// assertThat(data[1][0]).isEqualTo(' ');
+		view.draw(screen);
+		assertThat(forScreen(screen)).hasNoBorder(0, 0, 80, 24);
 	}
 
 	@Test
@@ -68,9 +54,11 @@ class BoxViewTests {
 		view.setShowBorder(true);
 		view.setTitle("title");
 		view.setRect(0, 0, 80, 24);
-		view.draw(display);
-		// char[][] data = display.getData();
-		// String line = new String(data[0]);
-		// assertThat(line).contains("title");
+		view.draw(screen);
+		assertThat(forScreen(screen)).hasHorizontalText("title", 0, 1, 5);
+	}
+
+	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
+		return () -> new ScreenAssert(screen);
 	}
 }
