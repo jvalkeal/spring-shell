@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.samples.view;
 
-
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.ViewHandler;
