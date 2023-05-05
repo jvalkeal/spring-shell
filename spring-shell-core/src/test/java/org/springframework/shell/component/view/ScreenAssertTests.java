@@ -46,9 +46,28 @@ class ScreenAssertTests {
 
 	@Test
 	void shouldNotThrowWithValidBorder() {
-		Screen screen = new Screen(5, 5);
-		screen.printBorder(0, 0, 5, 5);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 5, 5);
+		Screen screen = new Screen(5, 10);
+		screen.printBorder(0, 0, 10, 5);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 10, 5);
+
+		screen = new Screen(10, 5);
+		screen.printBorder(0, 0, 5, 10);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 5, 10);
+	}
+
+	@Test
+	void shouldNotThrowWithValidNonBorder() {
+		Screen screen = new Screen(5, 10);
+		screen.printBorder(0, 0, 10, 5);
+		assertThat(forScreen(screen)).hasNoBorder(1, 1, 8, 3);
+	}
+
+
+	@Test
+	void hasHorizontalText() {
+		Screen screen = new Screen(5, 10);
+		screen.print("test", 0, 0, 4);
+		assertThat(forScreen(screen)).hasHorizontalText("test", 0, 0, 4);
 	}
 
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
