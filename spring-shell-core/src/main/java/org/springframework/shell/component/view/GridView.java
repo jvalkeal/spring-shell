@@ -414,62 +414,9 @@ public class GridView extends BoxView {
 
 			// Draw border around primitive.
 			if (this.borders) {
-
-				for (int bx = item.x; bx < item.x + item.w; bx++) {
-					if (bx < 0 || bx >= screenWidth) {
-						continue;
-					}
-					int by = item.y - 1;
-					if (by >= 0 && by < screenHeight) {
-						printJoinedSemigraphics(screen, bx, by, '-');
-					}
-					by = item.y + item.h;
-					if (by >= 0 && by < screenHeight) {
-						printJoinedSemigraphics(screen, bx, by, '-');
-					}
-				}
-				for (int by = item.y; by < item.y + item.h; by++) {
-					if (by < 0 || by >= screenHeight) {
-						continue;
-					}
-					int bx = item.x - 1;
-					if (bx >= 0 && bx < screenWidth) {
-						printJoinedSemigraphics(screen, bx, by, '|');
-					}
-					bx = item.x + item.w;
-					if (bx >= 0 && bx < screenWidth) {
-						printJoinedSemigraphics(screen, bx, by, '|');
-					}
-				}
-
-				int bx = item.x - 1;
-				int by = item.y - 1;
-				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
-					printJoinedSemigraphics(screen, bx, by, '┌');
-				}
-				bx = item.x + item.w;
-				by = item.y - 1;
-				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
-					printJoinedSemigraphics(screen, bx, by, '┐');
-				}
-				bx = item.x - 1;
-				by = item.y + item.h;
-				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
-					printJoinedSemigraphics(screen, bx, by, '└');
-				}
-				bx = item.x + item.w;
-				by = item.y + item.h;
-				if (bx >= 0 && bx < screenWidth && by >= 0 && by < screenHeight) {
-					printJoinedSemigraphics(screen, bx, by, '┘');
-				}
-				// screen.printBorder(item.x, item.y, item.w, item.h);
 				screen.printBorder(item.x - 1, item.y - 1, item.w + 2, item.h + 2);
 			}
 		}
-	}
-
-	void printJoinedSemigraphics(Screen screen, int x, int y, char c) {
-		// screen.setContent(x, y, ScreenItem.of(c));
 	}
 
 	private static class GridItem {
