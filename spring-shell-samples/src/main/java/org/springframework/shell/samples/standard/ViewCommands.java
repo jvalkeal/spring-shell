@@ -148,13 +148,20 @@ public class ViewCommands extends AbstractShellComponent {
 		grid.borders = true;
 		// grid.setRowSize(2);
 		// grid.setColumnSize(2);
-		grid.setRowSize(1);
-		grid.setColumnSize(1);
-		grid.setShowBorder(false);
-		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
+
+		// grid.setRowSize(0, 0);
+		// grid.setColumnSize(0, 0);
+		// grid.setShowBorder(false);
+		// grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 		// grid.addItem(box2, 0, 1, 1, 1, 0, 0);
 		// grid.addItem(box3, 1, 0, 1, 1, 0, 0);
 		// grid.addItem(box4, 1, 1, 1, 1, 0, 0);
+
+		grid.setRowSize(0);
+		grid.setColumnSize(0, 0);
+		grid.setShowBorder(false);
+		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
+		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
 
 		component.setRoot(grid, true);
 		component.run();
