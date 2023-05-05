@@ -40,8 +40,8 @@ class GridViewTests {
 
 		GridView grid = new GridView();
 		grid.borders = true;
-		grid.setRowSize(1);
-		grid.setColumnSize(1);
+		grid.setRowSize(0);
+		grid.setColumnSize(0);
 		grid.setShowBorder(false);
 		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 
@@ -58,8 +58,8 @@ class GridViewTests {
 
 		GridView grid = new GridView();
 		grid.borders = true;
-		grid.setRowSize(1);
-		grid.setColumnSize(2);
+		grid.setRowSize(0);
+		grid.setColumnSize(0, 0);
 		grid.setShowBorder(false);
 		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
@@ -68,6 +68,7 @@ class GridViewTests {
 		grid.draw(screen);
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
 	}
 
 	@Test
@@ -77,8 +78,8 @@ class GridViewTests {
 
 		GridView grid = new GridView();
 		grid.borders = true;
-		grid.setRowSize(2);
-		grid.setColumnSize(1);
+		grid.setRowSize(0, 0);
+		grid.setColumnSize(0);
 		grid.setShowBorder(false);
 		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 		grid.addItem(box2, 1, 0, 1, 1, 0, 0);
@@ -98,8 +99,8 @@ class GridViewTests {
 
 		GridView grid = new GridView();
 		grid.borders = true;
-		grid.setRowSize(2);
-		grid.setColumnSize(1);
+		grid.setRowSize(0, 0);
+		grid.setColumnSize(0, 0);
 		grid.setShowBorder(false);
 		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
@@ -110,12 +111,6 @@ class GridViewTests {
 		grid.draw(screen);
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
-
-		assertThat(forScreen(screen)).hasBorder(0, 0, 2, 4);
-		assertThat(forScreen(screen)).hasBorder(2, 0, 78, 4);
-
-		assertThat(forScreen(screen)).hasBorder(0, 3, 2, 21);
-		assertThat(forScreen(screen)).hasBorder(2, 3, 78, 21);
 	}
 
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
