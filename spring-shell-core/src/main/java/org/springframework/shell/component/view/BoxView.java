@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.jline.terminal.MouseEvent;
 
@@ -61,11 +60,9 @@ public class BoxView extends AbstractView {
 					return null;
 				}
 			}
-
 			return event;
 		};
 	}
-
 
 	/**
 	 * Sets a paddings for this view.
@@ -112,6 +109,12 @@ public class BoxView extends AbstractView {
 		this.title = title;
 	}
 
+	/**
+	 * Possibly draws a box around this view and title in a box top boundary. Also
+	 * calls a {@code draw function} if defined.
+	 *
+	 * @param screen the screen
+	 */
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getRect();
 		if (rect.width() <= 0 || rect.height() <= 0) {

@@ -101,5 +101,11 @@ public abstract class AbstractView implements View {
 		return drawFunction;
 	}
 
+	/**
+	 * Component internal drawing method. Implementing classes needs to define this
+	 * method to draw something into a {@link Screen}.
+	 *
+	 * @param screen the screen
+	 */
 	protected abstract void drawInternal(Screen screen);
 }

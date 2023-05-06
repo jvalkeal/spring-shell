@@ -21,6 +21,8 @@ import java.util.List;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.View.Dimension;
 import org.springframework.shell.component.view.View.Position;
@@ -34,6 +36,7 @@ import org.springframework.util.Assert;
  */
 public class Screen {
 
+	private final static Logger log = LoggerFactory.getLogger(Screen.class);
 	private static final int BORDER_LEFT = 1;
 	private static final int BORDER_TOP = 2;
 	private static final int BORDER_RIGHT = 4;
@@ -77,6 +80,7 @@ public class Screen {
 		this.rows = rows;
 		this.columns = columns;
 		reset();
+		log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
 	}
 
 	public Dimension getSize() {
@@ -132,6 +136,8 @@ public class Screen {
 	}
 
 	public void printBorder(int x, int y, int width, int height) {
+		log.trace("PrintBorder rows={}, columns={}, x={}, y={}, width={}, height={}", this.rows, this.columns, x, y,
+				width, height);
 		printBorderHorizontal(x, y, width);
 		printBorderHorizontal(x, y + height - 1, width);
 		printBorderVertical(x, y, height);

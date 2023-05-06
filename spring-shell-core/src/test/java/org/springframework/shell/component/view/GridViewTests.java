@@ -19,10 +19,6 @@ import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.Screen;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GridViewTests {
@@ -69,6 +65,7 @@ class GridViewTests {
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
 		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
+		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
 	}
 
 	@Test
@@ -88,6 +85,8 @@ class GridViewTests {
 		grid.draw(screen);
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 12);
+		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
 	}
 
 	@Test
@@ -111,6 +110,10 @@ class GridViewTests {
 		grid.draw(screen);
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
+		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
+		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
+		assertThat(forScreen(screen)).hasBorder(39, 11, 41, 13);
 	}
 
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {

@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
@@ -151,8 +150,8 @@ public class ViewHandler {
 	private void display() {
 		log.debug("display");
 		size.copy(terminal.getSize());
-		display.resize(size.getRows(), size.getColumns());
 		display.clear();
+		display.resize(size.getRows(), size.getColumns());
 		display.reset();
 		rootView.setRect(0, 0, size.getColumns(), size.getRows());
 		virtualDisplay.resize(size.getRows(), size.getColumns());
@@ -258,6 +257,7 @@ public class ViewHandler {
 		});
 
 		try {
+			terminal.puts(Capability.enter_ca_mode);
 			terminal.puts(Capability.keypad_xmit);
 			terminal.puts(Capability.cursor_invisible);
 			terminal.trackMouse(Terminal.MouseTracking.Normal);
@@ -280,6 +280,7 @@ public class ViewHandler {
 			terminal.trackMouse(Terminal.MouseTracking.Off);
 			terminal.puts(Capability.keypad_local);
 			terminal.puts(Capability.cursor_visible);
+			terminal.puts(Capability.exit_ca_mode);
 			display.update(Collections.emptyList(), 0);
 		}
 	}

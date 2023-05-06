@@ -151,7 +151,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		ScreenItem[] topBorder = getHorizontalBorder(content, y, x, width);
 		ScreenItem[] rightBorder = getVerticalBorder(content, x + width - 1, y, height);
 		ScreenItem[] bottomBorder = getHorizontalBorder(content, y + height - 1, x, width);
-		ScreenItem[] leftBorder = getVerticalBorder(content, x, x, height);
+		ScreenItem[] leftBorder = getVerticalBorder(content, x, y, height);
 		return new ScreenItem[][] { topBorder, rightBorder, bottomBorder, leftBorder };
 	}
 
