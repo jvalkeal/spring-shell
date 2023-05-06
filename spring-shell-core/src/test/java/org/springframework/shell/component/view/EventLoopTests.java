@@ -27,7 +27,7 @@ class EventLoopTests {
 
 	@Test
 	void messageToMultipleSubscribers() {
-		EventLoop loop = new EventLoop();
+		DefaultEventLoop loop = new DefaultEventLoop();
 		loop.start();
 
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
