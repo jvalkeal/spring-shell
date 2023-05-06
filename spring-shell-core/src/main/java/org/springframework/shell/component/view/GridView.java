@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.shell.component.view.Screen.ScreenItem;
-
 /**
  * {@code GridView} is a layout container with no initial {@link View views}.
  *

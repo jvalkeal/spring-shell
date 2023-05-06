@@ -15,8 +15,17 @@
  */
 package org.springframework.shell.samples.view;
 
+import java.time.Duration;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
+
+import reactor.core.publisher.Flux;
+
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
+import org.springframework.shell.component.view.EventLoop;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -28,40 +37,56 @@ import org.springframework.shell.standard.AbstractShellComponent;
 @Command(command = { "view", "showcase" })
 public class ViewShowcaseCommands extends AbstractShellComponent {
 
-	@Command(command = "xxx1")
-	public void xxx1() {
+	@Command(command = "clock")
+	public void clock() {
+		// setup handler with one box view
 		ViewHandler component = new ViewHandler(getTerminal());
-		BoxView box = new BoxView();
-		box.setTitle("Title");
-		box.setShowBorder(true);
+		BoxView root = new BoxView();
+		root.setTitle("What's o'clock");
+		root.setShowBorder(true);
 
-		// Flux<Message<?>> asdf = Flux.interval(Duration.ofSeconds(1)).map(l -> {
-		// 	Message<String> message = MessageBuilder
-		// 		.withPayload("")
-		// 		.setHeader("xxx", "tick")
-		// 		.build();
-		// 	return message;
-		// });
-		// component.getEventLoop().scheduleEvents2(asdf);
+		// hack to store date to print
+		AtomicReference<String> ref = new AtomicReference<>();
 
-		// Flux<? extends Message<?>> events = component.getEventLoop().events();
-		// events.doOnNext(m -> {
-		// 	log.info("xxx1");
-		// 	if (m.getHeaders().containsKey("xxx")) {
-		// 		log.info("xxx2");
-		// 		String t = new Date().toString();
-		// 		box.setTitle(t);
-		// 	}
-		// })
-		// .subscribe();
+		// date message as flux
+		Flux<Message<?>> dates = Flux.interval(Duration.ofSeconds(1)).map(l -> {
+			String date = new Date().toString();
+			Message<String> message = MessageBuilder
+				.withPayload(date)
+				.setHeader("xxx", "tick")
+				.build();
+			return message;
+		});
 
-		// box.setInputConsumer(input -> {
-		// 	log.info("xxx3 {}", input);
-		// });
+		// schedule dates to event loop
+		component.getEventLoop().scheduleEventsx(dates);
 
-		component.setRoot(box, true);
+		// process dates
+		Flux<? extends Message<?>> datesProcessing = component.getEventLoop().events()
+			.filter(message -> message.getHeaders().containsKey("xxx"))
+			.doOnNext(message -> {
+				if(message.getPayload() instanceof String s) {
+					ref.set(s);
+					Message<String> xxx = MessageBuilder.withPayload("WINCH")
+						.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+						.build();
+					component.getEventLoop().dispatch(xxx);
+				}
+			});
+		// schedule detas processing
+		component.getEventLoop().scheduleEventsAndSubcribe(datesProcessing);
 
+		// draw current date
+		root.setDrawFunction((screen, rect) -> {
+			String s = ref.get();
+			if (s != null) {
+				screen.print(s, 2, 2, s.length());
+			}
+			return rect;
+		});
+
+		// logic run
+		component.setRoot(root, true);
 		component.run();
 	}
-
 }

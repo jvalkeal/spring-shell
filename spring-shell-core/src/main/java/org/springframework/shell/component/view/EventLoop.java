@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.function.Function;
+import java.util.concurrent.Flow.Subscriber;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -210,14 +210,48 @@ public class EventLoop {
 		dispatch(message);
 	}
 
-	private List<Flux<Message<?>>> toSchduleOnStart = new ArrayList<>();
+	private List<Flux<? extends Message<?>>> toSchduleOnStart = new ArrayList<>();
 	private List<Disposable> disposeOnStop = new ArrayList<>();
 
-	public void scheduleEvents2(Flux<Message<?>> messages) {
+	public void scheduleEvents(Flux<Message<?>> messages) {
 		Flux<Message<?>> f = messages
 			.doOnNext(m -> {
 				dispatch(m);
 			});
+		if (running) {
+			Disposable subscribe = f.subscribe();
+			disposeOnStop.add(subscribe);
+			log.info("xxx asdf1");
+		}
+		else {
+			this.toSchduleOnStart.add(f);
+			log.info("xxx asdf2");
+		}
+	}
+
+	public void scheduleEventsx(Flux<? extends Message<?>> messages) {
+		Flux<? extends Message<?>> f = messages
+			.doOnNext(m -> {
+				dispatch(m);
+			});
+		if (running) {
+			Disposable subscribe = f.subscribe();
+			disposeOnStop.add(subscribe);
+			log.info("xxx asdf1");
+		}
+		else {
+			this.toSchduleOnStart.add(f);
+			log.info("xxx asdf2");
+		}
+	}
+
+	public void scheduleEventsAndSubcribe(Flux<? extends Message<?>> f) {
+		// Disposable subscribe = messages
+		// 	.doOnNext(m -> {
+		// 		dispatch(m);
+		// 	})
+		// 	.subscribe()
+		// 	;
 		if (running) {
 			Disposable subscribe = f.subscribe();
 			disposeOnStop.add(subscribe);

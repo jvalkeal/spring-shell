@@ -53,6 +53,10 @@ class ScreenAssertTests {
 		screen = new Screen(10, 5);
 		screen.printBorder(0, 0, 5, 10);
 		assertThat(forScreen(screen)).hasBorder(0, 0, 5, 10);
+
+		screen = new Screen(10, 5);
+		screen.printBorder(1, 1, 3, 8);
+		assertThat(forScreen(screen)).hasBorder(1, 1, 3, 8);
 	}
 
 	@Test
