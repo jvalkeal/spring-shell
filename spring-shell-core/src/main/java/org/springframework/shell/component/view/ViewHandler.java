@@ -65,7 +65,7 @@ public class ViewHandler {
 	private Size size;
 	private View rootView;
 
-	private EventLoop eventLoop = new EventLoop();
+	private DefaultEventLoop eventLoop = new DefaultEventLoop();
 
 	/**
 	 * Constructs a handler with a given terminal.
@@ -171,7 +171,7 @@ public class ViewHandler {
 
 	private void dispatchWinch() {
 		Message<String> message = MessageBuilder.withPayload("WINCH")
-			.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.SIGNAL)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -179,7 +179,7 @@ public class ViewHandler {
 	private void registerEventHandling() {
 		Disposable subscribe1 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SIGNAL);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.SIGNAL);
 			})
 			.doOnNext(m -> {
 				display();
@@ -188,7 +188,7 @@ public class ViewHandler {
 
 		Disposable subscribe2 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.KEY);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
@@ -200,7 +200,7 @@ public class ViewHandler {
 
 		Disposable subscribe3 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.MOUSE);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.MOUSE);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
@@ -331,7 +331,7 @@ public class ViewHandler {
 		Message<KeyEvent> message = MessageBuilder
 			// .withPayload(binding)
 			.withPayload(event)
-			.setHeader(EventLoop.TYPE, EventLoop.Type.KEY)
+			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.KEY)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -339,7 +339,7 @@ public class ViewHandler {
 	private void dispatchMouse(MouseEvent event) {
 		Message<MouseEvent> message = MessageBuilder
 			.withPayload(event)
-			.setHeader(EventLoop.TYPE, EventLoop.Type.MOUSE)
+			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.MOUSE)
 			.build();
 		eventLoop.dispatch(message);
 	}

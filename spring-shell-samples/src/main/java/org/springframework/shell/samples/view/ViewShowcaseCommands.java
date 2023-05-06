@@ -25,7 +25,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.EventLoop;
+import org.springframework.shell.component.view.DefaultEventLoop;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -68,7 +68,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 				if(message.getPayload() instanceof String s) {
 					ref.set(s);
 					Message<String> xxx = MessageBuilder.withPayload("WINCH")
-						.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+						.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.SIGNAL)
 						.build();
 					component.getEventLoop().dispatch(xxx);
 				}
