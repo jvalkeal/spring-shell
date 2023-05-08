@@ -146,6 +146,9 @@ public class Screen {
 
 	public void printBorderHorizontal(int x, int y, int width) {
 		for (int i = x; i < x + width; i++) {
+			if (i < 0 || i >= columns) {
+				continue;
+			}
 			ScreenItem item = content[y][i];
 			if (item == null) {
 				item = ScreenItem.border();
@@ -162,6 +165,9 @@ public class Screen {
 
 	public void printBorderVertical(int x, int y, int height) {
 		for (int i = y; i < y + height; i++) {
+			if (i < 0 || i >= rows) {
+				continue;
+			}
 			ScreenItem item = content[i][x];
 			if (item == null) {
 				item = ScreenItem.border();

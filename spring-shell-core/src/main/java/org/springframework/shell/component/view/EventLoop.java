@@ -19,6 +19,11 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.messaging.Message;
 
+/**
+ *
+ *
+ * @author Janne Valkealahti
+ */
 public interface EventLoop {
 
 	Flux<? extends Message<?>> events();

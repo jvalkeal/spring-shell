@@ -17,6 +17,7 @@ package org.springframework.shell.component.view;
 
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,6 +115,43 @@ class GridViewTests {
 		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
 		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
 		assertThat(forScreen(screen)).hasBorder(39, 11, 41, 13);
+	}
+
+	@Test
+	@Disabled("bug")
+	void hasBordersWithxxx() {
+		screen = new Screen(20, 10);
+
+		BoxView menu = new BoxView();
+		BoxView main = new BoxView();
+		BoxView sideBar = new BoxView();
+		BoxView header = new BoxView();
+		BoxView footer = new BoxView();
+
+		GridView grid = new GridView();
+		grid.setRowSize(3, 0, 3);
+		grid.setColumnSize(30, 0, 30);
+		grid.borders = true;
+
+		grid.addItem(header, 0, 0, 1, 3, 0, 0);
+		grid.addItem(footer, 2, 0, 1, 3, 0, 0);
+
+		grid.addItem(menu, 0, 0, 0, 0, 0, 0);
+		grid.addItem(main, 1, 0, 1, 3, 0, 0);
+		grid.addItem(sideBar, 0, 0, 0, 0, 0, 0);
+
+		grid.addItem(menu, 1, 0, 1, 1, 0, 100);
+		grid.addItem(main, 1, 1, 1, 1, 0, 100);
+		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
+
+		grid.setRect(0, 0, 10, 20);
+		grid.draw(screen);
+
+		// assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+		// assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
+		// assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
+		// assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
+		// assertThat(forScreen(screen)).hasBorder(39, 11, 41, 13);
 	}
 
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
