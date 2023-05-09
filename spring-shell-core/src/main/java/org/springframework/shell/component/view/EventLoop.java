@@ -33,4 +33,54 @@ public interface EventLoop {
 	void scheduleEventsDispatch(Flux<? extends Message<?>> messages);
 
 	void dispatch(Message<?> message);
+
+	/**
+	 * Type of an event.
+	 */
+	enum Type {
+
+		/**
+		 * Signals dispatched from a terminal.
+		 */
+		SIGNAL,
+
+		/**
+		 * Key bindings from a terminal.
+		 */
+		KEY,
+
+		/**
+		 * Mouse bindings from a terminal.
+		 */
+		MOUSE,
+
+		/**
+		 * System bindinds like redraw.
+		 */
+		SYSTEM
+	}
+
+	/**
+	 * Contract to process event loop messages, possibly translating an event into
+	 * some other type of event or events.
+	 */
+	interface EventLoopProcessor {
+
+		/**
+		 * Checks if this processor can process an event.
+		 *
+		 * @param message the message
+		 * @return true if processor can process an event
+		 */
+		boolean canProcess(Message<?> message);
+
+		/**
+		 * Process a message and transform it into a new {@link Flux} of {@link Message}
+		 * instances.
+		 *
+		 * @param message the message to process
+		 * @return a flux of messages
+		 */
+		Flux<? extends Message<?>> process(Message<?> message);
+	}
 }
