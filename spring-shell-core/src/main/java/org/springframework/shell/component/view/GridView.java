@@ -41,7 +41,7 @@ public class GridView extends BoxView {
 	private int gapColumns;
 	private int rowOffset;
 	private int columnOffset;
-	public boolean borders;
+	private boolean showBorders;
 
 	/**
 	 * Defines how the columns of the grid are distributed. Each value
@@ -100,6 +100,25 @@ public class GridView extends BoxView {
 		gridItems.add(gridItem);
 		return this;
 	}
+
+	/**
+	 * Defines if borders is shown.
+	 *
+	 * @param showBorders the flag showing borders
+	 */
+	public void setShowBorders(boolean showBorders) {
+		this.showBorders = showBorders;
+	}
+
+	/**
+	 * Returns if borders is shown.
+	 *
+	 * @return true if borders is shown
+	 */
+	public boolean isShowBorders() {
+		return showBorders;
+	}
+
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -190,7 +209,7 @@ public class GridView extends BoxView {
 			}
 		}
 
-		if (this.borders) {
+		if (isShowBorders()) {
 			remainingHeight -= rows + 1;
 			remainingWidth -= columns + 1;
 		}
@@ -254,7 +273,7 @@ public class GridView extends BoxView {
 
 		// Calculate row/column positions.
 		int columnX = 0, rowY = 0;
-		if (this.borders) {
+		if (isShowBorders()) {
 			columnX++;
 			rowY++;
 		}
@@ -262,7 +281,7 @@ public class GridView extends BoxView {
 			int row = rowHeight[index];
 			rowPos[index] = rowY;
 			int gap = this.gapRows;
-			if (this.borders) {
+			if (isShowBorders()) {
 				gap = 1;
 			}
 			rowY += row + gap;
@@ -271,7 +290,7 @@ public class GridView extends BoxView {
 			int column = columnWidth[index];
 			columnPos[index] = columnX;
 			int gap = this.gapColumns;
-			if (this.borders) {
+			if (isShowBorders()) {
 				gap = 1;
 			}
 			columnX += column + gap;
@@ -291,7 +310,7 @@ public class GridView extends BoxView {
 			for (int index = 0; index < item.width; index++) {
 				pw += columnWidth[item.column + index];
 			}
-			if (this.borders) {
+			if (isShowBorders()) {
 				pw += item.width - 1;
 				ph += item.height - 1;
 			}
@@ -313,7 +332,7 @@ public class GridView extends BoxView {
 		int offsetX = 0;
 		int offsetY = 0;
 		int add = 1;
-		if (!this.borders) {
+		if (!isShowBorders()) {
 			add = this.gapRows;
 		}
 		for (int index = 0; index < rowHeight.length; index++) {
@@ -323,7 +342,7 @@ public class GridView extends BoxView {
 			}
 			offsetY += height2 + add;
 		}
-		if (!this.borders) {
+		if (!isShowBorders()) {
 			add = this.gapColumns;
 		}
 		for (int index = 0; index < columnWidth.length; index++) {
@@ -336,7 +355,7 @@ public class GridView extends BoxView {
 
 		// Line up the last row/column with the end of the available area.
 		int border = 0;
-		if (this.borders) {
+		if (isShowBorders()) {
 			border = 1;
 		}
 		int last = rowPos.length - 1;
@@ -450,7 +469,7 @@ public class GridView extends BoxView {
 			primitive.draw(screen);
 
 			// Draw border around primitive.
-			if (this.borders) {
+			if (isShowBorders()) {
 				screen.printBorder(item.x - 1, item.y - 1, item.w + 2, item.h + 2);
 			}
 		}
