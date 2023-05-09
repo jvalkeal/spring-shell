@@ -59,6 +59,8 @@ public class DefaultEventLoop implements EventLoop {
 	private Many<Message<?>> bus;
 	private Flux<? extends Message<?>> busFlux;
 	private List<EventLoopProcessor> processors;
+	private List<Flux<? extends Message<?>>> toSchduleOnStart = new ArrayList<>();
+	private List<Disposable> disposeOnStop = new ArrayList<>();
 
 	/**
 	 * Construct event loop with no procesors.
@@ -99,91 +101,15 @@ public class DefaultEventLoop implements EventLoop {
 		busFlux = flatMap.share();
 	}
 
-	/**
-	 * Type of an event.
-	 */
-	public enum Type {
-
-		/**
-		 * Signals dispatched from a terminal.
-		 */
-		SIGNAL,
-
-		/**
-		 * Key bindings from a terminal.
-		 */
-		KEY,
-
-		/**
-		 * Mouse bindings from a terminal.
-		 */
-		MOUSE,
-
-		/**
-		 * System bindinds like redraw.
-		 */
-		SYSTEM
-	}
-
-	/**
-	 * Contract to process event loop messages, possibly translating an event into
-	 * some other type of event or events.
-	 */
-	public interface EventLoopProcessor {
-
-		/**
-		 * Checks if this processor can process an event.
-		 *
-		 * @param message the message
-		 * @return true if processor can process an event
-		 */
-		boolean canProcess(Message<?> message);
-
-		/**
-		 * Process a message and transform it into a new {@link Flux} of {@link Message}
-		 * instances.
-		 *
-		 * @param message the message to process
-		 * @return a flux of messages
-		 */
-		Flux<? extends Message<?>> process(Message<?> message);
-	}
-
-	private static class TickProcessor implements EventLoopProcessor {
-
-		@Override
-		public boolean canProcess(Message<?> message) {
-			return ObjectUtils.nullSafeEquals(message.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.TYPE_TICK);
-		}
-
-		@Override
-		public Flux<? extends Message<?>> process(Message<?> message) {
-			Flux<Message<Long>> take = Flux.interval(Duration.ofMillis(100))
-				.map(l -> {
-					return MessageBuilder
-						.withPayload(l)
-						.build();
-				})
-				.take(Duration.ofSeconds(1));
-			return take;
-		}
-
-	}
-
 	public void start() {
 		if (running) {
 			return;
 		}
-
-		// processors.add(new TickProcessor());
-
 		this.toSchduleOnStart.forEach(f -> {
 			f.subscribe();
 		});
-
 		running = true;
 	}
-
 
 	public void stop() {
 		if (!running) {
@@ -211,9 +137,6 @@ public class DefaultEventLoop implements EventLoop {
 			.build();
 		dispatch(message);
 	}
-
-	private List<Flux<? extends Message<?>>> toSchduleOnStart = new ArrayList<>();
-	private List<Disposable> disposeOnStop = new ArrayList<>();
 
 	@Override
 	public void scheduleEventsDispatch(Flux<? extends Message<?>> messages) {
@@ -261,5 +184,26 @@ public class DefaultEventLoop implements EventLoop {
 		static Comparator<Message<?>> comparingPriority() {
 			return new MessageComparator();
 		}
+	}
+
+	private static class TickProcessor implements EventLoopProcessor {
+
+		@Override
+		public boolean canProcess(Message<?> message) {
+			return ObjectUtils.nullSafeEquals(message.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.TYPE_TICK);
+		}
+
+		@Override
+		public Flux<? extends Message<?>> process(Message<?> message) {
+			Flux<Message<Long>> take = Flux.interval(Duration.ofMillis(100))
+				.map(l -> {
+					return MessageBuilder
+						.withPayload(l)
+						.build();
+				})
+				.take(Duration.ofSeconds(1));
+			return take;
+		}
+
 	}
 }
