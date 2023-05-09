@@ -111,15 +111,16 @@ class GridViewTests {
 		grid.draw(screen);
 
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
-		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 12);
+		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 12);
 		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
 		assertThat(forScreen(screen)).hasBorder(39, 11, 41, 13);
 	}
 
 	@Test
-	@Disabled("bug")
+	// @Disabled("bug")
 	void hasBordersWithxxx() {
+		// screen = new Screen(20, 64);
 		screen = new Screen(20, 10);
 
 		BoxView menu = new BoxView();
@@ -144,6 +145,7 @@ class GridViewTests {
 		grid.addItem(main, 1, 1, 1, 1, 0, 100);
 		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
 
+		// grid.setRect(0, 0, 64, 20);
 		grid.setRect(0, 0, 10, 20);
 		grid.draw(screen);
 

@@ -126,6 +126,7 @@ public class GridView extends BoxView {
 			items.put(item.view, item);
 		}
 
+		// How many rows and columns do we have?
 		int rows = rowSize.length;
 		int columns = columnSize.length;
 		for (GridItem item : items.values()) {
@@ -143,14 +144,12 @@ public class GridView extends BoxView {
 		}
 
 		// Where are they located?
-
 		int[] rowPos = new int[rows];
 		int[] rowHeight = new int[rows];
 		int[] columnPos = new int[columns];
 		int[] columnWidth = new int[columns];
 
 		// How much space do we distribute?
-
 		int remainingWidth = width;
 		int remainingHeight = height;
 		int proportionalWidth = 0;
@@ -298,7 +297,7 @@ public class GridView extends BoxView {
 			}
 			else {
 				pw += (item.width - 1) * this.gapColumns;
-				ph += (item.height -1) * this.gapRows;
+				ph += (item.height - 1) * this.gapRows;
 			}
 			item.x = px;
 			item.y = py;
