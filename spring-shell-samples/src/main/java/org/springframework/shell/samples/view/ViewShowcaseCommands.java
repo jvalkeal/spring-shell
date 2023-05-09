@@ -59,7 +59,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		});
 
 		// schedule dates to event loop
-		component.getEventLoop().scheduleEventsx(dates);
+		component.getEventLoop().scheduleEventsDispatch(dates);
 
 		// process dates
 		Flux<? extends Message<?>> datesProcessing = component.getEventLoop().events()

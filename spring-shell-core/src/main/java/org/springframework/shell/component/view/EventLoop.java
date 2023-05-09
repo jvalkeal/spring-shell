@@ -30,7 +30,7 @@ public interface EventLoop {
 
 	void scheduleEventsAndSubcribe(Flux<? extends Message<?>> f);
 
-	void scheduleEventsx(Flux<? extends Message<?>> messages);
+	void scheduleEventsDispatch(Flux<? extends Message<?>> messages);
 
 	void dispatch(Message<?> message);
 }

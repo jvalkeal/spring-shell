@@ -215,24 +215,8 @@ public class DefaultEventLoop implements EventLoop {
 	private List<Flux<? extends Message<?>>> toSchduleOnStart = new ArrayList<>();
 	private List<Disposable> disposeOnStop = new ArrayList<>();
 
-	public void scheduleEvents(Flux<Message<?>> messages) {
-		Flux<Message<?>> f = messages
-			.doOnNext(m -> {
-				dispatch(m);
-			});
-		if (running) {
-			Disposable subscribe = f.subscribe();
-			disposeOnStop.add(subscribe);
-			log.info("xxx asdf1");
-		}
-		else {
-			this.toSchduleOnStart.add(f);
-			log.info("xxx asdf2");
-		}
-	}
-
 	@Override
-	public void scheduleEventsx(Flux<? extends Message<?>> messages) {
+	public void scheduleEventsDispatch(Flux<? extends Message<?>> messages) {
 		Flux<? extends Message<?>> f = messages
 			.doOnNext(m -> {
 				dispatch(m);
@@ -250,12 +234,6 @@ public class DefaultEventLoop implements EventLoop {
 
 	@Override
 	public void scheduleEventsAndSubcribe(Flux<? extends Message<?>> f) {
-		// Disposable subscribe = messages
-		// 	.doOnNext(m -> {
-		// 		dispatch(m);
-		// 	})
-		// 	.subscribe()
-		// 	;
 		if (running) {
 			Disposable subscribe = f.subscribe();
 			disposeOnStop.add(subscribe);
