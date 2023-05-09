@@ -66,7 +66,7 @@ public class ViewCommands extends AbstractShellComponent {
 		grid.setRowSize(3, 0, 3);
 		grid.setColumnSize(30, 0, 30);
 		// grid.setShowBorder(true);
-		grid.borders = true;
+		grid.setShowBorders(true);
 		grid.addItem(header, 0, 0, 1, 3, 0, 0);
 		grid.addItem(footer, 2, 0, 1, 3, 0, 0);
 
@@ -109,7 +109,7 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView box4 = new BoxView();
 
 		GridView grid = new GridView();
-		grid.borders = true;
+		grid.setShowBorders(true);
 		// grid.setRowSize(2);
 		// grid.setColumnSize(2);
 

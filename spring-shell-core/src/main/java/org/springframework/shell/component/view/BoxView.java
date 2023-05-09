@@ -84,7 +84,7 @@ public class BoxView extends AbstractView {
 	/**
 	 * Defines if border is shown.
 	 *
-	 * @param showBorder
+	 * @param showBorder the flag showing border
 	 */
 	public void setShowBorder(boolean showBorder) {
 		this.showBorder = showBorder;
