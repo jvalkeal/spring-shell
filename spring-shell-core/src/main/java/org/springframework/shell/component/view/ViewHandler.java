@@ -38,6 +38,7 @@ import reactor.core.Disposable;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.KeyBinder.ExpressionResult;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -66,6 +67,7 @@ public class ViewHandler {
 	private Display display;
 	private Size size;
 	private View rootView;
+	private final KeyBinder keyBinder;
 
 	private DefaultEventLoop eventLoop = new DefaultEventLoop();
 
@@ -78,6 +80,7 @@ public class ViewHandler {
 		Assert.notNull(terminal, "terminal must be set");
 		this.terminal = terminal;
 		this.bindingReader = new BindingReader(terminal.reader());
+		this.keyBinder = new KeyBinder(terminal);
 	}
 
 	/**
@@ -274,45 +277,46 @@ public class ViewHandler {
 	// PageUp
 	// PageDown
 
-	private void bindExpression(String expression, KeyMap<String> keyMap) {
-		String exp = expression.toLowerCase(Locale.ROOT);
-		String function = "OPERATION_EXP_" + expression;
-		String keySeq = null;
-		String mainKey = null;
-		boolean ctrl = false;
-		boolean alt = false;
-		for (String part : exp.split("\\+")) {
-			part = part.strip();
-			if ("ctrl".equals(part)) {
-				ctrl = true;
-			}
-			else if ("alt".equals(part)) {
-				alt = true;
-			}
-			else {
-				mainKey = part;
-			}
-		}
-		switch (exp) {
-			case "downarrow":
-				keySeq = key(terminal, Capability.key_down);
-				break;
-			default:
-				break;
-		}
-		if (ctrl && mainKey != null && mainKey.length() == 1) {
-			keySeq = ctrl(mainKey.charAt(0));
-		}
-		if (alt) {
-			keySeq = alt(keySeq);
-		}
-		if (function != null && keySeq != null) {
-			keyMap.bind(function, keySeq);
-		}
-	}
+	// private void bindExpression(String expression, KeyMap<String> keyMap) {
+	// 	String exp = expression.toLowerCase(Locale.ROOT);
+	// 	String function = "OPERATION_EXP_" + expression;
+	// 	String keySeq = null;
+	// 	String mainKey = null;
+	// 	boolean ctrl = false;
+	// 	boolean alt = false;
+	// 	for (String part : exp.split("\\+")) {
+	// 		part = part.strip();
+	// 		if ("ctrl".equals(part)) {
+	// 			ctrl = true;
+	// 		}
+	// 		else if ("alt".equals(part)) {
+	// 			alt = true;
+	// 		}
+	// 		else {
+	// 			mainKey = part;
+	// 		}
+	// 	}
+	// 	switch (exp) {
+	// 		case "downarrow":
+	// 			keySeq = key(terminal, Capability.key_down);
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// 	if (ctrl && mainKey != null && mainKey.length() == 1) {
+	// 		keySeq = ctrl(mainKey.charAt(0));
+	// 	}
+	// 	if (alt) {
+	// 		keySeq = alt(keySeq);
+	// 	}
+	// 	if (function != null && keySeq != null) {
+	// 		keyMap.bind(function, keySeq);
+	// 	}
+	// }
 
 	private void bindKeyMap(KeyMap<String> keyMap) {
-		bindExpression("DownArrow", keyMap);
+		keyBinder.bindExpression("DownArrow", keyMap);
+		keyBinder.bindExpression("Ctrl+h", keyMap);
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
@@ -321,12 +325,12 @@ public class ViewHandler {
 		// keyMap.bind("OPERATION_LEFT", key(terminal, Capability.key_left));
 		// keyMap.bind("OPERATION_RIGHT", key(terminal, Capability.key_right));
 
-		keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
-		keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
-		keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
-		keyMap.bind("CTRL_r", ctrl('r'));
-		keyMap.bind("ALT_r", alt('r'));
-		keyMap.bind("ESC", "\033");
+		// keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
+		// keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
+		// keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
+		// keyMap.bind("CTRL_r", ctrl('r'));
+		// keyMap.bind("ALT_r", alt('r'));
+		// keyMap.bind("ESC", "\033");
 
 
 		// skip 127 - DEL
@@ -343,22 +347,8 @@ public class ViewHandler {
 		}
 		if (operation.startsWith("OPERATION_EXP_")) {
 			String exp = operation.substring(14);
-			String mainKey = null;
-			boolean ctrl = false;
-			boolean alt = false;
-			for (String part : exp.split("\\+")) {
-				part = part.strip();
-				if ("ctrl".equals(part)) {
-					ctrl = true;
-				}
-				else if ("alt".equals(part)) {
-					alt = true;
-				}
-				else {
-					mainKey = part;
-				}
-			}
-			dispatchChar(exp, ctrl, alt);
+			ExpressionResult result = keyBinder.parseExpression(exp);
+			dispatchChar(exp, result.ctrl(), result.alt());
 			return false;
 		}
 		switch (operation) {
@@ -371,24 +361,24 @@ public class ViewHandler {
 				String lastBinding = bindingReader.getLastBinding();
 				dispatchChar(lastBinding, false, false);
 				break;
-			case "CTRL_ALT_r":
-				dispatchChar("r", true, true);
-				break;
-			case "CTRL_r":
-				dispatchChar("r", true, false);
-				break;
-			case "ALT_r":
-				dispatchChar("r", false, true);
-				break;
-			case "PPAGE":
-				dispatchChar("PPAGE", false, false);
-				break;
-			case "NPAGE":
-				dispatchChar("NPAGE", false, false);
-				break;
-			case "ESC":
-				dispatchChar("ESC", false, false);
-				break;
+			// case "CTRL_ALT_r":
+			// 	dispatchChar("r", true, true);
+			// 	break;
+			// case "CTRL_r":
+			// 	dispatchChar("r", true, false);
+			// 	break;
+			// case "ALT_r":
+			// 	dispatchChar("r", false, true);
+			// 	break;
+			// case "PPAGE":
+			// 	dispatchChar("PPAGE", false, false);
+			// 	break;
+			// case "NPAGE":
+			// 	dispatchChar("NPAGE", false, false);
+			// 	break;
+			// case "ESC":
+			// 	dispatchChar("ESC", false, false);
+			// 	break;
 
 		}
 
