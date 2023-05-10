@@ -17,6 +17,7 @@ package org.springframework.shell.component.view;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -43,6 +44,7 @@ import org.springframework.util.ObjectUtils;
 import static org.jline.keymap.KeyMap.alt;
 import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
+import static org.jline.keymap.KeyMap.translate;
 
 /**
  * Component handling {@link View} structures.
@@ -117,26 +119,6 @@ public class ViewHandler {
 
 	private void redraw() {
 		display();
-	}
-
-	// CTRL_ALT_x
-
-	private void bindKeyMap(KeyMap<String> keyMap) {
-		keyMap.bind(OPERATION_EXIT, "\r");
-		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
-
-		keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
-		keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
-		keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
-		keyMap.bind("CTRL_r", ctrl('r'));
-		keyMap.bind("ALT_r", alt('r'));
-		keyMap.bind("ESC", "\033");
-
-
-		// skip 127 - DEL
-		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
-			keyMap.bind(OPERATION_KEY_EVENT, Character.toString(i));
-		}
 	}
 
 	private void render(int rows, int columns) {
@@ -285,11 +267,99 @@ public class ViewHandler {
 		}
 	}
 
+	// Alt+Ctrl+x
+	// Ctrl+x
+	// Alt+x
+	// DownArrow
+	// PageUp
+	// PageDown
+
+	private void bindExpression(String expression, KeyMap<String> keyMap) {
+		String exp = expression.toLowerCase(Locale.ROOT);
+		String function = "OPERATION_EXP_" + expression;
+		String keySeq = null;
+		String mainKey = null;
+		boolean ctrl = false;
+		boolean alt = false;
+		for (String part : exp.split("\\+")) {
+			part = part.strip();
+			if ("ctrl".equals(part)) {
+				ctrl = true;
+			}
+			else if ("alt".equals(part)) {
+				alt = true;
+			}
+			else {
+				mainKey = part;
+			}
+		}
+		switch (exp) {
+			case "downarrow":
+				keySeq = key(terminal, Capability.key_down);
+				break;
+			default:
+				break;
+		}
+		if (ctrl && mainKey != null && mainKey.length() == 1) {
+			keySeq = ctrl(mainKey.charAt(0));
+		}
+		if (alt) {
+			keySeq = alt(keySeq);
+		}
+		if (function != null && keySeq != null) {
+			keyMap.bind(function, keySeq);
+		}
+	}
+
+	private void bindKeyMap(KeyMap<String> keyMap) {
+		bindExpression("DownArrow", keyMap);
+		keyMap.bind(OPERATION_EXIT, "\r");
+		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
+
+		// keyMap.bind("OPERATION_UP", key(terminal, Capability.key_up));
+		// keyMap.bind("OPERATION_DOWN", key(terminal, Capability.key_down));
+		// keyMap.bind("OPERATION_LEFT", key(terminal, Capability.key_left));
+		// keyMap.bind("OPERATION_RIGHT", key(terminal, Capability.key_right));
+
+		keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
+		keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
+		keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
+		keyMap.bind("CTRL_r", ctrl('r'));
+		keyMap.bind("ALT_r", alt('r'));
+		keyMap.bind("ESC", "\033");
+
+
+		// skip 127 - DEL
+		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
+			keyMap.bind(OPERATION_KEY_EVENT, Character.toString(i));
+		}
+	}
+
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
 		String operation = bindingReader.readBinding(keyMap);
 		log.debug("Read got operation {}", operation);
 		if (operation == null) {
 			return true;
+		}
+		if (operation.startsWith("OPERATION_EXP_")) {
+			String exp = operation.substring(14);
+			String mainKey = null;
+			boolean ctrl = false;
+			boolean alt = false;
+			for (String part : exp.split("\\+")) {
+				part = part.strip();
+				if ("ctrl".equals(part)) {
+					ctrl = true;
+				}
+				else if ("alt".equals(part)) {
+					alt = true;
+				}
+				else {
+					mainKey = part;
+				}
+			}
+			dispatchChar(exp, ctrl, alt);
+			return false;
 		}
 		switch (operation) {
 			case OPERATION_EXIT:
