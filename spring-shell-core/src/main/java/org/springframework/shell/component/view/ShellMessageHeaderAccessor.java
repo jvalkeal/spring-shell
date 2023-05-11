@@ -22,46 +22,42 @@ import org.springframework.util.ObjectUtils;
  *
  * Adds standard SI Headers.
  *
- * @author Andy Wilkinson
- * @author Artem Bilan
- * @author Gary Russell
- *
- * @since 4.0
+ * @author Janne Valkealahti
  *
  */
-public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
+public class ShellMessageHeaderAccessor extends MessageHeaderAccessor {
 
-	public static final String CORRELATION_ID = "correlationId";
+	// public static final String CORRELATION_ID = "correlationId";
 
-	public static final String EXPIRATION_DATE = "expirationDate";
+	// public static final String EXPIRATION_DATE = "expirationDate";
 
 	public static final String PRIORITY = "priority";
 
-	public static final String SEQUENCE_NUMBER = "sequenceNumber";
+	// public static final String SEQUENCE_NUMBER = "sequenceNumber";
 
-	public static final String SEQUENCE_SIZE = "sequenceSize";
+	// public static final String SEQUENCE_SIZE = "sequenceSize";
 
-	public static final String SEQUENCE_DETAILS = "sequenceDetails";
+	// public static final String SEQUENCE_DETAILS = "sequenceDetails";
 
-	public static final String ROUTING_SLIP = "routingSlip";
+	// public static final String ROUTING_SLIP = "routingSlip";
 
-	public static final String DUPLICATE_MESSAGE = "duplicateMessage";
+	// public static final String DUPLICATE_MESSAGE = "duplicateMessage";
 
-	public static final String CLOSEABLE_RESOURCE = "closeableResource";
+	// public static final String CLOSEABLE_RESOURCE = "closeableResource";
 
-	public static final String DELIVERY_ATTEMPT = "deliveryAttempt";
+	// public static final String DELIVERY_ATTEMPT = "deliveryAttempt";
 
 	/**
 	 * A callback to acknowledge message delivery. The type of the header value depends on
 	 * the context in which the header is used. See the reference manual for more
 	 * information.
 	 */
-	public static final String ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
+	// public static final String ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
 
 	/**
 	 * Raw source message.
 	 */
-	public static final String SOURCE_DATA = "sourceData";
+	// public static final String SOURCE_DATA = "sourceData";
 
 	/**
 	 * Raw source message.
@@ -69,12 +65,12 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 	public static final String REACTOR_CONTEXT = "reactorContext";
 
 
-	private static final BiFunction<String, String, String> TYPE_VERIFY_MESSAGE_FUNCTION =
-			(name, trailer) -> "The '" + name + trailer;
+	// private static final BiFunction<String, String, String> TYPE_VERIFY_MESSAGE_FUNCTION =
+	// 		(name, trailer) -> "The '" + name + trailer;
 
 	private Set<String> readOnlyHeaders = new HashSet<>();
 
-	public IntegrationMessageHeaderAccessor(@Nullable Message<?> message) {
+	public ShellMessageHeaderAccessor(@Nullable Message<?> message) {
 		super(message);
 	}
 
@@ -84,7 +80,6 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 	 * @param readOnlyHeaders the list of headers for {@code readOnly} mode. Defaults to
 	 * {@link org.springframework.messaging.MessageHeaders#ID} and
 	 * {@link org.springframework.messaging.MessageHeaders#TIMESTAMP}.
-	 * @since 4.3.2
 	 * @see #isReadOnly(String)
 	 */
 	public void setReadOnlyHeaders(String... readOnlyHeaders) {
@@ -94,25 +89,25 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 		}
 	}
 
-	@Nullable
-	public Long getExpirationDate() {
-		return getHeader(EXPIRATION_DATE, Long.class);
-	}
+	// @Nullable
+	// public Long getExpirationDate() {
+	// 	return getHeader(EXPIRATION_DATE, Long.class);
+	// }
 
-	@Nullable
-	public Object getCorrelationId() {
-		return getHeader(CORRELATION_ID);
-	}
+	// @Nullable
+	// public Object getCorrelationId() {
+	// 	return getHeader(CORRELATION_ID);
+	// }
 
-	public int getSequenceNumber() {
-		Number sequenceNumber = getHeader(SEQUENCE_NUMBER, Number.class);
-		return (sequenceNumber != null ? sequenceNumber.intValue() : 0);
-	}
+	// public int getSequenceNumber() {
+	// 	Number sequenceNumber = getHeader(SEQUENCE_NUMBER, Number.class);
+	// 	return (sequenceNumber != null ? sequenceNumber.intValue() : 0);
+	// }
 
-	public int getSequenceSize() {
-		Number sequenceSize = getHeader(SEQUENCE_SIZE, Number.class);
-		return (sequenceSize != null ? sequenceSize.intValue() : 0);
-	}
+	// public int getSequenceSize() {
+	// 	Number sequenceSize = getHeader(SEQUENCE_SIZE, Number.class);
+	// 	return (sequenceSize != null ? sequenceSize.intValue() : 0);
+	// }
 
 	@Nullable
 	public Integer getPriority() {
@@ -129,10 +124,10 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 	 * @return the {@link Closeable}.
 	 * @since 4.3
 	 */
-	@Nullable
-	public Closeable getCloseableResource() {
-		return getHeader(CLOSEABLE_RESOURCE, Closeable.class);
-	}
+	// @Nullable
+	// public Closeable getCloseableResource() {
+	// 	return getHeader(CLOSEABLE_RESOURCE, Closeable.class);
+	// }
 
 	// /**
 	//  * Return the acknowledgment callback, if present.
@@ -150,10 +145,10 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 	 * @return the delivery attempt.
 	 * @since 5.0.1
 	 */
-	@Nullable
-	public AtomicInteger getDeliveryAttempt() {
-		return getHeader(DELIVERY_ATTEMPT, AtomicInteger.class);
-	}
+	// @Nullable
+	// public AtomicInteger getDeliveryAttempt() {
+	// 	return getHeader(DELIVERY_ATTEMPT, AtomicInteger.class);
+	// }
 
 	/**
 	 * Get the source data header, if present.
@@ -161,11 +156,11 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 	 * @return the source header.
 	 * @since 5.1.6
 	 */
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public <T> T getSourceData() {
-		return (T) getHeader(SOURCE_DATA);
-	}
+	// @SuppressWarnings("unchecked")
+	// @Nullable
+	// public <T> T getSourceData() {
+	// 	return (T) getHeader(SOURCE_DATA);
+	// }
 
 	/**
 	 * Get a {@link ContextView} header if present.
@@ -191,30 +186,30 @@ public class IntegrationMessageHeaderAccessor extends MessageHeaderAccessor {
 		return (T) value;
 	}
 
-	@Override
-	protected void verifyType(String headerName, Object headerValue) {
-		if (headerName != null && headerValue != null) {
-			super.verifyType(headerName, headerValue);
-			if (IntegrationMessageHeaderAccessor.EXPIRATION_DATE.equals(headerName)) {
-				Assert.isTrue(headerValue instanceof Date || headerValue instanceof Long,
-						TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Date or Long."));
-			}
-			else if (IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER.equals(headerName)
-					|| IntegrationMessageHeaderAccessor.SEQUENCE_SIZE.equals(headerName)
-					|| IntegrationMessageHeaderAccessor.PRIORITY.equals(headerName)) {
-				Assert.isTrue(Number.class.isAssignableFrom(headerValue.getClass()),
-						TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Number."));
-			}
-			else if (IntegrationMessageHeaderAccessor.ROUTING_SLIP.equals(headerName)) {
-				Assert.isTrue(Map.class.isAssignableFrom(headerValue.getClass()),
-						TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Map."));
-			}
-			else if (IntegrationMessageHeaderAccessor.DUPLICATE_MESSAGE.equals(headerName)) {
-				Assert.isTrue(Boolean.class.isAssignableFrom(headerValue.getClass()),
-						TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be an Boolean."));
-			}
-		}
-	}
+	// @Override
+	// protected void verifyType(String headerName, Object headerValue) {
+	// 	if (headerName != null && headerValue != null) {
+	// 		super.verifyType(headerName, headerValue);
+	// 		if (IntegrationMessageHeaderAccessor.EXPIRATION_DATE.equals(headerName)) {
+	// 			Assert.isTrue(headerValue instanceof Date || headerValue instanceof Long,
+	// 					TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Date or Long."));
+	// 		}
+	// 		else if (IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER.equals(headerName)
+	// 				|| IntegrationMessageHeaderAccessor.SEQUENCE_SIZE.equals(headerName)
+	// 				|| IntegrationMessageHeaderAccessor.PRIORITY.equals(headerName)) {
+	// 			Assert.isTrue(Number.class.isAssignableFrom(headerValue.getClass()),
+	// 					TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Number."));
+	// 		}
+	// 		else if (IntegrationMessageHeaderAccessor.ROUTING_SLIP.equals(headerName)) {
+	// 			Assert.isTrue(Map.class.isAssignableFrom(headerValue.getClass()),
+	// 					TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be a Map."));
+	// 		}
+	// 		else if (IntegrationMessageHeaderAccessor.DUPLICATE_MESSAGE.equals(headerName)) {
+	// 			Assert.isTrue(Boolean.class.isAssignableFrom(headerValue.getClass()),
+	// 					TYPE_VERIFY_MESSAGE_FUNCTION.apply(headerName, "' header value must be an Boolean."));
+	// 		}
+	// 	}
+	// }
 
 	@Override
 	public boolean isReadOnly(String headerName) {

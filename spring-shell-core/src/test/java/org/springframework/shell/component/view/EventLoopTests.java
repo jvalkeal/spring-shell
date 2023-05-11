@@ -50,6 +50,27 @@ class EventLoopTests {
 	}
 
 	@Test
+	void test1() {
+		DefaultEventLoop2 loop = new DefaultEventLoop2();
+
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
+
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
+
+		StepVerifier verifier2 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
+
+		loop.dispatch(message);
+		verifier1.verify(Duration.ofSeconds(1));
+		verifier2.verify(Duration.ofSeconds(1));
+	}
+
+	@Test
 	void test2() {
 		DefaultEventLoop2 loop = new DefaultEventLoop2();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();

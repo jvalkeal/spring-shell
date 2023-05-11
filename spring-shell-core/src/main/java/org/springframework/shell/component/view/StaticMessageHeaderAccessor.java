@@ -15,15 +15,12 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.util.MimeType;
 
 /**
- * Lightweight type-safe header accessor avoiding object
- * creation just to access a header.
+ * Lightweight type-safe header accessor avoiding object creation just to access
+ * a header.
  *
- * @author Gary Russell
- * @author Artem Bilan
+ * @author Janne Valkealahti
  *
- * @since 5.0.1
- *
- * @see IntegrationMessageHeaderAccessor
+ * @see ShellMessageHeaderAccessor
  */
 public final class StaticMessageHeaderAccessor {
 
@@ -48,46 +45,46 @@ public final class StaticMessageHeaderAccessor {
 		return (value instanceof Long ? (Long) value : Long.parseLong(value.toString()));
 	}
 
-	@Nullable
-	public static MimeType getContentType(Message<?> message) {
-		Object value = message.getHeaders().get(MessageHeaders.CONTENT_TYPE);
-		if (value == null) {
-			return null;
-		}
-		return (value instanceof MimeType ? (MimeType) value : MimeType.valueOf(value.toString()));
-	}
+	// @Nullable
+	// public static MimeType getContentType(Message<?> message) {
+	// 	Object value = message.getHeaders().get(MessageHeaders.CONTENT_TYPE);
+	// 	if (value == null) {
+	// 		return null;
+	// 	}
+	// 	return (value instanceof MimeType ? (MimeType) value : MimeType.valueOf(value.toString()));
+	// }
 
-	@Nullable
-	public static Long getExpirationDate(Message<?> message) {
-		return message.getHeaders().get(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, Long.class);
-	}
+	// @Nullable
+	// public static Long getExpirationDate(Message<?> message) {
+	// 	return message.getHeaders().get(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, Long.class);
+	// }
 
-	public static int getSequenceNumber(Message<?> message) {
-		Number sequenceNumber = message.getHeaders().get(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER,
-				Number.class);
-		return (sequenceNumber != null ? sequenceNumber.intValue() : 0);
-	}
+	// public static int getSequenceNumber(Message<?> message) {
+	// 	Number sequenceNumber = message.getHeaders().get(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER,
+	// 			Number.class);
+	// 	return (sequenceNumber != null ? sequenceNumber.intValue() : 0);
+	// }
 
-	public static int getSequenceSize(Message<?> message) {
-		Number sequenceSize = message.getHeaders().get(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, Number.class);
-		return (sequenceSize != null ? sequenceSize.intValue() : 0);
-	}
+	// public static int getSequenceSize(Message<?> message) {
+	// 	Number sequenceSize = message.getHeaders().get(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, Number.class);
+	// 	return (sequenceSize != null ? sequenceSize.intValue() : 0);
+	// }
 
-	@Nullable
-	public static Integer getPriority(Message<?> message) {
-		Number priority = message.getHeaders().get(IntegrationMessageHeaderAccessor.PRIORITY, Number.class);
-		return (priority != null ? priority.intValue() : null);
-	}
+	// @Nullable
+	// public static Integer getPriority(Message<?> message) {
+	// 	Number priority = message.getHeaders().get(IntegrationMessageHeaderAccessor.PRIORITY, Number.class);
+	// 	return (priority != null ? priority.intValue() : null);
+	// }
 
-	@Nullable
-	public static Closeable getCloseableResource(Message<?> message) {
-		return message.getHeaders().get(IntegrationMessageHeaderAccessor.CLOSEABLE_RESOURCE, Closeable.class);
-	}
+	// @Nullable
+	// public static Closeable getCloseableResource(Message<?> message) {
+	// 	return message.getHeaders().get(IntegrationMessageHeaderAccessor.CLOSEABLE_RESOURCE, Closeable.class);
+	// }
 
-	@Nullable
-	public static AtomicInteger getDeliveryAttempt(Message<?> message) {
-		return message.getHeaders().get(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT, AtomicInteger.class);
-	}
+	// @Nullable
+	// public static AtomicInteger getDeliveryAttempt(Message<?> message) {
+	// 	return message.getHeaders().get(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT, AtomicInteger.class);
+	// }
 
 	// @Nullable
 	// public static AcknowledgmentCallback getAcknowledgmentCallback(Message<?> message) {
@@ -115,7 +112,7 @@ public final class StaticMessageHeaderAccessor {
 	 */
 	public static ContextView getReactorContext(Message<?> message) {
 		ContextView reactorContext = message.getHeaders()
-				.get(IntegrationMessageHeaderAccessor.REACTOR_CONTEXT, ContextView.class);
+				.get(ShellMessageHeaderAccessor.REACTOR_CONTEXT, ContextView.class);
 		if (reactorContext == null) {
 			reactorContext = Context.empty();
 		}
