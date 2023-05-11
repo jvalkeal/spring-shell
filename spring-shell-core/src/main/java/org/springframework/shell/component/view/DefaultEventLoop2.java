@@ -170,6 +170,11 @@ public class DefaultEventLoop2 implements EventLoop {
 
 		@Override
 		public int compare(Message<?> left, Message<?> right) {
+			Integer l = StaticMessageHeaderAccessor.getPriority(left);
+			Integer r = StaticMessageHeaderAccessor.getPriority(right);
+			if (l != null && r != null) {
+				return l.compareTo(r);
+			}
 			return 0;
 		}
 

@@ -72,14 +72,11 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 						.setHeader(EventLoop.TYPE, EventLoop.Type.SYSTEM)
 						.build();
 					component.getEventLoop().dispatch(xxx);
-					// Message<String> xxx = MessageBuilder.withPayload("WINCH")
-					// 	.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
-					// 	.build();
-					// component.getEventLoop().dispatch(xxx);
 				}
 			});
 		// schedule detas processing
-		component.getEventLoop().subcribe(datesProcessing);
+		datesProcessing.subscribe();
+		// component.getEventLoop().subcribe(datesProcessing);
 
 		// draw current date
 		root.setDrawFunction((screen, rect) -> {

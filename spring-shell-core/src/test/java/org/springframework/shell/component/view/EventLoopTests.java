@@ -95,8 +95,19 @@ class EventLoopTests {
 			.thenCancel()
 			.verifyLater();
 
-		// loop.sendReactiveMessage(message);
 		loop.subscribeTo(just);
+		verifier1.verify(Duration.ofSeconds(1));
+	}
+
+	@Test
+	void test4() {
+		DefaultEventLoop2 loop = new DefaultEventLoop2();
+
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectComplete()
+			.verifyLater();
+
+		loop.destroy();
 		verifier1.verify(Duration.ofSeconds(1));
 	}
 
