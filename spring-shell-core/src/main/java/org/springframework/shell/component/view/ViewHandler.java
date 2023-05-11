@@ -69,7 +69,8 @@ public class ViewHandler {
 	private View rootView;
 	private final KeyBinder keyBinder;
 
-	private DefaultEventLoop eventLoop = new DefaultEventLoop();
+	// private DefaultEventLoop eventLoop = new DefaultEventLoop();
+	private DefaultEventLoop2 eventLoop = new DefaultEventLoop2();
 
 	/**
 	 * Constructs a handler with a given terminal.
@@ -237,7 +238,7 @@ public class ViewHandler {
 	private void loop() {
 		Attributes attr = terminal.enterRawMode();
 
-		eventLoop.start();
+		// eventLoop.start();
 
 		registerEventHandling();
 
@@ -265,7 +266,8 @@ public class ViewHandler {
 			}
 		}
 		finally {
-			eventLoop.stop();
+			// eventLoop.stop();
+			eventLoop.destroy();
 			terminal.setAttributes(attr);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
 			terminal.puts(Capability.keypad_local);
@@ -326,7 +328,7 @@ public class ViewHandler {
 		Message<KeyEvent> message = MessageBuilder
 			// .withPayload(binding)
 			.withPayload(event)
-			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.KEY)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.KEY)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -334,7 +336,7 @@ public class ViewHandler {
 	private void dispatchMouse(MouseEvent event) {
 		Message<MouseEvent> message = MessageBuilder
 			.withPayload(event)
-			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.MOUSE)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.MOUSE)
 			.build();
 		eventLoop.dispatch(message);
 	}

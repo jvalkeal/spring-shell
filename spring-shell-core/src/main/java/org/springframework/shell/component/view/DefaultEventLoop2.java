@@ -35,28 +35,48 @@ import reactor.core.publisher.Sinks.Many;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-import org.springframework.core.log.LogMessage;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
 
-public class DefaultEventLoop2 {
+public class DefaultEventLoop2 implements EventLoop {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultEventLoop2.class);
 	private final Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
 	private final Many<Message<?>> sink = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
-	private final Flux<Message<?>> sinkFlux = sink.asFlux();
-
+	private final Flux<Message<?>> sinkFlux = sink.asFlux().share();
 	private final Sinks.Many<Boolean> subscribedSignal = Sinks.many().replay().limit(1);
 	private final Disposable.Composite upstreamSubscriptions = Disposables.composite();
 	private final Scheduler scheduler = Schedulers.boundedElastic();
 	private volatile boolean active = true;
 
-	// @Override
+	@Override
 	public void dispatch(Message<?> message) {
+		log.debug("dispatch {}", message);
 		if (!doSend(message, 1000)) {
 			log.warn("Failed to send message: {}", message);
 		}
+	}
+
+	@Override
+	public void subcribe(Flux<? extends Message<?>> messages) {
+		upstreamSubscriptions.add(
+		messages
+			// .delaySubscription(subscribedSignal.asFlux().filter(Boolean::booleanValue).next())
+			.subscribe()
+		);
+	}
+
+	@Override
+	public void dispatch(Flux<? extends Message<?>> messages) {
+		subscribeTo(messages);
+	}
+
+	@Override
+	public Flux<Message<?>> events() {
+		return sinkFlux.share()
+			.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
+		;
 	}
 
 	private boolean doSend(Message<?> message, long timeout) {
@@ -87,12 +107,6 @@ public class DefaultEventLoop2 {
 			case FAIL_TERMINATED, FAIL_CANCELLED ->
 					throw new IllegalStateException("Cannot emit messages into the cancelled or terminated sink: " + sink);
 		};
-	}
-
-	public Flux<Message<?>> events() {
-		return sinkFlux.share()
-		.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
-		;
 	}
 
 	public void subscribe(Subscriber<? super Message<?>> subscriber) {
@@ -127,10 +141,10 @@ public class DefaultEventLoop2 {
 	private void sendReactiveMessage(Message<?> message) {
 		Message<?> messageToSend = message;
 		// We have just restored Reactor context, so no need in a header anymore.
-		if (messageToSend.getHeaders().containsKey(IntegrationMessageHeaderAccessor.REACTOR_CONTEXT)) {
+		if (messageToSend.getHeaders().containsKey(ShellMessageHeaderAccessor.REACTOR_CONTEXT)) {
 			messageToSend =
 					MessageBuilder.fromMessage(message)
-							.removeHeader(IntegrationMessageHeaderAccessor.REACTOR_CONTEXT)
+							.removeHeader(ShellMessageHeaderAccessor.REACTOR_CONTEXT)
 							.build();
 		}
 		try {
@@ -150,7 +164,6 @@ public class DefaultEventLoop2 {
 		this.subscribedSignal.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.sink.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.scheduler.dispose();
-		// super.destroy();
 	}
 
 	private static class MessageComparator implements Comparator<Message<?>> {
