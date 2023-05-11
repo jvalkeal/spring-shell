@@ -29,33 +29,37 @@ import static org.jline.keymap.KeyMap.key;
 
 public class KeyBinder {
 
+	public final static String DEFAULT_PREFIX = "OPERATION_EXP_";
 	private final Terminal terminal;
+	private final String prefix;
 
 	public KeyBinder(Terminal terminal) {
-		Assert.notNull(terminal, "terminal must be set");
-		this.terminal = terminal;
+		this(terminal, null);
 	}
 
+	public KeyBinder(Terminal terminal, String prefix) {
+		Assert.notNull(terminal, "terminal must be set");
+		this.terminal = terminal;
+		this.prefix = prefix == null ? DEFAULT_PREFIX : prefix;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void bindAll(KeyMap<String> keyMap) {
+		bindExpression("DownArrow", keyMap);
+		bindExpression("UpArrow", keyMap);
+		bindExpression("LeftArrow", keyMap);
+		bindExpression("RightArrow", keyMap);
+		bindExpression("PageUp", keyMap);
+		bindExpression("PageDown", keyMap);
+	}
 
 	public void bindExpression(String expression, KeyMap<String> keyMap) {
 		String exp = expression.toLowerCase(Locale.ROOT);
-		String function = "OPERATION_EXP_" + expression;
+		String function = prefix + expression;
 		String keySeq = null;
-		// String mainKey = null;
-		// boolean ctrl = false;
-		// boolean alt = false;
-		// for (String part : exp.split("\\+")) {
-		// 	part = part.strip();
-		// 	if ("ctrl".equals(part)) {
-		// 		ctrl = true;
-		// 	}
-		// 	else if ("alt".equals(part)) {
-		// 		alt = true;
-		// 	}
-		// 	else {
-		// 		mainKey = part;
-		// 	}
-		// }
 		ExpressionResult result = parseExpression(exp);
 		switch (exp) {
 			case "downarrow":
@@ -69,6 +73,12 @@ public class KeyBinder {
 				break;
 			case "rightarrow":
 				keySeq = key(terminal, Capability.key_right);
+				break;
+			case "pageup":
+				keySeq = key(terminal, Capability.key_ppage);
+				break;
+			case "pagedown":
+				keySeq = key(terminal, Capability.key_npage);
 				break;
 			default:
 				break;

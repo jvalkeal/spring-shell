@@ -52,14 +52,14 @@ import org.springframework.util.ObjectUtils;
 public class DefaultEventLoop implements EventLoop {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultEventLoop.class);
-	public final static String TYPE = "type";
-	public final static String TYPE_SIGNAL = "signal";
-	public final static String TYPE_TICK = "tick";
+	// public final static String TYPE = "type";
+	// public final static String TYPE_SIGNAL = "signal";
+	// public final static String TYPE_TICK = "tick";
 	private boolean running;
 	private Many<Message<?>> bus;
 	private Flux<? extends Message<?>> busFlux;
 	private List<EventLoopProcessor> processors;
-	private List<Flux<? extends Message<?>>> toSchduleOnStart = new ArrayList<>();
+	private List<Flux<? extends Message<?>>> subscribeOnStart = new ArrayList<>();
 	private List<Disposable> disposeOnStop = new ArrayList<>();
 
 	/**
@@ -85,28 +85,29 @@ public class DefaultEventLoop implements EventLoop {
 		bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
 		Flux<Message<?>> f1 = bus.asFlux();
 
-		Flux<? extends Message<?>> flatMap = f1.flatMap(m -> {
-			Flux<? extends Message<?>> xxx = null;
+		Flux<? extends Message<?>> f2 = f1.flatMap(m -> {
+			Flux<? extends Message<?>> pm = null;
 			for (EventLoopProcessor processor : processors) {
 				if (processor.canProcess(m)) {
-					xxx = processor.process(m);
+					pm = processor.process(m);
 					break;
 				}
 			}
-			if (xxx != null) {
-				return xxx;
+			if (pm != null) {
+				return pm;
 			}
 			return Mono.just(m);
 		});
-		busFlux = flatMap.share();
+		busFlux = f2.share();
 	}
 
 	public void start() {
 		if (running) {
 			return;
 		}
-		this.toSchduleOnStart.forEach(f -> {
-			f.subscribe();
+		this.subscribeOnStart.forEach(f -> {
+			Disposable subscribe = f.subscribe();
+			this.disposeOnStop.add(subscribe);
 		});
 		running = true;
 	}
@@ -115,6 +116,8 @@ public class DefaultEventLoop implements EventLoop {
 		if (!running) {
 			return;
 		}
+		this.disposeOnStop.forEach(Disposable::dispose);
+		this.disposeOnStop.clear();
 		running = false;
 	}
 
@@ -130,16 +133,16 @@ public class DefaultEventLoop implements EventLoop {
 		bus.tryEmitNext(message);
 	}
 
-	public void dispatchTicks() {
-		Message<String> message = MessageBuilder
-			.withPayload("")
-			.setHeader("type", "tick")
-			.build();
-		dispatch(message);
-	}
+	// public void dispatchTicks() {
+	// 	Message<String> message = MessageBuilder
+	// 		.withPayload("")
+	// 		.setHeader("type", "tick")
+	// 		.build();
+	// 	dispatch(message);
+	// }
 
 	@Override
-	public void scheduleEventsDispatch(Flux<? extends Message<?>> messages) {
+	public void dispatch(Flux<? extends Message<?>> messages) {
 		Flux<? extends Message<?>> f = messages
 			.doOnNext(m -> {
 				dispatch(m);
@@ -150,20 +153,20 @@ public class DefaultEventLoop implements EventLoop {
 			log.info("xxx asdf1");
 		}
 		else {
-			this.toSchduleOnStart.add(f);
+			this.subscribeOnStart.add(f);
 			log.info("xxx asdf2");
 		}
 	}
 
 	@Override
-	public void scheduleEventsAndSubcribe(Flux<? extends Message<?>> f) {
+	public void subcribe(Flux<? extends Message<?>> messages) {
 		if (running) {
-			Disposable subscribe = f.subscribe();
+			Disposable subscribe = messages.subscribe();
 			disposeOnStop.add(subscribe);
 			log.info("xxx asdf1");
 		}
 		else {
-			this.toSchduleOnStart.add(f);
+			this.subscribeOnStart.add(messages);
 			log.info("xxx asdf2");
 		}
 	}
@@ -186,24 +189,24 @@ public class DefaultEventLoop implements EventLoop {
 		}
 	}
 
-	private static class TickProcessor implements EventLoopProcessor {
+	// private static class TickProcessor implements EventLoopProcessor {
 
-		@Override
-		public boolean canProcess(Message<?> message) {
-			return ObjectUtils.nullSafeEquals(message.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.TYPE_TICK);
-		}
+	// 	@Override
+	// 	public boolean canProcess(Message<?> message) {
+	// 		return ObjectUtils.nullSafeEquals(message.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.TYPE_TICK);
+	// 	}
 
-		@Override
-		public Flux<? extends Message<?>> process(Message<?> message) {
-			Flux<Message<Long>> take = Flux.interval(Duration.ofMillis(100))
-				.map(l -> {
-					return MessageBuilder
-						.withPayload(l)
-						.build();
-				})
-				.take(Duration.ofSeconds(1));
-			return take;
-		}
+	// 	@Override
+	// 	public Flux<? extends Message<?>> process(Message<?> message) {
+	// 		Flux<Message<Long>> take = Flux.interval(Duration.ofMillis(100))
+	// 			.map(l -> {
+	// 				return MessageBuilder
+	// 					.withPayload(l)
+	// 					.build();
+	// 			})
+	// 			.take(Duration.ofSeconds(1));
+	// 		return take;
+	// 	}
 
-	}
+	// }
 }
