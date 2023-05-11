@@ -18,6 +18,8 @@ package org.springframework.shell.component.view;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.messaging.Message;
@@ -47,17 +49,34 @@ class EventLoopTests {
 		verifier2.verify(Duration.ofSeconds(1));
 	}
 
-	// @Test
-	// void test2() {
-	// 	EventLoop loop = new EventLoop();
-	// 	loop.start();
+	@Test
+	void test2() {
+		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
-	// 	StepVerifier verifier1 = StepVerifier.create(loop.events())
-	// 		.expectNextCount(9)
-	// 		.thenCancel()
-	// 		.verifyLater();
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
 
-	// 	loop.dispatchTicks();
-	// 	verifier1.verify(Duration.ofSeconds(2));
-	// }
+		loop.dispatch(message);
+		verifier1.verify(Duration.ofSeconds(1));
+	}
+
+	@Test
+	void test3() {
+		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
+		Mono<Message<String>> just = Mono.just(message);
+
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
+
+		// loop.sendReactiveMessage(message);
+		loop.subscribeTo(just);
+		verifier1.verify(Duration.ofSeconds(1));
+	}
+
 }
