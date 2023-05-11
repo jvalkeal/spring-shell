@@ -28,30 +28,8 @@ import org.springframework.messaging.support.MessageBuilder;
 class EventLoopTests {
 
 	@Test
-	void messageToMultipleSubscribers() {
-		DefaultEventLoop loop = new DefaultEventLoop();
-		loop.start();
-
-		Message<String> message = MessageBuilder.withPayload("TEST").build();
-
-		StepVerifier verifier1 = StepVerifier.create(loop.events())
-			.expectNextCount(1)
-			.thenCancel()
-			.verifyLater();
-
-		StepVerifier verifier2 = StepVerifier.create(loop.events())
-			.expectNextCount(1)
-			.thenCancel()
-			.verifyLater();
-
-		loop.dispatch(message);
-		verifier1.verify(Duration.ofSeconds(1));
-		verifier2.verify(Duration.ofSeconds(1));
-	}
-
-	@Test
 	void test1() {
-		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		DefaultEventLoop loop = new DefaultEventLoop();
 
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
@@ -72,7 +50,7 @@ class EventLoopTests {
 
 	@Test
 	void test2() {
-		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		DefaultEventLoop loop = new DefaultEventLoop();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
@@ -86,7 +64,7 @@ class EventLoopTests {
 
 	@Test
 	void test3() {
-		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		DefaultEventLoop loop = new DefaultEventLoop();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 		Mono<Message<String>> just = Mono.just(message);
 
@@ -101,7 +79,7 @@ class EventLoopTests {
 
 	@Test
 	void test4() {
-		DefaultEventLoop2 loop = new DefaultEventLoop2();
+		DefaultEventLoop loop = new DefaultEventLoop();
 
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
 			.expectComplete()

@@ -27,6 +27,7 @@ import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.DefaultEventLoop;
 import org.springframework.shell.component.view.EventLoop;
+import org.springframework.shell.component.view.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -69,7 +70,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 				if(message.getPayload() instanceof String s) {
 					ref.set(s);
 					Message<String> xxx = MessageBuilder.withPayload("redraw")
-						.setHeader(EventLoop.TYPE, EventLoop.Type.SYSTEM)
+						.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
 						.build();
 					component.getEventLoop().dispatch(xxx);
 				}

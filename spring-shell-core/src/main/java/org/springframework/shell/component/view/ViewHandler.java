@@ -70,7 +70,7 @@ public class ViewHandler {
 	private final KeyBinder keyBinder;
 
 	// private DefaultEventLoop eventLoop = new DefaultEventLoop();
-	private DefaultEventLoop2 eventLoop = new DefaultEventLoop2();
+	private DefaultEventLoop eventLoop = new DefaultEventLoop();
 
 	/**
 	 * Constructs a handler with a given terminal.
@@ -157,7 +157,7 @@ public class ViewHandler {
 
 	private void dispatchWinch() {
 		Message<String> message = MessageBuilder.withPayload("WINCH")
-			.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SIGNAL)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -165,7 +165,7 @@ public class ViewHandler {
 	private void registerEventHandling() {
 		Disposable subscribe1 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SIGNAL);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SIGNAL);
 			})
 			.doOnNext(m -> {
 				display();
@@ -174,7 +174,7 @@ public class ViewHandler {
 
 		Disposable subscribe11 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SYSTEM);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SYSTEM);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
@@ -186,21 +186,26 @@ public class ViewHandler {
 			})
 			.subscribe();
 
-		Disposable subscribe2 = eventLoop.events()
-			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
-			})
+		// Disposable subscribe2 = eventLoop.events()
+		// 	.filter(m -> {
+		// 		return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
+		// 	})
+		// 	.doOnNext(m -> {
+		// 		Object payload = m.getPayload();
+		// 		if (payload instanceof KeyEvent p) {
+		// 			xxxk(p);
+		// 		}
+		// 	})
+		// 	.subscribe();
+		eventLoop.keyEvents()
 			.doOnNext(m -> {
-				Object payload = m.getPayload();
-				if (payload instanceof KeyEvent p) {
-					xxxk(p);
-				}
+				xxxk(m);
 			})
 			.subscribe();
 
 		Disposable subscribe3 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.MOUSE);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.MOUSE);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
@@ -212,6 +217,7 @@ public class ViewHandler {
 	}
 
 	private void xxxk(KeyEvent binding) {
+		log.info("XXXX {}", binding);
 		if (rootView != null) {
 			BiFunction<KeyEvent, Consumer<View>, KeyEvent> inputHandler = rootView.getInputHandler();
 			if (inputHandler != null) {
@@ -224,6 +230,7 @@ public class ViewHandler {
 	}
 
 	private void xxxm(MouseEvent e) {
+		log.info("DDDD {}", e);
 		if (rootView != null) {
 			BiFunction<MouseEvent, Consumer<View>, MouseEvent> mouseHandler = rootView.getMouseHandler();
 			if (mouseHandler != null) {
@@ -328,7 +335,7 @@ public class ViewHandler {
 		Message<KeyEvent> message = MessageBuilder
 			// .withPayload(binding)
 			.withPayload(event)
-			.setHeader(EventLoop.TYPE, EventLoop.Type.KEY)
+			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.KEY)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -336,7 +343,7 @@ public class ViewHandler {
 	private void dispatchMouse(MouseEvent event) {
 		Message<MouseEvent> message = MessageBuilder
 			.withPayload(event)
-			.setHeader(EventLoop.TYPE, EventLoop.Type.MOUSE)
+			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.MOUSE)
 			.build();
 		eventLoop.dispatch(message);
 	}
