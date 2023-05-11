@@ -156,7 +156,7 @@ public class ViewHandler {
 
 	private void dispatchWinch() {
 		Message<String> message = MessageBuilder.withPayload("WINCH")
-			.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.SIGNAL)
+			.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
 			.build();
 		eventLoop.dispatch(message);
 	}
@@ -164,28 +164,42 @@ public class ViewHandler {
 	private void registerEventHandling() {
 		Disposable subscribe1 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.SIGNAL);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SIGNAL);
 			})
 			.doOnNext(m -> {
 				display();
 			})
 			.subscribe();
 
+		Disposable subscribe11 = eventLoop.events()
+			.filter(m -> {
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.SYSTEM);
+			})
+			.doOnNext(m -> {
+				Object payload = m.getPayload();
+				if (payload instanceof String s) {
+					if ("redraw".equals(s)) {
+						display();
+					}
+				}
+			})
+			.subscribe();
+
 		Disposable subscribe2 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.KEY);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
 				if (payload instanceof KeyEvent p) {
-					xxx(p);
+					xxxk(p);
 				}
 			})
 			.subscribe();
 
 		Disposable subscribe3 = eventLoop.events()
 			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.Type.MOUSE);
+				return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.MOUSE);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
@@ -196,7 +210,7 @@ public class ViewHandler {
 			.subscribe();
 	}
 
-	private void xxx(KeyEvent binding) {
+	private void xxxk(KeyEvent binding) {
 		if (rootView != null) {
 			BiFunction<KeyEvent, Consumer<View>, KeyEvent> inputHandler = rootView.getInputHandler();
 			if (inputHandler != null) {
@@ -205,16 +219,11 @@ public class ViewHandler {
 				};
 				KeyEvent apply = inputHandler.apply(binding, asdf);
 			}
-			// Consumer<String> inputConsumer = rootView.getInputConsumer();
-			// if (inputConsumer != null) {
-			// 	inputConsumer.accept(binding);
-			// }
 		}
 	}
 
 	private void xxxm(MouseEvent e) {
 		if (rootView != null) {
-			// Function<MouseEvent, MouseEvent> mouseHandler = rootView.getMouseHandler();
 			BiFunction<MouseEvent, Consumer<View>, MouseEvent> mouseHandler = rootView.getMouseHandler();
 			if (mouseHandler != null) {
 				Consumer<View> asdf = v -> {
@@ -222,10 +231,6 @@ public class ViewHandler {
 				};
 				MouseEvent apply = mouseHandler.apply(e, asdf);
 			}
-			// Consumer<String> inputConsumer = rootView.getInputConsumer();
-			// if (inputConsumer != null) {
-			// 	inputConsumer.accept(binding);
-			// }
 		}
 	}
 
@@ -270,67 +275,16 @@ public class ViewHandler {
 		}
 	}
 
-	// Alt+Ctrl+x
-	// Ctrl+x
-	// Alt+x
-	// DownArrow
-	// PageUp
-	// PageDown
-
-	// private void bindExpression(String expression, KeyMap<String> keyMap) {
-	// 	String exp = expression.toLowerCase(Locale.ROOT);
-	// 	String function = "OPERATION_EXP_" + expression;
-	// 	String keySeq = null;
-	// 	String mainKey = null;
-	// 	boolean ctrl = false;
-	// 	boolean alt = false;
-	// 	for (String part : exp.split("\\+")) {
-	// 		part = part.strip();
-	// 		if ("ctrl".equals(part)) {
-	// 			ctrl = true;
-	// 		}
-	// 		else if ("alt".equals(part)) {
-	// 			alt = true;
-	// 		}
-	// 		else {
-	// 			mainKey = part;
-	// 		}
-	// 	}
-	// 	switch (exp) {
-	// 		case "downarrow":
-	// 			keySeq = key(terminal, Capability.key_down);
-	// 			break;
-	// 		default:
-	// 			break;
-	// 	}
-	// 	if (ctrl && mainKey != null && mainKey.length() == 1) {
-	// 		keySeq = ctrl(mainKey.charAt(0));
-	// 	}
-	// 	if (alt) {
-	// 		keySeq = alt(keySeq);
-	// 	}
-	// 	if (function != null && keySeq != null) {
-	// 		keyMap.bind(function, keySeq);
-	// 	}
-	// }
-
 	private void bindKeyMap(KeyMap<String> keyMap) {
-		keyBinder.bindExpression("DownArrow", keyMap);
-		keyBinder.bindExpression("Ctrl+h", keyMap);
+		keyBinder.bindAll(keyMap);
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
-		// keyMap.bind("OPERATION_UP", key(terminal, Capability.key_up));
-		// keyMap.bind("OPERATION_DOWN", key(terminal, Capability.key_down));
-		// keyMap.bind("OPERATION_LEFT", key(terminal, Capability.key_left));
-		// keyMap.bind("OPERATION_RIGHT", key(terminal, Capability.key_right));
-
-		// keyMap.bind("PPAGE", key(terminal, Capability.key_ppage));
-		// keyMap.bind("NPAGE", key(terminal, Capability.key_npage));
 		// keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
 		// keyMap.bind("CTRL_r", ctrl('r'));
 		// keyMap.bind("ALT_r", alt('r'));
 		// keyMap.bind("ESC", "\033");
+
 
 
 		// skip 127 - DEL
@@ -361,25 +315,6 @@ public class ViewHandler {
 				String lastBinding = bindingReader.getLastBinding();
 				dispatchChar(lastBinding, false, false);
 				break;
-			// case "CTRL_ALT_r":
-			// 	dispatchChar("r", true, true);
-			// 	break;
-			// case "CTRL_r":
-			// 	dispatchChar("r", true, false);
-			// 	break;
-			// case "ALT_r":
-			// 	dispatchChar("r", false, true);
-			// 	break;
-			// case "PPAGE":
-			// 	dispatchChar("PPAGE", false, false);
-			// 	break;
-			// case "NPAGE":
-			// 	dispatchChar("NPAGE", false, false);
-			// 	break;
-			// case "ESC":
-			// 	dispatchChar("ESC", false, false);
-			// 	break;
-
 		}
 
 		return false;

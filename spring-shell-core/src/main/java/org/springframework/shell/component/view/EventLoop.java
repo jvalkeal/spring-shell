@@ -28,11 +28,13 @@ public interface EventLoop {
 
 	Flux<? extends Message<?>> events();
 
-	void scheduleEventsAndSubcribe(Flux<? extends Message<?>> f);
+	void subcribe(Flux<? extends Message<?>> messages);
 
-	void scheduleEventsDispatch(Flux<? extends Message<?>> messages);
+	void dispatch(Flux<? extends Message<?>> messages);
 
 	void dispatch(Message<?> message);
+
+	public final static String TYPE = "type";
 
 	/**
 	 * Type of an event.

@@ -26,6 +26,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.DefaultEventLoop;
+import org.springframework.shell.component.view.EventLoop;
 import org.springframework.shell.component.view.ViewHandler;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -59,7 +60,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		});
 
 		// schedule dates to event loop
-		component.getEventLoop().scheduleEventsDispatch(dates);
+		component.getEventLoop().dispatch(dates);
 
 		// process dates
 		Flux<? extends Message<?>> datesProcessing = component.getEventLoop().events()
@@ -67,14 +68,18 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			.doOnNext(message -> {
 				if(message.getPayload() instanceof String s) {
 					ref.set(s);
-					Message<String> xxx = MessageBuilder.withPayload("WINCH")
-						.setHeader(DefaultEventLoop.TYPE, DefaultEventLoop.Type.SIGNAL)
+					Message<String> xxx = MessageBuilder.withPayload("redraw")
+						.setHeader(EventLoop.TYPE, EventLoop.Type.SYSTEM)
 						.build();
 					component.getEventLoop().dispatch(xxx);
+					// Message<String> xxx = MessageBuilder.withPayload("WINCH")
+					// 	.setHeader(EventLoop.TYPE, EventLoop.Type.SIGNAL)
+					// 	.build();
+					// component.getEventLoop().dispatch(xxx);
 				}
 			});
 		// schedule detas processing
-		component.getEventLoop().scheduleEventsAndSubcribe(datesProcessing);
+		component.getEventLoop().subcribe(datesProcessing);
 
 		// draw current date
 		root.setDrawFunction((screen, rect) -> {
