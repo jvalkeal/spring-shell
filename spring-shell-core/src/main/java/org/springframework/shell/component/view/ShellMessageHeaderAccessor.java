@@ -43,6 +43,11 @@ public class ShellMessageHeaderAccessor extends MessageHeaderAccessor {
 	 */
 	public static final String REACTOR_CONTEXT = "reactorContext";
 
+	/**
+	 * Raw source message.
+	 */
+	public static final String EVENT_TYPE = "eventType";
+
 	private static final BiFunction<String, String, String> TYPE_VERIFY_MESSAGE_FUNCTION =
 			(name, trailer) -> "The '" + name + trailer;
 
@@ -82,6 +87,16 @@ public class ShellMessageHeaderAccessor extends MessageHeaderAccessor {
 	@Nullable
 	public ContextView getReactorContext() {
 		return getHeader(REACTOR_CONTEXT, ContextView.class);
+	}
+
+	/**
+	 * Get a {@link EventLoop.Type} header if present.
+	 *
+	 * @return the {@link EventLoop.Type} header if present.
+	 */
+	@Nullable
+	public EventLoop.Type getEventType() {
+		return getHeader(EVENT_TYPE, EventLoop.Type.class);
 	}
 
 	@SuppressWarnings("unchecked")

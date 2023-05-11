@@ -75,4 +75,16 @@ public final class StaticMessageHeaderAccessor {
 		}
 		return reactorContext;
 	}
+
+	/**
+	 * Get a {@link EventLoop.Type} header if present.
+	 *
+	 * @param message the message to get a header from.
+	 * @return the {@link EventLoop.Type} header if present.
+	 */
+	public static EventLoop.Type getEventType(Message<?> message) {
+		EventLoop.Type eventType = message.getHeaders()
+				.get(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.class);
+		return eventType;
+	}
 }

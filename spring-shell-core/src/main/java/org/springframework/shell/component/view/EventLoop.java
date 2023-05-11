@@ -27,6 +27,7 @@ import org.springframework.messaging.Message;
 public interface EventLoop {
 
 	Flux<? extends Message<?>> events();
+	Flux<KeyEvent> keyEvents();
 
 	void subcribe(Flux<? extends Message<?>> messages);
 
@@ -34,7 +35,7 @@ public interface EventLoop {
 
 	void dispatch(Message<?> message);
 
-	public final static String TYPE = "type";
+	// public final static String TYPE = "type";
 
 	/**
 	 * Type of an event.
