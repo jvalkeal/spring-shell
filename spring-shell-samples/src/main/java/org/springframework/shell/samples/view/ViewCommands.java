@@ -23,7 +23,7 @@ import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.InputView;
 import org.springframework.shell.component.view.TextView;
-import org.springframework.shell.component.view.ViewHandler;
+import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 /**
@@ -38,7 +38,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "box")
 	public void box() {
-		ViewHandler component = new ViewHandler(getTerminal());
+		TerminalUI component = new TerminalUI(getTerminal());
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
@@ -48,7 +48,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "grid")
 	public void grid() {
-		ViewHandler component = new ViewHandler(getTerminal());
+		TerminalUI component = new TerminalUI(getTerminal());
 
 		BoxView menu = new BoxView();
 		// menu.setTitle("Menu");
@@ -84,7 +84,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "input")
 	public void input() {
-		ViewHandler component = new ViewHandler(getTerminal());
+		TerminalUI component = new TerminalUI(getTerminal());
 		InputView input = new InputView();
 		component.setRoot(input, true);
 		component.run();
@@ -92,7 +92,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "text")
 	public void text() {
-		ViewHandler component = new ViewHandler(getTerminal());
+		TerminalUI component = new TerminalUI(getTerminal());
 		TextView root = new TextView();
 		component.setRoot(root, true);
 		component.run();
@@ -101,7 +101,7 @@ public class ViewCommands extends AbstractShellComponent {
 
 	@Command(command = "test")
 	public void test() {
-		ViewHandler component = new ViewHandler(getTerminal());
+		TerminalUI component = new TerminalUI(getTerminal());
 
 		BoxView box1 = new BoxView();
 		BoxView box2 = new BoxView();

@@ -127,9 +127,6 @@ public class GridView extends BoxView {
 		int y = rect.y();
 		int width = rect.width();
 		int height = rect.height();
-		Dimension size = screen.getSize();
-		int screenWidth = size.width();
-		int screenHeight = size.height();
 
 		Map<View, GridItem> items = new HashMap<>();
 		for (GridItem item : gridItems) {
