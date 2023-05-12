@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -33,28 +32,28 @@ import org.jline.utils.Display;
 import org.jline.utils.InfoCmp.Capability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Disposable;
 
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.KeyBinder.ExpressionResult;
+import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
+import org.springframework.shell.component.view.eventloop.EventLoop;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import static org.jline.keymap.KeyMap.alt;
-import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
-import static org.jline.keymap.KeyMap.translate;
 
 /**
  * Component handling {@link View} structures.
  *
  * @author Janne Valkealahti
  */
-public class ViewHandler {
+public class TerminalUI {
 
-	private final static Logger log = LoggerFactory.getLogger(ViewHandler.class);
+	private final static Logger log = LoggerFactory.getLogger(TerminalUI.class);
 	public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
@@ -68,8 +67,6 @@ public class ViewHandler {
 	private Size size;
 	private View rootView;
 	private final KeyBinder keyBinder;
-
-	// private DefaultEventLoop eventLoop = new DefaultEventLoop();
 	private DefaultEventLoop eventLoop = new DefaultEventLoop();
 
 	/**
@@ -77,7 +74,7 @@ public class ViewHandler {
 	 *
 	 * @param terminal the terminal
 	 */
-	public ViewHandler(Terminal terminal) {
+	public TerminalUI(Terminal terminal) {
 		Assert.notNull(terminal, "terminal must be set");
 		this.terminal = terminal;
 		this.bindingReader = new BindingReader(terminal.reader());
@@ -91,7 +88,6 @@ public class ViewHandler {
 	 * @param fullScreen if root view should request full screen
 	 */
 	public void setRoot(View root, boolean fullScreen) {
-		// this.rootView.focus(root, true);
 		setFocus(root);
 		this.rootView = root;
 	}
@@ -121,8 +117,8 @@ public class ViewHandler {
 		return eventLoop;
 	}
 
-	private void redraw() {
-		display();
+	public void redraw() {
+		getEventLoop().dispatch(ShellMessageBuilder.asRedraw());
 	}
 
 	private void render(int rows, int columns) {
@@ -163,7 +159,7 @@ public class ViewHandler {
 	}
 
 	private void registerEventHandling() {
-		Disposable subscribe1 = eventLoop.events()
+		eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SIGNAL);
 			})
@@ -172,7 +168,7 @@ public class ViewHandler {
 			})
 			.subscribe();
 
-		Disposable subscribe11 = eventLoop.events()
+		eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SYSTEM);
 			})
@@ -186,67 +182,51 @@ public class ViewHandler {
 			})
 			.subscribe();
 
-		// Disposable subscribe2 = eventLoop.events()
-		// 	.filter(m -> {
-		// 		return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
-		// 	})
-		// 	.doOnNext(m -> {
-		// 		Object payload = m.getPayload();
-		// 		if (payload instanceof KeyEvent p) {
-		// 			xxxk(p);
-		// 		}
-		// 	})
-		// 	.subscribe();
 		eventLoop.keyEvents()
 			.doOnNext(m -> {
-				xxxk(m);
+				handleKeyEvent(m);
 			})
 			.subscribe();
 
-		Disposable subscribe3 = eventLoop.events()
+		eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.MOUSE);
 			})
 			.doOnNext(m -> {
 				Object payload = m.getPayload();
 				if (payload instanceof MouseEvent p) {
-					xxxm(p);
+					handleMouseEvent(p);
 				}
 			})
 			.subscribe();
 	}
 
-	private void xxxk(KeyEvent binding) {
-		log.info("XXXX {}", binding);
+	private void handleKeyEvent(KeyEvent event) {
 		if (rootView != null) {
 			BiFunction<KeyEvent, Consumer<View>, KeyEvent> inputHandler = rootView.getInputHandler();
 			if (inputHandler != null) {
 				Consumer<View> asdf = v -> {
 					setFocus(v);
 				};
-				KeyEvent apply = inputHandler.apply(binding, asdf);
+				inputHandler.apply(event, asdf);
 			}
 		}
 	}
 
-	private void xxxm(MouseEvent e) {
-		log.info("DDDD {}", e);
+	private void handleMouseEvent(MouseEvent event) {
 		if (rootView != null) {
 			BiFunction<MouseEvent, Consumer<View>, MouseEvent> mouseHandler = rootView.getMouseHandler();
 			if (mouseHandler != null) {
 				Consumer<View> asdf = v -> {
 					setFocus(v);
 				};
-				MouseEvent apply = mouseHandler.apply(e, asdf);
+				mouseHandler.apply(event, asdf);
 			}
 		}
 	}
 
 	private void loop() {
 		Attributes attr = terminal.enterRawMode();
-
-		// eventLoop.start();
-
 		registerEventHandling();
 
 		terminal.handle(Signal.WINCH, signal -> {
@@ -273,7 +253,6 @@ public class ViewHandler {
 			}
 		}
 		finally {
-			// eventLoop.stop();
 			eventLoop.destroy();
 			terminal.setAttributes(attr);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
@@ -288,13 +267,6 @@ public class ViewHandler {
 		keyBinder.bindAll(keyMap);
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
-
-		// keyMap.bind("CTRL_ALT_r", alt(ctrl('r')));
-		// keyMap.bind("CTRL_r", ctrl('r'));
-		// keyMap.bind("ALT_r", alt('r'));
-		// keyMap.bind("ESC", "\033");
-
-
 
 		// skip 127 - DEL
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
@@ -333,7 +305,6 @@ public class ViewHandler {
 		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
 		KeyEvent event = new KeyEvent(binding, ctrl, alt);
 		Message<KeyEvent> message = MessageBuilder
-			// .withPayload(binding)
 			.withPayload(event)
 			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.KEY)
 			.build();

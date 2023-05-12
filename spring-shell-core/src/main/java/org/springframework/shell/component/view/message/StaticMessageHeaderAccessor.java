@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.message;
 
 import java.util.UUID;
 
@@ -23,6 +23,7 @@ import reactor.util.context.ContextView;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.shell.component.view.eventloop.EventLoop;
 
 /**
  * Lightweight type-safe header accessor avoiding object creation just to access

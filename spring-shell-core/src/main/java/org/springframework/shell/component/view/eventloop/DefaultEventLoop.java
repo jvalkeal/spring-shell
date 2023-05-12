@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.eventloop;
 
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
@@ -37,8 +37,10 @@ import reactor.core.scheduler.Schedulers;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.KeyEvent;
+import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticMessageHeaderAccessor;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 public class DefaultEventLoop implements EventLoop {
 
@@ -50,6 +52,19 @@ public class DefaultEventLoop implements EventLoop {
 	private final Disposable.Composite upstreamSubscriptions = Disposables.composite();
 	private final Scheduler scheduler = Schedulers.boundedElastic();
 	private volatile boolean active = true;
+	private final List<EventLoopProcessor> processors;
+
+	public DefaultEventLoop() {
+		this(null);
+	}
+
+	public DefaultEventLoop(List<EventLoopProcessor> processors) {
+		this.processors = new ArrayList<>();
+		if (processors != null) {
+			this.processors.addAll(processors);
+		}
+		this.processors.add(new AnimationEventLoopProcessor());
+	}
 
 	@Override
 	public void dispatch(Message<?> message) {
@@ -60,38 +75,30 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
-	public void subcribe(Flux<? extends Message<?>> messages) {
-		upstreamSubscriptions.add(
-		messages
-			// .delaySubscription(subscribedSignal.asFlux().filter(Boolean::booleanValue).next())
-			.subscribe()
-		);
-	}
-
-	@Override
-	public void dispatch(Flux<? extends Message<?>> messages) {
+	public void dispatch(Publisher<? extends Message<?>> messages) {
 		subscribeTo(messages);
 	}
 
 	@Override
 	public Flux<Message<?>> events() {
-		return sinkFlux.share()
+		return sinkFlux.share().flatMap(m -> {
+				Flux<? extends Message<?>> pm = null;
+				for (EventLoopProcessor processor : processors) {
+					if (processor.canProcess(m)) {
+						pm = processor.process(m);
+						break;
+					}
+				}
+				if (pm != null) {
+					return pm;
+				}
+				return Mono.just(m);
+			})
 			.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
 		;
 	}
 
-	// Disposable subscribe2 = eventLoop.events()
-	// .filter(m -> {
-	// 	return ObjectUtils.nullSafeEquals(m.getHeaders().get(EventLoop.TYPE), EventLoop.Type.KEY);
-	// })
-	// .doOnNext(m -> {
-	// 	Object payload = m.getPayload();
-	// 	if (payload instanceof KeyEvent p) {
-	// 		xxxk(p);
-	// 	}
-	// })
-	// .subscribe();
-
+	@Override
 	public Flux<KeyEvent> keyEvents() {
 		return events()
 			.filter(m -> EventLoop.Type.KEY.equals(StaticMessageHeaderAccessor.getEventType(m)))
@@ -100,6 +107,14 @@ public class DefaultEventLoop implements EventLoop {
 			.cast(KeyEvent.class);
 	}
 
+	// @Override
+	// public void subcribe(Flux<? extends Message<?>> messages) {
+	// 	upstreamSubscriptions.add(
+	// 	messages
+	// 		// .delaySubscription(subscribedSignal.asFlux().filter(Boolean::booleanValue).next())
+	// 		.subscribe()
+	// 	);
+	// }
 
 	private boolean doSend(Message<?> message, long timeout) {
 		Assert.state(this.active && this.sink.currentSubscriberCount() > 0,
@@ -131,20 +146,20 @@ public class DefaultEventLoop implements EventLoop {
 		};
 	}
 
-	public void subscribe(Subscriber<? super Message<?>> subscriber) {
-		sink.asFlux()
-			.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
-			.share()
-			.subscribe(subscriber);
+	// public void subscribe(Subscriber<? super Message<?>> subscriber) {
+	// 	sink.asFlux()
+	// 		.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
+	// 		.share()
+	// 		.subscribe(subscriber);
 
-		upstreamSubscriptions.add(
-			Mono.fromCallable(() -> sink.currentSubscriberCount() > 0)
-					.filter(Boolean::booleanValue)
-					.doOnNext(subscribedSignal::tryEmitNext)
-					.repeatWhenEmpty((repeat) ->
-							active ? repeat.delayElements(Duration.ofMillis(100)) : repeat)
-					.subscribe());
-	}
+	// 	upstreamSubscriptions.add(
+	// 		Mono.fromCallable(() -> sink.currentSubscriberCount() > 0)
+	// 				.filter(Boolean::booleanValue)
+	// 				.doOnNext(subscribedSignal::tryEmitNext)
+	// 				.repeatWhenEmpty((repeat) ->
+	// 						active ? repeat.delayElements(Duration.ofMillis(100)) : repeat)
+	// 				.subscribe());
+	// }
 
 	public void subscribeTo(Publisher<? extends Message<?>> publisher) {
 		upstreamSubscriptions.add(
@@ -204,55 +219,4 @@ public class DefaultEventLoop implements EventLoop {
 			return new MessageComparator();
 		}
 	}
-
-	// private static class TickProcessor implements EventLoopProcessor {
-
-	// 	@Override
-	// 	public boolean canProcess(Message<?> message) {
-	// 		return ObjectUtils.nullSafeEquals(message.getHeaders().get(DefaultEventLoop.TYPE), DefaultEventLoop.TYPE_TICK);
-	// 	}
-
-	// 	@Override
-	// 	public Flux<? extends Message<?>> process(Message<?> message) {
-	// 		Flux<Message<Long>> take = Flux.interval(Duration.ofMillis(100))
-	// 			.map(l -> {
-	// 				return MessageBuilder
-	// 					.withPayload(l)
-	// 					.build();
-	// 			})
-	// 			.take(Duration.ofSeconds(1));
-	// 		return take;
-	// 	}
-
-	// }
-
-	// public DefaultEventLoop(List<EventLoopProcessor> processors) {
-	// 	this.processors = new ArrayList<>();
-	// 	if (processors != null) {
-	// 		this.processors.addAll(processors);
-	// 	}
-	// 	init();
-	// }
-
-	// private void init() {
-	// 	Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
-	// 	bus = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
-	// 	Flux<Message<?>> f1 = bus.asFlux();
-
-	// 	Flux<? extends Message<?>> f2 = f1.flatMap(m -> {
-	// 		Flux<? extends Message<?>> pm = null;
-	// 		for (EventLoopProcessor processor : processors) {
-	// 			if (processor.canProcess(m)) {
-	// 				pm = processor.process(m);
-	// 				break;
-	// 			}
-	// 		}
-	// 		if (pm != null) {
-	// 			return pm;
-	// 		}
-	// 		return Mono.just(m);
-	// 	});
-	// 	busFlux = f2.share();
-	// }
-
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.message;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,6 +26,7 @@ import reactor.util.context.ContextView;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 

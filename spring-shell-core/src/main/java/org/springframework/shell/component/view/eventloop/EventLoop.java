@@ -13,32 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.eventloop;
 
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.messaging.Message;
+import org.springframework.shell.component.view.KeyEvent;
 
 /**
+ * {@code EventLoop} is a central place where all eventing will be orchestrated
+ * for a lifecycle of a component. Orchestration is usually needed around timings
+ * of redraws and and component state updates.
  *
+ * Generic message type is a Spring {@link Message} and it's up to an {@code EventLoop}
+ * implementation how those are processed.
  *
  * @author Janne Valkealahti
  */
 public interface EventLoop {
 
+	/**
+	 * Return a {@link Flux} of {@link Message} events. When subscribed events will
+	 * be received until disposed or {@code EventLoop} terminates.
+	 *
+	 * @return the events from an event loop
+	 */
 	Flux<? extends Message<?>> events();
-	Flux<KeyEvent> keyEvents();
-
-	void subcribe(Flux<? extends Message<?>> messages);
-
-	void dispatch(Flux<? extends Message<?>> messages);
-
-	void dispatch(Message<?> message);
-
-	// public final static String TYPE = "type";
 
 	/**
-	 * Type of an event.
+	 * Specialisation of {@link #events()} which returns type safe
+	 * {@link KeyEvent}s.
+	 *
+	 * @return the key events from an event loop
+	 */
+	Flux<KeyEvent> keyEvents();
+
+	/**
+	 * Dispatch {@link Message}s into an {@code EventLoop} from a {@link Publisher}.
+	 * Usually type is either {@link Mono} or {@link Flux}.
+	 *
+	 * @param messages the messages to dispatch
+	 */
+	void dispatch(Publisher<? extends Message<?>> messages);
+
+	/**
+	 * Dispatch a {@link Message} into an {@code EventLoop}.
+	 *
+	 * @param message the message to dispatch
+	 */
+	void dispatch(Message<?> message);
+
+	/**
+	 * Type of an events handled by an {@code EventLoop}.
 	 */
 	enum Type {
 
@@ -60,7 +88,12 @@ public interface EventLoop {
 		/**
 		 * System bindinds like redraw.
 		 */
-		SYSTEM
+		SYSTEM,
+
+		/**
+		 * User bindinds for custom events.
+		 */
+		USER
 	}
 
 	/**
@@ -70,7 +103,9 @@ public interface EventLoop {
 	interface EventLoopProcessor {
 
 		/**
-		 * Checks if this processor can process an event.
+		 * Checks if this processor can process an event. If this method returns {@code true}
+		 * it's quaranteed that {@link #process(Message)} is called to resolve translation
+		 * of a message.
 		 *
 		 * @param message the message
 		 * @return true if processor can process an event

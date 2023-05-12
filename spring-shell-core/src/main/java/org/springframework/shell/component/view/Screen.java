@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.View.Dimension;
 import org.springframework.shell.component.view.View.Position;
+import org.springframework.shell.component.view.View.Rectangle;
 import org.springframework.util.Assert;
 
 /**
@@ -110,6 +111,33 @@ public class Screen {
 			char c = text.charAt(i);
 			setContent(x + i, y, ScreenItem.of(c));
 		}
+	}
+
+	public enum HorizontalAlign {
+		LEFT, CENTER, RIGHT,
+	}
+
+	public enum VerticalAlign {
+		TOP, CENTER, BOTTOM
+	}
+
+	public void printx(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
+		int x = rect.x();
+		if (hAlign == HorizontalAlign.CENTER) {
+			x = (x + rect.width()) / 2;
+			x = x - text.length() / 2;
+		}
+		else if (hAlign == HorizontalAlign.RIGHT) {
+			x = x + rect.width() - text.length();
+		}
+		int y = rect.y();
+		if (vAlign == VerticalAlign.CENTER) {
+			y = (y + rect.height()) / 2;
+		}
+		else if (vAlign == VerticalAlign.BOTTOM) {
+			y = y + rect.height() - 1;
+		}
+		print(text, x, y, text.length());
 	}
 
 	public List<AttributedString> getScreenLines() {
