@@ -66,12 +66,18 @@ class ScreenAssertTests {
 		assertThat(forScreen(screen)).hasNoBorder(1, 1, 8, 3);
 	}
 
-
 	@Test
 	void hasHorizontalText() {
 		Screen screen = new Screen(5, 10);
 		screen.print("test", 0, 0, 4);
 		assertThat(forScreen(screen)).hasHorizontalText("test", 0, 0, 4);
+	}
+
+	@Test
+	void hasNoHorizontalText() {
+		Screen screen = new Screen(5, 10);
+		screen.print("xxxx", 0, 0, 4);
+		assertThat(forScreen(screen)).hasNoHorizontalText("test", 0, 0, 4);
 	}
 
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
