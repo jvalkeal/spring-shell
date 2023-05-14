@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +36,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.KeyBinder;
+import org.springframework.shell.component.view.KeyEvent;
+import org.springframework.shell.component.view.Screen;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.KeyBinder.ExpressionResult;
 import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
 import org.springframework.shell.component.view.eventloop.EventLoop;
@@ -118,7 +122,7 @@ public class TerminalUI {
 	}
 
 	public void redraw() {
-		getEventLoop().dispatch(ShellMessageBuilder.asRedraw());
+		getEventLoop().dispatch(ShellMessageBuilder.ofRedraw());
 	}
 
 	private void render(int rows, int columns) {
@@ -312,27 +316,12 @@ public class TerminalUI {
 	}
 
 	private void dispatchMouse(MouseEvent event) {
-		Message<MouseEvent> message = MessageBuilder
-			.withPayload(event)
-			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.MOUSE)
-			.build();
-		eventLoop.dispatch(message);
+		log.debug("Dispatch mouse event: {}", event);
+		eventLoop.dispatch(ShellMessageBuilder.ofMouseEvent(event));
 	}
 
     private void mouseEvent() {
         MouseEvent event = terminal.readMouseEvent();
-		log.info("MOUSE: {}", event);
 		dispatchMouse(event);
-        // if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-        //         && event.getButton() == MouseEvent.Button.Button1) {
-        //     int x = event.getX();
-        //     int y = event.getY();
-        // }
-        // else if (event.getType() == MouseEvent.Type.Wheel) {
-        //     if (event.getButton() == MouseEvent.Button.WheelDown) {
-        //     } else if (event.getButton() == MouseEvent.Button.WheelUp) {
-        //     }
-        // }
     }
-
 }

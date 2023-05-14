@@ -42,6 +42,11 @@ import org.springframework.shell.component.view.message.ShellMessageHeaderAccess
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.util.Assert;
 
+/**
+ * Default implementation of an {@link EventLoop}.
+ *
+ * @author Janne Valkealahti
+ */
 public class DefaultEventLoop implements EventLoop {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultEventLoop.class);
@@ -49,7 +54,7 @@ public class DefaultEventLoop implements EventLoop {
 	private final Many<Message<?>> sink = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
 	private final Flux<Message<?>> sinkFlux = sink.asFlux().share();
 	private final Sinks.Many<Boolean> subscribedSignal = Sinks.many().replay().limit(1);
-	private final Disposable.Composite upstreamSubscriptions = Disposables.composite();
+	private final Disposable.Composite disposables = Disposables.composite();
 	private final Scheduler scheduler = Schedulers.boundedElastic();
 	private volatile boolean active = true;
 	private final List<EventLoopProcessor> processors;
@@ -107,6 +112,12 @@ public class DefaultEventLoop implements EventLoop {
 			.cast(KeyEvent.class);
 	}
 
+	@Override
+	public void onDestroy(Disposable disposable) {
+		disposables.add(disposable);
+	}
+
+
 	// @Override
 	// public void subcribe(Flux<? extends Message<?>> messages) {
 	// 	upstreamSubscriptions.add(
@@ -162,7 +173,7 @@ public class DefaultEventLoop implements EventLoop {
 	// }
 
 	public void subscribeTo(Publisher<? extends Message<?>> publisher) {
-		upstreamSubscriptions.add(
+		disposables.add(
 			Flux.from(publisher)
 				// .delaySubscription(subscribedSignal.asFlux().filter(Boolean::booleanValue).next())
 				.publishOn(scheduler)
@@ -197,7 +208,7 @@ public class DefaultEventLoop implements EventLoop {
 
 	public void destroy() {
 		this.active = false;
-		this.upstreamSubscriptions.dispose();
+		this.disposables.dispose();
 		this.subscribedSignal.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.sink.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.scheduler.dispose();
