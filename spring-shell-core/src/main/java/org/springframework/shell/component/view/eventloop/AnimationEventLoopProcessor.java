@@ -23,7 +23,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.eventloop.EventLoop.EventLoopProcessor;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 
 /**
  * {@link EventLoopProcessor} converting incoming message into animation tick
@@ -35,7 +35,7 @@ public class AnimationEventLoopProcessor implements EventLoopProcessor {
 
 	@Override
 	public boolean canProcess(Message<?> message) {
-		if (EventLoop.Type.SYSTEM.equals(StaticMessageHeaderAccessor.getEventType(message))) {
+		if (EventLoop.Type.SYSTEM.equals(StaticShellMessageHeaderAccessor.getEventType(message))) {
 			if (message.getHeaders().containsKey("animationstart")) {
 				return true;
 			}

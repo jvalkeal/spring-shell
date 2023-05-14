@@ -33,9 +33,9 @@ import org.springframework.shell.component.view.eventloop.EventLoop;
  *
  * @see ShellMessageHeaderAccessor
  */
-public final class StaticMessageHeaderAccessor {
+public final class StaticShellMessageHeaderAccessor {
 
-	private StaticMessageHeaderAccessor() {
+	private StaticShellMessageHeaderAccessor() {
 	}
 
 	@Nullable
