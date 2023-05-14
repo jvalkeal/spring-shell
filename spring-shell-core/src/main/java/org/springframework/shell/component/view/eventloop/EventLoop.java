@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.eventloop;
 
 import org.reactivestreams.Publisher;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -64,6 +65,13 @@ public interface EventLoop {
 	 * @param message the message to dispatch
 	 */
 	void dispatch(Message<?> message);
+
+	/**
+	 * Register {@link Disposable} to get disposed when event loop terminates.
+	 *
+	 * @param disposable a disposable to dispose
+	 */
+	void onDestroy(Disposable disposable);
 
 	/**
 	 * Type of an events handled by an {@code EventLoop}.

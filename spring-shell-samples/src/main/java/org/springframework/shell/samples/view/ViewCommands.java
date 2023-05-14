@@ -16,9 +16,9 @@
 package org.springframework.shell.samples.view;
 
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 /**

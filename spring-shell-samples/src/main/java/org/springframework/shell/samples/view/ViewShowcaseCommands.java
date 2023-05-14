@@ -23,15 +23,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.Screen;
 import org.springframework.shell.component.view.View;
-import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.component.view.Screen.HorizontalAlign;
 import org.springframework.shell.component.view.Screen.VerticalAlign;
 import org.springframework.shell.component.view.View.Rectangle;
@@ -208,12 +209,13 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			.subscribe();
 
 		// schedule game updates
-		Flux.interval(Duration.ofMillis(500))
+		Disposable subscribe = Flux.interval(Duration.ofMillis(500))
 			.doOnNext(l -> {
 				snakeGame.update(0);
 				component.redraw();
 			})
 			.subscribe();
+		component.getEventLoop().onDestroy(subscribe);
 
 		// draw game area
 		root.setDrawFunction((screen, rect) -> {

@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.view.message;
 
+import org.jline.terminal.MouseEvent;
+
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
@@ -57,10 +59,22 @@ public final class ShellMessageBuilder<T> {
 		return new ShellMessageBuilder<>(payload, null);
 	}
 
-	public static Message<String> asRedraw() {
+	public static Message<String> ofRedraw() {
 		return new ShellMessageBuilder<>("redraw", null)
 			.setEventType(EventLoop.Type.SYSTEM)
 			.setPriority(0)
+			.build();
+	}
+
+	/**
+	 * Create a message of a {@link MouseEvent}.
+	 *
+	 * @param event the event type
+	 * @return a message with {@link MouseEvent} as a payload
+	 */
+	public static Message<MouseEvent> ofMouseEvent(MouseEvent event) {
+		return new ShellMessageBuilder<>(event, null)
+			.setEventType(EventLoop.Type.MOUSE)
 			.build();
 	}
 
