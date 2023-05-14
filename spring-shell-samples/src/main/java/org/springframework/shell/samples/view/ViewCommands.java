@@ -15,14 +15,9 @@
  */
 package org.springframework.shell.samples.view;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.InputView;
-import org.springframework.shell.component.view.TextView;
 import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -33,8 +28,6 @@ import org.springframework.shell.standard.AbstractShellComponent;
  */
 @Command(command = "view")
 public class ViewCommands extends AbstractShellComponent {
-
-	private final static Logger log = LoggerFactory.getLogger(ViewCommands.class);
 
 	@Command(command = "box")
 	public void box() {
@@ -82,31 +75,14 @@ public class ViewCommands extends AbstractShellComponent {
 		component.run();
 	}
 
-	@Command(command = "input")
-	public void input() {
-		TerminalUI component = new TerminalUI(getTerminal());
-		InputView input = new InputView();
-		component.setRoot(input, true);
-		component.run();
-	}
-
-	@Command(command = "text")
-	public void text() {
-		TerminalUI component = new TerminalUI(getTerminal());
-		TextView root = new TextView();
-		component.setRoot(root, true);
-		component.run();
-	}
-
-
 	@Command(command = "test")
 	public void test() {
 		TerminalUI component = new TerminalUI(getTerminal());
 
 		BoxView box1 = new BoxView();
 		BoxView box2 = new BoxView();
-		BoxView box3 = new BoxView();
-		BoxView box4 = new BoxView();
+		// BoxView box3 = new BoxView();
+		// BoxView box4 = new BoxView();
 
 		GridView grid = new GridView();
 		grid.setShowBorders(true);

@@ -24,7 +24,6 @@ import reactor.test.StepVerifier;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
 
 class EventLoopTests {
 
