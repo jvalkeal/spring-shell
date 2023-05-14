@@ -59,6 +59,11 @@ public final class ShellMessageBuilder<T> {
 		return new ShellMessageBuilder<>(payload, null);
 	}
 
+	/**
+	 * Create a {@code redraw} message.
+	 *
+	 * @return a redraw message
+	 */
 	public static Message<String> ofRedraw() {
 		return new ShellMessageBuilder<>("redraw", null)
 			.setEventType(EventLoop.Type.SYSTEM)
