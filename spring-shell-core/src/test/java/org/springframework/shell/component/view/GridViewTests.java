@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
