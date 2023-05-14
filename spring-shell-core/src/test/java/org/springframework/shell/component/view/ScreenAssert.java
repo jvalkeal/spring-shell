@@ -88,6 +88,34 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		return this;
 	}
 
+	/**
+	 * Verifies that a given text can not be found from a screen coordinates following
+	 * horizontal width.
+	 *
+	 * @param text a text to verify
+	 * @param x a x position of a text
+	 * @param y a y position of a text
+	 * @param width a width of a text to check
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasNoHorizontalText(String text, int x, int y, int width) {
+		isNotNull();
+		ScreenItem[][] content = actual.getContent();
+		checkBounds(content, x, y, width, 1);
+		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null) {
+				if (items[i].content != null) {
+					buf.append(items[i].content);
+				}
+			}
+		}
+		String actualText = buf.toString();
+		assertThat(actualText).isNotEqualTo(text);
+		return this;
+	}
+
 	private ScreenAssert hasBorderType(int x, int y, int width, int height, boolean border) {
 		isNotNull();
 		ScreenItem[][] content = actual.getContent();

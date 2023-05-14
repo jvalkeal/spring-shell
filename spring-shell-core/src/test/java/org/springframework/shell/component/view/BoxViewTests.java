@@ -58,6 +58,16 @@ class BoxViewTests {
 		assertThat(forScreen(screen)).hasHorizontalText("title", 0, 1, 5);
 	}
 
+	@Test
+	void hasNoTitleWhenNoBorder() {
+		BoxView view = new BoxView();
+		view.setShowBorder(false);
+		view.setTitle("title");
+		view.setRect(0, 0, 80, 24);
+		view.draw(screen);
+		assertThat(forScreen(screen)).hasNoHorizontalText("title", 0, 1, 5);
+	}
+
 	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
 		return () -> new ScreenAssert(screen);
 	}
