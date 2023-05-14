@@ -209,13 +209,14 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			.subscribe();
 
 		// schedule game updates
-		Disposable subscribe = Flux.interval(Duration.ofMillis(500))
+		Disposable gameInterval = Flux.interval(Duration.ofMillis(500))
 			.doOnNext(l -> {
 				snakeGame.update(0);
 				component.redraw();
 			})
 			.subscribe();
-		component.getEventLoop().onDestroy(subscribe);
+		// dispose when event loop is getting destroyd
+		component.getEventLoop().onDestroy(gameInterval);
 
 		// draw game area
 		root.setDrawFunction((screen, rect) -> {
