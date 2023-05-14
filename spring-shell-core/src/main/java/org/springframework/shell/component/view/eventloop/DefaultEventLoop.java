@@ -39,7 +39,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.util.Assert;
 
 public class DefaultEventLoop implements EventLoop {
@@ -101,7 +101,7 @@ public class DefaultEventLoop implements EventLoop {
 	@Override
 	public Flux<KeyEvent> keyEvents() {
 		return events()
-			.filter(m -> EventLoop.Type.KEY.equals(StaticMessageHeaderAccessor.getEventType(m)))
+			.filter(m -> EventLoop.Type.KEY.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.map(m -> m.getPayload())
 			.ofType(KeyEvent.class)
 			.cast(KeyEvent.class);
@@ -169,7 +169,7 @@ public class DefaultEventLoop implements EventLoop {
 				.flatMap((message) ->
 						Mono.just(message)
 								.handle((messageToHandle, syncSink) -> sendReactiveMessage(messageToHandle))
-								.contextWrite(StaticMessageHeaderAccessor.getReactorContext(message))
+								.contextWrite(StaticShellMessageHeaderAccessor.getReactorContext(message))
 								)
 				.contextCapture()
 				.subscribe());
@@ -207,8 +207,8 @@ public class DefaultEventLoop implements EventLoop {
 
 		@Override
 		public int compare(Message<?> left, Message<?> right) {
-			Integer l = StaticMessageHeaderAccessor.getPriority(left);
-			Integer r = StaticMessageHeaderAccessor.getPriority(right);
+			Integer l = StaticShellMessageHeaderAccessor.getPriority(left);
+			Integer r = StaticShellMessageHeaderAccessor.getPriority(right);
 			if (l != null && r != null) {
 				return l.compareTo(r);
 			}

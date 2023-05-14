@@ -37,7 +37,7 @@ import org.springframework.shell.component.view.Screen.VerticalAlign;
 import org.springframework.shell.component.view.View.Rectangle;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 
@@ -78,7 +78,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 
 		// process dates
 		component.getEventLoop().events()
-			.filter(m -> EventLoop.Type.USER.equals(StaticMessageHeaderAccessor.getEventType(m)))
+			.filter(m -> EventLoop.Type.USER.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.doOnNext(message -> {
 				if(message.getPayload() instanceof String s) {
 					ref.set(s);
@@ -90,7 +90,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		// testing for animations for now
 		AtomicInteger animX = new AtomicInteger();
 		component.getEventLoop().events()
-			.filter(m -> EventLoop.Type.SYSTEM.equals(StaticMessageHeaderAccessor.getEventType(m)))
+			.filter(m -> EventLoop.Type.SYSTEM.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.filter(m -> m.getHeaders().containsKey("animationtick"))
 			.doOnNext(message -> {
 				Object payload = message.getPayload();
