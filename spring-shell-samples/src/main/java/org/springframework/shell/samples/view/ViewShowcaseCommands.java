@@ -108,8 +108,8 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		// handle keys
 		component.getEventLoop().keyEvents()
 			.doOnNext(e -> {
-				switch (e.binding()) {
-					case "DownArrow":
+				switch (e.key()) {
+					case DOWNARROW:
 						if (vAlign.get() == VerticalAlign.TOP) {
 							vAlign.set(VerticalAlign.CENTER);
 						}
@@ -117,7 +117,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							vAlign.set(VerticalAlign.BOTTOM);
 						}
 						break;
-					case "UpArrow":
+					case UPARROW:
 						if (vAlign.get() == VerticalAlign.BOTTOM) {
 							vAlign.set(VerticalAlign.CENTER);
 						}
@@ -125,7 +125,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							vAlign.set(VerticalAlign.TOP);
 						}
 						break;
-					case "LeftArrow":
+					case LEFTARROW:
 						if (hAlign.get() == HorizontalAlign.RIGHT) {
 							hAlign.set(HorizontalAlign.CENTER);
 						}
@@ -133,7 +133,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							hAlign.set(HorizontalAlign.LEFT);
 						}
 						break;
-					case "RightArrow":
+					case RIGHTARROW:
 						Message<String> animStart = MessageBuilder
 							.withPayload("")
 							.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
@@ -188,17 +188,17 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		// handle arrow keys to game
 		component.getEventLoop().keyEvents()
 			.doOnNext(e -> {
-				switch (e.binding()) {
-					case "DownArrow":
+				switch (e.key()) {
+					case DOWNARROW:
 						direction.set(1);
 						break;
-					case "UpArrow":
+					case UPARROW:
 						direction.set(-1);
 						break;
-					case "LeftArrow":
+					case LEFTARROW:
 						direction.set(-2);
 						break;
-					case "RightArrow":
+					case RIGHTARROW:
 						direction.set(2);
 						break;
 					default:

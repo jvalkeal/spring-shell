@@ -41,6 +41,8 @@ import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.Screen;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.KeyBinder.ExpressionResult;
+import org.springframework.shell.component.view.KeyEvent.KeyType;
+import org.springframework.shell.component.view.KeyEvent.ModType;
 import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -287,7 +289,9 @@ public class TerminalUI {
 		if (operation.startsWith("OPERATION_EXP_")) {
 			String exp = operation.substring(14);
 			ExpressionResult result = keyBinder.parseExpression(exp);
-			dispatchChar(exp, result.ctrl(), result.alt());
+			KeyType keyType = KeyType.valueOf(exp.toUpperCase());
+			KeyEvent keyEvent = KeyEvent.ofType(keyType, ModType.of(result.ctrl(), result.alt()));
+			dispatchKeyEvent(keyEvent);
 			return false;
 		}
 		switch (operation) {
@@ -307,7 +311,16 @@ public class TerminalUI {
 
 	private void dispatchChar(String binding, boolean ctrl, boolean alt) {
 		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
-		KeyEvent event = new KeyEvent(binding, ctrl, alt);
+		// KeyEvent event = new KeyEvent(binding, ctrl, alt);
+		KeyEvent event = KeyEvent.ofCharacter(binding, ModType.of(ctrl, alt));
+		Message<KeyEvent> message = MessageBuilder
+			.withPayload(event)
+			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.KEY)
+			.build();
+		eventLoop.dispatch(message);
+	}
+
+	private void dispatchKeyEvent(KeyEvent event) {
 		Message<KeyEvent> message = MessageBuilder
 			.withPayload(event)
 			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.KEY)
