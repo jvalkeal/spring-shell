@@ -40,7 +40,6 @@ import org.springframework.shell.component.view.KeyBinder;
 import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.Screen;
 import org.springframework.shell.component.view.View;
-import org.springframework.shell.component.view.KeyBinder.ExpressionResult;
 import org.springframework.shell.component.view.KeyEvent.KeyType;
 import org.springframework.shell.component.view.KeyEvent.ModType;
 import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
@@ -50,6 +49,7 @@ import org.springframework.shell.component.view.message.ShellMessageHeaderAccess
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
+import static org.jline.keymap.KeyMap.alt;
 import static org.jline.keymap.KeyMap.key;
 
 /**
@@ -274,6 +274,12 @@ public class TerminalUI {
 		keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
+		// keyMap.bind("XXX", alt(key(terminal, Capability.key_down)));
+
+        // bind(emacs, FORWARD_WORD, translate("^[[1;5C")); // ctrl-left
+        // bind(emacs, BACKWARD_WORD, translate("^[[1;5D")); // ctrl-right
+
+
 		// skip 127 - DEL
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
 			keyMap.bind(OPERATION_KEY_EVENT, Character.toString(i));
@@ -286,11 +292,9 @@ public class TerminalUI {
 		if (operation == null) {
 			return true;
 		}
-		if (operation.startsWith("OPERATION_EXP_")) {
+		if (operation.startsWith("OPERATION_KEY_")) {
 			String exp = operation.substring(14);
-			ExpressionResult result = keyBinder.parseExpression(exp);
-			KeyType keyType = KeyType.valueOf(exp.toUpperCase());
-			KeyEvent keyEvent = KeyEvent.ofType(keyType, ModType.of(result.ctrl(), result.alt()));
+			KeyEvent keyEvent = keyBinder.parseKeyEvent(exp);
 			dispatchKeyEvent(keyEvent);
 			return false;
 		}
@@ -312,7 +316,7 @@ public class TerminalUI {
 	private void dispatchChar(String binding, boolean ctrl, boolean alt) {
 		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
 		// KeyEvent event = new KeyEvent(binding, ctrl, alt);
-		KeyEvent event = KeyEvent.ofCharacter(binding, ModType.of(ctrl, alt));
+		KeyEvent event = KeyEvent.ofCharacter(binding, ModType.of(ctrl, alt, false));
 		Message<KeyEvent> message = MessageBuilder
 			.withPayload(event)
 			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.KEY)
