@@ -21,11 +21,15 @@ import org.jline.keymap.KeyMap;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
+import org.springframework.shell.component.view.KeyEvent.KeyType;
+import org.springframework.shell.component.view.KeyEvent.ModType;
 import org.springframework.util.Assert;
 
 import static org.jline.keymap.KeyMap.alt;
+import static org.jline.keymap.KeyMap.del;
 import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
+import static org.jline.keymap.KeyMap.translate;
 
 public class KeyBinder {
 
@@ -48,71 +52,55 @@ public class KeyBinder {
 	}
 
 	public void bindAll(KeyMap<String> keyMap) {
-		bindExpression("DownArrow", keyMap);
-		bindExpression("UpArrow", keyMap);
-		bindExpression("LeftArrow", keyMap);
-		bindExpression("RightArrow", keyMap);
-		bindExpression("PageUp", keyMap);
-		bindExpression("PageDown", keyMap);
+
+		keyMap.bind("OPERATION_KEY_BACKSPACE", del());
+		keyMap.bind("OPERATION_KEY_DELETE", key(terminal, Capability.key_dc));
+
+		keyMap.bind("OPERATION_KEY_LEFT", key(terminal, Capability.key_left));
+		keyMap.bind("OPERATION_KEY_RIGHT", key(terminal, Capability.key_right));
+		keyMap.bind("OPERATION_KEY_UP", key(terminal, Capability.key_up));
+		keyMap.bind("OPERATION_KEY_DOWN", key(terminal, Capability.key_down));
+
+		keyMap.bind("OPERATION_KEY_ALT_LEFT", alt(key(terminal, Capability.key_left)));
+		keyMap.bind("OPERATION_KEY_ALT_RIGHT", alt(key(terminal, Capability.key_right)));
+		keyMap.bind("OPERATION_KEY_ALT_UP", alt(key(terminal, Capability.key_up)));
+		keyMap.bind("OPERATION_KEY_ALT_DOWN", alt(key(terminal, Capability.key_down)));
+
+		keyMap.bind("OPERATION_KEY_CTRL_LEFT", translate("^[[1;5D"));
+		keyMap.bind("OPERATION_KEY_CTRL_RIGHT", translate("^[[1;5C"));
+		keyMap.bind("OPERATION_KEY_CTRL_UP", translate("^[[1;5A"));
+		keyMap.bind("OPERATION_KEY_CTRL_DOWN", translate("^[[1;5B"));
+
+		keyMap.bind("OPERATION_KEY_SHIFT_LEFT", translate("^[[1;2D"));
+		keyMap.bind("OPERATION_KEY_SHIFT_RIGHT", translate("^[[1;2C"));
+		keyMap.bind("OPERATION_KEY_SHIFT_UP", translate("^[[1;2A"));
+		keyMap.bind("OPERATION_KEY_SHIFT_DOWN", translate("^[[1;2B"));
+
 	}
 
-	public void bindExpression(String expression, KeyMap<String> keyMap) {
-		String exp = expression.toLowerCase(Locale.ROOT);
-		String function = prefix + expression;
-		String keySeq = null;
-		ExpressionResult result = parseExpression(exp);
-		switch (exp) {
-			case "downarrow":
-				keySeq = key(terminal, Capability.key_down);
-				break;
-			case "uparrow":
-				keySeq = key(terminal, Capability.key_up);
-				break;
-			case "leftarrow":
-				keySeq = key(terminal, Capability.key_left);
-				break;
-			case "rightarrow":
-				keySeq = key(terminal, Capability.key_right);
-				break;
-			case "pageup":
-				keySeq = key(terminal, Capability.key_ppage);
-				break;
-			case "pagedown":
-				keySeq = key(terminal, Capability.key_npage);
-				break;
-			default:
-				break;
-		}
-		if (result.ctrl() && result.key() != null && result.key().length() == 1) {
-			keySeq = ctrl(result.key().charAt(0));
-		}
-		if (result.alt()) {
-			keySeq = alt(keySeq);
-		}
-		if (function != null && keySeq != null) {
-			keyMap.bind(function, keySeq);
-		}
-	}
-
-	public record ExpressionResult(String key, boolean ctrl, boolean alt) {}
-
-	public ExpressionResult parseExpression(String expression) {
+	public KeyEvent parseKeyEvent(String expression) {
 		boolean ctrl = false;
 		boolean alt = false;
+		boolean shift = false;
 		String key = null;
-		for (String part : expression.split("\\+")) {
+		for (String part : expression.split("_")) {
 			part = part.strip();
-			if ("ctrl".equals(part)) {
+			if ("CTRL".equals(part)) {
 				ctrl = true;
 			}
-			else if ("alt".equals(part)) {
+			else if ("ALT".equals(part)) {
 				alt = true;
+			}
+			else if ("SHIFT".equals(part)) {
+				shift = true;
 			}
 			else {
 				key = part;
 			}
 		}
-		return new ExpressionResult(key, ctrl, alt);
+		KeyType keyType = KeyType.valueOf(key);
+		KeyEvent keyEvent = KeyEvent.ofType(keyType, ModType.of(ctrl, alt, shift));
+		return keyEvent;
 	}
 
 }

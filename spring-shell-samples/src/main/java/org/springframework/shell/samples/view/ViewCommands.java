@@ -19,6 +19,7 @@ import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
+import org.springframework.shell.component.view.InputView;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 /**
@@ -72,6 +73,16 @@ public class ViewCommands extends AbstractShellComponent {
 		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
 
 		component.setRoot(grid, true);
+		component.run();
+	}
+
+	@Command(command = "input")
+	public void input() {
+		TerminalUI component = new TerminalUI(getTerminal());
+		InputView input = new InputView();
+		input.setTitle("Input");
+		input.setShowBorder(true);
+		component.setRoot(input, true);
 		component.run();
 	}
 

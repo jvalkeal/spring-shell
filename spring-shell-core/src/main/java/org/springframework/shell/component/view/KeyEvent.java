@@ -20,55 +20,61 @@ import java.util.EnumSet;
 
 public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
 
-    public static KeyEvent ofCharacter(String data) {
-        return new KeyEvent(data, null, EnumSet.noneOf(ModType.class));
-    }
+	public static KeyEvent ofCharacter(String data) {
+		return new KeyEvent(data, null, EnumSet.noneOf(ModType.class));
+	}
 
-    public static KeyEvent ofCharacter(String data, EnumSet<ModType> mod) {
-        return new KeyEvent(data, null, mod);
-    }
+	public static KeyEvent ofCharacter(String data, EnumSet<ModType> mod) {
+		return new KeyEvent(data, null, mod);
+	}
 
-    public static KeyEvent ofType(KeyType type) {
-        return new KeyEvent(null, type, EnumSet.noneOf(ModType.class));
-    }
+	public static KeyEvent ofType(KeyType type) {
+		return new KeyEvent(null, type, EnumSet.noneOf(ModType.class));
+	}
 
-    public static KeyEvent ofType(KeyType type, EnumSet<ModType> mod) {
-        return new KeyEvent(null, type, mod);
-    }
+	public static KeyEvent ofType(KeyType type, EnumSet<ModType> mod) {
+		return new KeyEvent(null, type, mod);
+	}
 
-    public enum ModType {
-        CTRL,
-        ALT;
+	public enum ModType {
+		CTRL,
+		ALT,
+		SHIFT;
 
-        public static EnumSet<ModType> of(boolean ctrl, boolean alt) {
-            if (!ctrl && !alt) {
-                return EnumSet.noneOf(ModType.class);
-            }
-            ArrayList<ModType> list = new ArrayList<ModType>();
-            if (ctrl) {
-                list.add(CTRL);
-            }
-            if (alt) {
-                list.add(ALT);
-            }
-            return EnumSet.copyOf(list);
-        }
-    }
+		public static EnumSet<ModType> of(boolean ctrl, boolean alt, boolean shift) {
+			if (!ctrl && !alt && !shift) {
+				return EnumSet.noneOf(ModType.class);
+			}
+			ArrayList<ModType> list = new ArrayList<ModType>();
+			if (ctrl) {
+				list.add(CTRL);
+			}
+			if (alt) {
+				list.add(ALT);
+			}
+			if (shift) {
+				list.add(SHIFT);
+			}
+			return EnumSet.copyOf(list);
+		}
+	}
 
-    public enum KeyType {
-        DOWNARROW("DownArrow"),
-        UPARROW("UpArrow"),
-        LEFTARROW("LeftArrow"),
-        RIGHTARROW("RightArrow");
+	public enum KeyType {
+		DOWN("DownArrow"),
+		UP("UpArrow"),
+		LEFT("LeftArrow"),
+		RIGHT("RightArrow"),
+		BACKSPACE("Backspace"),
+		DELETE("Delete");
 
-        private final String name;
+		private final String name;
 
-        KeyType(String name) {
-            this.name = name;
-        }
+		KeyType(String name) {
+			this.name = name;
+		}
 
-        public String getName() {
-            return name;
-        }
-    }
+		public String getName() {
+			return name;
+		}
+	}
 }

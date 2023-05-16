@@ -109,7 +109,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		component.getEventLoop().keyEvents()
 			.doOnNext(e -> {
 				switch (e.key()) {
-					case DOWNARROW:
+					case DOWN:
 						if (vAlign.get() == VerticalAlign.TOP) {
 							vAlign.set(VerticalAlign.CENTER);
 						}
@@ -117,7 +117,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							vAlign.set(VerticalAlign.BOTTOM);
 						}
 						break;
-					case UPARROW:
+					case UP:
 						if (vAlign.get() == VerticalAlign.BOTTOM) {
 							vAlign.set(VerticalAlign.CENTER);
 						}
@@ -125,7 +125,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							vAlign.set(VerticalAlign.TOP);
 						}
 						break;
-					case LEFTARROW:
+					case LEFT:
 						if (hAlign.get() == HorizontalAlign.RIGHT) {
 							hAlign.set(HorizontalAlign.CENTER);
 						}
@@ -133,7 +133,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 							hAlign.set(HorizontalAlign.LEFT);
 						}
 						break;
-					case RIGHTARROW:
+					case RIGHT:
 						Message<String> animStart = MessageBuilder
 							.withPayload("")
 							.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
@@ -189,16 +189,16 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		component.getEventLoop().keyEvents()
 			.doOnNext(e -> {
 				switch (e.key()) {
-					case DOWNARROW:
+					case DOWN:
 						direction.set(1);
 						break;
-					case UPARROW:
+					case UP:
 						direction.set(-1);
 						break;
-					case LEFTARROW:
+					case LEFT:
 						direction.set(-2);
 						break;
-					case RIGHTARROW:
+					case RIGHT:
 						direction.set(2);
 						break;
 					default:
