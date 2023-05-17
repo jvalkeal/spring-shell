@@ -73,6 +73,7 @@ public class TerminalUI {
 	private Display display;
 	private Size size;
 	private View rootView;
+	private boolean fullScreen;
 	private final KeyBinder keyBinder;
 	private DefaultEventLoop eventLoop = new DefaultEventLoop();
 
@@ -96,8 +97,9 @@ public class TerminalUI {
 	 */
 	public void setRoot(View root, boolean fullScreen) {
 		setFocus(root);
-		rootView = root;
-		rootView.getMessageListeners().register(e -> {
+		this.rootView = root;
+		this.fullScreen = fullScreen;
+		this.rootView.getMessageListeners().register(e -> {
 			View view = StaticShellMessageHeaderAccessor.getView(e);
 			if (view != null) {
 				if (e.getPayload() instanceof String s) {
@@ -125,7 +127,7 @@ public class TerminalUI {
 	 */
 	public void run() {
 		bindKeyMap(keyMap);
-		display = new Display(terminal, true);
+		display = new Display(terminal, fullScreen);
 		size = new Size();
 		loop();
 	}
@@ -152,9 +154,22 @@ public class TerminalUI {
 		display.clear();
 		display.resize(size.getRows(), size.getColumns());
 		display.reset();
-		rootView.setRect(0, 0, size.getColumns(), size.getRows());
-		virtualDisplay.resize(size.getRows(), size.getColumns());
-		render(size.getRows(), size.getColumns());
+		if (fullScreen) {
+			rootView.setRect(0, 0, size.getColumns(), size.getRows());
+			virtualDisplay.resize(size.getRows(), size.getColumns());
+			render(size.getRows(), size.getColumns());
+		}
+		else {
+			rootView.setRect(0, 0, 10, 7);
+			virtualDisplay.resize(7, 10);
+			render(7, 10);
+		}
+		// rootView.setRect(0, 0, size.getColumns(), size.getRows());
+		// virtualDisplay.resize(size.getRows(), size.getColumns());
+		// testing not full screen
+		// rootView.setRect(0, 0, size.getColumns(), 5);
+		// virtualDisplay.resize(5, size.getColumns());
+		// render(size.getRows(), size.getColumns());
 		List<AttributedString> newLines = virtualDisplay.getScreenLines();
 
 		int xxx = 0;

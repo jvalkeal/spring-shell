@@ -16,6 +16,7 @@
 package org.springframework.shell.samples.view;
 
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
@@ -77,46 +78,20 @@ public class ViewCommands extends AbstractShellComponent {
 	}
 
 	@Command(command = "input")
-	public String input() {
+	public String input(
+		@Option(defaultValue = "true") boolean fullScreen
+	) {
 		TerminalUI component = new TerminalUI(getTerminal());
 		InputView input = new InputView();
 		input.setTitle("Input");
 		input.setShowBorder(true);
-		component.setRoot(input, true);
+		component.setRoot(input, fullScreen);
 		component.run();
 		return input.getInputText();
 	}
 
 	@Command(command = "test")
 	public void test() {
-		TerminalUI component = new TerminalUI(getTerminal());
-
-		BoxView box1 = new BoxView();
-		BoxView box2 = new BoxView();
-		// BoxView box3 = new BoxView();
-		// BoxView box4 = new BoxView();
-
-		GridView grid = new GridView();
-		grid.setShowBorders(true);
-		// grid.setRowSize(2);
-		// grid.setColumnSize(2);
-
-		// grid.setRowSize(0, 0);
-		// grid.setColumnSize(0, 0);
-		// grid.setShowBorder(false);
-		// grid.addItem(box1, 0, 0, 1, 1, 0, 0);
-		// grid.addItem(box2, 0, 1, 1, 1, 0, 0);
-		// grid.addItem(box3, 1, 0, 1, 1, 0, 0);
-		// grid.addItem(box4, 1, 1, 1, 1, 0, 0);
-
-		grid.setRowSize(0);
-		grid.setColumnSize(0, 0);
-		grid.setShowBorder(false);
-		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
-		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
-
-		component.setRoot(grid, true);
-		component.run();
 	}
 
 }
