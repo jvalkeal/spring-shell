@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -77,8 +78,10 @@ public abstract class AbstractView implements View {
 	}
 
 	@Override
-	public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
-		return (event, view) -> event;
+	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
+		return (event, focus) -> {
+			focus.accept(this);
+		};
 	}
 
 	/**

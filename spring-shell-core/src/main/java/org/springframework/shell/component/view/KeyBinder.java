@@ -53,6 +53,7 @@ public class KeyBinder {
 
 	public void bindAll(KeyMap<String> keyMap) {
 
+		keyMap.bind("OPERATION_KEY_ENTER", "\r");
 		keyMap.bind("OPERATION_KEY_BACKSPACE", del());
 		keyMap.bind("OPERATION_KEY_DELETE", key(terminal, Capability.key_dc));
 
