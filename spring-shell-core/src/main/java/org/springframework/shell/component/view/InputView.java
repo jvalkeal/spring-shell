@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class InputView extends BoxView {
@@ -24,14 +24,17 @@ public class InputView extends BoxView {
 	private int cursorPosition = 0;
 
 	@Override
-	public BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler() {
-		return (event, view) -> {
+	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
+		return (event, focus) -> {
 			if (event.key() == null) {
 				String data = event.data();
 				add(data);
 			}
 			else {
 				switch (event.key()) {
+					case ENTER:
+						enter(event);
+						break;
 					case BACKSPACE:
 						backspace();
 						break;
@@ -48,7 +51,7 @@ public class InputView extends BoxView {
 						break;
 				}
 			}
-			return event;
+			super.getInputHandler().accept(event, focus);
 		};
 	}
 
@@ -60,6 +63,20 @@ public class InputView extends BoxView {
 		screen.setShowCursor(hasFocus());
 		screen.setCursorPosition(new Position(rect.x() + cursorPosition, rect.y()));
 		super.drawInternal(screen);
+	}
+
+	private Consumer<KeyEvent> acceptConsumer;
+	private Consumer<KeyEvent> exitConsumer;
+	void setExitConsumer(Consumer<KeyEvent> consumer) {
+	}
+	Consumer<KeyEvent> getExitConsumer() {
+		return exitConsumer;
+	}
+
+	private void enter(KeyEvent event) {
+		if (exitConsumer != null) {
+			exitConsumer.accept(event);
+		}
 	}
 
 	private void add(String data) {

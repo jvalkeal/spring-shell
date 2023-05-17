@@ -17,6 +17,7 @@ package org.springframework.shell.component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -60,7 +61,7 @@ import static org.jline.keymap.KeyMap.key;
 public class TerminalUI {
 
 	private final static Logger log = LoggerFactory.getLogger(TerminalUI.class);
-	public final static String OPERATION_EXIT = "EXIT";
+	// public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
 	public final static String OPERATION_KEY_EVENT = "CHAR";
@@ -209,12 +210,9 @@ public class TerminalUI {
 
 	private void handleKeyEvent(KeyEvent event) {
 		if (rootView != null) {
-			BiFunction<KeyEvent, Consumer<View>, KeyEvent> inputHandler = rootView.getInputHandler();
+			BiConsumer<KeyEvent, Consumer<View>> inputHandler = rootView.getInputHandler();
 			if (inputHandler != null) {
-				Consumer<View> asdf = v -> {
-					setFocus(v);
-				};
-				inputHandler.apply(event, asdf);
+				inputHandler.accept(event, this::setFocus);
 			}
 		}
 	}
@@ -271,7 +269,7 @@ public class TerminalUI {
 
 	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyBinder.bindAll(keyMap);
-		keyMap.bind(OPERATION_EXIT, "\r");
+		// keyMap.bind(OPERATION_EXIT, "\r");
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
 		// keyMap.bind("XXX", alt(key(terminal, Capability.key_down)));
@@ -299,8 +297,8 @@ public class TerminalUI {
 			return false;
 		}
 		switch (operation) {
-			case OPERATION_EXIT:
-				return true;
+			// case OPERATION_EXIT:
+			// 	return true;
 			case OPERATION_MOUSE_EVENT:
 				mouseEvent();
 				break;

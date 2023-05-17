@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -78,7 +79,7 @@ public interface View {
 	 *
 	 * @return
 	 */
-	BiFunction<KeyEvent, Consumer<View>, KeyEvent> getInputHandler();
+	BiConsumer<KeyEvent, Consumer<View>> getInputHandler();
 
 	/**
 	 * Record representing coordinates {@code x}, {@code y} and its {@code width}
