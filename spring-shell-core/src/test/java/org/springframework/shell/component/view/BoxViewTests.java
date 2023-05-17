@@ -37,6 +37,14 @@ class BoxViewTests {
 		view.setRect(0, 0, 80, 24);
 		view.draw(screen);
 		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+
+		screen = new Screen(7, 10);
+		BoxView view2 = new BoxView();
+		view2.setShowBorder(true);
+		view2.setRect(0, 0, 10, 7);
+		view2.draw(screen);
+		assertThat(forScreen(screen)).hasBorder(0, 0, 10, 7);
+
 	}
 
 	@Test
