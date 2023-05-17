@@ -18,6 +18,11 @@ package org.springframework.shell.component.view;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.springframework.shell.component.view.listener.CompositeListener;
+import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
+import org.springframework.shell.component.view.listener.ShellMessageListener;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
+
 public class InputView extends BoxView {
 
 	private final StringBuilder text = new StringBuilder();
@@ -34,6 +39,9 @@ public class InputView extends BoxView {
 				switch (event.key()) {
 					case ENTER:
 						enter(event);
+						break;
+					case TAB:
+						leave(event);
 						break;
 					case BACKSPACE:
 						backspace();
@@ -65,18 +73,17 @@ public class InputView extends BoxView {
 		super.drawInternal(screen);
 	}
 
-	private Consumer<KeyEvent> acceptConsumer;
-	private Consumer<KeyEvent> exitConsumer;
-	void setExitConsumer(Consumer<KeyEvent> consumer) {
-	}
-	Consumer<KeyEvent> getExitConsumer() {
-		return exitConsumer;
+	CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
+	CompositeListener<ShellMessageListener> getMessageListeners() {
+		return messageListerer;
 	}
 
 	private void enter(KeyEvent event) {
-		if (exitConsumer != null) {
-			exitConsumer.accept(event);
-		}
+		messageListerer.onMessage(ShellMessageBuilder.ofView(this));
+	}
+
+	private void leave(KeyEvent event) {
+		messageListerer.onMessage(ShellMessageBuilder.ofView(this));
 	}
 
 	private void add(String data) {
