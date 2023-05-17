@@ -84,14 +84,19 @@ public final class ShellMessageBuilder<T> {
 			.build();
 	}
 
-	public static Message<View> ofView(View view) {
-		return new ShellMessageBuilder<>(view, null)
+	public static Message<String> ofViewFocus(String action, View view) {
+		return new ShellMessageBuilder<>(action, null)
 			.setEventType(EventLoop.Type.SYSTEM)
+			.setView(view)
 			.build();
 	}
 
 	public ShellMessageBuilder<T> setPriority(Integer priority) {
 		return setHeader(ShellMessageHeaderAccessor.PRIORITY, priority);
+	}
+
+	public ShellMessageBuilder<T> setView(View view) {
+		return setHeader(ShellMessageHeaderAccessor.VIEW, view);
 	}
 
 	public ShellMessageBuilder<T> setEventType(EventLoop.Type type) {

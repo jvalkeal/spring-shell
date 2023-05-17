@@ -26,6 +26,7 @@ import reactor.util.context.ContextView;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -38,6 +39,8 @@ import org.springframework.util.ObjectUtils;
 public class ShellMessageHeaderAccessor extends MessageHeaderAccessor {
 
 	public static final String PRIORITY = "priority";
+
+	public static final String VIEW = "view";
 
 	/**
 	 * Raw source message.
@@ -78,6 +81,12 @@ public class ShellMessageHeaderAccessor extends MessageHeaderAccessor {
 	public Integer getPriority() {
 		Number priority = getHeader(PRIORITY, Number.class);
 		return (priority != null ? priority.intValue() : null);
+	}
+
+	@Nullable
+	public View getView() {
+		View view = getHeader(VIEW, View.class);
+		return view;
 	}
 
 	/**
