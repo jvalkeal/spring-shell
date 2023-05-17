@@ -20,6 +20,7 @@ import org.jline.terminal.MouseEvent;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.util.Assert;
 
@@ -80,6 +81,12 @@ public final class ShellMessageBuilder<T> {
 	public static Message<MouseEvent> ofMouseEvent(MouseEvent event) {
 		return new ShellMessageBuilder<>(event, null)
 			.setEventType(EventLoop.Type.MOUSE)
+			.build();
+	}
+
+	public static Message<View> ofView(View view) {
+		return new ShellMessageBuilder<>(view, null)
+			.setEventType(EventLoop.Type.SYSTEM)
 			.build();
 	}
 

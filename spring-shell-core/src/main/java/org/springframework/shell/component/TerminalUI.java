@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component;
 
+import java.io.IOError;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -237,6 +238,9 @@ public class TerminalUI {
 			log.debug("Handling signal {}", signal);
 			dispatchWinch();
 		});
+		// terminal.handle(Signal.INT, signal -> {
+		// 	log.debug("Handling signal {}", signal);
+		// });
 
 		try {
 			terminal.puts(Capability.enter_ca_mode);
@@ -270,6 +274,7 @@ public class TerminalUI {
 	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyBinder.bindAll(keyMap);
 		// keyMap.bind(OPERATION_EXIT, "\r");
+		// keyMap.bind("OPERATION_EXIT", org.jline.keymap.KeyMap.ctrl('d'));
 		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
 
 		// keyMap.bind("XXX", alt(key(terminal, Capability.key_down)));
@@ -287,6 +292,17 @@ public class TerminalUI {
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
 		String operation = bindingReader.readBinding(keyMap);
 		log.debug("Read got operation {}", operation);
+		// String operation = null;
+		// try {
+		// 	operation = bindingReader.readBinding(keyMap);
+		// 	log.debug("Read got operation {}", operation);
+        // } catch (IOError e) {
+        //     // Ignore Ctrl+C interrupts and just exit the loop
+        //     // if (!(e.getCause() instanceof InterruptedException)) {
+        //     //     throw e;
+        //     // }
+		// 	log.debug("Read binding error {}", e);
+		// }
 		if (operation == null) {
 			return true;
 		}
@@ -297,8 +313,9 @@ public class TerminalUI {
 			return false;
 		}
 		switch (operation) {
-			// case OPERATION_EXIT:
-			// 	return true;
+			// case "OPERATION_EXIT":
+			// 	terminal.raise(Signal.QUIT);
+			// 	break;
 			case OPERATION_MOUSE_EVENT:
 				mouseEvent();
 				break;
