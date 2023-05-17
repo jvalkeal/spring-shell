@@ -21,6 +21,9 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 
+import org.springframework.shell.component.view.listener.CompositeListener;
+import org.springframework.shell.component.view.listener.ShellMessageListener;
+
 /**
  * {@code View} is an interface representing something what can be drawn into
  * a {@link Screen} within its bounds.
@@ -80,6 +83,13 @@ public interface View {
 	 * @return
 	 */
 	BiConsumer<KeyEvent, Consumer<View>> getInputHandler();
+
+	/**
+	 * Get composite listener used for registration.
+	 *
+	 * @return
+	 */
+	CompositeListener<ShellMessageListener> getMessageListeners();
 
 	/**
 	 * Record representing coordinates {@code x}, {@code y} and its {@code width}

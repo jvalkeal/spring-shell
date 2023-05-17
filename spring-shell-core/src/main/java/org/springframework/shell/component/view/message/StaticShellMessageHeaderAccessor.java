@@ -23,6 +23,7 @@ import reactor.util.context.ContextView;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 
 /**
@@ -60,6 +61,12 @@ public final class StaticShellMessageHeaderAccessor {
 	public static Integer getPriority(Message<?> message) {
 		Number priority = message.getHeaders().get(ShellMessageHeaderAccessor.PRIORITY, Number.class);
 		return (priority != null ? priority.intValue() : null);
+	}
+
+	@Nullable
+	public static View getView(Message<?> message) {
+		View view = message.getHeaders().get(ShellMessageHeaderAccessor.VIEW, View.class);
+		return view;
 	}
 
 	/**

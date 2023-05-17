@@ -23,6 +23,10 @@ import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.listener.CompositeListener;
+import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
+import org.springframework.shell.component.view.listener.ShellMessageListener;
+
 /**
  * Base implementation of a {@link View}.
  *
@@ -37,6 +41,7 @@ public abstract class AbstractView implements View {
 	private int height = 0;
 	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
 	private boolean hasFocus;
+	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -84,6 +89,11 @@ public abstract class AbstractView implements View {
 		};
 	}
 
+	@Override
+	public CompositeListener<ShellMessageListener> getMessageListeners() {
+		return messageListerer;
+	}
+
 	/**
 	 * Sets a callback function which is invoked after a {@link View} has been
 	 * drawn.
@@ -102,6 +112,15 @@ public abstract class AbstractView implements View {
 	 */
 	public BiFunction<Screen, Rectangle, Rectangle> getDrawFunction() {
 		return drawFunction;
+	}
+
+	/**
+	 * Gets a {@link ShellMessageListener} which can be used to dispatch an event.
+	 *
+	 * @return a shell message listener
+	 */
+	protected ShellMessageListener getShellMessageListener() {
+		return messageListerer;
 	}
 
 	/**
