@@ -74,8 +74,11 @@ public class InputView extends BoxView {
 	}
 
 	CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
-	CompositeListener<ShellMessageListener> getMessageListeners() {
+	public CompositeListener<ShellMessageListener> getMessageListeners() {
 		return messageListerer;
+	}
+	public String getInputText() {
+		return text.toString();
 	}
 
 	private void enter(KeyEvent event) {

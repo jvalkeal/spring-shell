@@ -77,13 +77,14 @@ public class ViewCommands extends AbstractShellComponent {
 	}
 
 	@Command(command = "input")
-	public void input() {
+	public String input() {
 		TerminalUI component = new TerminalUI(getTerminal());
 		InputView input = new InputView();
 		input.setTitle("Input");
 		input.setShowBorder(true);
 		component.setRoot(input, true);
 		component.run();
+		return input.getInputText();
 	}
 
 	@Command(command = "test")

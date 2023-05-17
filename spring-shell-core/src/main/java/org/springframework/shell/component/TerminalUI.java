@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.InputView;
 import org.springframework.shell.component.view.KeyBinder;
 import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.Screen;
@@ -98,6 +99,12 @@ public class TerminalUI {
 	public void setRoot(View root, boolean fullScreen) {
 		setFocus(root);
 		this.rootView = root;
+
+		if (rootView instanceof InputView v) {
+			v.getMessageListeners().register(eee -> {
+				this.terminal.raise(Signal.INT);
+			});
+		}
 	}
 
 	private View focus = null;
@@ -262,12 +269,14 @@ public class TerminalUI {
 		}
 		finally {
 			eventLoop.destroy();
-			terminal.setAttributes(attr);
+			display.update(Collections.emptyList(), 0);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
+			terminal.puts(Capability.exit_ca_mode);
+			terminal.puts(Capability.clear_screen);
 			terminal.puts(Capability.keypad_local);
 			terminal.puts(Capability.cursor_visible);
-			terminal.puts(Capability.exit_ca_mode);
-			display.update(Collections.emptyList(), 0);
+			terminal.setAttributes(attr);
+			// display.update(Collections.emptyList(), 0);s
 		}
 	}
 
@@ -290,19 +299,22 @@ public class TerminalUI {
 	}
 
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
-		String operation = bindingReader.readBinding(keyMap);
-		log.debug("Read got operation {}", operation);
-		// String operation = null;
-		// try {
-		// 	operation = bindingReader.readBinding(keyMap);
-		// 	log.debug("Read got operation {}", operation);
-        // } catch (IOError e) {
-        //     // Ignore Ctrl+C interrupts and just exit the loop
-        //     // if (!(e.getCause() instanceof InterruptedException)) {
-        //     //     throw e;
-        //     // }
-		// 	log.debug("Read binding error {}", e);
-		// }
+        Thread readThread = Thread.currentThread();
+		terminal.handle(Signal.INT, signal -> readThread.interrupt());
+
+		// String operation = bindingReader.readBinding(keyMap);
+		// log.debug("Read got operation {}", operation);
+		String operation = null;
+		try {
+			operation = bindingReader.readBinding(keyMap);
+			log.debug("Read got operation {}", operation);
+        } catch (IOError e) {
+            // Ignore Ctrl+C interrupts and just exit the loop
+            // if (!(e.getCause() instanceof InterruptedException)) {
+            //     throw e;
+            // }
+			log.debug("Read binding error {}", e);
+		}
 		if (operation == null) {
 			return true;
 		}
