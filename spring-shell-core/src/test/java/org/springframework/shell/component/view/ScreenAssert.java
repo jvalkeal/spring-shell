@@ -16,8 +16,10 @@
 package org.springframework.shell.component.view;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.assertj.core.api.AbstractAssert;
+import org.jline.utils.AttributedString;
 
 import org.springframework.shell.component.view.Screen.ScreenItem;
 import org.springframework.shell.component.view.View.Position;
@@ -147,6 +149,16 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		return this;
 	}
 
+	private String screenError() {
+		List<AttributedString> screenLines = actual.getScreenLines();
+		StringBuffer buf = new StringBuffer();
+		buf.append(String.format("%nExpecting screen:%n"));
+		for (AttributedString line : screenLines) {
+			buf.append(String.format("%n%s", AttributedString.stripAnsi(line.toString())));
+		}
+		return buf.toString();
+	}
+
 	private ScreenAssert hasBorderType(int x, int y, int width, int height, boolean border) {
 		isNotNull();
 		ScreenItem[][] content = actual.getContent();
@@ -159,7 +171,8 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		if (topBorder.length != width) {
 			failWithMessage("Top Border size doesn't match");
 		}
-		assertThat(topBorder).allSatisfy(b -> {
+		String failMessage = screenError();
+		assertThat(topBorder).withFailMessage(failMessage).allSatisfy(b -> {
 			if (border) {
 				assertThat(b).isNotNull();
 				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
@@ -170,7 +183,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 				}
 			}
 		});
-		assertThat(rightBorder).allSatisfy(b -> {
+		assertThat(rightBorder).withFailMessage(failMessage).allSatisfy(b -> {
 			if (border) {
 				assertThat(b).isNotNull();
 				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
@@ -181,7 +194,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 				}
 			}
 		});
-		assertThat(bottomBorder).allSatisfy(b -> {
+		assertThat(bottomBorder).withFailMessage(failMessage).allSatisfy(b -> {
 			if (border) {
 				assertThat(b).isNotNull();
 				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
@@ -192,7 +205,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 				}
 			}
 		});
-		assertThat(leftBorder).allSatisfy(b -> {
+		assertThat(leftBorder).withFailMessage(failMessage).allSatisfy(b -> {
 			if (border) {
 				assertThat(b).isNotNull();
 				assertThat(b.getType()).isEqualTo(Screen.Type.BORDER);
