@@ -151,9 +151,9 @@ public class TerminalUI {
 	private void display() {
 		log.debug("display");
 		size.copy(terminal.getSize());
-		display.clear();
+		// display.clear();
 		display.resize(size.getRows(), size.getColumns());
-		display.reset();
+		// display.reset();
 		if (fullScreen) {
 			rootView.setRect(0, 0, size.getColumns(), size.getRows());
 			virtualDisplay.resize(size.getRows(), size.getColumns());
@@ -266,7 +266,9 @@ public class TerminalUI {
 		// });
 
 		try {
-			terminal.puts(Capability.enter_ca_mode);
+			if (fullScreen) {
+				terminal.puts(Capability.enter_ca_mode);
+			}
 			terminal.puts(Capability.keypad_xmit);
 			terminal.puts(Capability.cursor_invisible);
 			terminal.trackMouse(Terminal.MouseTracking.Normal);
@@ -285,14 +287,19 @@ public class TerminalUI {
 		}
 		finally {
 			eventLoop.destroy();
-			display.update(Collections.emptyList(), 0);
+			terminal.setAttributes(attr);
+			// display.update(Collections.emptyList(), 0);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
-			terminal.puts(Capability.exit_ca_mode);
-			terminal.puts(Capability.clear_screen);
+			if (fullScreen) {
+				terminal.puts(Capability.exit_ca_mode);
+			}
+			// terminal.puts(Capability.clear_screen);
 			terminal.puts(Capability.keypad_local);
 			terminal.puts(Capability.cursor_visible);
-			terminal.setAttributes(attr);
-			// display.update(Collections.emptyList(), 0);s
+			// terminal.setAttributes(attr);
+			if (!fullScreen) {
+				display.update(Collections.emptyList(), 0);
+			}
 		}
 	}
 
