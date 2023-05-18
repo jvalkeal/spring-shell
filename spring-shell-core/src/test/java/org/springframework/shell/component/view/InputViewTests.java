@@ -27,7 +27,8 @@ class InputViewTests extends AbstraceViewTests {
 	@Test
 	void test() {
 		InputView view = new InputView();
-		view.draw(screen24x80);
+		view.setShowBorder(true);
+		view.setRect(0, 0, 80, 24);
 
 		BiConsumer<KeyEvent, Consumer<View>> inputHandler = view.getInputHandler();
 		if (inputHandler != null) {
@@ -35,7 +36,9 @@ class InputViewTests extends AbstraceViewTests {
 			inputHandler.accept(event, v -> {});
 		}
 
-		assertThat(forScreen(screen24x80)).hasHorizontalText("0", 0, 0, 1);
+		view.draw(screen24x80);
+
+		assertThat(forScreen(screen24x80)).hasHorizontalText("1", 1, 1, 1);
 
 	}
 }
