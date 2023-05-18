@@ -24,6 +24,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class ScreenAssertTests {
 
 	@Test
+	void testCursorPosition() {
+		Screen screen = new Screen(5, 5);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasCursorVisible())
+			.withMessageContaining("Expecting a Screen to have a visible cursor");
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasCursorInPosition(1, 1))
+			.withMessageContaining("Expecting a Screen to have position <1,1> but was <0,0>");
+	}
+
+	@Test
 	void shouldThrowWithInvalidBounds() {
 		Screen screen = new Screen(5, 5);
 		assertThatExceptionOfType(AssertionError.class)

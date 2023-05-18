@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.assertj.core.api.AbstractAssert;
 
 import org.springframework.shell.component.view.Screen.ScreenItem;
+import org.springframework.shell.component.view.View.Position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,6 +33,36 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 
 	public ScreenAssert(Screen actual) {
 		super(actual, ScreenAssert.class);
+	}
+
+	/**
+	 * Verifies that the actual {@link Screen} has a cursor visible.
+	 *
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasCursorVisible() {
+		isNotNull();
+		if (!actual.isShowCursor()) {
+			failWithMessage("Expecting a Screen to have a visible cursor", actual);
+		}
+		return this;
+	}
+
+	/**
+	 * Verifies that the actual {@link Screen} has a cursor in a given position.
+	 *
+	 * @param x a x position in a screen
+	 * @param y a y position in a screen
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasCursorInPosition(int x, int y) {
+		isNotNull();
+		Position cursorPosition = actual.getCursorPosition();
+		if (cursorPosition.x() != x || cursorPosition.y() != y) {
+			failWithMessage("Expecting a Screen to have position <%s,%s> but was <%s,%s>", x, y, cursorPosition.x(),
+					cursorPosition.y());
+		}
+		return this;
 	}
 
 	/**
