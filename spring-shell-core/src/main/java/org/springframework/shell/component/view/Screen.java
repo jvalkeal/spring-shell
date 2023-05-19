@@ -123,14 +123,6 @@ public class Screen {
 		}
 	}
 
-	public enum HorizontalAlign {
-		LEFT, CENTER, RIGHT,
-	}
-
-	public enum VerticalAlign {
-		TOP, CENTER, BOTTOM
-	}
-
 	public void printx(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
 		int x = rect.x();
 		if (hAlign == HorizontalAlign.CENTER) {
