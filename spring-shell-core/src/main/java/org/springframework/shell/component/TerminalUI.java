@@ -152,14 +152,18 @@ public class TerminalUI {
 		log.debug("display");
 		size.copy(terminal.getSize());
 		// display.clear();
-		display.resize(size.getRows(), size.getColumns());
+		// display.resize(size.getRows(), size.getColumns());
 		// display.reset();
 		if (fullScreen) {
+			display.clear();
+			display.resize(size.getRows(), size.getColumns());
+			display.reset();
 			rootView.setRect(0, 0, size.getColumns(), size.getRows());
 			virtualDisplay.resize(size.getRows(), size.getColumns());
 			render(size.getRows(), size.getColumns());
 		}
 		else {
+			display.resize(size.getRows(), size.getColumns());
 			rootView.setRect(0, 0, 10, 7);
 			virtualDisplay.resize(7, 10);
 			render(7, 10);
@@ -288,6 +292,9 @@ public class TerminalUI {
 		finally {
 			eventLoop.destroy();
 			terminal.setAttributes(attr);
+			if (fullScreen) {
+				display.update(Collections.emptyList(), 0);
+			}
 			// display.update(Collections.emptyList(), 0);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
 			if (fullScreen) {
@@ -295,6 +302,7 @@ public class TerminalUI {
 			}
 			// terminal.puts(Capability.clear_screen);
 			terminal.puts(Capability.keypad_local);
+			log.debug("Setting cursor visible");
 			terminal.puts(Capability.cursor_visible);
 			// terminal.setAttributes(attr);
 			if (!fullScreen) {
