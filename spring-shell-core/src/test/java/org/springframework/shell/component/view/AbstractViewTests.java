@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -27,6 +30,12 @@ class AbstractViewTests {
 		screen24x80 = new Screen(24, 80);
 	}
 
+	void dispatchEvent(View view, KeyEvent event) {
+		BiConsumer<KeyEvent, Consumer<View>> inputHandler = view.getInputHandler();
+		if (inputHandler != null) {
+			inputHandler.accept(event, v -> {});
+		}
+	}
 
 	AssertProvider<ScreenAssert> forScreen(Screen screen) {
 		return () -> new ScreenAssert(screen);

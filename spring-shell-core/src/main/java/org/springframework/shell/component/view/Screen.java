@@ -59,6 +59,16 @@ public class Screen {
 		resize(rows, columns);
 	}
 
+	public Screen clip(int x, int y, int width, int height) {
+		Screen screen = new Screen(height, width);
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				screen.setContent(j, i, content[y + i][x + j]);
+			}
+		}
+		return screen;
+	}
+
 	public void setShowCursor(boolean showCursor) {
 		this.showCursor = showCursor;
 	}

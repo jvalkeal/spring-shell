@@ -149,12 +149,18 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		return this;
 	}
 
-	private String screenError() {
+	private String screenError(int x, int y, int width, int height) {
 		List<AttributedString> screenLines = actual.getScreenLines();
 		StringBuffer buf = new StringBuffer();
 		buf.append(String.format("%nExpecting screen:%n"));
 		for (AttributedString line : screenLines) {
-			buf.append(String.format("%n%s", AttributedString.stripAnsi(line.toString())));
+			buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
+		}
+		Screen clip = actual.clip(x, y, width, height);
+		List<AttributedString> screenLines2 = clip.getScreenLines();
+		buf.append(String.format("%nhave border in bounded box x=%s y=%s width=%s height=%s, was:%n", x, y, width, height));
+		for (AttributedString line : screenLines2) {
+			buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
 		}
 		return buf.toString();
 	}
@@ -171,7 +177,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		if (topBorder.length != width) {
 			failWithMessage("Top Border size doesn't match");
 		}
-		String failMessage = screenError();
+		String failMessage = screenError(x, y, width, height);
 		assertThat(topBorder).withFailMessage(failMessage).allSatisfy(b -> {
 			if (border) {
 				assertThat(b).isNotNull();

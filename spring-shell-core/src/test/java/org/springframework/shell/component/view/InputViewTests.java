@@ -15,9 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,20 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InputViewTests extends AbstractViewTests {
 
 	@Test
-	void test() {
+	void shouldShowInput() {
 		InputView view = new InputView();
 		view.setShowBorder(true);
 		view.setRect(0, 0, 80, 24);
 
-		BiConsumer<KeyEvent, Consumer<View>> inputHandler = view.getInputHandler();
-		if (inputHandler != null) {
-			KeyEvent event = KeyEvent.ofCharacter("1");
-			inputHandler.accept(event, v -> {});
-		}
-
+		dispatchEvent(view, KeyEvent.ofCharacter("1"));
 		view.draw(screen24x80);
 
 		assertThat(forScreen(screen24x80)).hasHorizontalText("1", 1, 1, 1);
-
 	}
 }
