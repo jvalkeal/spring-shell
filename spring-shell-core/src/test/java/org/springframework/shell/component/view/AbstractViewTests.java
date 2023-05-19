@@ -18,7 +18,7 @@ package org.springframework.shell.component.view;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
-class AbstraceViewTests {
+class AbstractViewTests {
 
 	Screen screen24x80;
 
