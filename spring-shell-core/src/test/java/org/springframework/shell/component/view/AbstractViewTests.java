@@ -24,10 +24,12 @@ import org.junit.jupiter.api.BeforeEach;
 class AbstractViewTests {
 
 	Screen screen24x80;
+	Screen screen7x10;
 
 	@BeforeEach
 	void setupScreens() {
 		screen24x80 = new Screen(24, 80);
+		screen7x10 = new Screen(7, 10);
 	}
 
 	void dispatchEvent(View view, KeyEvent event) {
