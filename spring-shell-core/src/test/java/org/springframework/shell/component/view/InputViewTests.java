@@ -31,5 +31,6 @@ class InputViewTests extends AbstractViewTests {
 		view.draw(screen24x80);
 
 		assertThat(forScreen(screen24x80)).hasHorizontalText("1", 1, 1, 1);
+		assertThat(forScreen(screen24x80)).hasCursorInPosition(2, 1);
 	}
 }

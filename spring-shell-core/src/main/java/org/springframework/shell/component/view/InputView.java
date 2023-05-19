@@ -20,6 +20,11 @@ import java.util.function.Consumer;
 
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 
+/**
+ * {@code InputView} is used as a text input.
+ *
+ * @author Janne Valkealahti
+ */
 public class InputView extends BoxView {
 
 	private final StringBuilder text = new StringBuilder();
