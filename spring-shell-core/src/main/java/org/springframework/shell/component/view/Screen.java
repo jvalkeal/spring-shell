@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.View.Dimension;
 import org.springframework.shell.component.view.View.Position;
 import org.springframework.shell.component.view.View.Rectangle;
+import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.util.Assert;
 
 /**
