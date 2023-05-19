@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.Locale;
-
 import org.jline.keymap.KeyMap;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
@@ -27,7 +25,6 @@ import org.springframework.util.Assert;
 
 import static org.jline.keymap.KeyMap.alt;
 import static org.jline.keymap.KeyMap.del;
-import static org.jline.keymap.KeyMap.ctrl;
 import static org.jline.keymap.KeyMap.key;
 import static org.jline.keymap.KeyMap.translate;
 
