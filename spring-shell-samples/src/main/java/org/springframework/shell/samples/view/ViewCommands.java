@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.samples.view;
 
+import org.jline.utils.AttributedStyle;
+
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.component.TerminalUI;
@@ -37,6 +39,8 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
+		// box.setBackgroundStyle(AttributedStyle.DEFAULT.background(AttributedStyle.BLUE));
+		// box.setBackgroundColor(AttributedStyle.BLUE);
 		component.setRoot(box, true);
 		component.run();
 	}

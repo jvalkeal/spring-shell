@@ -112,8 +112,8 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i].content != null) {
-				buf.append(items[i].content);
+			if (items[i].getContent() != null) {
+				buf.append(items[i].getContent());
 			}
 		}
 		String actualText = buf.toString();
@@ -139,8 +139,8 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < items.length; i++) {
 			if (items[i] != null) {
-				if (items[i].content != null) {
-					buf.append(items[i].content);
+				if (items[i].getContent() != null) {
+					buf.append(items[i].getContent());
 				}
 			}
 		}

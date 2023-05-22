@@ -25,11 +25,15 @@ class AbstractViewTests {
 
 	Screen screen24x80;
 	Screen screen7x10;
+	Screen screen10x10;
+	Screen screen0x0;
 
 	@BeforeEach
 	void setupScreens() {
 		screen24x80 = new Screen(24, 80);
 		screen7x10 = new Screen(7, 10);
+		screen0x0 = new Screen();
+		screen10x10 = new Screen(10, 10);
 	}
 
 	void dispatchEvent(View view, KeyEvent event) {

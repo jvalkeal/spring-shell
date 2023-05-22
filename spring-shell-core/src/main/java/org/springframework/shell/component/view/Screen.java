@@ -17,6 +17,8 @@ package org.springframework.shell.component.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -110,6 +112,15 @@ public class Screen {
 		}
 	}
 
+	public void doWithAll(Function<ScreenItem, ScreenItem> function) {
+		this.content = new ScreenItem[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				this.content[i][j] = function.apply(this.content[i][j]);
+			}
+		}
+	}
+
 	public void setContent(int x, int y, ScreenItem item) {
 		content[y][x] = item;
 	}
@@ -155,7 +166,8 @@ public class Screen {
 						builder.append(content[i][j].getContent(), content[i][j].getStyle());
 					}
 					else if (item.type == Type.BORDER) {
-						builder.append(BOX_CHARS[item.getBorder()]);
+						// builder.append(BOX_CHARS[item.getBorder()]);
+						builder.append(Character.toString(BOX_CHARS[item.getBorder()]), content[i][j].getStyle());
 					}
 				}
 				else {
@@ -230,9 +242,9 @@ public class Screen {
 
 	public static class ScreenItem {
 
-		Type type;
-		CharSequence content;
-		AttributedStyle style;
+		private Type type;
+		private CharSequence content;
+		private AttributedStyle style = AttributedStyle.DEFAULT;
 		private int border = 0;
 
 		public ScreenItem(Type type, CharSequence content, AttributedStyle style) {
@@ -251,6 +263,11 @@ public class Screen {
 
 		public static ScreenItem of(CharSequence content) {
 			return new ScreenItem(Type.TEXT, content, null);
+		}
+
+		public ScreenItem background(int color) {
+			style = style.background(color);
+			return this;
 		}
 
 		public Type getType() {

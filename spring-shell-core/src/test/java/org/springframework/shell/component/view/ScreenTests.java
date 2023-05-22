@@ -15,40 +15,32 @@
  */
 package org.springframework.shell.component.view;
 
-import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ScreenTests {
-
-	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
-		return () -> new ScreenAssert(screen);
-	}
+class ScreenTests extends AbstractViewTests {
 
 	@Test
 	void zeroDataSizeDoesntBreak() {
-		Screen display = new Screen();
-		assertThat(display.getContent()).isEmpty();
-		assertThat(display.getScreenLines()).isEmpty();
+		assertThat(screen0x0.getContent()).isEmpty();
+		assertThat(screen0x0.getScreenLines()).isEmpty();
 	}
 
 	@Test
 	void cantResizeNegative() {
-		Screen display = new Screen();
 		assertThatThrownBy(() -> {
-			display.resize(-1, 0);
+			screen0x0.resize(-1, 0);
 		}).hasMessageContaining("negative rows");
 		assertThatThrownBy(() -> {
-			display.resize(0, -1);
+			screen0x0.resize(0, -1);
 		}).hasMessageContaining("negative columns");
 	}
 
 	@Test
 	void printInBoxShows() {
-		Screen screen = new Screen(10, 10);
-		screen.printBorder(0, 0, 10, 10);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 10, 10);
+		screen10x10.printBorder(0, 0, 10, 10);
+		assertThat(forScreen(screen10x10)).hasBorder(0, 0, 10, 10);
 	}
 }

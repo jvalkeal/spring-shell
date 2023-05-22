@@ -19,7 +19,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
+import org.jline.utils.AttributedStyle;
 
+import org.springframework.shell.component.view.Screen.ScreenItem;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,6 +43,8 @@ public class BoxView extends AbstractView {
 	private int paddingBottom;
 	private int paddingLeft;
 	private int paddingRight;
+	// private AttributedStyle backgroundStyle;
+	private int backgroundColor = -1;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -109,6 +113,19 @@ public class BoxView extends AbstractView {
 		this.title = title;
 	}
 
+	// /**
+	//  * Sets a background style.
+	//  *
+	//  * @param backgroundStyle the background style
+	//  */
+	// public void setBackgroundStyle(AttributedStyle backgroundStyle) {
+	// 	this.backgroundStyle = backgroundStyle;
+	// }
+
+	public void setBackgroundColor(int backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
 	/**
 	 * Possibly draws a box around this view and title in a box top boundary. Also
 	 * calls a {@code draw function} if defined.
@@ -126,6 +143,13 @@ public class BoxView extends AbstractView {
 				screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
 			}
 		}
+		// screen.doWithAll(item -> {
+		// 	if (item == null) {
+		// 		item = ScreenItem.of(' ');
+		// 		item.style = backgroundStyle;
+		// 	}
+		// 	return item;
+		// });
 		if (getDrawFunction() != null) {
 			Rectangle r = getDrawFunction().apply(screen, rect);
 			innerX = r.x();
