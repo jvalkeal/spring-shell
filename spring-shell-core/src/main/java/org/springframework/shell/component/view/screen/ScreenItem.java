@@ -37,7 +37,7 @@ public interface ScreenItem {
 
 	int getBackground();
 
-	int getForeround();
+	int getForeground();
 
 	int getStyle();
 

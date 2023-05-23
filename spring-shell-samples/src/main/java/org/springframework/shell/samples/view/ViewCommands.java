@@ -15,14 +15,13 @@
  */
 package org.springframework.shell.samples.view;
 
-import org.jline.utils.AttributedStyle;
-
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.InputView;
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 /**
@@ -39,7 +38,8 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
-		box.setBackgroundColor(AttributedStyle.BLUE);
+		box.setBackgroundColor(Color.Khaki4);
+		box.setTitleColor(Color.Green1);
 		component.setRoot(box, true);
 		component.run();
 	}

@@ -141,6 +141,15 @@ public class DefaultScreen implements Screen {
 	}
 
 	@Override
+	public void print(String text, int x, int y, int width, int color) {
+		for (int i = 0; i < text.length() && i < width; i++) {
+			char c = text.charAt(i);
+			this.items[y][x + i].content = Character.toString(c);
+			this.items[y][x + i].foreground = color;
+		}
+	}
+
+	@Override
 	public void print(String text, View.Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
 		int x = rect.x();
 		if (hAlign == HorizontalAlign.CENTER) {
@@ -228,7 +237,10 @@ public class DefaultScreen implements Screen {
 				if (item != null) {
 					AttributedStyle s = new AttributedStyle(AttributedStyle.DEFAULT);
 					if (item.background > -1) {
-						s = s.background(item.getBackground());
+						s = s.backgroundRgb(item.getBackground());
+					}
+					if (item.foreground > -1) {
+						s = s.foregroundRgb(item.getForeground());
 					}
 					// s.foreground(item.getForeround());
 					// if ((item.style & ScreenxItem.STYLE_BOLD) == ScreenxItem.STYLE_BOLD) {
@@ -265,6 +277,7 @@ public class DefaultScreen implements Screen {
 	private static class DefaultScreenItem implements ScreenItem {
 
 		CharSequence content;
+		int foreground;
 		int background;
 		int style;
 		int border;
@@ -285,8 +298,8 @@ public class DefaultScreen implements Screen {
 		}
 
 		@Override
-		public int getForeround() {
-			throw new UnsupportedOperationException("Unimplemented method 'getForeround'");
+		public int getForeground() {
+			return foreground;
 		}
 
 		@Override
