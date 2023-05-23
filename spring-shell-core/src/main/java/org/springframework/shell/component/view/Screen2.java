@@ -39,9 +39,9 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class Screen {
+public class Screen2 {
 
-	private final static Logger log = LoggerFactory.getLogger(Screen.class);
+	private final static Logger log = LoggerFactory.getLogger(Screen2.class);
 	private static final int BORDER_LEFT = 1;
 	private static final int BORDER_TOP = 2;
 	private static final int BORDER_RIGHT = 4;
@@ -55,16 +55,16 @@ public class Screen {
 	private boolean showCursor;
 	private Position cursorPosition = new Position(0, 0);
 
-	public Screen() {
+	public Screen2() {
 		this(0, 0);
 	}
 
-	public Screen(int rows, int columns) {
+	public Screen2(int rows, int columns) {
 		resize(rows, columns);
 	}
 
-	public Screen clip(int x, int y, int width, int height) {
-		Screen screen = new Screen(height, width);
+	public Screen2 clip(int x, int y, int width, int height) {
+		Screen2 screen = new Screen2(height, width);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				screen.setContent(j, i, content[y + i][x + j]);

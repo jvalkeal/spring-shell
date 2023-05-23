@@ -19,15 +19,18 @@ import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.screen.DefaultScreenx;
+import org.springframework.shell.component.view.screen.Screenx;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GridViewTests {
 
-	private Screen screen;
+	private Screenx screen;
 
 	@BeforeEach
 	void setup() {
-		screen = new Screen(24, 80);
+		screen = new DefaultScreenx(24, 80);
 	}
 
 	@Test
@@ -118,7 +121,7 @@ class GridViewTests {
 
 	@Test
 	void hasBordersWithHidden() {
-		screen = new Screen(20, 10);
+		screen = new DefaultScreenx(20, 10);
 
 		BoxView menu = new BoxView();
 		BoxView main = new BoxView();
@@ -149,7 +152,7 @@ class GridViewTests {
 		// assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
 	}
 
-	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
+	private AssertProvider<ScreenAssert> forScreen(Screenx screen) {
 		return () -> new ScreenAssert(screen);
 	}
 }

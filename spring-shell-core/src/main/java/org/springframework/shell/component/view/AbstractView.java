@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
+import org.springframework.shell.component.view.screen.Screenx;
 
 /**
  * Base implementation of a {@link View}.
@@ -39,7 +40,7 @@ public abstract class AbstractView implements View {
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
-	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
+	private BiFunction<Screenx, Rectangle, Rectangle> drawFunction;
 	private boolean hasFocus;
 	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
 
@@ -57,7 +58,7 @@ public abstract class AbstractView implements View {
 	}
 
 	@Override
-	public final void draw(Screen screen) {
+	public final void draw(Screenx screen) {
 		drawInternal(screen);
 	}
 
@@ -100,7 +101,7 @@ public abstract class AbstractView implements View {
 	 *
 	 * @param drawFunction the draw function
 	 */
-	public void setDrawFunction(BiFunction<Screen, Rectangle, Rectangle> drawFunction) {
+	public void setDrawFunction(BiFunction<Screenx, Rectangle, Rectangle> drawFunction) {
 		this.drawFunction = drawFunction;
 	}
 
@@ -110,7 +111,7 @@ public abstract class AbstractView implements View {
 	 * @return null if function is not set
 	 * @see #setDrawFunction(BiFunction)
 	 */
-	public BiFunction<Screen, Rectangle, Rectangle> getDrawFunction() {
+	public BiFunction<Screenx, Rectangle, Rectangle> getDrawFunction() {
 		return drawFunction;
 	}
 
@@ -129,5 +130,5 @@ public abstract class AbstractView implements View {
 	 *
 	 * @param screen the screen
 	 */
-	protected abstract void drawInternal(Screen screen);
+	protected abstract void drawInternal(Screenx screen);
 }

@@ -21,19 +21,22 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
+import org.springframework.shell.component.view.screen.DefaultScreenx;
+import org.springframework.shell.component.view.screen.Screenx;
+
 class AbstractViewTests {
 
-	Screen screen24x80;
-	Screen screen7x10;
-	Screen screen10x10;
-	Screen screen0x0;
+	Screenx screen24x80;
+	Screenx screen7x10;
+	Screenx screen10x10;
+	Screenx screen0x0;
 
 	@BeforeEach
 	void setupScreens() {
-		screen24x80 = new Screen(24, 80);
-		screen7x10 = new Screen(7, 10);
-		screen0x0 = new Screen();
-		screen10x10 = new Screen(10, 10);
+		screen24x80 = new DefaultScreenx(24, 80);
+		screen7x10 = new DefaultScreenx(7, 10);
+		screen0x0 = new DefaultScreenx();
+		screen10x10 = new DefaultScreenx(10, 10);
 	}
 
 	void dispatchEvent(View view, KeyEvent event) {
@@ -43,7 +46,7 @@ class AbstractViewTests {
 		}
 	}
 
-	AssertProvider<ScreenAssert> forScreen(Screen screen) {
+	AssertProvider<ScreenAssert> forScreen(Screenx screen) {
 		return () -> new ScreenAssert(screen);
 	}
 }

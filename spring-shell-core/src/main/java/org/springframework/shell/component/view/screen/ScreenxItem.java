@@ -17,4 +17,29 @@ package org.springframework.shell.component.view.screen;
 
 public interface ScreenxItem {
 
+    static final int STYLE_BOLD = 1;
+    static final int STYLE_FAINT = STYLE_BOLD << 1;
+    static final int STYLE_ITALIC = STYLE_BOLD << 2;
+    static final int STYLE_UNDERLINE = STYLE_BOLD << 3;
+    static final int STYLE_BLINK = STYLE_BOLD << 4;
+    static final int STYLE_INVERSE = STYLE_BOLD << 5;
+    static final int STYLE_CONCEAL = STYLE_BOLD << 6;
+    static final int STYLE_CROSSED_OUT = STYLE_BOLD << 7;
+
+
+	static final int BORDER_LEFT = 1;
+	static final int BORDER_TOP = BORDER_LEFT << 1;
+	static final int BORDER_RIGHT = BORDER_LEFT << 2;
+	static final int BORDER_BOTTOM = BORDER_LEFT << 3;
+
+	CharSequence getContent();
+
+	int getBorder();
+
+	int getBackground();
+
+	int getForeround();
+
+	int getStyle();
+
 }

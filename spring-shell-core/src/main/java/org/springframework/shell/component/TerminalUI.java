@@ -41,13 +41,14 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.KeyBinder;
 import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.KeyEvent.ModType;
-import org.springframework.shell.component.view.Screen;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
+import org.springframework.shell.component.view.screen.DefaultScreenx;
+import org.springframework.shell.component.view.screen.Screenx;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -69,7 +70,7 @@ public class TerminalUI {
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
 	private final KeyMap<String> keyMap = new KeyMap<>();
-	private final Screen virtualDisplay = new Screen();
+	private final Screenx virtualDisplay = new DefaultScreenx();
 	private Display display;
 	private Size size;
 	private View rootView;

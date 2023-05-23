@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import org.jline.terminal.MouseEvent;
 import org.jline.utils.AttributedStyle;
 
-import org.springframework.shell.component.view.Screen.ScreenItem;
+import org.springframework.shell.component.view.screen.Screenx;
 import org.springframework.util.StringUtils;
 
 /**
@@ -132,7 +132,7 @@ public class BoxView extends AbstractView {
 	 *
 	 * @param screen the screen
 	 */
-	protected void drawInternal(Screen screen) {
+	protected void drawInternal(Screenx screen) {
 		Rectangle rect = getRect();
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;

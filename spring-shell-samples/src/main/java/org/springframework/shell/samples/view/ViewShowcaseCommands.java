@@ -31,7 +31,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.Screen;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.View.Rectangle;
 import org.springframework.shell.component.view.eventloop.EventLoop;
@@ -39,6 +38,7 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
+import org.springframework.shell.component.view.screen.Screenx;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 
@@ -160,7 +160,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			// Rectangle r = new View.Rectangle(rect.x() + 1, rect.y() + 1, rect.width() - 2, rect.height() - 2);
 			String s = ref.get();
 			if (s != null) {
-				screen.printx(s, r, hAlign.get(), vAlign.get());
+				screen.print(s, r, hAlign.get(), vAlign.get());
 			}
 			return rect;
 		});
@@ -256,7 +256,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			game.update();
 		}
 
-		void draw(Screen screen) {
+		void draw(Screenx screen) {
 			Cell[][] cells = board.cells;
 			for (int i = 0; i < cells.length; i++) {
 				for (int j = 0; j < cells[i].length; j++) {

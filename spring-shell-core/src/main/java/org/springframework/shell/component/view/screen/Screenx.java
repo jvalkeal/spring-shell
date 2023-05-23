@@ -15,6 +15,37 @@
  */
 package org.springframework.shell.component.view.screen;
 
+import java.util.List;
+
+import org.jline.utils.AttributedString;
+
+import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.VerticalAlign;
+
 public interface Screenx {
 
+	void setShowCursor(boolean showCursor);
+
+	boolean isShowCursor();
+
+	void setCursorPosition(View.Position cursorPosition);
+
+	View.Position getCursorPosition();
+
+	ScreenxItem[][] getItems();
+
+	// void setItem(int x, int y, ScreenxItem item);
+
+	void print(String text, int x, int y, int width);
+
+	void print(String text, View.Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
+
+	void printBorder(int x, int y, int width, int height);
+
+	void resize(int rows, int columns);
+
+	List<AttributedString> getScreenLines();
+
+	Screenx clip(int x, int y, int width, int height);
 }

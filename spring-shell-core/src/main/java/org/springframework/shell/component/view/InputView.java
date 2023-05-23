@@ -19,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.screen.Screenx;
 
 /**
  * {@code InputView} is used as a text input.
@@ -66,7 +67,7 @@ public class InputView extends BoxView {
 	}
 
 	@Override
-	protected void drawInternal(Screen screen) {
+	protected void drawInternal(Screenx screen) {
 		Rectangle rect = getInnerRect();
 		String s = text.toString();
 		screen.print(s, rect.x(), rect.y(), s.length());
