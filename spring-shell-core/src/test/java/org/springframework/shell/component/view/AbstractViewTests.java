@@ -21,32 +21,32 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
-import org.springframework.shell.component.view.screen.DefaultScreenx;
-import org.springframework.shell.component.view.screen.Screenx;
+import org.springframework.shell.component.view.screen.DefaultScreen;
+import org.springframework.shell.component.view.screen.Screen;
 
-class AbstractViewTests {
+public class AbstractViewTests {
 
-	Screenx screen24x80;
-	Screenx screen7x10;
-	Screenx screen10x10;
-	Screenx screen0x0;
+	protected Screen screen24x80;
+	protected Screen screen7x10;
+	protected Screen screen10x10;
+	protected Screen screen0x0;
 
 	@BeforeEach
 	void setupScreens() {
-		screen24x80 = new DefaultScreenx(24, 80);
-		screen7x10 = new DefaultScreenx(7, 10);
-		screen0x0 = new DefaultScreenx();
-		screen10x10 = new DefaultScreenx(10, 10);
+		screen24x80 = new DefaultScreen(24, 80);
+		screen7x10 = new DefaultScreen(7, 10);
+		screen0x0 = new DefaultScreen();
+		screen10x10 = new DefaultScreen(10, 10);
 	}
 
-	void dispatchEvent(View view, KeyEvent event) {
+	protected void dispatchEvent(View view, KeyEvent event) {
 		BiConsumer<KeyEvent, Consumer<View>> inputHandler = view.getInputHandler();
 		if (inputHandler != null) {
 			inputHandler.accept(event, v -> {});
 		}
 	}
 
-	AssertProvider<ScreenAssert> forScreen(Screenx screen) {
+	protected AssertProvider<ScreenAssert> forScreen(Screen screen) {
 		return () -> new ScreenAssert(screen);
 	}
 }

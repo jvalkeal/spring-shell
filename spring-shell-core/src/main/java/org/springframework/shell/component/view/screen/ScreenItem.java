@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.component.view.screen;
 
-public interface ScreenxItem {
+public interface ScreenItem {
 
     static final int STYLE_BOLD = 1;
     static final int STYLE_FAINT = STYLE_BOLD << 1;

@@ -22,8 +22,8 @@ import org.assertj.core.api.AbstractAssert;
 import org.jline.utils.AttributedString;
 
 import org.springframework.shell.component.view.View.Position;
-import org.springframework.shell.component.view.screen.Screenx;
-import org.springframework.shell.component.view.screen.ScreenxItem;
+import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.ScreenItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,9 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Janne Valkealahti
  */
-public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
+public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 
-	public ScreenAssert(Screenx actual) {
+	public ScreenAssert(Screen actual) {
 		super(actual, ScreenAssert.class);
 	}
 
@@ -108,9 +108,9 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
 	 */
 	public ScreenAssert hasHorizontalText(String text, int x, int y, int width) {
 		isNotNull();
-		ScreenxItem[][] content = actual.getItems();
+		ScreenItem[][] content = actual.getItems();
 		checkBounds(content, x, y, width, 1);
-		ScreenxItem[] items = getHorizontalBorder(content, x, y, width);
+		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < items.length; i++) {
 			if (items[i].getContent() != null) {
@@ -134,9 +134,9 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
 	 */
 	public ScreenAssert hasNoHorizontalText(String text, int x, int y, int width) {
 		isNotNull();
-		ScreenxItem[][] content = actual.getItems();
+		ScreenItem[][] content = actual.getItems();
 		checkBounds(content, x, y, width, 1);
-		ScreenxItem[] items = getHorizontalBorder(content, x, y, width);
+		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < items.length; i++) {
 			if (items[i] != null) {
@@ -157,7 +157,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
 		for (AttributedString line : screenLines) {
 			buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
 		}
-		Screenx clip = actual.clip(x, y, width, height);
+		Screen clip = actual.clip(x, y, width, height);
 		List<AttributedString> screenLines2 = clip.getScreenLines();
 		buf.append(String.format("%nhave border in bounded box x=%s y=%s width=%s height=%s, was:%n", x, y, width, height));
 		for (AttributedString line : screenLines2) {
@@ -168,13 +168,13 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
 
 	private ScreenAssert hasBorderType(int x, int y, int width, int height, boolean border) {
 		isNotNull();
-		ScreenxItem[][] content = actual.getItems();
+		ScreenItem[][] content = actual.getItems();
 		checkBounds(content, x, y, width, height);
-		ScreenxItem[][] borders = getBorders(content, x, y, width, height);
-		ScreenxItem[] topBorder = borders[0];
-		ScreenxItem[] rightBorder = borders[1];
-		ScreenxItem[] bottomBorder = borders[2];
-		ScreenxItem[] leftBorder = borders[3];
+		ScreenItem[][] borders = getBorders(content, x, y, width, height);
+		ScreenItem[] topBorder = borders[0];
+		ScreenItem[] rightBorder = borders[1];
+		ScreenItem[] bottomBorder = borders[2];
+		ScreenItem[] leftBorder = borders[3];
 		if (topBorder.length != width) {
 			failWithMessage("Top Border size doesn't match");
 		}
@@ -228,27 +228,27 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screenx> {
 		return this;
 	}
 
-	private ScreenxItem[][] getBorders(ScreenxItem[][] content, int x, int y, int width, int height) {
-		ScreenxItem[] topBorder = getHorizontalBorder(content, y, x, width);
-		ScreenxItem[] rightBorder = getVerticalBorder(content, x + width - 1, y, height);
-		ScreenxItem[] bottomBorder = getHorizontalBorder(content, y + height - 1, x, width);
-		ScreenxItem[] leftBorder = getVerticalBorder(content, x, y, height);
-		return new ScreenxItem[][] { topBorder, rightBorder, bottomBorder, leftBorder };
+	private ScreenItem[][] getBorders(ScreenItem[][] content, int x, int y, int width, int height) {
+		ScreenItem[] topBorder = getHorizontalBorder(content, y, x, width);
+		ScreenItem[] rightBorder = getVerticalBorder(content, x + width - 1, y, height);
+		ScreenItem[] bottomBorder = getHorizontalBorder(content, y + height - 1, x, width);
+		ScreenItem[] leftBorder = getVerticalBorder(content, x, y, height);
+		return new ScreenItem[][] { topBorder, rightBorder, bottomBorder, leftBorder };
 	}
 
-	private ScreenxItem[] getHorizontalBorder(ScreenxItem[][] content, int row, int start, int width) {
+	private ScreenItem[] getHorizontalBorder(ScreenItem[][] content, int row, int start, int width) {
 		return Arrays.copyOfRange(content[row], start, start + width);
 	}
 
-	private ScreenxItem[] getVerticalBorder(ScreenxItem[][] content, int column, int start, int height) {
-		ScreenxItem[] array = new ScreenxItem[height];
+	private ScreenItem[] getVerticalBorder(ScreenItem[][] content, int column, int start, int height) {
+		ScreenItem[] array = new ScreenItem[height];
 		for (int i = 0; i < array.length; i++) {
 			array[i] = content[start][column];
 		}
 		return array;
 	}
 
-	private void checkBounds(ScreenxItem[][] content, int x, int y, int width, int height) {
+	private void checkBounds(ScreenItem[][] content, int x, int y, int width, int height) {
 		if (x < 0 || y < 0 || width < 1 || height < 1) {
 			failWithMessage("Can't assert with negative bounded rectangle, was x=%s y=%s width=%s height=%s", x, y,
 					width, height);

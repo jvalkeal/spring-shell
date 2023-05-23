@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.shell.component.view.screen.Screenx;
+import org.springframework.shell.component.view.screen.Screen;
 
 /**
  * {@code GridView} is a layout container with no initial {@link View views}.
@@ -123,7 +123,7 @@ public class GridView extends BoxView {
 
 
 	@Override
-	protected void drawInternal(Screenx screen) {
+	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		int x = rect.x();
 		int y = rect.y();

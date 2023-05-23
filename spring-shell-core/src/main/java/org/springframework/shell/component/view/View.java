@@ -23,7 +23,7 @@ import org.jline.terminal.MouseEvent;
 
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
-import org.springframework.shell.component.view.screen.Screenx;
+import org.springframework.shell.component.view.screen.Screen;
 
 /**
  * {@code View} is an interface representing something what can be drawn into
@@ -39,7 +39,7 @@ public interface View {
 	 *
 	 * @param screen the screen
 	 */
-	void draw(Screenx screen);
+	void draw(Screen screen);
 
 	/**
 	 * Sets bounded box where this {@link View} should operate.

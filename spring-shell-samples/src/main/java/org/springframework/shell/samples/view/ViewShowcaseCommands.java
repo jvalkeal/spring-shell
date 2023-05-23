@@ -38,7 +38,7 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.screen.Screenx;
+import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 
@@ -256,7 +256,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 			game.update();
 		}
 
-		void draw(Screenx screen) {
+		void draw(Screen screen) {
 			Cell[][] cells = board.cells;
 			for (int i = 0; i < cells.length; i++) {
 				for (int j = 0; j < cells[i].length; j++) {

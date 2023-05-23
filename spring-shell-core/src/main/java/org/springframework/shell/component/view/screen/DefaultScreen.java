@@ -29,9 +29,9 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.util.Assert;
 
-public class DefaultScreenx implements Screenx {
+public class DefaultScreen implements Screen {
 
-	private final static Logger log = LoggerFactory.getLogger(DefaultScreenx.class);
+	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
 	// private ScreenxItem[][] items;
 	private DefaultScreenxItem[][] items;
 	private boolean showCursor;
@@ -39,17 +39,17 @@ public class DefaultScreenx implements Screenx {
 	private int rows = 0;
 	private int columns = 0;
 
-	public DefaultScreenx() {
+	public DefaultScreen() {
 		this(0, 0);
 	}
 
-	public DefaultScreenx(int rows, int columns) {
+	public DefaultScreen(int rows, int columns) {
 		resize(rows, columns);
 	}
 
 	@Override
-	public Screenx clip(int x, int y, int width, int height) {
-		DefaultScreenx screen = new DefaultScreenx(height, width);
+	public Screen clip(int x, int y, int width, int height) {
+		DefaultScreen screen = new DefaultScreen(height, width);
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				screen.items[i][j] = items[y + i][x + j];
@@ -80,7 +80,7 @@ public class DefaultScreenx implements Screenx {
 	}
 
 	@Override
-	public ScreenxItem[][] getItems() {
+	public ScreenItem[][] getItems() {
 		return items;
 	}
 
@@ -188,10 +188,10 @@ public class DefaultScreenx implements Screenx {
 				items[y][i] = item;
 			}
 			if (i > x) {
-				item.border |= ScreenxItem.BORDER_RIGHT;
+				item.border |= ScreenItem.BORDER_RIGHT;
 			}
 			if (i < x + width - 1) {
-				item.border |= ScreenxItem.BORDER_LEFT;
+				item.border |= ScreenItem.BORDER_LEFT;
 			}
 		}
 	}
@@ -210,10 +210,10 @@ public class DefaultScreenx implements Screenx {
 				items[i][x] = item;
 			}
 			if (i > y) {
-				item.border |= ScreenxItem.BORDER_BOTTOM;
+				item.border |= ScreenItem.BORDER_BOTTOM;
 			}
 			if (i < y + height - 1) {
-				item.border |= ScreenxItem.BORDER_TOP;
+				item.border |= ScreenItem.BORDER_TOP;
 			}
 		}
 	}
@@ -263,7 +263,7 @@ public class DefaultScreenx implements Screenx {
 		return newLines;
 	}
 
-	private static class DefaultScreenxItem implements ScreenxItem {
+	private static class DefaultScreenxItem implements ScreenItem {
 
 		CharSequence content;
 		int background;

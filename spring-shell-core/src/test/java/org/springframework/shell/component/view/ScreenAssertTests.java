@@ -18,8 +18,8 @@ package org.springframework.shell.component.view;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.screen.DefaultScreenx;
-import org.springframework.shell.component.view.screen.Screenx;
+import org.springframework.shell.component.view.screen.DefaultScreen;
+import org.springframework.shell.component.view.screen.Screen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -28,7 +28,7 @@ class ScreenAssertTests {
 
 	@Test
 	void testCursorPosition() {
-		Screenx screen = new DefaultScreenx(5, 5);
+		Screen screen = new DefaultScreen(5, 5);
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forScreen(screen)).hasCursorVisible())
 			.withMessageContaining("Expecting a Screen to have a visible cursor");
@@ -39,14 +39,14 @@ class ScreenAssertTests {
 
 	@Test
 	void shouldThrowWithInvalidBounds() {
-		Screenx screen = new DefaultScreenx(5, 5);
+		Screen screen = new DefaultScreen(5, 5);
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 0, 0));
 	}
 
 	@Test
 	void shouldThrowWithInvalidBorder() {
-		Screenx screen = new DefaultScreenx(5, 5);
+		Screen screen = new DefaultScreen(5, 5);
 		screen.printBorder(0, 0, 5, 5);
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forScreen(screen)).hasBorder(0, 0, 5, 4));
@@ -60,36 +60,36 @@ class ScreenAssertTests {
 
 	@Test
 	void shouldNotThrowWithValidBorder() {
-		Screenx screen = new DefaultScreenx(5, 10);
+		Screen screen = new DefaultScreen(5, 10);
 		screen.printBorder(0, 0, 10, 5);
 		assertThat(forScreen(screen)).hasBorder(0, 0, 10, 5);
 
-		screen = new DefaultScreenx(10, 5);
+		screen = new DefaultScreen(10, 5);
 		screen.printBorder(0, 0, 5, 10);
 		assertThat(forScreen(screen)).hasBorder(0, 0, 5, 10);
 
-		screen = new DefaultScreenx(10, 5);
+		screen = new DefaultScreen(10, 5);
 		screen.printBorder(1, 1, 3, 8);
 		assertThat(forScreen(screen)).hasBorder(1, 1, 3, 8);
 	}
 
 	@Test
 	void shouldNotThrowWithValidNonBorder() {
-		Screenx screen = new DefaultScreenx(5, 10);
+		Screen screen = new DefaultScreen(5, 10);
 		screen.printBorder(0, 0, 10, 5);
 		assertThat(forScreen(screen)).hasNoBorder(1, 1, 8, 3);
 	}
 
 	@Test
 	void hasHorizontalText() {
-		Screenx screen = new DefaultScreenx(5, 10);
+		Screen screen = new DefaultScreen(5, 10);
 		screen.print("test", 0, 0, 4);
 		assertThat(forScreen(screen)).hasHorizontalText("test", 0, 0, 4);
 	}
 
 	@Test
 	void hasNoHorizontalText() {
-		Screenx screen = new DefaultScreenx(5, 10);
+		Screen screen = new DefaultScreen(5, 10);
 		screen.print("xxxx", 0, 0, 4);
 		assertThat(forScreen(screen)).hasNoHorizontalText("test", 0, 0, 4);
 	}
@@ -101,7 +101,7 @@ class ScreenAssertTests {
 	// 	assertThat(forScreen(screen)).hasBorder(0, 0, 5, 4);
 	// }
 
-	private AssertProvider<ScreenAssert> forScreen(Screenx screen) {
+	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
 		return () -> new ScreenAssert(screen);
 	}
 }

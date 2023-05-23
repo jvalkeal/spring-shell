@@ -23,7 +23,7 @@ import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 
-public interface Screenx {
+public interface Screen {
 
 	void setShowCursor(boolean showCursor);
 
@@ -33,9 +33,7 @@ public interface Screenx {
 
 	View.Position getCursorPosition();
 
-	ScreenxItem[][] getItems();
-
-	// void setItem(int x, int y, ScreenxItem item);
+	ScreenItem[][] getItems();
 
 	void print(String text, int x, int y, int width);
 
@@ -47,7 +45,7 @@ public interface Screenx {
 
 	List<AttributedString> getScreenLines();
 
-	Screenx clip(int x, int y, int width, int height);
+	Screen clip(int x, int y, int width, int height);
 
 	void setBackground(View.Rectangle rect, int color);
 }
