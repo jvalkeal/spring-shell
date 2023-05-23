@@ -26,7 +26,6 @@ public interface ScreenItem {
     static final int STYLE_CONCEAL = STYLE_BOLD << 6;
     static final int STYLE_CROSSED_OUT = STYLE_BOLD << 7;
 
-
 	static final int BORDER_LEFT = 1;
 	static final int BORDER_TOP = BORDER_LEFT << 1;
 	static final int BORDER_RIGHT = BORDER_LEFT << 2;

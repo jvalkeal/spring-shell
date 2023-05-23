@@ -32,8 +32,7 @@ import org.springframework.util.Assert;
 public class DefaultScreen implements Screen {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
-	// private ScreenxItem[][] items;
-	private DefaultScreenxItem[][] items;
+	private DefaultScreenItem[][] items;
 	private boolean showCursor;
 	private View.Position cursorPosition = new View.Position(0, 0);
 	private int rows = 0;
@@ -124,11 +123,11 @@ public class DefaultScreen implements Screen {
 	// }
 
 	public void reset() {
-		this.items = new DefaultScreenxItem[rows][columns];
+		this.items = new DefaultScreenItem[rows][columns];
 		for (int i = 0; i < rows; i++) {
-			this.items[i] = new DefaultScreenxItem[columns];
+			this.items[i] = new DefaultScreenItem[columns];
 			for (int j = 0; j < columns; j++) {
-				this.items[i][j] = new DefaultScreenxItem();
+				this.items[i][j] = new DefaultScreenItem();
 			}
 		}
 	}
@@ -182,9 +181,9 @@ public class DefaultScreen implements Screen {
 			if (y >= items.length) {
 				continue;
 			}
-			DefaultScreenxItem item = items[y][i];
+			DefaultScreenItem item = items[y][i];
 			if (item == null) {
-				item = new DefaultScreenxItem();
+				item = new DefaultScreenItem();
 				items[y][i] = item;
 			}
 			if (i > x) {
@@ -204,9 +203,9 @@ public class DefaultScreen implements Screen {
 			if (x >= items[i].length) {
 				continue;
 			}
-			DefaultScreenxItem item = items[i][x];
+			DefaultScreenItem item = items[i][x];
 			if (item == null) {
-				item = new DefaultScreenxItem();
+				item = new DefaultScreenItem();
 				items[i][x] = item;
 			}
 			if (i > y) {
@@ -225,7 +224,7 @@ public class DefaultScreen implements Screen {
 		for (int i = 0; i < items.length; i++) {
 			AttributedStringBuilder builder = new AttributedStringBuilder();
 			for (int j = 0; j < items[i].length; j++) {
-				DefaultScreenxItem item = items[i][j];
+				DefaultScreenItem item = items[i][j];
 				if (item != null) {
 					AttributedStyle s = new AttributedStyle(AttributedStyle.DEFAULT);
 					if (item.background > -1) {
@@ -263,7 +262,7 @@ public class DefaultScreen implements Screen {
 		return newLines;
 	}
 
-	private static class DefaultScreenxItem implements ScreenItem {
+	private static class DefaultScreenItem implements ScreenItem {
 
 		CharSequence content;
 		int background;
