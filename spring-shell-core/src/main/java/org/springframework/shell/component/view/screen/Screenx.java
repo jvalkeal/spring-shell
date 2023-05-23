@@ -48,4 +48,6 @@ public interface Screenx {
 	List<AttributedString> getScreenLines();
 
 	Screenx clip(int x, int y, int width, int height);
+
+	void setBackground(View.Rectangle rect, int color);
 }

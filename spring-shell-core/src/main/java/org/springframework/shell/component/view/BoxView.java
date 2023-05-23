@@ -137,6 +137,9 @@ public class BoxView extends AbstractView {
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
+		if (backgroundColor > -1) {
+			screen.setBackground(rect, backgroundColor);
+		}
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {

@@ -39,8 +39,7 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView box = new BoxView();
 		box.setTitle("Title");
 		box.setShowBorder(true);
-		// box.setBackgroundStyle(AttributedStyle.DEFAULT.background(AttributedStyle.BLUE));
-		// box.setBackgroundColor(AttributedStyle.BLUE);
+		box.setBackgroundColor(AttributedStyle.BLUE);
 		component.setRoot(box, true);
 		component.run();
 	}

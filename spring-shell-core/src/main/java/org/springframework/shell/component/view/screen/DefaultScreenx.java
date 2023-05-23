@@ -99,6 +99,17 @@ public class DefaultScreenx implements Screenx {
 		items[y][x].background = color;
 	}
 
+	@Override
+	public void setBackground(View.Rectangle rect, int color) {
+		for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
+			for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
+				setBackground(j, i, color);
+			}
+		}
+	}
+
+	// View.Rectangle rect
+
 	public void addStyle(int x, int y, int style) {
 		items[y][x].style |= style;
 	}
@@ -216,10 +227,10 @@ public class DefaultScreenx implements Screenx {
 			for (int j = 0; j < items[i].length; j++) {
 				DefaultScreenxItem item = items[i][j];
 				if (item != null) {
-					AttributedStyle s = new AttributedStyle();
-					// if (item.background > -1) {
-					// 	s.background(item.getBackground());
-					// }
+					AttributedStyle s = new AttributedStyle(AttributedStyle.DEFAULT);
+					if (item.background > -1) {
+						s = s.background(item.getBackground());
+					}
 					// s.foreground(item.getForeround());
 					// if ((item.style & ScreenxItem.STYLE_BOLD) == ScreenxItem.STYLE_BOLD) {
 					// 	s.bold();
@@ -233,13 +244,14 @@ public class DefaultScreenx implements Screenx {
 					// s.crossedOut();
 					// builder.
 					if (item.getContent() != null){
-						builder.append(item.getContent(), AttributedStyle.DEFAULT);
+						builder.append(item.getContent(), s);
 					}
 					else if (item.getBorder() > 0) {
-						builder.append(Character.toString(BOX_CHARS[item.getBorder()]), null);
+						builder.append(Character.toString(BOX_CHARS[item.getBorder()]), s);
 					}
 					else {
-						builder.append(' ');
+						builder.append(Character.toString(' '), s);
+						// builder.append(' ');
 					}
 				}
 				else {
