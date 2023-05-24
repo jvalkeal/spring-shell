@@ -107,6 +107,9 @@ public class ViewCommands extends AbstractShellComponent {
 	) {
 		TerminalUI component = new TerminalUI(getTerminal());
 		InputView input = new InputView();
+		if (!fullScreen) {
+			input.setRect(0, 0, 15, 6);
+		}
 		input.setTitle("Input");
 		input.setShowBorder(true);
 		component.setRoot(input, fullScreen);

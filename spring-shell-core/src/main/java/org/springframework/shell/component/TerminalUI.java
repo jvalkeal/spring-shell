@@ -44,6 +44,7 @@ import org.springframework.shell.component.view.KeyEvent.ModType;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.eventloop.DefaultEventLoop;
 import org.springframework.shell.component.view.eventloop.EventLoop;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
@@ -159,9 +160,9 @@ public class TerminalUI {
 		}
 		else {
 			display.resize(size.getRows(), size.getColumns());
-			rootView.setRect(0, 0, 10, 7);
-			virtualDisplay.resize(7, 10);
-			render(7, 10);
+			Rectangle rect = rootView.getRect();
+			virtualDisplay.resize(rect.height(), rect.width());
+			render(rect.height(), rect.width());
 		}
 
 		List<AttributedString> newLines = virtualDisplay.getScreenLines();
