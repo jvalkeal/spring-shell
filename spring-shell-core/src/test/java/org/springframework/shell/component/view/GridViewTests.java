@@ -15,23 +15,13 @@
  */
 package org.springframework.shell.component.view;
 
-import org.assertj.core.api.AssertProvider;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.screen.DefaultScreen;
-import org.springframework.shell.component.view.screen.Screen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GridViewTests {
-
-	private Screen screen;
-
-	@BeforeEach
-	void setup() {
-		screen = new DefaultScreen(24, 80);
-	}
+class GridViewTests extends AbstractViewTests {
 
 	@Test
 	void hasBordersWith1x1() {
@@ -45,9 +35,9 @@ class GridViewTests {
 		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
 
 		grid.setRect(0, 0, 80, 24);
-		grid.draw(screen);
+		grid.draw(screen24x80);
 
-		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
 	}
 
 	@Test
@@ -64,11 +54,11 @@ class GridViewTests {
 		grid.addItem(box2, 0, 1, 1, 1, 0, 0);
 
 		grid.setRect(0, 0, 80, 24);
-		grid.draw(screen);
+		grid.draw(screen24x80);
 
-		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 24);
-		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 39, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(39, 0, 41, 24);
 	}
 
 	@Test
@@ -85,11 +75,11 @@ class GridViewTests {
 		grid.addItem(box2, 1, 0, 1, 1, 0, 0);
 
 		grid.setRect(0, 0, 80, 24);
-		grid.draw(screen);
+		grid.draw(screen24x80);
 
-		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 12);
-		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 12);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 11, 80, 13);
 	}
 
 	@Test
@@ -110,18 +100,18 @@ class GridViewTests {
 		grid.addItem(box4, 1, 1, 1, 1, 0, 0);
 
 		grid.setRect(0, 0, 80, 24);
-		grid.draw(screen);
+		grid.draw(screen24x80);
 
-		assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
-		assertThat(forScreen(screen)).hasBorder(0, 0, 39, 12);
-		assertThat(forScreen(screen)).hasBorder(39, 0, 41, 12);
-		assertThat(forScreen(screen)).hasBorder(0, 11, 80, 13);
-		assertThat(forScreen(screen)).hasBorder(39, 11, 41, 13);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 39, 12);
+		assertThat(forScreen(screen24x80)).hasBorder(39, 0, 41, 12);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 11, 80, 13);
+		assertThat(forScreen(screen24x80)).hasBorder(39, 11, 41, 13);
 	}
 
 	@Test
 	void hasBordersWithHidden() {
-		screen = new DefaultScreen(20, 10);
+		screen24x80 = new DefaultScreen(20, 10);
 
 		BoxView menu = new BoxView();
 		BoxView main = new BoxView();
@@ -146,13 +136,30 @@ class GridViewTests {
 		grid.addItem(sideBar, 1, 2, 1, 1, 0, 100);
 
 		grid.setRect(0, 0, 10, 20);
-		grid.draw(screen);
+		grid.draw(screen24x80);
 
 		// overflows, don't have full border anywhere
 		// assertThat(forScreen(screen)).hasBorder(0, 0, 80, 24);
 	}
 
-	private AssertProvider<ScreenAssert> forScreen(Screen screen) {
-		return () -> new ScreenAssert(screen);
+	@Test
+	void gridBoxHasTitle() {
+		BoxView box1 = new BoxView();
+
+		GridView grid = new GridView();
+		grid.setShowBorder(true);
+		grid.setTitle("title");
+		grid.setShowBorders(true);
+		grid.setRowSize(0);
+		grid.setColumnSize(0);
+		grid.addItem(box1, 0, 0, 1, 1, 0, 0);
+
+		grid.setRect(0, 0, 80, 24);
+		grid.draw(screen24x80);
+
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+		assertThat(forScreen(screen24x80)).hasBorder(1, 1, 78, 22);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("title", 1, 0, 5);
 	}
+
 }
