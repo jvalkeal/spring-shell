@@ -60,6 +60,7 @@ public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
 	}
 
 	public enum KeyType {
+		CHAR("Character"),
 		BACKTAB("BACKTAB"),
 		ENTER("Enter"),
 		TAB("Tab"),

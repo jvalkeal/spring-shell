@@ -52,8 +52,6 @@ import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import static org.jline.keymap.KeyMap.key;
-
 /**
  * Component handling {@link View} structures.
  *
@@ -62,7 +60,6 @@ import static org.jline.keymap.KeyMap.key;
 public class TerminalUI {
 
 	private final static Logger log = LoggerFactory.getLogger(TerminalUI.class);
-	// public final static String OPERATION_EXIT = "EXIT";
 	public final static String OPERATION_REDRAW = "REDRAW";
 	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
 	public final static String OPERATION_KEY_EVENT = "CHAR";
@@ -150,11 +147,8 @@ public class TerminalUI {
 	}
 
 	private void display() {
-		log.debug("display");
+		log.trace("display()");
 		size.copy(terminal.getSize());
-		// display.clear();
-		// display.resize(size.getRows(), size.getColumns());
-		// display.reset();
 		if (fullScreen) {
 			display.clear();
 			display.resize(size.getRows(), size.getColumns());
@@ -169,22 +163,15 @@ public class TerminalUI {
 			virtualDisplay.resize(7, 10);
 			render(7, 10);
 		}
-		// rootView.setRect(0, 0, size.getColumns(), size.getRows());
-		// virtualDisplay.resize(size.getRows(), size.getColumns());
-		// testing not full screen
-		// rootView.setRect(0, 0, size.getColumns(), 5);
-		// virtualDisplay.resize(5, size.getColumns());
-		// render(size.getRows(), size.getColumns());
-		List<AttributedString> newLines = virtualDisplay.getScreenLines();
 
-		int xxx = 0;
+		List<AttributedString> newLines = virtualDisplay.getScreenLines();
+		int targetCursorPos = 0;
 		if (virtualDisplay.isShowCursor()) {
 			terminal.puts(Capability.cursor_visible);
-			xxx = size.cursorPos(virtualDisplay.getCursorPosition().y(), virtualDisplay.getCursorPosition().x());
-			log.debug("XXX cursor pos {}", xxx);
+			targetCursorPos = size.cursorPos(virtualDisplay.getCursorPosition().y(), virtualDisplay.getCursorPosition().x());
+			log.debug("Display targetCursorPos {}", targetCursorPos);
 		}
-
-		display.update(newLines, xxx);
+		display.update(newLines, targetCursorPos);
 	}
 
 	private void dispatchWinch() {
@@ -266,9 +253,6 @@ public class TerminalUI {
 			log.debug("Handling signal {}", signal);
 			dispatchWinch();
 		});
-		// terminal.handle(Signal.INT, signal -> {
-		// 	log.debug("Handling signal {}", signal);
-		// });
 
 		try {
 			if (fullScreen) {
@@ -298,16 +282,11 @@ public class TerminalUI {
 			if (fullScreen) {
 				display.update(Collections.emptyList(), 0);
 			}
-			// display.update(Collections.emptyList(), 0);
 			terminal.trackMouse(Terminal.MouseTracking.Off);
 			if (fullScreen) {
 				terminal.puts(Capability.exit_ca_mode);
 			}
-			// terminal.puts(Capability.clear_screen);
 			terminal.puts(Capability.keypad_local);
-			// log.debug("Setting cursor visible");
-			// terminal.puts(Capability.cursor_visible);
-			// terminal.setAttributes(attr);
 			if (!fullScreen) {
 				display.update(Collections.emptyList(), 0);
 			}
@@ -316,34 +295,22 @@ public class TerminalUI {
 
 	private void bindKeyMap(KeyMap<String> keyMap) {
 		keyBinder.bindAll(keyMap);
-		keyMap.bind(OPERATION_MOUSE_EVENT, key(terminal, Capability.key_mouse));
-
-		// skip 127 - DEL
-		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
-			keyMap.bind(OPERATION_KEY_EVENT, Character.toString(i));
-		}
 	}
 
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
         Thread readThread = Thread.currentThread();
-		// terminal.handle(Signal.INT, signal -> readThread.interrupt());
 		terminal.handle(Signal.INT, signal -> {
 			log.debug("Handling signal {}", signal);
 			readThread.interrupt();
 		});
 
-		// String operation = bindingReader.readBinding(keyMap);
-		// log.debug("Read got operation {}", operation);
 		String operation = null;
 		try {
 			operation = bindingReader.readBinding(keyMap);
 			log.debug("Read got operation {}", operation);
         } catch (IOError e) {
             // Ignore Ctrl+C interrupts and just exit the loop
-            // if (!(e.getCause() instanceof InterruptedException)) {
-            //     throw e;
-            // }
-			log.debug("Read binding error {}", e);
+			log.trace("Read binding error {}", e);
 		}
 		if (operation == null) {
 			return true;
@@ -354,14 +321,12 @@ public class TerminalUI {
 			dispatchKeyEvent(keyEvent);
 			return false;
 		}
-		switch (operation) {
-			case OPERATION_MOUSE_EVENT:
-				mouseEvent();
-				break;
-			case OPERATION_KEY_EVENT:
-				String lastBinding = bindingReader.getLastBinding();
-				dispatchChar(lastBinding, false, false);
-				break;
+		else if (operation.equals("OPERATION_CHAR")) {
+			String lastBinding = bindingReader.getLastBinding();
+			dispatchChar(lastBinding, false, false);
+		}
+		else if (operation.equals("OPERATION_MOUSE")) {
+			mouseEvent();
 		}
 
 		return false;

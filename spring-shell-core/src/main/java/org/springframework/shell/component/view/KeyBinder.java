@@ -50,6 +50,12 @@ public class KeyBinder {
 
 	public void bindAll(KeyMap<String> keyMap) {
 
+		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
+			keyMap.bind("OPERATION_CHAR", Character.toString(i));
+		}
+
+		keyMap.bind("OPERATION_MOUSE", key(terminal, Capability.key_mouse));
+
 		keyMap.bind("OPERATION_KEY_ENTER", "\r");
 		keyMap.bind("OPERATION_KEY_BACKSPACE", del());
 		keyMap.bind("OPERATION_KEY_DELETE", key(terminal, Capability.key_dc));
