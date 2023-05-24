@@ -37,7 +37,7 @@ public interface Screen {
 
 	void print(String text, int x, int y, int width);
 
-	void print(String text, int x, int y, int width, int color);
+	void print(String text, int x, int y, int width, int color, int style);
 
 	void print(String text, View.Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
 

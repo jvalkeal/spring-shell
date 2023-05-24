@@ -141,11 +141,12 @@ public class DefaultScreen implements Screen {
 	}
 
 	@Override
-	public void print(String text, int x, int y, int width, int color) {
+	public void print(String text, int x, int y, int width, int color, int style) {
 		for (int i = 0; i < text.length() && i < width; i++) {
 			char c = text.charAt(i);
 			this.items[y][x + i].content = Character.toString(c);
 			this.items[y][x + i].foreground = color;
+			this.items[y][x + i].style = style;
 		}
 	}
 
@@ -242,18 +243,30 @@ public class DefaultScreen implements Screen {
 					if (item.foreground > -1) {
 						s = s.foregroundRgb(item.getForeground());
 					}
-					// s.foreground(item.getForeround());
-					// if ((item.style & ScreenxItem.STYLE_BOLD) == ScreenxItem.STYLE_BOLD) {
-					// 	s.bold();
-					// }
-					// s.faint();
-					// s.italic();
-					// s.underline();
-					// s.blink();
-					// s.inverse();
-					// s.conceal();
-					// s.crossedOut();
-					// builder.
+					if ((item.style & ScreenItem.STYLE_BOLD) == ScreenItem.STYLE_BOLD) {
+						s = s.bold();
+					}
+					if ((item.style & ScreenItem.STYLE_FAINT) == ScreenItem.STYLE_FAINT) {
+						s = s.faint();
+					}
+					if ((item.style & ScreenItem.STYLE_ITALIC) == ScreenItem.STYLE_ITALIC) {
+						s = s.italic();
+					}
+					if ((item.style & ScreenItem.STYLE_UNDERLINE) == ScreenItem.STYLE_UNDERLINE) {
+						s = s.underline();
+					}
+					if ((item.style & ScreenItem.STYLE_BLINK) == ScreenItem.STYLE_BLINK) {
+						s = s.blink();
+					}
+					if ((item.style & ScreenItem.STYLE_INVERSE) == ScreenItem.STYLE_INVERSE) {
+						s = s.inverse();
+					}
+					if ((item.style & ScreenItem.STYLE_CONCEAL) == ScreenItem.STYLE_CONCEAL) {
+						s = s.conceal();
+					}
+					if ((item.style & ScreenItem.STYLE_CROSSEDOUT) == ScreenItem.STYLE_CROSSEDOUT) {
+						s = s.crossedOut();
+					}
 					if (item.getContent() != null){
 						builder.append(item.getContent(), s);
 					}
@@ -262,7 +275,6 @@ public class DefaultScreen implements Screen {
 					}
 					else {
 						builder.append(Character.toString(' '), s);
-						// builder.append(' ');
 					}
 				}
 				else {

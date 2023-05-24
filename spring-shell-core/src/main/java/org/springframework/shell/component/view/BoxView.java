@@ -44,6 +44,7 @@ public class BoxView extends AbstractView {
 	private int paddingRight;
 	private int backgroundColor = -1;
 	private int titleColor = -1;
+	private int titleStyle = -1;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -131,6 +132,15 @@ public class BoxView extends AbstractView {
 	}
 
 	/**
+	 * Sets a title style.
+	 *
+	 * @param titleStyle the title style
+	 */
+	public void setTitleStyle(int titleStyle) {
+		this.titleStyle = titleStyle;
+	}
+
+	/**
 	 * Possibly draws a box around this view and title in a box top boundary. Also
 	 * calls a {@code draw function} if defined.
 	 *
@@ -148,7 +158,7 @@ public class BoxView extends AbstractView {
 			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {
 				if (titleColor > -1) {
-					screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2, titleColor);
+					screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2, titleColor, titleStyle);
 				}
 				else {
 					screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);

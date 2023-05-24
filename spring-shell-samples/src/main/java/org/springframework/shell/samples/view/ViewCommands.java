@@ -22,6 +22,7 @@ import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.InputView;
 import org.springframework.shell.component.view.screen.Color;
+import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.standard.AbstractShellComponent;
 
 /**
@@ -40,6 +41,7 @@ public class ViewCommands extends AbstractShellComponent {
 		box.setShowBorder(true);
 		box.setBackgroundColor(Color.Khaki4);
 		box.setTitleColor(Color.Green1);
+		box.setTitleStyle(ScreenItem.STYLE_BOLD|ScreenItem.STYLE_ITALIC);
 		component.setRoot(box, true);
 		component.run();
 	}
