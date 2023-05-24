@@ -15,6 +15,11 @@
  */
 package org.springframework.shell.component.view.screen;
 
+/**
+ *
+ *
+ * @author Janne Valkealahti
+ */
 public interface ScreenItem {
 
     static final int STYLE_BOLD = 1;

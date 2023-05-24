@@ -30,6 +30,11 @@ import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.util.Assert;
 
+/**
+ * Default implementation of a {@link Screen}.
+ *
+ * @author Janne Valkealahti
+ */
 public class DefaultScreen implements Screen {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
@@ -53,7 +58,6 @@ public class DefaultScreen implements Screen {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				screen.items[i][j] = items[y + i][x + j];
-				// screen.setContent(j, i, items[y + i][x + j]);
 			}
 		}
 		return screen;
@@ -108,8 +112,6 @@ public class DefaultScreen implements Screen {
 		}
 	}
 
-	// View.Rectangle rect
-
 	public void addStyle(int x, int y, int style) {
 		items[y][x].style |= style;
 	}
@@ -117,11 +119,6 @@ public class DefaultScreen implements Screen {
 	public void removeStyle(int x, int y, int style) {
 		items[y][x].style &= ~style;
 	}
-
-	// @Override
-	// public void setItem(int x, int y, ScreenxItem item) {
-	// 	items[y][x] = item;
-	// }
 
 	public void reset() {
 		this.items = new DefaultScreenItem[rows][columns];
@@ -309,6 +306,9 @@ public class DefaultScreen implements Screen {
 		return newLines;
 	}
 
+	/**
+	 * Default private implementation of a {@link ScreenItem}.
+	 */
 	private static class DefaultScreenItem implements ScreenItem {
 
 		CharSequence content;

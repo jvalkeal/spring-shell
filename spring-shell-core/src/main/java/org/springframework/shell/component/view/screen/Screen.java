@@ -24,6 +24,11 @@ import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 
+/**
+ *
+ *
+ * @author Janne Valkealahti
+ */
 public interface Screen {
 
 	void setShowCursor(boolean showCursor);
