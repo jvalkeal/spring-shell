@@ -41,8 +41,9 @@ public class ViewCommands extends AbstractShellComponent {
 		box.setTitle("Title");
 		box.setShowBorder(true);
 		box.setBackgroundColor(Color.KHAKI4);
-		box.setTitleColor(Color.GREEN1);
-		box.setTitleStyle(ScreenItem.STYLE_BOLD|ScreenItem.STYLE_ITALIC);
+		// box.setTitleColor(Color.GREEN1);
+		box.setTitleColor(Color.RED);
+		// box.setTitleStyle(ScreenItem.STYLE_BOLD|ScreenItem.STYLE_ITALIC);
 		box.setTitleAlign(HorizontalAlign.CENTER);
 		component.setRoot(box, true);
 		component.run();

@@ -32,3 +32,4 @@ logging:
     org:
       springframework:
         shell: trace
+      jline: debug

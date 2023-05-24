@@ -293,6 +293,8 @@ public class TerminalUI {
 		finally {
 			eventLoop.destroy();
 			terminal.setAttributes(attr);
+			log.debug("Setting cursor visible");
+			terminal.puts(Capability.cursor_visible);
 			if (fullScreen) {
 				display.update(Collections.emptyList(), 0);
 			}
@@ -303,8 +305,8 @@ public class TerminalUI {
 			}
 			// terminal.puts(Capability.clear_screen);
 			terminal.puts(Capability.keypad_local);
-			log.debug("Setting cursor visible");
-			terminal.puts(Capability.cursor_visible);
+			// log.debug("Setting cursor visible");
+			// terminal.puts(Capability.cursor_visible);
 			// terminal.setAttributes(attr);
 			if (!fullScreen) {
 				display.update(Collections.emptyList(), 0);
@@ -324,7 +326,11 @@ public class TerminalUI {
 
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {
         Thread readThread = Thread.currentThread();
-		terminal.handle(Signal.INT, signal -> readThread.interrupt());
+		// terminal.handle(Signal.INT, signal -> readThread.interrupt());
+		terminal.handle(Signal.INT, signal -> {
+			log.debug("Handling signal {}", signal);
+			readThread.interrupt();
+		});
 
 		// String operation = bindingReader.readBinding(keyMap);
 		// log.debug("Read got operation {}", operation);
