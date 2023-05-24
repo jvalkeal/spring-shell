@@ -18,6 +18,9 @@ package org.springframework.shell.component.view.screen;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.AbstractViewTests;
+import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.geom.VerticalAlign;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,4 +48,25 @@ class ScreenTests extends AbstractViewTests {
 		screen10x10.printBorder(0, 0, 10, 10);
 		assertThat(forScreen(screen10x10)).hasBorder(0, 0, 10, 10);
 	}
+
+	@Test
+	void printsText() {
+		screen24x80.print("text", 0, 0, 4);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 0, 0, 4);
+	}
+
+	@Test
+	void printsTextAlign() {
+		Rectangle rect = new Rectangle(1, 1, 10, 10);
+		screen24x80.print("text", rect, HorizontalAlign.CENTER, VerticalAlign.CENTER);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 3, 5, 4);
+	}
+
+	@Test
+	void printsTextAlignInOneRowRect() {
+		Rectangle rect = new Rectangle(1, 1, 10, 1);
+		screen24x80.print("text", rect, HorizontalAlign.CENTER, VerticalAlign.CENTER);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 3, 1, 4);
+	}
+
 }

@@ -20,7 +20,9 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 
+import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.util.StringUtils;
 
@@ -46,6 +48,7 @@ public class BoxView extends AbstractView {
 	private int backgroundColor = -1;
 	private int titleColor = -1;
 	private int titleStyle = -1;
+	private HorizontalAlign titleAlign;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -142,6 +145,15 @@ public class BoxView extends AbstractView {
 	}
 
 	/**
+	 * Sets a title align.
+	 *
+	 * @param titleAlign the title align
+	 */
+	public void setTitleAlign(HorizontalAlign titleAlign) {
+		this.titleAlign = titleAlign;
+	}
+
+	/**
 	 * Possibly draws a box around this view and title in a box top boundary. Also
 	 * calls a {@code draw function} if defined.
 	 *
@@ -158,11 +170,12 @@ public class BoxView extends AbstractView {
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {
+				Rectangle r = new Rectangle(rect.x() + 1, rect.y(), rect.width() - 2, 1);
 				if (titleColor > -1) {
-					screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2, titleColor, titleStyle);
+					screen.print(title, r, titleAlign, VerticalAlign.CENTER, backgroundColor, titleStyle);
 				}
 				else {
-					screen.print(title, rect.x() + 1, rect.y(), rect.width() - 2);
+					screen.print(title, r, titleAlign, VerticalAlign.CENTER);
 				}
 			}
 		}

@@ -110,7 +110,7 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 		isNotNull();
 		ScreenItem[][] content = actual.getItems();
 		checkBounds(content, x, y, width, 1);
-		ScreenItem[] items = getHorizontalBorder(content, x, y, width);
+		ScreenItem[] items = getHorizontalBorder(content, y, x, width);
 		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < items.length; i++) {
 			if (items[i].getContent() != null) {
