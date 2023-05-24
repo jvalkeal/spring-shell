@@ -17,6 +17,7 @@ package org.springframework.shell.component.view.screen;
 
 public class Color {
 
+	// https://en.wikipedia.org/wiki/X11_color_names#Numbered_variants
 	public static final int AntiqueWhite = 0xFAEBD7;
 	public static final int Aquamarine = 0x7FFFD4;
 	public static final int Azure = 0xF0FFFF;
@@ -403,17 +404,19 @@ public class Color {
 	public static final int Wheat4 = 0x8B7E66;
 	public static final int Yellow4 = 0x8B8B00;
 
+	// basic color types
 	public final static int White = 0xffffff;
 	public final static int Black = 0x000000;
 
+	// grays
 	public final static int Grey0 = 0x000000;
-	public final static int Grey100 = 0xffffff;
+	public final static int Grey3 = 0x080808;
+	public final static int Grey7 = 0x121212;
 	public final static int Grey11 = 0x1c1c1c;
 	public final static int Grey15 = 0x262626;
 	public final static int Grey19 = 0x303030;
 	public final static int Grey23 = 0x3a3a3a;
 	public final static int Grey27 = 0x444444;
-	public final static int Grey3 = 0x080808;
 	public final static int Grey30 = 0x4e4e4e;
 	public final static int Grey35 = 0x585858;
 	public final static int Grey37 = 0x5f5f5f;
@@ -428,7 +431,6 @@ public class Color {
 	public final static int Grey63 = 0xaf87af;
 	public final static int Grey66 = 0xa8a8a8;
 	public final static int Grey69 = 0xafafaf;
-	public final static int Grey7 = 0x121212;
 	public final static int Grey70 = 0xb2b2b2;
 	public final static int Grey74 = 0xbcbcbc;
 	public final static int Grey78 = 0xc6c6c6;
@@ -437,4 +439,5 @@ public class Color {
 	public final static int Grey85 = 0xdadada;
 	public final static int Grey89 = 0xe4e4e4;
 	public final static int Grey93 = 0xeeeeee;
+	public final static int Grey100 = 0xffffff;
 }
