@@ -125,6 +125,7 @@ public class GridView extends BoxView {
 
 	@Override
 	protected void drawInternal(Screen screen) {
+		super.drawInternal(screen);
 		Rectangle rect = getInnerRect();
 		int x = rect.x();
 		int y = rect.y();

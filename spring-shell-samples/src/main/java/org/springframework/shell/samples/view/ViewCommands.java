@@ -53,21 +53,34 @@ public class ViewCommands extends AbstractShellComponent {
 		TerminalUI component = new TerminalUI(getTerminal());
 
 		BoxView menu = new BoxView();
-		// menu.setTitle("Menu");
-		// menu.setShowBorder(true);
+		menu.setBackgroundColor(Color.KHAKI4);
+		menu.setTitle("Menu");
+		menu.setShowBorder(true);
 
 		BoxView main = new BoxView();
+		main.setBackgroundColor(Color.KHAKI4);
+		main.setTitle("Main");
+		main.setShowBorder(true);
 
 		BoxView sideBar = new BoxView();
+		sideBar.setBackgroundColor(Color.KHAKI4);
+		sideBar.setTitle("Sidebar");
+		sideBar.setShowBorder(true);
 
 		BoxView header = new BoxView();
+		header.setBackgroundColor(Color.KHAKI4);
+		header.setTitle("Header");
+		header.setShowBorder(true);
 
 		BoxView footer = new BoxView();
+		footer.setBackgroundColor(Color.KHAKI4);
+		footer.setTitle("Footer");
+		footer.setShowBorder(true);
 
 		GridView grid = new GridView();
-		// grid.setBackgroundColor(Color.Khaki4);
-		// grid.setTitleColor(Color.Green1);
-		// grid.setTitleStyle(ScreenItem.STYLE_BOLD|ScreenItem.STYLE_ITALIC);
+		grid.setBackgroundColor(Color.KHAKI3);
+		grid.setTitle("Grid");
+		grid.setShowBorder(true);
 
 		grid.setRowSize(3, 0, 3);
 		grid.setColumnSize(30, 0, 30);

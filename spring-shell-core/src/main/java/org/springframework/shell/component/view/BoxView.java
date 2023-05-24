@@ -172,10 +172,10 @@ public class BoxView extends AbstractView {
 			if (StringUtils.hasText(title)) {
 				Rectangle r = new Rectangle(rect.x() + 1, rect.y(), rect.width() - 2, 1);
 				if (titleColor > -1) {
-					screen.print(title, r, titleAlign, VerticalAlign.CENTER, backgroundColor, titleStyle);
+					screen.print(title, r, titleAlign, VerticalAlign.TOP, backgroundColor, titleStyle);
 				}
 				else {
-					screen.print(title, r, titleAlign, VerticalAlign.CENTER);
+					screen.print(title, r, titleAlign, VerticalAlign.TOP);
 				}
 			}
 		}
