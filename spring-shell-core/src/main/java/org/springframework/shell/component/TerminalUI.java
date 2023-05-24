@@ -61,10 +61,6 @@ import org.springframework.util.ObjectUtils;
 public class TerminalUI {
 
 	private final static Logger log = LoggerFactory.getLogger(TerminalUI.class);
-	public final static String OPERATION_REDRAW = "REDRAW";
-	public final static String OPERATION_MOUSE_EVENT = "MOUSE_EVENT";
-	public final static String OPERATION_KEY_EVENT = "CHAR";
-
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
 	private final KeyMap<String> keyMap = new KeyMap<>();
@@ -334,7 +330,6 @@ public class TerminalUI {
 	}
 
 	private void dispatchChar(String binding, boolean ctrl, boolean alt) {
-		log.trace("Dispatching {} with {}", OPERATION_KEY_EVENT, binding);
 		KeyEvent event = KeyEvent.ofCharacter(binding, ModType.of(ctrl, alt, false));
 		Message<KeyEvent> message = MessageBuilder
 			.withPayload(event)
