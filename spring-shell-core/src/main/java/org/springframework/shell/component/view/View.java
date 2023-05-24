@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
 import org.springframework.shell.component.view.screen.Screen;
@@ -92,38 +93,4 @@ public interface View {
 	 */
 	CompositeListener<ShellMessageListener> getMessageListeners();
 
-	/**
-	 * Record representing coordinates {@code x}, {@code y} and its {@code width}
-	 * and {@code height}.
-	 */
-	record Rectangle(int x, int y, int width, int height) {
-
-		boolean contains(int X, int Y) {
-			int w = this.width;
-			int h = this.height;
-			if ((w | h) < 0) {
-				return false;
-			}
-			int x = this.x;
-			int y = this.y;
-			if (X < x || Y < y) {
-				return false;
-			}
-			w += x;
-			h += y;
-			return ((w < x || w > X) && (h < y || h > Y));
-		}
-	};
-
-	/**
-	 * Record representing dimensions {@code width} and {@code height}.
-	 */
-	record Dimension(int width, int height) {
-	};
-
-	/**
-	 * Record representing position {@code x} and {@code y}.
-	 */
-	record Position(int x, int y) {
-	};
 }

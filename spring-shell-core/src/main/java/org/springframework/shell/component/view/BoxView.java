@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.util.StringUtils;
 

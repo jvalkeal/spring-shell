@@ -21,7 +21,7 @@ import java.util.List;
 import org.assertj.core.api.AbstractAssert;
 import org.jline.utils.AttributedString;
 
-import org.springframework.shell.component.view.View.Position;
+import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.ScreenItem;
 

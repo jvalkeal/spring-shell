@@ -31,10 +31,9 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.View;
-import org.springframework.shell.component.view.View.Rectangle;
 import org.springframework.shell.component.view.eventloop.EventLoop;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
@@ -156,7 +155,7 @@ public class ViewShowcaseCommands extends AbstractShellComponent {
 		// draw current date
 		root.setDrawFunction((screen, rect) -> {
 			int a = animX.get();
-			Rectangle r = new View.Rectangle(rect.x() + 1 + a, rect.y() + 1, rect.width() - 2, rect.height() - 2);
+			Rectangle r = new Rectangle(rect.x() + 1 + a, rect.y() + 1, rect.width() - 2, rect.height() - 2);
 			// Rectangle r = new View.Rectangle(rect.x() + 1, rect.y() + 1, rect.width() - 2, rect.height() - 2);
 			String s = ref.get();
 			if (s != null) {

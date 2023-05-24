@@ -19,8 +19,9 @@ import java.util.List;
 
 import org.jline.utils.AttributedString;
 
-import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.Position;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 
 public interface Screen {
@@ -29,9 +30,9 @@ public interface Screen {
 
 	boolean isShowCursor();
 
-	void setCursorPosition(View.Position cursorPosition);
+	void setCursorPosition(Position cursorPosition);
 
-	View.Position getCursorPosition();
+	Position getCursorPosition();
 
 	ScreenItem[][] getItems();
 
@@ -39,7 +40,7 @@ public interface Screen {
 
 	void print(String text, int x, int y, int width, int color, int style);
 
-	void print(String text, View.Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
+	void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
 
 	void printBorder(int x, int y, int width, int height);
 
@@ -49,5 +50,5 @@ public interface Screen {
 
 	Screen clip(int x, int y, int width, int height);
 
-	void setBackground(View.Rectangle rect, int color);
+	void setBackground(Rectangle rect, int color);
 }

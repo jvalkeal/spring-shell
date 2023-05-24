@@ -18,6 +18,8 @@ package org.springframework.shell.component.view;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.springframework.shell.component.view.geom.Position;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 

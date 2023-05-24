@@ -63,6 +63,10 @@ public class ViewCommands extends AbstractShellComponent {
 		BoxView footer = new BoxView();
 
 		GridView grid = new GridView();
+		// grid.setBackgroundColor(Color.Khaki4);
+		// grid.setTitleColor(Color.Green1);
+		// grid.setTitleStyle(ScreenItem.STYLE_BOLD|ScreenItem.STYLE_ITALIC);
+
 		grid.setRowSize(3, 0, 3);
 		grid.setColumnSize(30, 0, 30);
 		// grid.setShowBorder(true);

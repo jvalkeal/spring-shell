@@ -24,8 +24,9 @@ import org.jline.utils.AttributedStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.geom.Position;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.util.Assert;
 
@@ -34,7 +35,7 @@ public class DefaultScreen implements Screen {
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
 	private DefaultScreenItem[][] items;
 	private boolean showCursor;
-	private View.Position cursorPosition = new View.Position(0, 0);
+	private Position cursorPosition = new Position(0, 0);
 	private int rows = 0;
 	private int columns = 0;
 
@@ -69,12 +70,12 @@ public class DefaultScreen implements Screen {
 	}
 
 	@Override
-	public void setCursorPosition(View.Position cursorPosition) {
+	public void setCursorPosition(Position cursorPosition) {
 		this.cursorPosition = cursorPosition;
 	}
 
 	@Override
-	public View.Position getCursorPosition() {
+	public Position getCursorPosition() {
 		return cursorPosition;
 	}
 
@@ -99,7 +100,7 @@ public class DefaultScreen implements Screen {
 	}
 
 	@Override
-	public void setBackground(View.Rectangle rect, int color) {
+	public void setBackground(Rectangle rect, int color) {
 		for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
 			for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
 				setBackground(j, i, color);
@@ -151,7 +152,7 @@ public class DefaultScreen implements Screen {
 	}
 
 	@Override
-	public void print(String text, View.Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
+	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
 		int x = rect.x();
 		if (hAlign == HorizontalAlign.CENTER) {
 			x = (x + rect.width()) / 2;
@@ -243,29 +244,31 @@ public class DefaultScreen implements Screen {
 					if (item.foreground > -1) {
 						s = s.foregroundRgb(item.getForeground());
 					}
-					if ((item.style & ScreenItem.STYLE_BOLD) == ScreenItem.STYLE_BOLD) {
-						s = s.bold();
-					}
-					if ((item.style & ScreenItem.STYLE_FAINT) == ScreenItem.STYLE_FAINT) {
-						s = s.faint();
-					}
-					if ((item.style & ScreenItem.STYLE_ITALIC) == ScreenItem.STYLE_ITALIC) {
-						s = s.italic();
-					}
-					if ((item.style & ScreenItem.STYLE_UNDERLINE) == ScreenItem.STYLE_UNDERLINE) {
-						s = s.underline();
-					}
-					if ((item.style & ScreenItem.STYLE_BLINK) == ScreenItem.STYLE_BLINK) {
-						s = s.blink();
-					}
-					if ((item.style & ScreenItem.STYLE_INVERSE) == ScreenItem.STYLE_INVERSE) {
-						s = s.inverse();
-					}
-					if ((item.style & ScreenItem.STYLE_CONCEAL) == ScreenItem.STYLE_CONCEAL) {
-						s = s.conceal();
-					}
-					if ((item.style & ScreenItem.STYLE_CROSSEDOUT) == ScreenItem.STYLE_CROSSEDOUT) {
-						s = s.crossedOut();
+					if (item.style > -1) {
+						if ((item.style & ScreenItem.STYLE_BOLD) == ScreenItem.STYLE_BOLD) {
+							s = s.bold();
+						}
+						if ((item.style & ScreenItem.STYLE_FAINT) == ScreenItem.STYLE_FAINT) {
+							s = s.faint();
+						}
+						if ((item.style & ScreenItem.STYLE_ITALIC) == ScreenItem.STYLE_ITALIC) {
+							s = s.italic();
+						}
+						if ((item.style & ScreenItem.STYLE_UNDERLINE) == ScreenItem.STYLE_UNDERLINE) {
+							s = s.underline();
+						}
+						if ((item.style & ScreenItem.STYLE_BLINK) == ScreenItem.STYLE_BLINK) {
+							s = s.blink();
+						}
+						if ((item.style & ScreenItem.STYLE_INVERSE) == ScreenItem.STYLE_INVERSE) {
+							s = s.inverse();
+						}
+						if ((item.style & ScreenItem.STYLE_CONCEAL) == ScreenItem.STYLE_CONCEAL) {
+							s = s.conceal();
+						}
+						if ((item.style & ScreenItem.STYLE_CROSSEDOUT) == ScreenItem.STYLE_CROSSEDOUT) {
+							s = s.crossedOut();
+						}
 					}
 					if (item.getContent() != null){
 						builder.append(item.getContent(), s);
@@ -289,9 +292,9 @@ public class DefaultScreen implements Screen {
 	private static class DefaultScreenItem implements ScreenItem {
 
 		CharSequence content;
-		int foreground;
-		int background;
-		int style;
+		int foreground = -1;
+		int background = -1;
+		int style = -1;
 		int border;
 
 		@Override
