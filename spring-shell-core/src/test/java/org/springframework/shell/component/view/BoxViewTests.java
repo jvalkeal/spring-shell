@@ -52,7 +52,7 @@ class BoxViewTests extends AbstractViewTests {
 		view.setTitle("title");
 		view.setRect(0, 0, 80, 24);
 		view.draw(screen24x80);
-		assertThat(forScreen(screen24x80)).hasHorizontalText("title", 0, 1, 5);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("title", 1, 0, 5);
 	}
 
 	@Test

@@ -423,7 +423,7 @@ public class GridView extends BoxView {
 
 		// Draw primitives and borders.
 		for (Entry<View, GridItem> entry : items.entrySet()) {
-			View primitive = entry.getKey();
+			View view = entry.getKey();
 			GridItem item = entry.getValue();
 
 			// Final primitive position.
@@ -459,15 +459,9 @@ public class GridView extends BoxView {
 
 			item.x += x;
 			item.y += y;
-			primitive.setRect(item.x, item.y, item.w, item.h);
+			view.setRect(item.x, item.y, item.w, item.h);
 
-			// Draw primitive.
-			// 	if item == focus {
-			// 		defer primitive.Draw(screen)
-			// 	} else {
-			// 		primitive.Draw(screen)
-			// 	}
-			primitive.draw(screen);
+			view.draw(screen);
 
 			// Draw border around primitive.
 			if (isShowBorders()) {
