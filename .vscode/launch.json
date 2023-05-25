@@ -87,6 +87,54 @@
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
             "projectName": "spring-shell-samples",
             "args": "e2e reg exit-code --arg1 fun"
+        },
+        {
+            "type": "java",
+            "name": "Sample view box",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view box"
+        },
+        {
+            "type": "java",
+            "name": "Sample view grid",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view grid"
+        },
+        {
+            "type": "java",
+            "name": "Sample view input",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view input"
+        },
+        {
+            "type": "java",
+            "name": "Sample view showcase clock",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view showcase clock"
+        },
+        {
+            "type": "java",
+            "name": "Sample view showcase snakegame",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view showcase snakegame"
+        },
+        {
+            "type": "java",
+            "name": "Sample view test",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view test"
         }
     ]
 }
