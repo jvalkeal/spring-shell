@@ -17,6 +17,8 @@ package org.springframework.shell.component.view;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.event.KeyEvent;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class InputViewTests extends AbstractViewTests {

@@ -23,6 +23,7 @@ import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.CompositeShellMessageListener;

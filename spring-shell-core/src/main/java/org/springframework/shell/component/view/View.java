@@ -21,14 +21,16 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
 import org.springframework.shell.component.view.screen.Screen;
 
 /**
- * {@code View} is an interface representing something what can be drawn into
- * a {@link Screen} within its bounds.
+ * {@code View} is the interface for all {@code Views} on the {@link Screen} and
+ * represents a visible element that can render itself and contains zero or more
+ * nested {@code Views}.
  *
  * @author Janne Valkealahti
  */
@@ -36,7 +38,7 @@ public interface View {
 
 	/**
 	 * Draw view into {@link Screen}. This is a main access point to draw
-	 * visible things in a screen.
+	 * visible things into a screen.
 	 *
 	 * @param screen the screen
 	 */

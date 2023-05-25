@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.shell.component.view.View;
-import org.springframework.shell.component.view.eventloop.EventLoop;
+import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 

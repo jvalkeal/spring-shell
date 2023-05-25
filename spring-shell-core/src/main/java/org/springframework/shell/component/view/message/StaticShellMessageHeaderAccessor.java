@@ -24,7 +24,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.shell.component.view.View;
-import org.springframework.shell.component.view.eventloop.EventLoop;
+import org.springframework.shell.component.view.event.EventLoop;
 
 /**
  * Lightweight type-safe header accessor avoiding object creation just to access

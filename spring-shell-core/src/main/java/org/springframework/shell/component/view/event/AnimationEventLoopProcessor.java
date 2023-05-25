@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.eventloop;
+package org.springframework.shell.component.view.event;
 
 import java.time.Duration;
 
@@ -21,7 +21,7 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.component.view.eventloop.EventLoop.EventLoopProcessor;
+import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 

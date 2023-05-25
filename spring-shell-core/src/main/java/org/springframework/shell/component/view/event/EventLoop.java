@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.eventloop;
+package org.springframework.shell.component.view.event;
 
 import org.reactivestreams.Publisher;
 import reactor.core.Disposable;
@@ -21,7 +21,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.messaging.Message;
-import org.springframework.shell.component.view.KeyEvent;
 
 /**
  * {@code EventLoop} is a central place where all eventing will be orchestrated

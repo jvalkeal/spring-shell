@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.eventloop;
+package org.springframework.shell.component.view.event;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,7 +37,6 @@ import reactor.core.scheduler.Schedulers;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.component.view.KeyEvent;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.util.Assert;

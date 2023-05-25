@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
 

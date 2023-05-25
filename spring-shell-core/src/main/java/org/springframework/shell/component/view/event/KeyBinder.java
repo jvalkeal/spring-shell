@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.event;
 
 import org.jline.keymap.KeyMap;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
-import org.springframework.shell.component.view.KeyEvent.KeyType;
-import org.springframework.shell.component.view.KeyEvent.ModType;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.ModType;
 import org.springframework.util.Assert;
 
 import static org.jline.keymap.KeyMap.alt;
