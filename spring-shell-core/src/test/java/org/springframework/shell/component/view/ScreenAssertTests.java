@@ -18,6 +18,7 @@ package org.springframework.shell.component.view;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -35,6 +36,22 @@ class ScreenAssertTests {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forScreen(screen)).hasCursorInPosition(1, 1))
 			.withMessageContaining("Expecting a Screen to have position <1,1> but was <0,0>");
+	}
+
+	@Test
+	void hasForegroundColorShouldPass() {
+		Screen screen = new DefaultScreen(5, 5);
+		screen.print("test", 0, 0, 4, Color.RED, 0);
+		assertThat(forScreen(screen)).hasForegroundColor(0, 0, Color.RED);
+	}
+
+	@Test
+	void hasForegroundColorShouldFail() {
+		Screen screen = new DefaultScreen(5, 5);
+		screen.print("test", 0, 0, 4, Color.RED, 0);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasForegroundColor(0, 0, Color.BLUE))
+			.withMessageContaining("Expecting a Screen to have foreground color <255> position <0,0> but was <16711680>");
 	}
 
 	@Test
