@@ -15,30 +15,53 @@
  */
 package org.springframework.shell.component.view.screen;
 
-import java.util.List;
-
-import org.jline.utils.AttributedString;
-
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 
 /**
- *
+ * {@code Screen} is representing a virtual area which is sitting between a user
+ * and lower level {@code jline} terminal providing convenient methods working
+ * with visible content.
  *
  * @author Janne Valkealahti
  */
 public interface Screen {
 
-	void setShowCursor(boolean showCursor);
+	/**
+	 * Sets if cursor should be visible.
+	 *
+	 * @param show true if cursor should be visible
+	 */
+	void setShowCursor(boolean show);
 
+	/**
+	 * Gets if cursor is visible.
+	 *
+	 * @return true if cursor is visible
+	 */
 	boolean isShowCursor();
 
-	void setCursorPosition(Position cursorPosition);
+	/**
+	 * Sets a cursor position.
+	 *
+	 * @param position new cursor position
+	 */
+	void setCursorPosition(Position position);
 
+	/**
+	 * Gets a cursor position.
+	 *
+	 * @return cursor position
+	 */
 	Position getCursorPosition();
 
+	/**
+	 * Gets two dimensional array of {@link ScreenItem}'s.
+	 *
+	 * @return two dimensional array of screen items
+	 */
 	ScreenItem[][] getItems();
 
 	void print(String text, int x, int y, int width);
