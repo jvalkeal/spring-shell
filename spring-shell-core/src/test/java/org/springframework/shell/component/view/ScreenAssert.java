@@ -22,6 +22,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.jline.utils.AttributedString;
 
 import org.springframework.shell.component.view.geom.Position;
+import org.springframework.shell.component.view.screen.DisplayLines;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.ScreenItem;
 
@@ -171,17 +172,21 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 	}
 
 	private String screenError(int x, int y, int width, int height) {
-		List<AttributedString> screenLines = actual.getScreenLines();
 		StringBuffer buf = new StringBuffer();
-		buf.append(String.format("%nExpecting screen:%n"));
-		for (AttributedString line : screenLines) {
-			buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
-		}
-		Screen clip = actual.clip(x, y, width, height);
-		List<AttributedString> screenLines2 = clip.getScreenLines();
-		buf.append(String.format("%nhave border in bounded box x=%s y=%s width=%s height=%s, was:%n", x, y, width, height));
-		for (AttributedString line : screenLines2) {
-			buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
+		if (actual instanceof DisplayLines dl1) {
+			List<AttributedString> screenLines = dl1.getScreenLines();
+			buf.append(String.format("%nExpecting screen:%n"));
+			for (AttributedString line : screenLines) {
+				buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
+			}
+			Screen clip = actual.clip(x, y, width, height);
+			if (clip instanceof DisplayLines dl2) {
+				List<AttributedString> screenLines2 = dl2.getScreenLines();
+				buf.append(String.format("%nhave border in bounded box x=%s y=%s width=%s height=%s, was:%n", x, y, width, height));
+				for (AttributedString line : screenLines2) {
+					buf.append(String.format("%n  %s", AttributedString.stripAnsi(line.toString())));
+				}
+			}
 		}
 		return buf.toString();
 	}

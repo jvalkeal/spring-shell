@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class DefaultScreen implements Screen {
+public class DefaultScreen implements Screen, DisplayLines {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
 	private DefaultScreenItem[][] items;

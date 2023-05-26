@@ -64,7 +64,7 @@ public class TerminalUI {
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
 	private final KeyMap<String> keyMap = new KeyMap<>();
-	private final Screen virtualDisplay = new DefaultScreen();
+	private final DefaultScreen virtualDisplay = new DefaultScreen();
 	private Display display;
 	private Size size;
 	private View rootView;

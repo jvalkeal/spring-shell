@@ -53,8 +53,6 @@ public interface Screen {
 
 	void resize(int rows, int columns);
 
-	List<AttributedString> getScreenLines();
-
 	Screen clip(int x, int y, int width, int height);
 
 	void setBackground(Rectangle rect, int color);
