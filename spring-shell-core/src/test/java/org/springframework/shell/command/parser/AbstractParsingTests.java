@@ -110,6 +110,19 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT3_OPTION_ARG1_ARG2 = CommandRegistration.builder()
+		.command("root3")
+		.withOption()
+			.longNames("arg1")
+			.and()
+		.withOption()
+			.longNames("arg2")
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	static final CommandRegistration ROOT3_SHORT_OPTION_A = CommandRegistration.builder()
 		.command("root3")
 		.withOption()
@@ -121,6 +134,19 @@ abstract class AbstractParsingTests {
 		.build();
 
 	static final CommandRegistration ROOT3_SHORT_OPTION_A_B = CommandRegistration.builder()
+		.command("root3")
+		.withOption()
+			.shortNames('a')
+			.and()
+		.withOption()
+			.shortNames('b')
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
+	static final CommandRegistration ROOT3_SHORT_OPTION_A_B_REQUIRED = CommandRegistration.builder()
 		.command("root3")
 		.withOption()
 			.shortNames('a')

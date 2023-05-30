@@ -41,11 +41,12 @@ public class OptionTypeCommands {
 		@ShellMethod(key = LEGACY_ANNO + "option-type-xxx1", group = GROUP)
 		public String optionTypeXxx1Annotation(
 			@ShellOption(value = "-a") String arg1,
-			@ShellOption(value = "-b") String arg2
-			// @ShellOption(value = "-c") boolean arg3
+			@ShellOption(value = "-b") String arg2,
+			@ShellOption(value = "-c") boolean arg3
 		) {
-			return "Hello " + arg1 + arg2;
-			// return "Hello " + arg1 + arg2 + arg3;
+			// return "Hello " + arg2;
+			// return "Hello " + arg1 + arg2;
+			return "Hello " + arg1 + arg2 + arg3;
 		}
 
 		@ShellMethod(key = LEGACY_ANNO + "option-type-xxx2", group = GROUP)
