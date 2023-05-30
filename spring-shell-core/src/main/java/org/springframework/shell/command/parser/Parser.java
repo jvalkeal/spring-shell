@@ -308,16 +308,16 @@ public interface Parser {
 					max = Math.min(max, currentOptionArgument.size());
 					List<String> toUse = currentOptionArgument.subList(0, max);
 
-					if (currentOption.getArityMin() > -1 && currentOptionArgument.size() < currentOption.getArityMin()) {
-						String arg = currentOption.getLongNames()[0];
-						commonMessageResults.add(MessageResult.of(ParserMessage.NOT_ENOUGH_OPTION_ARGUMENTS, 0, arg,
-								currentOptionArgument.size()));
-					}
-					else if (currentOption.getArityMax() > -1 && currentOptionArgument.size() > currentOption.getArityMax()) {
-						String arg = currentOption.getLongNames()[0];
-						commonMessageResults.add(MessageResult.of(ParserMessage.TOO_MANY_OPTION_ARGUMENTS, 0, arg,
-								currentOption.getArityMax()));
-					}
+					// if (currentOption.getArityMin() > -1 && currentOptionArgument.size() < currentOption.getArityMin()) {
+					// 	String arg = currentOption.getLongNames()[0];
+					// 	commonMessageResults.add(MessageResult.of(ParserMessage.NOT_ENOUGH_OPTION_ARGUMENTS, 0, arg,
+					// 			currentOptionArgument.size()));
+					// }
+					// else if (currentOption.getArityMax() > -1 && currentOptionArgument.size() > currentOption.getArityMax()) {
+					// 	String arg = currentOption.getLongNames()[0];
+					// 	commonMessageResults.add(MessageResult.of(ParserMessage.TOO_MANY_OPTION_ARGUMENTS, 0, arg,
+					// 			currentOption.getArityMax()));
+					// }
 
 					Object value = null;
 					if (toUse.size() == 1) {

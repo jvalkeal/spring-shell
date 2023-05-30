@@ -266,6 +266,16 @@ class ParserTests extends AbstractParsingTests {
 			assertThat(result.messageResults()).isEmpty();
 		}
 
+		@Test
+		void shouldFindShortOptionx() {
+			register(ROOT3_SHORT_OPTION_A_B);
+			ParseResult result = parse("root3", "-a", "aaa", "-b", "bbb");
+			assertThat(result).isNotNull();
+			assertThat(result.commandRegistration()).isNotNull();
+			assertThat(result.optionResults()).isNotEmpty();
+			assertThat(result.messageResults()).isEmpty();
+		}
+
 	}
 
 	@Nested

@@ -38,6 +38,25 @@ public class OptionTypeCommands {
 	@ShellComponent
 	public static class LegacyAnnotation extends BaseE2ECommands {
 
+		@ShellMethod(key = LEGACY_ANNO + "option-type-xxx1", group = GROUP)
+		public String optionTypeXxx1Annotation(
+			@ShellOption(value = "-a") String arg1,
+			@ShellOption(value = "-b") String arg2
+			// @ShellOption(value = "-c") boolean arg3
+		) {
+			return "Hello " + arg1 + arg2;
+			// return "Hello " + arg1 + arg2 + arg3;
+		}
+
+		@ShellMethod(key = LEGACY_ANNO + "option-type-xxx2", group = GROUP)
+		public String optionTypeXxx2Annotation(
+			@ShellOption(value = "--aa") String arg1,
+			@ShellOption(value = "--bb") String arg2,
+			@ShellOption(value = "--cc") boolean arg3
+		) {
+			return "Hello " + arg1 + arg2 + arg3;
+		}
+
 		@ShellMethod(key = LEGACY_ANNO + "option-type-string", group = GROUP)
 		public String optionTypeStringAnnotation(
 			@ShellOption(help = "Desc arg1") String arg1

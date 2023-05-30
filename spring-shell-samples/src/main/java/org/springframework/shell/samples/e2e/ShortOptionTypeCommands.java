@@ -74,6 +74,14 @@ public class ShortOptionTypeCommands {
 				@Option(shortNames = 'c') boolean c) {
 			return String.format("Hi a='%s' b='%s' c='%s'", a, b, c);
 		}
+
+		@Command(command = "short-option-type-boolean-and-string")
+		public String shortOptionTypeBooleanAndStringAnnotation(
+				@Option(shortNames = 'a') String a,
+				@Option(shortNames = 'b') boolean b
+				) {
+			return String.format("Hi a='%s' b='%s'", a, b);
+		}
 	}
 
 	@Component

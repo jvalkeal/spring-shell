@@ -120,6 +120,21 @@ abstract class AbstractParsingTests {
 			.and()
 		.build();
 
+	static final CommandRegistration ROOT3_SHORT_OPTION_A_B = CommandRegistration.builder()
+		.command("root3")
+		.withOption()
+			.shortNames('a')
+			.required()
+			.and()
+		.withOption()
+			.required()
+			.shortNames('b')
+			.and()
+		.withTarget()
+			.consumer(ctx -> {})
+			.and()
+		.build();
+
 	static final CommandRegistration ROOT4 = CommandRegistration.builder()
 		.command("root4")
 		.withOption()
