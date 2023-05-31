@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
+import javax.sql.RowSet;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -40,8 +43,6 @@ import org.springframework.util.Assert;
 public class DefaultScreen implements Screen, DisplayLines {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
-	private DefaultScreenItem[][] items;
-	private Map<Integer, DefaultScreenItem[][]> layerItems = new HashMap<>();
 	private boolean showCursor;
 	private Position cursorPosition = new Position(0, 0);
 	private int rows = 0;
@@ -56,14 +57,8 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public Screen clip(int x, int y, int width, int height) {
-		DefaultScreen screen = new DefaultScreen(height, width);
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				screen.items[i][j] = items[y + i][x + j];
-			}
-		}
-		return screen;
+	public WriterBuilder writerBuilder() {
+		return new DefaultWriterBuilder();
 	}
 
 	@Override
@@ -87,181 +82,66 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public ScreenItem[][] getItems() {
-		return items;
-	}
-
-	@Override
 	public void resize(int rows, int columns) {
 		Assert.isTrue(rows > -1, "Cannot have negative rows size");
 		Assert.isTrue(columns > -1, "Cannot have negative columns size");
 		this.rows = rows;
 		this.columns = columns;
-		reset();
-		log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
-	}
-
-
-	public void setBackground(int x, int y, int color) {
-		items[y][x].background = color;
-	}
-
-	@Override
-	public void setBackground(Rectangle rect, int color) {
-		for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
-			for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
-				setBackground(j, i, color);
-			}
-		}
-	}
-
-	public void addStyle(int x, int y, int style) {
-		items[y][x].style |= style;
-	}
-
-	public void removeStyle(int x, int y, int style) {
-		items[y][x].style &= ~style;
-	}
-
-	public void reset() {
-		DefaultScreenItem[][] layer0 = layerItems.computeIfAbsent(0, l -> {
-			return new DefaultScreenItem[rows][columns];
-		});
-		this.items = new DefaultScreenItem[rows][columns];
-		for (int i = 0; i < rows; i++) {
-			this.items[i] = new DefaultScreenItem[columns];
-			layer0[i] = new DefaultScreenItem[columns];
-
-			for (int j = 0; j < columns; j++) {
-				this.items[i][j] = new DefaultScreenItem();
-				layer0[i][j] = new DefaultScreenItem();
-			}
-		}
+		// reset();
+		// log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
 	}
 
 	@Override
 	public void print(String text, int x, int y, int width) {
-		for (int i = 0; i < text.length() && i < width; i++) {
-			char c = text.charAt(i);
-			this.items[y][x + i].content = Character.toString(c);
-		}
+		writerBuilder().build().text(text, x, y);
 	}
 
 	@Override
 	public void print(String text, int x, int y, int width, int color, int style) {
-		for (int i = 0; i < text.length() && i < width; i++) {
-			char c = text.charAt(i);
-			this.items[y][x + i].content = Character.toString(c);
-			this.items[y][x + i].foreground = color;
-			this.items[y][x + i].style = style;
-		}
-	}
-
-	@Override
-	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign, int color, int style) {
-		int x = rect.x();
-		if (hAlign == HorizontalAlign.CENTER) {
-			x = (x + rect.width()) / 2;
-			x = x - text.length() / 2;
-		}
-		else if (hAlign == HorizontalAlign.RIGHT) {
-			x = x + rect.width() - text.length();
-		}
-		int y = rect.y();
-		if (vAlign == VerticalAlign.CENTER) {
-			y = (y + rect.height()) / 2;
-		}
-		else if (vAlign == VerticalAlign.BOTTOM) {
-			y = y + rect.height() - 1;
-		}
-		print(text, x, y, text.length(), color, style);
+		writerBuilder().color(color).style(style).build().text(text, x, y);
 	}
 
 	@Override
 	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
-		int x = rect.x();
-		if (hAlign == HorizontalAlign.CENTER) {
-			x = (x + rect.width()) / 2;
-			x = x - text.length() / 2;
-		}
-		else if (hAlign == HorizontalAlign.RIGHT) {
-			x = x + rect.width() - text.length();
-		}
-		int y = rect.y();
-		if (vAlign == VerticalAlign.CENTER) {
-			y = (y + rect.height()) / 2;
-		}
-		else if (vAlign == VerticalAlign.BOTTOM) {
-			y = y + rect.height() - 1;
-		}
-		print(text, x, y, text.length());
+		writerBuilder().build().text(text, rect, hAlign, vAlign);
+	}
+
+	@Override
+	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign, int color, int style) {
+		writerBuilder().color(color).style(style).build().text(text, rect, hAlign, vAlign);
+	}
+
+	@Override
+	public void printBorder(int x, int y, int width, int height) {
+		writerBuilder().build().border(x, y, width, height);
+	}
+
+	@Override
+	public void setBackground(Rectangle rect, int color) {
+		writerBuilder().build().background(rect, color);
+	}
+
+	@Override
+	public ScreenItem[][] getItems() {
+		return getScreenItems();
+	}
+
+	@Override
+	public Screen clip(int x, int y, int width, int height) {
+		return null;
 	}
 
 	private static char[] BOX_CHARS = new char[] { ' ', '╴', '╵', '┌', '╶', '─', '┐', '┬', '╷', '└', '│', '├', '┘', '┴',
 			'┤', '┼' };
 
 	@Override
-	public void printBorder(int x, int y, int width, int height) {
-		log.trace("PrintBorder rows={}, columns={}, x={}, y={}, width={}, height={}", this.rows, this.columns, x, y,
-				width, height);
-		printBorderHorizontal(x, y, width);
-		printBorderHorizontal(x, y + height - 1, width);
-		printBorderVertical(x, y, height);
-		printBorderVertical(x + width - 1, y, height);
-	}
-
-	public void printBorderHorizontal(int x, int y, int width) {
-		for (int i = x; i < x + width; i++) {
-			if (i < 0 || i >= columns) {
-				continue;
-			}
-			if (y >= items.length) {
-				continue;
-			}
-			DefaultScreenItem item = items[y][i];
-			if (item == null) {
-				item = new DefaultScreenItem();
-				items[y][i] = item;
-			}
-			if (i > x) {
-				item.border |= ScreenItem.BORDER_RIGHT;
-			}
-			if (i < x + width - 1) {
-				item.border |= ScreenItem.BORDER_LEFT;
-			}
-		}
-	}
-
-	public void printBorderVertical(int x, int y, int height) {
-		for (int i = y; i < y + height; i++) {
-			if (i < 0 || i >= rows) {
-				continue;
-			}
-			if (x >= items[i].length) {
-				continue;
-			}
-			DefaultScreenItem item = items[i][x];
-			if (item == null) {
-				item = new DefaultScreenItem();
-				items[i][x] = item;
-			}
-			if (i > y) {
-				item.border |= ScreenItem.BORDER_BOTTOM;
-			}
-			if (i < y + height - 1) {
-				item.border |= ScreenItem.BORDER_TOP;
-			}
-		}
-	}
-
-
-	@Override
 	public List<AttributedString> getScreenLines() {
 		List<AttributedString> newLines = new ArrayList<>();
+		ScreenItem[][] items = getScreenItems();
 		for (int i = 0; i < items.length; i++) {
 			AttributedStringBuilder builder = new AttributedStringBuilder();
 			for (int j = 0; j < items[i].length; j++) {
-				DefaultScreenItem item = items[i][j];
+				DefaultScreenItem item = (DefaultScreenItem) items[i][j];
 				if (item != null) {
 					AttributedStyle s = new AttributedStyle(AttributedStyle.DEFAULT);
 					if (item.background > -1) {
@@ -350,6 +230,204 @@ public class DefaultScreen implements Screen, DisplayLines {
 		public int getStyle() {
 			return style;
 		}
+
+	}
+
+	/**
+	 * Default private implementation of a {@link WriterBuilder}.
+	 */
+	private class DefaultWriterBuilder implements WriterBuilder {
+
+		int layer;
+		int color = -1;
+		int style = -1;
+
+		@Override
+		public Writer build() {
+			return new DefaultWriter(layer);
+		}
+
+		@Override
+		public WriterBuilder layer(int index) {
+			this.layer = index;
+			return this;
+		}
+
+		@Override
+		public WriterBuilder color(int color) {
+			this.color = color;
+			return this;
+		}
+
+		@Override
+		public WriterBuilder style(int style) {
+			this.style = style;
+			return this;
+		}
+	}
+
+
+	public void reset() {
+		// DefaultScreenItem[][] layer0 = layerItems.computeIfAbsent(0, l -> {
+		// 	return new DefaultScreenItem[rows][columns];
+		// });
+		// this.items = new DefaultScreenItem[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			// this.items[i] = new DefaultScreenItem[columns];
+			// layer0[i] = new DefaultScreenItem[columns];
+
+			for (int j = 0; j < columns; j++) {
+				// this.items[i][j] = new DefaultScreenItem();
+				// layer0[i][j] = new DefaultScreenItem();
+			}
+		}
+	}
+
+	private class Layer {
+		DefaultScreenItem[][] items = new DefaultScreenItem[rows][columns];
+
+		DefaultScreenItem getScreenItem(int x, int y) {
+			if (items[y] == null) {
+				items[y] = new DefaultScreenItem[columns];
+			}
+			if (items[y][x] == null) {
+				items[y][x] = new DefaultScreenItem();
+			}
+			return items[y][x];
+		}
+	}
+
+	private Map<Integer, Layer> layers = new TreeMap<>();
+
+	private Layer getLayer(int index) {
+		Layer layer = layers.computeIfAbsent(index, l -> {
+			return new Layer();
+		});
+		return layer;
+	}
+
+	// @Override
+	public ScreenItem[][] getScreenItems() {
+		DefaultScreenItem[][] projection = new DefaultScreenItem[rows][columns];
+		layers.entrySet().stream().forEach(entry -> {
+			Layer layer = entry.getValue();
+			DefaultScreenItem[][] layerItems = layer.items;
+			for (int i = 0; i < rows; i++) {
+				// if (projection[i] == null) {
+				// 	projection[i] = new DefaultScreenItem[columns];
+				// }
+
+				for (int j = 0; j < columns; j++) {
+					if (layerItems[i][j] != null) {
+						projection[i][j] = layerItems[i][j];
+					}
+				}
+			}
+
+		});
+		return projection;
+	}
+
+	/**
+	 * Default private implementation of a {@link Writer}.
+	 */
+	private class DefaultWriter implements Writer {
+
+		int index;
+
+		DefaultWriter(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public void text(String text, int x, int y) {
+			Layer layer = getLayer(index);
+			for (int i = 0; i < text.length() && i < columns; i++) {
+				char c = text.charAt(i);
+				DefaultScreenItem item = layer.getScreenItem(x + i, y);
+				item.content = Character.toString(c);
+			}
+		}
+
+		@Override
+		public void border(int x, int y, int width, int height) {
+			log.trace("PrintBorder rows={}, columns={}, x={}, y={}, width={}, height={}", rows, columns, x, y, width,
+					height);
+			printBorderHorizontal(x, y, width);
+			printBorderHorizontal(x, y + height - 1, width);
+			printBorderVertical(x, y, height);
+			printBorderVertical(x + width - 1, y, height);
+		}
+
+		@Override
+		public void background(Rectangle rect, int color) {
+			Layer layer = getLayer(index);
+			for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
+				for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
+					DefaultScreenItem item = layer.getScreenItem(i, j);
+					item.background = color;
+				}
+			}
+		}
+
+		@Override
+		public void text(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
+			int x = rect.x();
+			if (hAlign == HorizontalAlign.CENTER) {
+				x = (x + rect.width()) / 2;
+				x = x - text.length() / 2;
+			}
+			else if (hAlign == HorizontalAlign.RIGHT) {
+				x = x + rect.width() - text.length();
+			}
+			int y = rect.y();
+			if (vAlign == VerticalAlign.CENTER) {
+				y = (y + rect.height()) / 2;
+			}
+			else if (vAlign == VerticalAlign.BOTTOM) {
+				y = y + rect.height() - 1;
+			}
+			text(text, x, y);
+		}
+
+		private void printBorderHorizontal(int x, int y, int width) {
+			Layer layer = getLayer(index);
+			for (int i = x; i < x + width; i++) {
+				if (i < 0 || i >= columns) {
+					continue;
+				}
+				if (y >= rows) {
+					continue;
+				}
+				DefaultScreenItem item = layer.getScreenItem(i, y);
+				if (i > x) {
+					item.border |= ScreenItem.BORDER_RIGHT;
+				}
+				if (i < x + width - 1) {
+					item.border |= ScreenItem.BORDER_LEFT;
+				}
+			}
+		}
+
+		private void printBorderVertical(int x, int y, int height) {
+			Layer layer = getLayer(index);
+			for (int i = y; i < y + height; i++) {
+				if (i < 0 || i >= rows) {
+					continue;
+				}
+				if (x >= columns) {
+					continue;
+				}
+				DefaultScreenItem item = layer.getScreenItem(x, i);
+				if (i > y) {
+					item.border |= ScreenItem.BORDER_BOTTOM;
+				}
+				if (i < y + height - 1) {
+					item.border |= ScreenItem.BORDER_TOP;
+				}
+			}
+		}
+
 
 	}
 }

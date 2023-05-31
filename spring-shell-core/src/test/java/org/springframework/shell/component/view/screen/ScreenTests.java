@@ -76,7 +76,7 @@ class ScreenTests extends AbstractViewTests {
 
 	@Test
 	void writeTextFromWriterLayerOverrides() {
-		DefaultScreen2 screen = new DefaultScreen2(24, 80);
+		DefaultScreen screen = new DefaultScreen(24, 80);
 		screen.writerBuilder().layer(0).build().text("text", 0, 0);
 		screen.writerBuilder().layer(1).build().text("xxx", 0, 0);
 		ScreenItem[][] items = screen.getScreenItems();

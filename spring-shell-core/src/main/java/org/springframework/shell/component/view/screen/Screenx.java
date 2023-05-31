@@ -27,7 +27,7 @@ import org.springframework.shell.component.view.geom.VerticalAlign;
  *
  * @author Janne Valkealahti
  */
-public interface Screen {
+public interface Screenx {
 
 	/**
 	 * Sets if cursor should be visible.
@@ -58,11 +58,11 @@ public interface Screen {
 	Position getCursorPosition();
 
 	/**
-	 * Gets a new instance of a {@link WriterBuilder}.
+	 * Gets two dimensional array of {@link ScreenItem}'s.
 	 *
-	 * @return a new writer builder
+	 * @return two dimensional array of screen items
 	 */
-	WriterBuilder writerBuilder();
+	ScreenItem[][] getItems();
 
 	void print(String text, int x, int y, int width);
 
@@ -76,61 +76,8 @@ public interface Screen {
 
 	void resize(int rows, int columns);
 
-	// Screen clip(int x, int y, int width, int height);
+	Screenx clip(int x, int y, int width, int height);
 
 	void setBackground(Rectangle rect, int color);
 
-	ScreenItem[][] getItems();
-
-	Screen clip(int x, int y, int width, int height);
-
-
-	/**
-	 * Interface to write into a {@link Screen}. Contains convenient methods user is
-	 * most likely to need to operate on a {@link Screen}.
-	 */
-	interface Writer {
-
-		/**
-		 * Write a text horizontally starting from a position defined by {@code x} and
-		 * {@code y} within a bounds of a {@link Screen}.
-		 *
-		 * @param text the text to write
-		 * @param x the x position
-		 * @param y the y position
-		 */
-		void text(String text, int x, int y);
-
-		void border(int x, int y, int width, int height);
-
-		void background(Rectangle rect, int color);
-
-		void text(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
-	}
-
-	/**
-	 * Builder interface for a {@link Writer}. Allows to defined settings a builder
-	 * will operare on.
-	 */
-	interface WriterBuilder {
-
-		/**
-		 * Define a {@code z-index} this {@link Writer} operates on.
-		 * {@code WriterBuilder} defaults on a layer index {@code 0}.
-		 *
-		 * @param index the z-index
-		 * @return a writer builder for chaining
-		 */
-		WriterBuilder layer(int index);
-
-		WriterBuilder color(int color);
-		WriterBuilder style(int style);
-
-		/**
-		 * Build a {@link Writer}.
-		 *
-		 * @return a build writer
-		 */
-		Writer build();
-	}
 }
