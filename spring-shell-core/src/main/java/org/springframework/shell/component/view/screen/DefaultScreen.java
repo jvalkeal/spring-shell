@@ -56,11 +56,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public WriterBuilder writerBuilder() {
-		return new DefaultWriterBuilder();
-	}
-
-	@Override
 	public Screen clip(int x, int y, int width, int height) {
 		DefaultScreen screen = new DefaultScreen(height, width);
 		for (int i = 0; i < height; i++) {
@@ -354,51 +349,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 		@Override
 		public int getStyle() {
 			return style;
-		}
-
-	}
-
-	/**
-	 * Default private implementation of a {@link WriterBuilder}.
-	 */
-	private class DefaultWriterBuilder implements WriterBuilder {
-
-		int layer;
-
-		@Override
-		public Writer build() {
-			return new DefaultWriter(layer);
-		}
-
-		@Override
-		public WriterBuilder layer(int index) {
-			this.layer = index;
-			return this;
-		}
-	}
-
-	/**
-	 * Default private implementation of a {@link Writer}.
-	 */
-	private class DefaultWriter implements Writer {
-
-		int layer;
-
-		DefaultWriter(int layer) {
-			this.layer = layer;
-		}
-
-		@Override
-		public void write(String text, int x, int y) {
-			// print(text, x, y, text.length(), layer);
-		}
-
-
-		public void print(String text, int x, int y, int width, int layer) {
-			for (int i = 0; i < text.length() && i < width; i++) {
-				char c = text.charAt(i);
-				items[y][x + i].content = Character.toString(c);
-			}
 		}
 
 	}

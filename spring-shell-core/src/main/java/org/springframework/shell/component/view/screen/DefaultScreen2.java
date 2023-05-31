@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.sql.RowSet;
 
@@ -32,8 +33,6 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
-import org.springframework.shell.component.view.screen.Screen.Writer;
-import org.springframework.shell.component.view.screen.Screen.WriterBuilder;
 import org.springframework.util.Assert;
 
 /**
@@ -41,10 +40,9 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
+public class DefaultScreen2 implements Screen2 {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
-	// private DefaultScreenItem[][] items;
 	private boolean showCursor;
 	private Position cursorPosition = new Position(0, 0);
 	private int rows = 0;
@@ -58,38 +56,37 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 		resize(rows, columns);
 	}
 
-	// @Override
+	@Override
 	public WriterBuilder writerBuilder() {
 		return new DefaultWriterBuilder();
-
 	}
 
-	// @Override
+	@Override
 	public void setShowCursor(boolean showCursor) {
 		this.showCursor = showCursor;
 	}
 
-	// @Override
+	@Override
 	public boolean isShowCursor() {
 		return showCursor;
 	}
 
-	// @Override
+	@Override
 	public void setCursorPosition(Position cursorPosition) {
 		this.cursorPosition = cursorPosition;
 	}
 
-	// @Override
+	@Override
 	public Position getCursorPosition() {
 		return cursorPosition;
 	}
 
 	// @Override
 	public void resize(int rows, int columns) {
-		// Assert.isTrue(rows > -1, "Cannot have negative rows size");
-		// Assert.isTrue(columns > -1, "Cannot have negative columns size");
-		// this.rows = rows;
-		// this.columns = columns;
+		Assert.isTrue(rows > -1, "Cannot have negative rows size");
+		Assert.isTrue(columns > -1, "Cannot have negative columns size");
+		this.rows = rows;
+		this.columns = columns;
 		// reset();
 		// log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
 	}
@@ -138,6 +135,8 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 	private class DefaultWriterBuilder implements WriterBuilder {
 
 		int layer;
+		int color = -1;
+		int style = -1;
 
 		@Override
 		public Writer build() {
@@ -147,6 +146,18 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 		@Override
 		public WriterBuilder layer(int index) {
 			this.layer = index;
+			return this;
+		}
+
+		@Override
+		public WriterBuilder color(int color) {
+			this.color = color;
+			return this;
+		}
+
+		@Override
+		public WriterBuilder style(int style) {
+			this.style = style;
 			return this;
 		}
 	}
@@ -182,7 +193,7 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 		}
 	}
 
-	private Map<Integer, Layer> layers = new HashMap<>();
+	private Map<Integer, Layer> layers = new TreeMap<>();
 
 	private Layer getLayer(int index) {
 		Layer layer = layers.computeIfAbsent(index, l -> {
@@ -191,12 +202,26 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 		return layer;
 	}
 
-	public DefaultScreenItem[][] getScreenItems() {
-		layers.keySet().stream().sorted().forEach(index -> {
-			Layer layer = layers.get(index);
+	// @Override
+	public ScreenItem[][] getScreenItems() {
+		DefaultScreenItem[][] projection = new DefaultScreenItem[rows][columns];
+		layers.entrySet().stream().forEach(entry -> {
+			Layer layer = entry.getValue();
+			DefaultScreenItem[][] layerItems = layer.items;
+			for (int i = 0; i < rows; i++) {
+				// if (projection[i] == null) {
+				// 	projection[i] = new DefaultScreenItem[columns];
+				// }
+
+				for (int j = 0; j < columns; j++) {
+					if (layerItems[i][j] != null) {
+						projection[i][j] = layerItems[i][j];
+					}
+				}
+			}
 
 		});
-		return null;
+		return projection;
 	}
 
 	/**
@@ -211,14 +236,92 @@ public class DefaultScreen2 /*implements Screen, DisplayLines*/ {
 		}
 
 		@Override
-		public void write(String text, int x, int y) {
+		public void text(String text, int x, int y) {
 			Layer layer = getLayer(index);
 			for (int i = 0; i < text.length() && i < columns; i++) {
 				char c = text.charAt(i);
-				DefaultScreenItem item = layer.getScreenItem(x, y);
+				DefaultScreenItem item = layer.getScreenItem(x + i, y);
 				item.content = Character.toString(c);
 			}
+		}
 
+		@Override
+		public void border(int x, int y, int width, int height) {
+			log.trace("PrintBorder rows={}, columns={}, x={}, y={}, width={}, height={}", rows, columns, x, y, width,
+					height);
+			printBorderHorizontal(x, y, width);
+			printBorderHorizontal(x, y + height - 1, width);
+			printBorderVertical(x, y, height);
+			printBorderVertical(x + width - 1, y, height);
+		}
+
+		@Override
+		public void background(Rectangle rect, int color) {
+			Layer layer = getLayer(index);
+			for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
+				for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
+					DefaultScreenItem item = layer.getScreenItem(i, j);
+					item.background = color;
+				}
+			}
+		}
+
+		@Override
+		public void text(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
+			int x = rect.x();
+			if (hAlign == HorizontalAlign.CENTER) {
+				x = (x + rect.width()) / 2;
+				x = x - text.length() / 2;
+			}
+			else if (hAlign == HorizontalAlign.RIGHT) {
+				x = x + rect.width() - text.length();
+			}
+			int y = rect.y();
+			if (vAlign == VerticalAlign.CENTER) {
+				y = (y + rect.height()) / 2;
+			}
+			else if (vAlign == VerticalAlign.BOTTOM) {
+				y = y + rect.height() - 1;
+			}
+			text(text, x, y);
+		}
+
+		private void printBorderHorizontal(int x, int y, int width) {
+			Layer layer = getLayer(index);
+			for (int i = x; i < x + width; i++) {
+				if (i < 0 || i >= columns) {
+					continue;
+				}
+				if (y >= rows) {
+					continue;
+				}
+				DefaultScreenItem item = layer.getScreenItem(i, y);
+				if (i > x) {
+					item.border |= ScreenItem.BORDER_RIGHT;
+				}
+				if (i < x + width - 1) {
+					item.border |= ScreenItem.BORDER_LEFT;
+				}
+			}
+		}
+
+		private void printBorderVertical(int x, int y, int height) {
+			Layer layer = getLayer(index);
+			for (int i = y; i < y + height; i++) {
+				if (i < 0 || i >= rows) {
+					continue;
+				}
+				if (x >= columns) {
+					continue;
+				}
+				DefaultScreenItem item = layer.getScreenItem(x, i);
+				if (i > y) {
+					item.border |= ScreenItem.BORDER_BOTTOM;
+				}
+				if (i < y + height - 1) {
+					item.border |= ScreenItem.BORDER_TOP;
+				}
+			}
 		}
 
 
