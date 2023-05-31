@@ -29,7 +29,8 @@ import org.springframework.shell.component.view.screen.ScreenItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Asserts for {@link Screen}.
+ * Asserts for {@link Screen}. This is a work-in-progress implementation and
+ * relevant parts are copied into spring-shell-test.
  *
  * @author Janne Valkealahti
  */

@@ -30,7 +30,6 @@ class ScreenTests extends AbstractViewTests {
 	@Test
 	void zeroDataSizeDoesntBreak() {
 		assertThat(screen0x0.getItems()).isEmpty();
-		// assertThat(screen0x0.getScreenLines()).isEmpty();
 	}
 
 	@Test
@@ -67,6 +66,23 @@ class ScreenTests extends AbstractViewTests {
 		Rectangle rect = new Rectangle(1, 1, 10, 1);
 		screen24x80.print("text", rect, HorizontalAlign.CENTER, VerticalAlign.CENTER);
 		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 3, 1, 4);
+	}
+
+	@Test
+	void writeTextFromWriter() {
+		screen24x80.writerBuilder().build().write("text", 0, 0);
+		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 0, 0, 4);
+	}
+
+	@Test
+	void writeTextFromWriterLayerOverrides() {
+		DefaultScreen2 screen = new DefaultScreen2(24, 80);
+		screen.writerBuilder().layer(0).build().write("text", 0, 0);
+		screen.writerBuilder().layer(1).build().write("xxx", 0, 0);
+		// assertThat(forScreen(screen24x80)).hasHorizontalText("xxxt", 0, 0, 4);
+
+
+
 	}
 
 }

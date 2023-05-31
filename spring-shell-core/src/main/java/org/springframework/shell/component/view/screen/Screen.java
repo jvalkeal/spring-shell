@@ -64,6 +64,13 @@ public interface Screen {
 	 */
 	ScreenItem[][] getItems();
 
+	/**
+	 * Gets a new instance of a {@link WriterBuilder}.
+	 *
+	 * @return a new writer builder
+	 */
+	WriterBuilder writerBuilder();
+
 	void print(String text, int x, int y, int width);
 
 	void print(String text, int x, int y, int width, int color, int style);
@@ -79,4 +86,45 @@ public interface Screen {
 	Screen clip(int x, int y, int width, int height);
 
 	void setBackground(Rectangle rect, int color);
+
+	/**
+	 * Interface to write into a {@link Screen}. Contains convenient methods user is
+	 * most likely to need to operate on a {@link Screen}.
+	 */
+	interface Writer {
+
+		/**
+		 * Write a text horizontally starting from a position defined by {@code x} and
+		 * {@code y} within a bounds of a {@link Screen}.
+		 *
+		 * @param text the text to write
+		 * @param x the x position
+		 * @param y the y position
+		 */
+		void write(String text, int x, int y);
+
+	}
+
+	/**
+	 * Builder interface for a {@link Writer}. Allows to defined settings a builder
+	 * will operare on.
+	 */
+	interface WriterBuilder {
+
+		/**
+		 * Define a {@code z-index} this {@link Writer} operates on.
+		 * {@code WriterBuilder} defaults on a layer index {@code 0}.
+		 *
+		 * @param index the z-index
+		 * @return a writer builder for chaining
+		 */
+		WriterBuilder layer(int index);
+
+		/**
+		 * Build a {@link Writer}.
+		 *
+		 * @return a build writer
+		 */
+		Writer build();
+	}
 }

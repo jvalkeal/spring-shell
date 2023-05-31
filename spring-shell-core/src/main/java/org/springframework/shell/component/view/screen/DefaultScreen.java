@@ -16,7 +16,9 @@
 package org.springframework.shell.component.view.screen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -39,6 +41,7 @@ public class DefaultScreen implements Screen, DisplayLines {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultScreen.class);
 	private DefaultScreenItem[][] items;
+	private Map<Integer, DefaultScreenItem[][]> layerItems = new HashMap<>();
 	private boolean showCursor;
 	private Position cursorPosition = new Position(0, 0);
 	private int rows = 0;
@@ -50,6 +53,11 @@ public class DefaultScreen implements Screen, DisplayLines {
 
 	public DefaultScreen(int rows, int columns) {
 		resize(rows, columns);
+	}
+
+	@Override
+	public WriterBuilder writerBuilder() {
+		return new DefaultWriterBuilder();
 	}
 
 	@Override
@@ -121,11 +129,17 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	public void reset() {
+		DefaultScreenItem[][] layer0 = layerItems.computeIfAbsent(0, l -> {
+			return new DefaultScreenItem[rows][columns];
+		});
 		this.items = new DefaultScreenItem[rows][columns];
 		for (int i = 0; i < rows; i++) {
 			this.items[i] = new DefaultScreenItem[columns];
+			layer0[i] = new DefaultScreenItem[columns];
+
 			for (int j = 0; j < columns; j++) {
 				this.items[i][j] = new DefaultScreenItem();
+				layer0[i][j] = new DefaultScreenItem();
 			}
 		}
 	}
@@ -340,6 +354,51 @@ public class DefaultScreen implements Screen, DisplayLines {
 		@Override
 		public int getStyle() {
 			return style;
+		}
+
+	}
+
+	/**
+	 * Default private implementation of a {@link WriterBuilder}.
+	 */
+	private class DefaultWriterBuilder implements WriterBuilder {
+
+		int layer;
+
+		@Override
+		public Writer build() {
+			return new DefaultWriter(layer);
+		}
+
+		@Override
+		public WriterBuilder layer(int index) {
+			this.layer = index;
+			return this;
+		}
+	}
+
+	/**
+	 * Default private implementation of a {@link Writer}.
+	 */
+	private class DefaultWriter implements Writer {
+
+		int layer;
+
+		DefaultWriter(int layer) {
+			this.layer = layer;
+		}
+
+		@Override
+		public void write(String text, int x, int y) {
+			// print(text, x, y, text.length(), layer);
+		}
+
+
+		public void print(String text, int x, int y, int width, int layer) {
+			for (int i = 0; i < text.length() && i < width; i++) {
+				char c = text.charAt(i);
+				items[y][x + i].content = Character.toString(c);
+			}
 		}
 
 	}
