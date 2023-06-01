@@ -62,6 +62,13 @@ public interface View {
 	Rectangle getRect();
 
 	/**
+	 * Sets a layer index this {@code View} operates on.
+	 *
+	 * @param index the layer index
+	 */
+	void setLayer(int index);
+
+	/**
 	 * Called when {@code View} gets or loses a focus.
 	 *
 	 * @param view the view receiving focus

@@ -31,6 +31,7 @@ public class AppView extends BoxView {
 			main.draw(screen);
 		}
 		if (modal != null) {
+			modal.setLayer(1);
 			modal.setRect(rect.x() + 5, rect.y() + 5, rect.width() - 10, rect.height() - 10);
 			modal.draw(screen);
 		}

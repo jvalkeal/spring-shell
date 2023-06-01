@@ -165,17 +165,21 @@ public class BoxView extends AbstractView {
 			return;
 		}
 		if (backgroundColor > -1) {
-			screen.setBackground(rect, backgroundColor);
+			screen.writerBuilder().layer(getLayer()).build().background(rect, backgroundColor);
+			// screen.setBackground(rect, backgroundColor);
 		}
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
-			screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
+			screen.writerBuilder().layer(getLayer()).build().border(rect.x(), rect.y(), rect.width(), rect.height());
+			// screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {
 				Rectangle r = new Rectangle(rect.x() + 1, rect.y(), rect.width() - 2, 1);
 				if (titleColor > -1) {
-					screen.print(title, r, titleAlign, VerticalAlign.TOP, titleColor, titleStyle);
+					screen.writerBuilder().layer(getLayer()).color(titleColor).style(titleStyle).build().text(title, r, titleAlign, VerticalAlign.TOP);
+					// screen.print(title, r, titleAlign, VerticalAlign.TOP, titleColor, titleStyle);
 				}
 				else {
-					screen.print(title, r, titleAlign, VerticalAlign.TOP);
+					screen.writerBuilder().layer(getLayer()).build().text(title, rect, titleAlign, VerticalAlign.TOP);
+					// screen.print(title, r, titleAlign, VerticalAlign.TOP);
 				}
 			}
 		}

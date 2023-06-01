@@ -45,6 +45,7 @@ public abstract class AbstractView implements View {
 	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
 	private boolean hasFocus;
 	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
+	private int layer;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -57,6 +58,15 @@ public abstract class AbstractView implements View {
 	@Override
 	public Rectangle getRect() {
 		return new Rectangle(x, y, width, height);
+	}
+
+	@Override
+	public void setLayer(int index) {
+		this.layer = index;
+	}
+
+	protected int getLayer() {
+		return layer;
 	}
 
 	@Override
