@@ -65,25 +65,12 @@ public interface Screen {
 	WriterBuilder writerBuilder();
 
 	void print(String text, int x, int y, int width);
-
-	// void print(String text, int x, int y, int width, int color, int style);
-
 	void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
-
 	void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign, int color, int style);
-
 	void printBorder(int x, int y, int width, int height);
-
 	void resize(int rows, int columns);
-
-	// Screen clip(int x, int y, int width, int height);
-
-	void setBackground(Rectangle rect, int color);
-
 	ScreenItem[][] getItems();
-
 	Screen clip(int x, int y, int width, int height);
-
 
 	/**
 	 * Interface to write into a {@link Screen}. Contains convenient methods user is

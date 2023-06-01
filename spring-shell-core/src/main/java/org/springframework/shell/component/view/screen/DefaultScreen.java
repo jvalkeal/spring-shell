@@ -114,11 +114,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public void setBackground(Rectangle rect, int color) {
-		writerBuilder().build().background(rect, color);
-	}
-
-	@Override
 	public ScreenItem[][] getItems() {
 		return getScreenItems();
 	}
