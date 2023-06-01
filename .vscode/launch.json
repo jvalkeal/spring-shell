@@ -114,6 +114,14 @@
         },
         {
             "type": "java",
+            "name": "Sample view app",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-samples",
+            "args": "view app"
+        },
+        {
+            "type": "java",
             "name": "Sample view showcase clock",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
