@@ -87,8 +87,8 @@ public class DefaultScreen implements Screen, DisplayLines {
 		Assert.isTrue(columns > -1, "Cannot have negative columns size");
 		this.rows = rows;
 		this.columns = columns;
-		// reset();
-		// log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
+		reset();
+		log.trace("Screen reset rows={} cols={}", this.rows, this.columns);
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class DefaultScreen implements Screen, DisplayLines {
 
 		@Override
 		public Writer build() {
-			return new DefaultWriter(layer);
+			return new DefaultWriter(layer, color, style);
 		}
 
 		@Override
@@ -266,8 +266,8 @@ public class DefaultScreen implements Screen, DisplayLines {
 		}
 	}
 
-
-	public void reset() {
+	private void reset() {
+		layers.clear();
 		// DefaultScreenItem[][] layer0 = layerItems.computeIfAbsent(0, l -> {
 		// 	return new DefaultScreenItem[rows][columns];
 		// });
@@ -287,9 +287,9 @@ public class DefaultScreen implements Screen, DisplayLines {
 		DefaultScreenItem[][] items = new DefaultScreenItem[rows][columns];
 
 		DefaultScreenItem getScreenItem(int x, int y) {
-			if (items[y] == null) {
-				items[y] = new DefaultScreenItem[columns];
-			}
+			// if (items[y] == null) {
+			// 	items[y] = new DefaultScreenItem[columns];
+			// }
 			if (items[y][x] == null) {
 				items[y][x] = new DefaultScreenItem();
 			}
@@ -334,9 +334,13 @@ public class DefaultScreen implements Screen, DisplayLines {
 	private class DefaultWriter implements Writer {
 
 		int index;
+		int color = -1;
+		int style = -1;
 
-		DefaultWriter(int index) {
+		DefaultWriter(int index, int color, int style) {
 			this.index = index;
+			this.color = color;
+			this.style = style;
 		}
 
 		@Override
@@ -346,6 +350,12 @@ public class DefaultScreen implements Screen, DisplayLines {
 				char c = text.charAt(i);
 				DefaultScreenItem item = layer.getScreenItem(x + i, y);
 				item.content = Character.toString(c);
+				if (color > -1) {
+					item.foreground = color;
+				}
+				if (style > -1) {
+					item.style = style;
+				}
 			}
 		}
 
@@ -364,7 +374,7 @@ public class DefaultScreen implements Screen, DisplayLines {
 			Layer layer = getLayer(index);
 			for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
 				for (int j = rect.x(); j < rect.x() + rect.width(); j++) {
-					DefaultScreenItem item = layer.getScreenItem(i, j);
+					DefaultScreenItem item = layer.getScreenItem(j, i);
 					item.background = color;
 				}
 			}
