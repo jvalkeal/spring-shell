@@ -66,7 +66,7 @@ public interface Screen {
 
 	void print(String text, int x, int y, int width);
 
-	void print(String text, int x, int y, int width, int color, int style);
+	// void print(String text, int x, int y, int width, int color, int style);
 
 	void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
 
@@ -101,6 +101,14 @@ public interface Screen {
 		 */
 		void text(String text, int x, int y);
 
+		/**
+		 * Write a border with a given rectangle coordinates.
+		 *
+		 * @param x the x position
+		 * @param y the y position
+		 * @param width the rectangle width
+		 * @param height the rectangle height
+		 */
 		void border(int x, int y, int width, int height);
 
 		void background(Rectangle rect, int color);

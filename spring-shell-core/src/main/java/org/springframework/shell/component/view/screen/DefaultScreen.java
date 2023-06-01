@@ -16,12 +16,9 @@
 package org.springframework.shell.component.view.screen;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.sql.RowSet;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -96,10 +93,10 @@ public class DefaultScreen implements Screen, DisplayLines {
 		writerBuilder().build().text(text, x, y);
 	}
 
-	@Override
-	public void print(String text, int x, int y, int width, int color, int style) {
-		writerBuilder().color(color).style(style).build().text(text, x, y);
-	}
+	// @Override
+	// public void print(String text, int x, int y, int width, int color, int style) {
+	// 	writerBuilder().color(color).style(style).build().text(text, x, y);
+	// }
 
 	@Override
 	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
