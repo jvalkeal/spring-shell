@@ -18,7 +18,6 @@ package org.springframework.shell.samples.view;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.component.TerminalUI;
-import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.InputView;
@@ -116,39 +115,6 @@ public class ViewCommands extends AbstractShellComponent {
 		component.setRoot(input, fullScreen);
 		component.run();
 		return input.getInputText();
-	}
-
-	@Command(command = "app")
-	public void app(
-		@Option(defaultValue = "true") boolean fullScreen
-	) {
-		TerminalUI component = new TerminalUI(getTerminal());
-		AppView app = new AppView();
-
-		GridView grid = new GridView();
-		grid.setShowBorders(true);
-		grid.setRowSize(0);
-		grid.setColumnSize(30, 0, 30);
-
-		BoxView g1 = new BoxView();
-		BoxView g2 = new BoxView();
-		BoxView g3 = new BoxView();
-
-		grid.addItem(g1, 0, 0, 1, 1, 0, 0);
-		grid.addItem(g2, 0, 1, 1, 1, 0, 0);
-		grid.addItem(g3, 0, 2, 1, 1, 0, 0);
-
-		app.setMain(grid);
-
-		BoxView modal = new BoxView();
-		modal.setBackgroundColor(Color.KHAKI4);
-		modal.setTitle("Modal");
-		modal.setShowBorder(true);
-
-		app.setModal(modal);
-
-		component.setRoot(app, fullScreen);
-		component.run();
 	}
 
 	@Command(command = "test")
