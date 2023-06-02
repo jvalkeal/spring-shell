@@ -15,47 +15,75 @@
  */
 package org.springframework.shell.samples.catalog;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.screen.Color;
+import org.springframework.shell.component.view.SelectorListView;
+import org.springframework.shell.component.view.StatusBarView;
+import org.springframework.shell.component.view.StatusBarView.StatusItem;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
 
+/**
+ * Main command access point to view showcase catalog.
+ *
+ * @author Janne Valkealahti
+ */
 @Command
 public class CatalogCommand extends AbstractShellComponent {
+
+	private final Logger log = LoggerFactory.getLogger(CatalogCommand.class);
+
+	@Autowired
+	private List<Scenario> scenarios;
 
 	@Command(command = "catalog")
 	public void catalog(
 	) {
+		log.info("Using scenarios {}", scenarios);
 		TerminalUI component = new TerminalUI(getTerminal());
 		AppView app = new AppView();
 
 		GridView grid = new GridView();
-		grid.setShowBorders(true);
-		grid.setRowSize(0);
-		grid.setColumnSize(30, 0, 30);
+		grid.setRowSize(0, 1);
+		grid.setColumnSize(30, 0);
 
-		BoxView g1 = new BoxView();
-		BoxView g2 = new BoxView();
-		BoxView g3 = new BoxView();
+		SelectorListView categories = new SelectorListView();
+		// BoxView categories = new BoxView();
+		categories.setTitle("Categories");
+		categories.setShowBorder(true);
 
-		grid.addItem(g1, 0, 0, 1, 1, 0, 0);
-		grid.addItem(g2, 0, 1, 1, 1, 0, 0);
-		grid.addItem(g3, 0, 2, 1, 1, 0, 0);
+		BoxView scenarios = new BoxView();
+		scenarios.setTitle("Scenarios");
+		scenarios.setShowBorder(true);
+
+		StatusBarView statusBar = statusBar();
+
+		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
+		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
+		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
 
 		app.setMain(grid);
 
-		BoxView modal = new BoxView();
-		modal.setBackgroundColor(Color.KHAKI4);
-		modal.setTitle("Modal");
-		modal.setShowBorder(true);
-
-		app.setModal(modal);
-
 		component.setRoot(app, true);
 		component.run();
+	}
+
+	private StatusBarView statusBar() {
+		StatusBarView statusBar = new StatusBarView();
+		StatusItem item1 = new StatusBarView.StatusItem("item1");
+		StatusItem item2 = new StatusBarView.StatusItem("item2");
+		statusBar.setItems(Arrays.asList(item1, item2));
+		return statusBar;
 	}
 
 }

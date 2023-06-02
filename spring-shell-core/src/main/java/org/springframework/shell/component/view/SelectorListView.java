@@ -15,40 +15,43 @@
  */
 package org.springframework.shell.component.view;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
- * {@link AppView} provides an opinionated terminal UI application view
- * controlling main viewing area, menubar, statusbar and modal window system.
+ * {@link SelectorListView} shows {@link SelectorItem items} vertically.
  *
  * @author Janne Valkealahti
  */
-public class AppView extends BoxView {
+public class SelectorListView extends BoxView {
 
-	private View main;
-	private View modal;
+	private final Logger log = LoggerFactory.getLogger(SelectorListView.class);
 
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
-		if (main != null) {
-			main.setRect(rect.x(), rect.y(), rect.width(), rect.height());
-			main.draw(screen);
-		}
-		if (modal != null) {
-			modal.setLayer(1);
-			modal.setRect(rect.x() + 5, rect.y() + 5, rect.width() - 10, rect.height() - 10);
-			modal.draw(screen);
-		}
+		Writer writer = screen.writerBuilder().build();
+		writer.text("item1", rect.x(), rect.y());
+		writer.text("item1", rect.x(), rect.y() + 1);
 		super.drawInternal(screen);
 	}
 
-	public void setMain(View main) {
-		this.main = main;
+	public static class SelectorItem {
+
+		private String title;
+
+		public SelectorItem(String title) {
+			this.title = title;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
 	}
 
-	public void setModal(View modal) {
-		this.modal = modal;
-	}
 }
