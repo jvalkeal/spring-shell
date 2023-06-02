@@ -178,7 +178,7 @@ public class BoxView extends AbstractView {
 					// screen.print(title, r, titleAlign, VerticalAlign.TOP, titleColor, titleStyle);
 				}
 				else {
-					screen.writerBuilder().layer(getLayer()).build().text(title, rect, titleAlign, VerticalAlign.TOP);
+					screen.writerBuilder().layer(getLayer()).build().text(title, r, titleAlign, VerticalAlign.TOP);
 					// screen.print(title, r, titleAlign, VerticalAlign.TOP);
 				}
 			}
