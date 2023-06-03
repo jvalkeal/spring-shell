@@ -13,29 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog.scenario;
+package org.springframework.shell.samples.catalog.scenario.box;
 
-import java.util.List;
+import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.stereotype.Component;
 
-/**
- * Scenario is an item which participates in a catalog showcase command.
- *
- * @author Janne Valkealahti
- */
-public interface Scenario {
+@Component
+public class SimpleBoxView1Scenario extends AbstractScenario {
 
-	/**
-	 * Gets a categories this scenario should be attached.
-	 *
-	 * @return categories of a scenario
-	 */
-	List<String> getCategories();
-
-	/**
-	 * Gets a title this scenario should use.
-	 *
-	 * @return title of a scenario
-	 */
-	String getTitle();
-
+	public SimpleBoxView1Scenario() {
+		super("box1title", "box1");
+	}
 }

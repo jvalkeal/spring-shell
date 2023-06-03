@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.samples.catalog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,8 +28,9 @@ import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
-import org.springframework.shell.component.view.SelectorListView;
+import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.StatusBarView;
+import org.springframework.shell.component.view.ListView.ListItem;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
@@ -57,8 +59,15 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		SelectorListView categories = new SelectorListView();
-		// BoxView categories = new BoxView();
+		ListView categories = new ListView();
+		List<ListItem> items = new ArrayList<>();
+		scenarios.forEach(s -> {
+			s.getCategories().forEach(c -> {
+				items.add(new ListItem(c));
+			});
+		});
+		categories.setItems(items);
+
 		categories.setTitle("Categories");
 		categories.setShowBorder(true);
 

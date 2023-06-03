@@ -27,18 +27,25 @@ import java.util.List;
 public class AbstractScenario implements Scenario {
 
 	private final List<String> categories = new ArrayList<>();
+	private final String title;
 
-	public AbstractScenario(String... category) {
-		this(Arrays.asList(category));
+	public AbstractScenario(String title, String... category) {
+		this(title, Arrays.asList(category));
 	}
 
-	public AbstractScenario(List<String> categories) {
+	public AbstractScenario(String title, List<String> categories) {
 		this.categories.addAll(categories);
+		this.title = title;
 	}
 
 	@Override
 	public List<String> getCategories() {
 		return categories;
+	}
+
+	@Override
+	public String getTitle() {
+		return title;
 	}
 
 }

@@ -15,36 +15,76 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
- * {@link SelectorListView} shows {@link SelectorItem items} vertically.
+ * {@link ListView} shows {@link ListItem items} vertically.
  *
  * @author Janne Valkealahti
  */
-public class SelectorListView extends BoxView {
+public class ListView extends BoxView {
 
-	private final Logger log = LoggerFactory.getLogger(SelectorListView.class);
+	private final static Logger log = LoggerFactory.getLogger(ListView.class);
+
+	private final List<ListItem> items = new ArrayList<>();
 
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		Writer writer = screen.writerBuilder().build();
-		writer.text("item1", rect.x(), rect.y());
-		writer.text("item1", rect.x(), rect.y() + 1);
+		int y = rect.y();
+		for (ListItem i : items) {
+			writer.text(i.getTitle(), rect.x(), y++);
+		}
 		super.drawInternal(screen);
 	}
 
-	public static class SelectorItem {
+	@Override
+	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
+		return (event, focus) -> {
+			if (event.key() == null) {
+				String data = event.data();
+			}
+			else {
+				switch (event.key()) {
+					case ENTER:
+						log.debug("XXX ENTER");
+					break;
+					case UP:
+						log.debug("XXX UP");
+						break;
+					case DOWN:
+						log.debug("XXX DOWN");
+						break;
+					default:
+						break;
+				}
+			}
+			super.getInputHandler().accept(event, focus);
+		};
+	}
+
+	public void setItems(List<ListItem> items) {
+		this.items.clear();
+		this.items.addAll(items);
+	}
+
+	public static class ListItem {
 
 		private String title;
 
-		public SelectorItem(String title) {
+		public ListItem(String title) {
 			this.title = title;
 		}
 

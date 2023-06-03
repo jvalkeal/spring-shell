@@ -19,9 +19,9 @@ import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SimpleBoxViewScenario extends AbstractScenario {
+public class SimpleBoxView2Scenario extends AbstractScenario {
 
-	public SimpleBoxViewScenario() {
-		super("box");
+	public SimpleBoxView2Scenario() {
+		super("box2title", "box2");
 	}
 }
