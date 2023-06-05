@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -122,6 +124,20 @@ public class GridView extends BoxView {
 		return showBorders;
 	}
 
+	@Override
+	public MouseHandler getMouseHandler() {
+		return args -> {
+			View focus = null;
+			for (GridItem i : gridItems) {
+				MouseHandlerResult r = i.view.getMouseHandler().handle(args);
+				if (r.focus() != null) {
+					focus = r.focus();
+					break;
+				}
+			}
+			return MouseHandler.resultOf(args.event(), focus);
+		};
+	}
 
 	@Override
 	protected void drawInternal(Screen screen) {

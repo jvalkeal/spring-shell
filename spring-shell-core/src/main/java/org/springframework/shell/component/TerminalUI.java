@@ -238,8 +238,9 @@ public class TerminalUI {
 			MouseHandler handler = rootView.getMouseHandler();
 			if (handler != null) {
 				MouseHandlerResult result = handler.handle(MouseHandler.argsOf(event));
-				if (result.view() != null) {
-					setFocus(result.view());
+				log.debug(("handleMouseEvent {}"), result);
+				if (result.focus() != null) {
+					setFocus(result.focus());
 				}
 			}
 		}

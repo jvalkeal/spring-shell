@@ -52,11 +52,11 @@ public interface MouseHandler {
 	 * {@link View}.
 	 *
 	 * @param event the mouse event
-	 * @param view  the view
+	 * @param focus  the view
 	 * @return a mouse handler result
 	 */
-	static MouseHandlerResult resultOf(MouseEvent event, View view) {
-		return new MouseHandlerResult(event, false, view);
+	static MouseHandlerResult resultOf(MouseEvent event, View focus) {
+		return new MouseHandlerResult(event, false, focus, null);
 	}
 
 	/**
@@ -72,8 +72,10 @@ public interface MouseHandler {
 	 *
 	 * @param event the mouse event
 	 * @param consumed flag telling if event was consumed
-	 * @param view the view which consumed an event
+	 * @param focus the view which consumed an event
+	 * @param capture the view which captured an event
 	 */
-	record MouseHandlerResult(@Nullable MouseEvent event, boolean consumed, @Nullable View view) {
+	record MouseHandlerResult(@Nullable MouseEvent event, boolean consumed, @Nullable View focus,
+			@Nullable View capture) {
 	}
 }
