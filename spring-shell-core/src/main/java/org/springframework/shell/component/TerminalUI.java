@@ -42,8 +42,10 @@ import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyBinder;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerArgs;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.View;
@@ -225,11 +227,21 @@ public class TerminalUI {
 	}
 
 	private void handleKeyEvent(KeyEvent event) {
-		if (rootView != null) {
-			BiConsumer<KeyEvent, Consumer<View>> inputHandler = rootView.getInputHandler();
-			if (inputHandler != null) {
-				inputHandler.accept(event, this::setFocus);
+		if (rootView != null && rootView.hasFocus()) {
+			// BiConsumer<KeyEvent, Consumer<View>> inputHandler = rootView.getInputHandler();
+			// if (inputHandler != null) {
+			// 	inputHandler.accept(event, this::setFocus);
+			// }
+
+			KeyHandler handler = rootView.getKeyHandler();
+			if (handler != null) {
+				KeyHandlerResult result = handler.handle(KeyHandler.argsOf(event));
+				log.debug(("handleKeyEvent {}"), result);
+				if (result.focus() != null) {
+					setFocus(result.focus());
+				}
 			}
+
 		}
 	}
 

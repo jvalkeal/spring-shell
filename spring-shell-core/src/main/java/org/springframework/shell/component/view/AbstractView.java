@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
@@ -93,6 +94,11 @@ public abstract class AbstractView implements View {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		return null;
+	}
+
+	@Override
+	public KeyHandler getKeyHandler() {
 		return null;
 	}
 

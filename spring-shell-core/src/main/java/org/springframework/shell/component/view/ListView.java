@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
@@ -73,6 +74,36 @@ public class ListView extends BoxView {
 			}
 			super.getInputHandler().accept(event, focus);
 		};
+	}
+
+	@Override
+	public KeyHandler getKeyHandler() {
+		return args -> {
+			KeyEvent event = args.event();
+
+			if (event.key() == null) {
+				String data = event.data();
+			}
+			else {
+				switch (event.key()) {
+					case ENTER:
+						log.debug("XXX ENTER");
+					break;
+					case UP:
+						log.debug("XXX UP");
+						break;
+					case DOWN:
+						log.debug("XXX DOWN");
+						break;
+					default:
+						break;
+				}
+			}
+
+
+			return KeyHandler.resultOf(event, null);
+		};
+		// return super.getKeyHandler();
 	}
 
 	public void setItems(List<ListItem> items) {

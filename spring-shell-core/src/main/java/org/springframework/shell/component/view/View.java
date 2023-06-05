@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
@@ -90,6 +91,9 @@ public interface View {
 	 */
 	@Nullable
 	MouseHandler getMouseHandler();
+
+	@Nullable
+	KeyHandler getKeyHandler();
 
 	/**
 	 *

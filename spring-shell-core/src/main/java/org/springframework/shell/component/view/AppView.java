@@ -22,6 +22,7 @@ import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -62,6 +63,22 @@ public class AppView extends BoxView {
 			}
 		}
 		return super.getMouseHandler();
+	}
+
+	@Override
+	public KeyHandler getKeyHandler() {
+		if (main != null) {
+			return main.getKeyHandler();
+		}
+		return super.getKeyHandler();
+	}
+
+	@Override
+	public boolean hasFocus() {
+		if (main != null) {
+			return main.hasFocus();
+		}
+		return super.hasFocus();
 	}
 
 	public void setMain(View main) {
