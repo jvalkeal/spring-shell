@@ -15,6 +15,14 @@
  */
 package org.springframework.shell.component.view;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
+import org.jline.terminal.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -26,6 +34,7 @@ import org.springframework.shell.component.view.screen.Screen;
  */
 public class AppView extends BoxView {
 
+	private final static Logger log = LoggerFactory.getLogger(AppView.class);
 	private View main;
 	private View modal;
 
@@ -42,6 +51,11 @@ public class AppView extends BoxView {
 			modal.draw(screen);
 		}
 		super.drawInternal(screen);
+	}
+
+	@Override
+	public MouseHandler getMouseHandler() {
+		return super.getMouseHandler();
 	}
 
 	public void setMain(View main) {

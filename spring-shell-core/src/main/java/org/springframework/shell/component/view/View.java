@@ -16,12 +16,11 @@
 package org.springframework.shell.component.view;
 
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import org.jline.terminal.MouseEvent;
-
+import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
@@ -84,10 +83,13 @@ public interface View {
 	boolean hasFocus();
 
 	/**
+	 * Gets a {@link View} mouse {@link MouseHandler}. Can be {@code null} which
+	 * indicates view will not handle any mouse events.
 	 *
-	 * @return
+	 * @return a view mouse handler
 	 */
-	BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler();
+	@Nullable
+	MouseHandler getMouseHandler();
 
 	/**
 	 *

@@ -42,7 +42,10 @@ import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyBinder;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerArgs;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -232,12 +235,12 @@ public class TerminalUI {
 
 	private void handleMouseEvent(MouseEvent event) {
 		if (rootView != null) {
-			BiFunction<MouseEvent, Consumer<View>, MouseEvent> mouseHandler = rootView.getMouseHandler();
-			if (mouseHandler != null) {
-				Consumer<View> asdf = v -> {
-					setFocus(v);
-				};
-				mouseHandler.apply(event, asdf);
+			MouseHandler handler = rootView.getMouseHandler();
+			if (handler != null) {
+				MouseHandlerResult result = handler.handle(MouseHandler.argsOf(event));
+				if (result.view() != null) {
+					setFocus(result.view());
+				}
 			}
 		}
 	}

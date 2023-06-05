@@ -15,11 +15,11 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-
 import org.jline.terminal.MouseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  */
 public class BoxView extends AbstractView {
 
+	private final static Logger log = LoggerFactory.getLogger(BoxView.class);
 	private String title = null;
 	private boolean showBorder = false;
 	private int innerX = -1;
@@ -57,18 +58,19 @@ public class BoxView extends AbstractView {
 	}
 
 	@Override
-	public BiFunction<MouseEvent, Consumer<View>, MouseEvent> getMouseHandler() {
-		return (event, view) -> {
+	public MouseHandler getMouseHandler() {
+		return args -> {
+			View view = null;
+			MouseEvent event = args.event();
 			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
 					&& event.getButton() == MouseEvent.Button.Button1) {
 				int x = event.getX();
 				int y = event.getY();
 				if (getRect().contains(x, y)) {
-					view.accept(this);
-					return null;
+					view = this;
 				}
 			}
-			return event;
+			return MouseHandler.resultOf(args.event(), view);
 		};
 	}
 
