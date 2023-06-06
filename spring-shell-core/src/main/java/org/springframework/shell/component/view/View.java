@@ -88,14 +88,14 @@ public interface View {
 	@Nullable
 	MouseHandler getMouseHandler();
 
-	@Nullable
-	KeyHandler getKeyHandler();
 	/**
 	 * Gets a {@link View} mouse {@link KeyHandler}. Can be {@code null} which
 	 * indicates view will not handle any key events.
 	 *
 	 * @return a view mouse handler
 	 */
+	@Nullable
+	KeyHandler getKeyHandler();
 
 	/**
 	 * Get composite listener used for registration.

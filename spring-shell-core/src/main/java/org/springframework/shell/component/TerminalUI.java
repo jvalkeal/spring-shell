@@ -223,11 +223,6 @@ public class TerminalUI {
 
 	private void handleKeyEvent(KeyEvent event) {
 		if (rootView != null && rootView.hasFocus()) {
-			// BiConsumer<KeyEvent, Consumer<View>> inputHandler = rootView.getInputHandler();
-			// if (inputHandler != null) {
-			// 	inputHandler.accept(event, this::setFocus);
-			// }
-
 			KeyHandler handler = rootView.getKeyHandler();
 			if (handler != null) {
 				KeyHandlerResult result = handler.handle(KeyHandler.argsOf(event));
@@ -236,7 +231,6 @@ public class TerminalUI {
 					setFocus(result.focus());
 				}
 			}
-
 		}
 	}
 

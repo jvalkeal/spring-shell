@@ -72,11 +72,8 @@ public class ListView extends BoxView {
 						break;
 				}
 			}
-
-
 			return KeyHandler.resultOf(event, null);
 		};
-		// return super.getKeyHandler();
 	}
 
 	public void setItems(List<ListItem> items) {
