@@ -50,6 +50,8 @@ public interface EventLoop {
 	 */
 	Flux<KeyEvent> keyEvents();
 
+	<T> Flux<T> events(EventLoop.Type type, Class<T> clazz);
+
 	/**
 	 * Dispatch {@link Message}s into an {@code EventLoop} from a {@link Publisher}.
 	 * Usually type is either {@link Mono} or {@link Flux}.

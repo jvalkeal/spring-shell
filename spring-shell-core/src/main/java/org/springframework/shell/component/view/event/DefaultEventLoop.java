@@ -103,6 +103,16 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
+	public <T> Flux<T> events(EventLoop.Type type, Class<T> clazz) {
+		return events()
+			.filter(m -> type.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
+			.map(m -> m.getPayload())
+			.ofType(clazz)
+			.cast(clazz);
+	}
+
+
+	@Override
 	public Flux<KeyEvent> keyEvents() {
 		return events()
 			.filter(m -> EventLoop.Type.KEY.equals(StaticShellMessageHeaderAccessor.getEventType(m)))

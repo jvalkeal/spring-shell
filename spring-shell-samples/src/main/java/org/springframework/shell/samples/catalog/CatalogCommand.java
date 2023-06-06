@@ -23,6 +23,7 @@ import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
@@ -30,10 +31,15 @@ import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListItem;
+import org.springframework.shell.component.view.ListView.ListViewArgs;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
+import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Main command access point to view showcase catalog.
@@ -55,6 +61,15 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
+	// public static <T> Flux<T> xxx(EventLoop eventLoop, EventLoop.Type type, Class<T> clazz) {
+	// 	return eventLoop.events()
+	// 		.filter(m -> type.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
+	// 		.map(m -> m.getPayload())
+	// 		.ofType(clazz)
+	// 		.cast(clazz)
+	// 		;
+	// }
+
 	@Command(command = "catalog")
 	public void catalog(
 	) {
@@ -68,13 +83,42 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView scenarios = scenarios();
 
 		ListView categories = categories();
-		categories.getMessageListeners().register(e -> {
-			log.info("CATEGORIES {}", e);
-			List<ListItem> items = new ArrayList<>();
-			items.add(new ListItem("111"));
-			items.add(new ListItem("222"));
-			scenarios.setItems(items);
-		});
+
+		EventLoop eventLoop = component.getEventLoop();
+		categories.setEventLoop(eventLoop);
+		eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
+			.doOnNext(args -> {
+				log.info("CATEGORIES {}", args);
+				List<ListItem> items = new ArrayList<>();
+				items.add(new ListItem("111"));
+				items.add(new ListItem("222"));
+				scenarios.setItems(items);
+			})
+			.subscribe();
+
+		// eventLoop.events()
+		// 	.filter(m -> {
+		// 		return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.VIEW);
+		// 	})
+		// 	.doOnNext(m -> {
+		// 		Object payload = m.getPayload();
+		// 		if (payload instanceof ListViewArgs s) {
+		// 			log.info("CATEGORIES {}", s);
+		// 			List<ListItem> items = new ArrayList<>();
+		// 			items.add(new ListItem("111"));
+		// 			items.add(new ListItem("222"));
+		// 			scenarios.setItems(items);
+		// 		}
+		// 	})
+		// 	.subscribe();
+
+		// categories.getMessageListeners().register(e -> {
+		// 	log.info("CATEGORIES {}", e);
+		// 	List<ListItem> items = new ArrayList<>();
+		// 	items.add(new ListItem("111"));
+		// 	items.add(new ListItem("222"));
+		// 	scenarios.setItems(items);
+		// });
 
 
 		StatusBarView statusBar = statusBar();
