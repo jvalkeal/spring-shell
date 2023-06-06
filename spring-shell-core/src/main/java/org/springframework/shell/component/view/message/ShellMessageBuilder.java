@@ -91,6 +91,13 @@ public final class ShellMessageBuilder<T> {
 			.build();
 	}
 
+	public static Message<?> ofView(View view, Object args) {
+		return new ShellMessageBuilder<>(args, null)
+			.setEventType(EventLoop.Type.VIEW)
+			.setView(view)
+			.build();
+	}
+
 	public ShellMessageBuilder<T> setPriority(Integer priority) {
 		return setHeader(ShellMessageHeaderAccessor.PRIORITY, priority);
 	}

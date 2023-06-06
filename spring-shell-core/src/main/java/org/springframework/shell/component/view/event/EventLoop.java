@@ -98,6 +98,11 @@ public interface EventLoop {
 		SYSTEM,
 
 		/**
+		 * View bindinds from views.
+		 */
+		VIEW,
+
+		/**
 		 * User bindinds for custom events.
 		 */
 		USER

@@ -21,9 +21,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
@@ -37,6 +39,7 @@ public class ListView extends BoxView {
 	private final static Logger log = LoggerFactory.getLogger(ListView.class);
 
 	private final List<ListItem> items = new ArrayList<>();
+	private int selected = -1;
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -64,9 +67,11 @@ public class ListView extends BoxView {
 					break;
 					case UP:
 						log.debug("XXX UP");
+						up();
 						break;
 					case DOWN:
 						log.debug("XXX DOWN");
+						down();
 						break;
 					default:
 						break;
@@ -79,6 +84,19 @@ public class ListView extends BoxView {
 	public void setItems(List<ListItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
+	}
+
+	private void up() {
+		selected++;
+		getShellMessageListener().onMessage(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
+	}
+
+	private void down() {
+		selected--;
+		getShellMessageListener().onMessage(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
+	}
+
+	public static record ListViewArgs(int selected) {
 	}
 
 	public static class ListItem {

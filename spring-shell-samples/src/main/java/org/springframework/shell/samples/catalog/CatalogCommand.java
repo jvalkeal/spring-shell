@@ -18,6 +18,8 @@ package org.springframework.shell.samples.catalog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +47,13 @@ public class CatalogCommand extends AbstractShellComponent {
 
 	private final Logger log = LoggerFactory.getLogger(CatalogCommand.class);
 
-	@Autowired
+	// @Autowired
 	private List<Scenario> scenarios;
+
+	public CatalogCommand(List<Scenario> scenarios) {
+		this.scenarios = scenarios;
+		TreeMap<String, Scenario> treeMap = new TreeMap<String, Scenario>();
+	}
 
 	@Command(command = "catalog")
 	public void catalog(
@@ -59,6 +66,26 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
+		ListView categories = categories();
+
+		// BoxView scenarios = new BoxView();
+		// scenarios.setTitle("Scenarios");
+		// scenarios.setShowBorder(true);
+		ListView scenarios = scenarios();
+
+		StatusBarView statusBar = statusBar();
+
+		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
+		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
+		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
+
+		app.setMain(grid);
+
+		component.setRoot(app, true);
+		component.run();
+	}
+
+	private ListView categories() {
 		ListView categories = new ListView();
 		List<ListItem> items = new ArrayList<>();
 		scenarios.forEach(s -> {
@@ -71,20 +98,31 @@ public class CatalogCommand extends AbstractShellComponent {
 		categories.setTitle("Categories");
 		categories.setShowBorder(true);
 
-		BoxView scenarios = new BoxView();
+		categories.getMessageListeners().register(e -> {
+			log.info("CATEGORIES {}", e);
+		});
+
+		return categories;
+	}
+
+	private ListView scenarios() {
+		ListView scenarios = new ListView();
+		List<ListItem> items = new ArrayList<>();
+		// scenarios.forEach(s -> {
+		// 	s.getCategories().forEach(c -> {
+		// 		items.add(new ListItem(c));
+		// 	});
+		// });
+		// categories.setItems(items);
+
 		scenarios.setTitle("Scenarios");
 		scenarios.setShowBorder(true);
 
-		StatusBarView statusBar = statusBar();
+		scenarios.getMessageListeners().register(e -> {
+			log.info("SCENARIOS {}", e);
+		});
 
-		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
-		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
-		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
-
-		app.setMain(grid);
-
-		component.setRoot(app, true);
-		component.run();
+		return scenarios;
 	}
 
 	private StatusBarView statusBar() {
