@@ -18,21 +18,19 @@ package org.springframework.shell.samples.catalog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
-import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
-import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.ListView.ListItem;
+import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
@@ -46,19 +44,20 @@ import org.springframework.shell.standard.AbstractShellComponent;
 public class CatalogCommand extends AbstractShellComponent {
 
 	private final Logger log = LoggerFactory.getLogger(CatalogCommand.class);
-
-	// @Autowired
-	private List<Scenario> scenarios;
+	private final Map<String, List<Scenario>> scenarioMap = new TreeMap<>();
 
 	public CatalogCommand(List<Scenario> scenarios) {
-		this.scenarios = scenarios;
-		TreeMap<String, Scenario> treeMap = new TreeMap<String, Scenario>();
+		scenarios.forEach(s -> {
+			s.getCategories().forEach(category -> {
+				List<Scenario> catScenarios = scenarioMap.computeIfAbsent(category, key -> new ArrayList<>());
+				catScenarios.add(s);
+			});
+		});
 	}
 
 	@Command(command = "catalog")
 	public void catalog(
 	) {
-		log.info("Using scenarios {}", scenarios);
 		TerminalUI component = new TerminalUI(getTerminal());
 		AppView app = new AppView();
 
@@ -66,12 +65,17 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView categories = categories();
-
-		// BoxView scenarios = new BoxView();
-		// scenarios.setTitle("Scenarios");
-		// scenarios.setShowBorder(true);
 		ListView scenarios = scenarios();
+
+		ListView categories = categories();
+		categories.getMessageListeners().register(e -> {
+			log.info("CATEGORIES {}", e);
+			List<ListItem> items = new ArrayList<>();
+			items.add(new ListItem("111"));
+			items.add(new ListItem("222"));
+			scenarios.setItems(items);
+		});
+
 
 		StatusBarView statusBar = statusBar();
 
@@ -88,26 +92,24 @@ public class CatalogCommand extends AbstractShellComponent {
 	private ListView categories() {
 		ListView categories = new ListView();
 		List<ListItem> items = new ArrayList<>();
-		scenarios.forEach(s -> {
-			s.getCategories().forEach(c -> {
-				items.add(new ListItem(c));
-			});
+		scenarioMap.keySet().forEach(c -> {
+			items.add(new ListItem(c));
 		});
 		categories.setItems(items);
 
 		categories.setTitle("Categories");
 		categories.setShowBorder(true);
 
-		categories.getMessageListeners().register(e -> {
-			log.info("CATEGORIES {}", e);
-		});
+		// categories.getMessageListeners().register(e -> {
+		// 	log.info("CATEGORIES {}", e);
+		// });
 
 		return categories;
 	}
 
 	private ListView scenarios() {
 		ListView scenarios = new ListView();
-		List<ListItem> items = new ArrayList<>();
+		// List<ListItem> items = new ArrayList<>();
 		// scenarios.forEach(s -> {
 		// 	s.getCategories().forEach(c -> {
 		// 		items.add(new ListItem(c));
