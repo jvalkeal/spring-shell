@@ -15,10 +15,6 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,13 +15,11 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -41,9 +39,9 @@ public class AbstractViewTests {
 	}
 
 	protected void dispatchEvent(View view, KeyEvent event) {
-		BiConsumer<KeyEvent, Consumer<View>> inputHandler = view.getInputHandler();
-		if (inputHandler != null) {
-			inputHandler.accept(event, v -> {});
+		KeyHandler keyHandler = view.getKeyHandler();
+		if (keyHandler != null) {
+			keyHandler.handle(new KeyHandler.KeyHandlerArgs(event));
 		}
 	}
 

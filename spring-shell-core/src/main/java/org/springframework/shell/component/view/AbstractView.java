@@ -15,15 +15,11 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -100,13 +96,6 @@ public abstract class AbstractView implements View {
 	@Override
 	public KeyHandler getKeyHandler() {
 		return null;
-	}
-
-	@Override
-	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
-		return (event, focus) -> {
-			focus.accept(this);
-		};
 	}
 
 	@Override

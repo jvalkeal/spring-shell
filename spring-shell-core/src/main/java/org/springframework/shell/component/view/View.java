@@ -15,11 +15,7 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import org.springframework.lang.Nullable;
-import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -94,12 +90,12 @@ public interface View {
 
 	@Nullable
 	KeyHandler getKeyHandler();
-
 	/**
+	 * Gets a {@link View} mouse {@link KeyHandler}. Can be {@code null} which
+	 * indicates view will not handle any key events.
 	 *
-	 * @return
+	 * @return a view mouse handler
 	 */
-	BiConsumer<KeyEvent, Consumer<View>> getInputHandler();
 
 	/**
 	 * Get composite listener used for registration.

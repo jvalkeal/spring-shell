@@ -15,10 +15,8 @@
  */
 package org.springframework.shell.component.view;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -35,8 +33,9 @@ public class InputView extends BoxView {
 	private int cursorPosition = 0;
 
 	@Override
-	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
-		return (event, focus) -> {
+	public KeyHandler getKeyHandler() {
+		return args -> {
+			KeyEvent event = args.event();
 			if (event.key() == null) {
 				String data = event.data();
 				add(data);
@@ -65,7 +64,7 @@ public class InputView extends BoxView {
 						break;
 				}
 			}
-			super.getInputHandler().accept(event, focus);
+			return KeyHandler.resultOf(event, null);
 		};
 	}
 

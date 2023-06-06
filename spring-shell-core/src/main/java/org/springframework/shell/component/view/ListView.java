@@ -17,8 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,31 +47,6 @@ public class ListView extends BoxView {
 			writer.text(i.getTitle(), rect.x(), y++);
 		}
 		super.drawInternal(screen);
-	}
-
-	@Override
-	public BiConsumer<KeyEvent, Consumer<View>> getInputHandler() {
-		return (event, focus) -> {
-			if (event.key() == null) {
-				String data = event.data();
-			}
-			else {
-				switch (event.key()) {
-					case ENTER:
-						log.debug("XXX ENTER");
-					break;
-					case UP:
-						log.debug("XXX UP");
-						break;
-					case DOWN:
-						log.debug("XXX DOWN");
-						break;
-					default:
-						break;
-				}
-			}
-			super.getInputHandler().accept(event, focus);
-		};
 	}
 
 	@Override
