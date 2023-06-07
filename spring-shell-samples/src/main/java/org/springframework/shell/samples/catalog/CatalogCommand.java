@@ -23,6 +23,7 @@ import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import org.springframework.shell.command.annotation.Command;
@@ -65,6 +66,8 @@ public class CatalogCommand extends AbstractShellComponent {
 	public void catalog(
 	) {
 		TerminalUI component = new TerminalUI(getTerminal());
+		EventLoop eventLoop = component.getEventLoop();
+
 		AppView app = new AppView();
 
 		GridView grid = new GridView();
@@ -72,12 +75,9 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setColumnSize(30, 0);
 
 		ListView scenarios = scenarios();
+		ListView categories = categories(eventLoop);
 
-		ListView categories = categories();
-
-		EventLoop eventLoop = component.getEventLoop();
-		categories.setEventLoop(eventLoop);
-		eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
+		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
 			.doOnNext(args -> {
 				log.info("CATEGORIES {}", args);
 				List<ListItem> items = new ArrayList<>();
@@ -86,7 +86,7 @@ public class CatalogCommand extends AbstractShellComponent {
 				scenarios.setItems(items);
 			})
 			.subscribe();
-
+		eventLoop.onDestroy(disposable);
 
 		StatusBarView statusBar = statusBar();
 
@@ -100,8 +100,9 @@ public class CatalogCommand extends AbstractShellComponent {
 		component.run();
 	}
 
-	private ListView categories() {
+	private ListView categories(EventLoop eventLoop) {
 		ListView categories = new ListView();
+		categories.setEventLoop(eventLoop);
 		List<ListItem> items = new ArrayList<>();
 		scenarioMap.keySet().forEach(c -> {
 			items.add(new ListItem(c));

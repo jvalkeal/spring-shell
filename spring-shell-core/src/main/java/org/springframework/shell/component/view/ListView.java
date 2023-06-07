@@ -88,13 +88,11 @@ public class ListView extends BoxView {
 	private void up() {
 		selected++;
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
-		// getShellMessageListener().onMessage(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
 	}
 
 	private void down() {
 		selected--;
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
-		// getShellMessageListener().onMessage(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
 	}
 
 	public static record ListViewArgs(int selected) {
