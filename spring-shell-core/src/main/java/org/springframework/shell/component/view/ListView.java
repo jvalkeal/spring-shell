@@ -21,8 +21,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.messaging.Message;
-import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -85,18 +83,6 @@ public class ListView extends BoxView {
 	public void setItems(List<ListItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
-	}
-
-	private EventLoop eventLoop;
-
-	public void setEventLoop(EventLoop eventLoop) {
-		this.eventLoop = eventLoop;
-	}
-
-	protected void dispatch(Message<?> message) {
-		if (eventLoop != null) {
-			eventLoop.dispatch(message);
-		}
 	}
 
 	private void up() {

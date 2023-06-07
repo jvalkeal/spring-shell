@@ -61,15 +61,6 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
-	// public static <T> Flux<T> xxx(EventLoop eventLoop, EventLoop.Type type, Class<T> clazz) {
-	// 	return eventLoop.events()
-	// 		.filter(m -> type.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
-	// 		.map(m -> m.getPayload())
-	// 		.ofType(clazz)
-	// 		.cast(clazz)
-	// 		;
-	// }
-
 	@Command(command = "catalog")
 	public void catalog(
 	) {
@@ -95,30 +86,6 @@ public class CatalogCommand extends AbstractShellComponent {
 				scenarios.setItems(items);
 			})
 			.subscribe();
-
-		// eventLoop.events()
-		// 	.filter(m -> {
-		// 		return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.VIEW);
-		// 	})
-		// 	.doOnNext(m -> {
-		// 		Object payload = m.getPayload();
-		// 		if (payload instanceof ListViewArgs s) {
-		// 			log.info("CATEGORIES {}", s);
-		// 			List<ListItem> items = new ArrayList<>();
-		// 			items.add(new ListItem("111"));
-		// 			items.add(new ListItem("222"));
-		// 			scenarios.setItems(items);
-		// 		}
-		// 	})
-		// 	.subscribe();
-
-		// categories.getMessageListeners().register(e -> {
-		// 	log.info("CATEGORIES {}", e);
-		// 	List<ListItem> items = new ArrayList<>();
-		// 	items.add(new ListItem("111"));
-		// 	items.add(new ListItem("222"));
-		// 	scenarios.setItems(items);
-		// });
 
 
 		StatusBarView statusBar = statusBar();

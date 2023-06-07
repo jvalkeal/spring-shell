@@ -84,16 +84,16 @@ public final class ShellMessageBuilder<T> {
 			.build();
 	}
 
-	public static Message<String> ofViewFocus(String action, View view) {
-		return new ShellMessageBuilder<>(action, null)
-			.setEventType(EventLoop.Type.SYSTEM)
+	public static Message<?> ofView(View view, Object args) {
+		return new ShellMessageBuilder<>(args, null)
+			.setEventType(EventLoop.Type.VIEW)
 			.setView(view)
 			.build();
 	}
 
-	public static Message<?> ofView(View view, Object args) {
-		return new ShellMessageBuilder<>(args, null)
-			.setEventType(EventLoop.Type.VIEW)
+	public static Message<String> ofViewFocus(String action, View view) {
+		return new ShellMessageBuilder<>(action, null)
+			.setEventType(EventLoop.Type.SYSTEM)
 			.setView(view)
 			.build();
 	}

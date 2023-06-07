@@ -20,6 +20,9 @@ import java.util.function.BiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.lang.Nullable;
+import org.springframework.messaging.Message;
+import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -44,6 +47,7 @@ public abstract class AbstractView implements View {
 	private boolean hasFocus;
 	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
 	private int layer;
+	private EventLoop eventLoop;
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -121,6 +125,29 @@ public abstract class AbstractView implements View {
 	 */
 	public BiFunction<Screen, Rectangle, Rectangle> getDrawFunction() {
 		return drawFunction;
+	}
+
+	/**
+	 * Set an {@link EventLoop}.
+	 *
+	 * @param eventLoop the event loop
+	 */
+	public void setEventLoop(@Nullable EventLoop eventLoop) {
+		this.eventLoop = eventLoop;
+	}
+
+	/**
+	 * Dispatch a {@link Message} into an event loop.
+	 *
+	 * @param message the message to dispatch
+	 */
+	protected void dispatch(Message<?> message) {
+		if (eventLoop != null) {
+			eventLoop.dispatch(message);
+		}
+		else {
+			log.warn("Can't dispatch message {} as eventloop is not set", message);
+		}
 	}
 
 	/**
