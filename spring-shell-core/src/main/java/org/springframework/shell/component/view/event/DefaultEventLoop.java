@@ -107,8 +107,7 @@ public class DefaultEventLoop implements EventLoop {
 		return events()
 			.filter(m -> type.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.map(m -> m.getPayload())
-			.ofType(clazz)
-			.cast(clazz);
+			.ofType(clazz);
 	}
 
 

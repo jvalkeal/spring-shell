@@ -17,6 +17,7 @@ package org.springframework.shell.component.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,11 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
  *
  * @author Janne Valkealahti
  */
-public class ListView extends BoxView {
+public class ListView<T> extends BoxView {
 
 	private final static Logger log = LoggerFactory.getLogger(ListView.class);
 
-	private final List<ListItem> items = new ArrayList<>();
+	private final List<T> items = new ArrayList<>();
 	private int selected = -1;
 
 	@Override
@@ -45,8 +46,9 @@ public class ListView extends BoxView {
 		Rectangle rect = getInnerRect();
 		Writer writer = screen.writerBuilder().build();
 		int y = rect.y();
-		for (ListItem i : items) {
-			writer.text(i.getTitle(), rect.x(), y++);
+
+		for (T i : items) {
+			writer.text(i.toString(), rect.x(), y++);
 		}
 		super.drawInternal(screen);
 	}
@@ -61,15 +63,15 @@ public class ListView extends BoxView {
 			}
 			else {
 				switch (event.key()) {
-					case ENTER:
-						log.debug("XXX ENTER");
-					break;
+					// case ENTER:
+					// 	log.debug("XXX ENTER");
+					// 	break;
 					case UP:
-						log.debug("XXX UP");
+						// log.debug("XXX UP");
 						up();
 						break;
 					case DOWN:
-						log.debug("XXX DOWN");
+						// log.debug("XXX DOWN");
 						down();
 						break;
 					default:
@@ -80,36 +82,25 @@ public class ListView extends BoxView {
 		};
 	}
 
-	public void setItems(List<ListItem> items) {
+	public void setItems(List<T> items) {
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
 	private void up() {
+
 		selected++;
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
 	}
 
 	private void down() {
+
 		selected--;
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs(selected)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
 	}
 
-	public static record ListViewArgs(int selected) {
+	public record ListViewArgs<T>(T selected, View view) implements ViewAction {
 	}
 
-	public static class ListItem {
-
-		private String title;
-
-		public ListItem(String title) {
-			this.title = title;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-	}
 
 }

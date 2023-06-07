@@ -31,7 +31,6 @@ import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
-import org.springframework.shell.component.view.ListView.ListItem;
 import org.springframework.shell.component.view.ListView.ListViewArgs;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
@@ -74,16 +73,14 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView scenarios = scenarios();
-		ListView categories = categories(eventLoop);
+		ListView<String> scenarios = scenarios();
+		ListView<String> categories = categories(eventLoop);
 
 		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
+			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				log.info("CATEGORIES {}", args);
-				List<ListItem> items = new ArrayList<>();
-				items.add(new ListItem("111"));
-				items.add(new ListItem("222"));
-				scenarios.setItems(items);
+				scenarios.setItems(Arrays.asList("111", "222"));
 			})
 			.subscribe();
 		eventLoop.onDestroy(disposable);
@@ -100,27 +97,20 @@ public class CatalogCommand extends AbstractShellComponent {
 		component.run();
 	}
 
-	private ListView categories(EventLoop eventLoop) {
-		ListView categories = new ListView();
+	private ListView<String> categories(EventLoop eventLoop) {
+		ListView<String> categories = new ListView<>();
 		categories.setEventLoop(eventLoop);
-		List<ListItem> items = new ArrayList<>();
-		scenarioMap.keySet().forEach(c -> {
-			items.add(new ListItem(c));
-		});
+		List<String> items = List.copyOf(scenarioMap.keySet());
 		categories.setItems(items);
 
 		categories.setTitle("Categories");
 		categories.setShowBorder(true);
 
-		// categories.getMessageListeners().register(e -> {
-		// 	log.info("CATEGORIES {}", e);
-		// });
-
 		return categories;
 	}
 
-	private ListView scenarios() {
-		ListView scenarios = new ListView();
+	private ListView<String> scenarios() {
+		ListView<String> scenarios = new ListView<>();
 		// List<ListItem> items = new ArrayList<>();
 		// scenarios.forEach(s -> {
 		// 	s.getCategories().forEach(c -> {
