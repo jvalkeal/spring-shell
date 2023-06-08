@@ -136,21 +136,7 @@ public class ListView<T> extends BoxView {
 		}
 	}
 
-	public static class ListViewArgsx<T> implements ViewAction {
-
-		T selected() {
-			return null;
-		}
-
-		@Override
-		public View view() {
-			return null;
-		}
-
-	}
-
 	public record ListViewArgs<T>(T selected, View view) implements ViewAction {
 	}
-
 
 }

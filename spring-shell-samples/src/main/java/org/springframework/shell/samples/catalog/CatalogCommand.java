@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.shell.command.annotation.Command;
@@ -34,15 +33,11 @@ import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListViewArgs;
-import org.springframework.shell.component.view.ListView.ListViewArgsx;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.event.EventLoop;
-import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Main command access point to view showcase catalog.
@@ -82,7 +77,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> categories = categories(eventLoop);
 
 		ParameterizedTypeReference<ListViewArgs<String>> typeRef = new ParameterizedTypeReference<ListViewArgs<String>>(){};
-		eventLoop.events(EventLoop.Type.VIEW, typeRef)
+		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, typeRef)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				if (args.selected() != null) {
@@ -93,19 +88,7 @@ public class CatalogCommand extends AbstractShellComponent {
 				}
 			})
 			.subscribe();
-
-		// Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
-		// 	.filter(args -> args.view() == categories)
-		// 	.doOnNext(args -> {
-		// 		log.info("CATEGORIES {}", args);
-		// 		if (args.selected() != null) {
-		// 			// String selected = args.selected();
-		// 			// args.s
-		// 		}
-		// 		scenarios.setItems(Arrays.asList("111", "222"));
-		// 	})
-		// 	.subscribe();
-		// eventLoop.onDestroy(disposable);
+		eventLoop.onDestroy(disposable);
 
 		StatusBarView statusBar = statusBar();
 
