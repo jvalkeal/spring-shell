@@ -18,10 +18,12 @@ package org.springframework.shell.component.view;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.control.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -41,16 +43,37 @@ public class ListView<T> extends BoxView {
 	private final List<T> items = new ArrayList<>();
 	private int selected = -1;
 
+	private final List<ListCell<T>> cells = new ArrayList<>();
+	private Function<ListView<T>, ListCell<T>> factory = listView -> new ListCell<>();
+
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
-		Writer writer = screen.writerBuilder().build();
+		// Writer writer = screen.writerBuilder().build();
 		int y = rect.y();
 
-		for (T i : items) {
-			writer.text(i.toString(), rect.x(), y++);
+		int i = 0;
+		for (ListCell<T> c : cells) {
+			c.setRect(rect.x(), y++, rect.width(), rect.height());
+			c.updateSelected(i == selected);
+			c.draw(screen);
+			i++;
 		}
+		// for (T i : items) {
+		// 	writer.text(i.toString(), rect.x(), y++);
+		// }
 		super.drawInternal(screen);
+	}
+
+	public void setItems(List<T> items) {
+		this.items.clear();
+		this.items.addAll(items);
+		this.cells.clear();
+		for (T i : items) {
+			ListCell<T> c = factory.apply(this);
+			cells.add(c);
+			c.updateItem(i);
+		}
 	}
 
 	@Override
@@ -82,21 +105,28 @@ public class ListView<T> extends BoxView {
 		};
 	}
 
-	public void setItems(List<T> items) {
-		this.items.clear();
-		this.items.addAll(items);
-	}
-
 	private void up() {
-
-		selected++;
+		updateIndex(-1);
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
 	}
 
 	private void down() {
-
-		selected--;
+		updateIndex(1);
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
+	}
+
+	private void updateIndex(int step) {
+		int size = items.size();
+		if (step > 0) {
+			if (selected + step < size) {
+				selected += step;
+			}
+		}
+		else if (step < 0) {
+			if (selected - step > 0) {
+				selected += step;
+			}
+		}
 	}
 
 	public record ListViewArgs<T>(T selected, View view) implements ViewAction {
