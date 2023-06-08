@@ -28,6 +28,7 @@ import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
@@ -55,6 +56,14 @@ public class ListView<T> extends BoxView {
 		int i = 0;
 		for (ListCell<T> c : cells) {
 			c.setRect(rect.x(), y++, rect.width(), rect.height());
+			if (i == selected) {
+				c.updateSelected(true);
+				c.setBackgroundColor(Color.BLUE4);
+			}
+			else {
+				c.updateSelected(false);
+				c.setBackgroundColor(-1);
+			}
 			c.updateSelected(i == selected);
 			c.draw(screen);
 			i++;
@@ -107,12 +116,20 @@ public class ListView<T> extends BoxView {
 
 	private void up() {
 		updateIndex(-1);
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(selectedItem(), this)));
 	}
 
 	private void down() {
 		updateIndex(1);
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(null, this)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(selectedItem(), this)));
+	}
+
+	private T selectedItem() {
+		T selectedItem = null;
+		if (selected > 0 && selected < items.size()) {
+			selectedItem = items.get(selected);
+		}
+		return selectedItem;
 	}
 
 	private void updateIndex(int step) {
@@ -127,6 +144,19 @@ public class ListView<T> extends BoxView {
 				selected += step;
 			}
 		}
+	}
+
+	public static class ListViewArgsx<T> implements ViewAction {
+
+		T selected() {
+			return null;
+		}
+
+		@Override
+		public View view() {
+			return null;
+		}
+
 	}
 
 	public record ListViewArgs<T>(T selected, View view) implements ViewAction {

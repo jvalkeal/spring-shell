@@ -20,6 +20,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.Message;
 
 /**
@@ -61,6 +62,8 @@ public interface EventLoop {
 	 * @return the filtered events from an event loop
 	 */
 	<T> Flux<T> events(EventLoop.Type type, Class<T> clazz);
+	// <T> Flux<T> eventsx(EventLoop.Type type, ParameterizedTypeReference<?> xxx);
+	<T> Flux<T> eventsxx(EventLoop.Type type, Class<? super T> clazz);
 
 	/**
 	 * Dispatch {@link Message}s into an {@code EventLoop} from a {@link Publisher}.

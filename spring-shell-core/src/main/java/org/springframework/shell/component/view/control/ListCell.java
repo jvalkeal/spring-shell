@@ -33,8 +33,10 @@ public class ListCell<T> extends AbstractCell<T> {
 	public void draw(Screen screen) {
 		Rectangle rect = getRect();
 		Writer writer = screen.writerBuilder().build();
-		String prefix = isSelected() ? "> " : "  ";
-		writer.text(prefix + text, rect.x(), rect.y());
+		// String prefix = isSelected() ? "> " : "  ";
+		// writer.text(prefix + text, rect.x(), rect.y());
+		writer.text(text, rect.x(), rect.y());
+		writer.background(rect, getBackgroundColor());
 	}
 
 	public void updateItem(T item) {

@@ -20,15 +20,14 @@ import org.springframework.shell.component.view.screen.Screen;
 public interface Control {
 
 	/**
-	 * Draw view into {@link Screen}. This is a main access point to draw
-	 * visible things into a screen.
+	 * Draw {@link Control} into a {@link Screen}.
 	 *
 	 * @param screen the screen
 	 */
 	void draw(Screen screen);
 
 	/**
-	 * Sets bounded box where this {@link View} should operate.
+	 * Sets bounds where this {@link Control} should operate.
 	 *
 	 * @param x a x coord of a bounded box
 	 * @param y an y coord of a bounded box
@@ -36,5 +35,4 @@ public interface Control {
 	 * @param height a height of a bounded box
 	 */
 	void setRect(int x, int y, int width, int height);
-
 }

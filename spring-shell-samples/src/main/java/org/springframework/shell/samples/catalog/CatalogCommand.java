@@ -26,12 +26,14 @@ import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListViewArgs;
+import org.springframework.shell.component.view.ListView.ListViewArgsx;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.event.EventLoop;
@@ -61,6 +63,8 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
+
+
 	@Command(command = "catalog")
 	public void catalog(
 	) {
@@ -76,10 +80,23 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> scenarios = scenarios();
 		ListView<String> categories = categories(eventLoop);
 
+		ParameterizedTypeReference<ListViewArgs<String>> xxx = new ParameterizedTypeReference<ListViewArgs<String>>(){};
+		// Flux<ListViewArgsx<String>> events1 = eventLoop.eventsx(EventLoop.Type.VIEW, ListViewArgsx.class);
+		// eventLoop.eventsx(EventLoop.Type.VIEW, xxx)
+		// 	.doOnNext(xxx -> {
+		// 		String selected = xxx.selected();
+		// 	})
+		// 	.subscribe();
+
+		// Flux<ListViewArgs<String>> events3 = eventLoop.eventsxx(EventLoop.Type.VIEW, ListViewArgs.class);
 		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				log.info("CATEGORIES {}", args);
+				if (args.selected() != null) {
+					// String selected = args.selected();
+					// args.s
+				}
 				scenarios.setItems(Arrays.asList("111", "222"));
 			})
 			.subscribe();

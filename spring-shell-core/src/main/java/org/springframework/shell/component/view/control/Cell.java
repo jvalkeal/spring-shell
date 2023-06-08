@@ -21,4 +21,12 @@ public interface Cell<T> extends Control {
 	void setItem(T item);
 	boolean isSelected();
 	void updateSelected(boolean selected);
+
+	/**
+	 * Sets a background color.
+	 *
+	 * @param backgroundColor the background color
+	 */
+	void setBackgroundColor(int backgroundColor);
+
 }
