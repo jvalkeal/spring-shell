@@ -17,7 +17,6 @@ package org.springframework.shell.component.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -30,7 +29,6 @@ import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
-import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
  * {@link ListView} shows {@link ListItem items} vertically.
@@ -55,7 +53,7 @@ public class ListView<T> extends BoxView {
 
 		int i = 0;
 		for (ListCell<T> c : cells) {
-			c.setRect(rect.x(), y++, rect.width(), rect.height());
+			c.setRect(rect.x(), y++, rect.width(), 1);
 			if (i == selected) {
 				c.updateSelected(true);
 				c.setBackgroundColor(Color.BLUE4);
@@ -68,9 +66,6 @@ public class ListView<T> extends BoxView {
 			c.draw(screen);
 			i++;
 		}
-		// for (T i : items) {
-		// 	writer.text(i.toString(), rect.x(), y++);
-		// }
 		super.drawInternal(screen);
 	}
 
@@ -95,15 +90,10 @@ public class ListView<T> extends BoxView {
 			}
 			else {
 				switch (event.key()) {
-					// case ENTER:
-					// 	log.debug("XXX ENTER");
-					// 	break;
 					case UP:
-						// log.debug("XXX UP");
 						up();
 						break;
 					case DOWN:
-						// log.debug("XXX DOWN");
 						down();
 						break;
 					default:
@@ -126,7 +116,7 @@ public class ListView<T> extends BoxView {
 
 	private T selectedItem() {
 		T selectedItem = null;
-		if (selected > 0 && selected < items.size()) {
+		if (selected >= 0 && selected < items.size()) {
 			selectedItem = items.get(selected);
 		}
 		return selectedItem;

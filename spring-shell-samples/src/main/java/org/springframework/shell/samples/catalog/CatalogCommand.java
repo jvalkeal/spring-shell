@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,27 +81,31 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> scenarios = scenarios();
 		ListView<String> categories = categories(eventLoop);
 
-		ParameterizedTypeReference<ListViewArgs<String>> xxx = new ParameterizedTypeReference<ListViewArgs<String>>(){};
-		// Flux<ListViewArgsx<String>> events1 = eventLoop.eventsx(EventLoop.Type.VIEW, ListViewArgsx.class);
-		// eventLoop.eventsx(EventLoop.Type.VIEW, xxx)
-		// 	.doOnNext(xxx -> {
-		// 		String selected = xxx.selected();
-		// 	})
-		// 	.subscribe();
-
-		// Flux<ListViewArgs<String>> events3 = eventLoop.eventsxx(EventLoop.Type.VIEW, ListViewArgs.class);
-		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
+		ParameterizedTypeReference<ListViewArgs<String>> typeRef = new ParameterizedTypeReference<ListViewArgs<String>>(){};
+		eventLoop.events(EventLoop.Type.VIEW, typeRef)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
-				log.info("CATEGORIES {}", args);
 				if (args.selected() != null) {
-					// String selected = args.selected();
-					// args.s
+					String selected = args.selected();
+					List<Scenario> list = scenarioMap.get(selected);
+					List<String> collect = list.stream().map(s -> s.getTitle()).collect(Collectors.toList());
+					scenarios.setItems(collect);
 				}
-				scenarios.setItems(Arrays.asList("111", "222"));
 			})
 			.subscribe();
-		eventLoop.onDestroy(disposable);
+
+		// Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, ListViewArgs.class)
+		// 	.filter(args -> args.view() == categories)
+		// 	.doOnNext(args -> {
+		// 		log.info("CATEGORIES {}", args);
+		// 		if (args.selected() != null) {
+		// 			// String selected = args.selected();
+		// 			// args.s
+		// 		}
+		// 		scenarios.setItems(Arrays.asList("111", "222"));
+		// 	})
+		// 	.subscribe();
+		// eventLoop.onDestroy(disposable);
 
 		StatusBarView statusBar = statusBar();
 

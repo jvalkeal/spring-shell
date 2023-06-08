@@ -62,8 +62,8 @@ public interface EventLoop {
 	 * @return the filtered events from an event loop
 	 */
 	<T> Flux<T> events(EventLoop.Type type, Class<T> clazz);
-	// <T> Flux<T> eventsx(EventLoop.Type type, ParameterizedTypeReference<?> xxx);
-	<T> Flux<T> eventsxx(EventLoop.Type type, Class<? super T> clazz);
+
+	<T> Flux<T> events(EventLoop.Type type, ParameterizedTypeReference<T> typeRef);
 
 	/**
 	 * Dispatch {@link Message}s into an {@code EventLoop} from a {@link Publisher}.

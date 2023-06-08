@@ -36,6 +36,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
@@ -111,21 +112,14 @@ public class DefaultEventLoop implements EventLoop {
 			.ofType(clazz);
 	}
 
-	// @Override
-	// public <T> Flux<T> eventsx(Type type, ParameterizedTypeReference<?> xxx) {
-	// 	Flux<Message<?>> events = events();
-	// 	Flux<?> asdf = events.map(m -> m.getPayload());
-	// 	Flux<? extends T> dddd = asdf.ofType(xxx.getType().);
-	// 	return (Flux<T>)dddd;
-	// }
-
-
 	@Override
-	public <T> Flux<T> eventsxx(Type type, Class<? super T> clazz) {
-		Flux<Message<?>> events = events();
-		Flux<?> asdf = events.map(m -> m.getPayload());
-		Flux<? super T> dddd = asdf.ofType(clazz);
-		return (Flux<T>)dddd;
+	@SuppressWarnings("unchecked")
+	public <T> Flux<T> events(Type type, ParameterizedTypeReference<T> typeRef) {
+		ResolvableType resolvableType = ResolvableType.forType(typeRef);
+		return (Flux<T>) events()
+			.filter(m -> type.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
+			.map(m -> m.getPayload())
+			.ofType(resolvableType.getRawClass());
 	}
 
 	@Override
