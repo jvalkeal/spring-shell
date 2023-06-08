@@ -198,6 +198,9 @@ public class TerminalUI {
 					if ("redraw".equals(s)) {
 						display();
 					}
+					else if ("int".equals(s)) {
+						this.terminal.raise(Signal.INT);
+					}
 				}
 			})
 			.subscribe();
@@ -321,6 +324,13 @@ public class TerminalUI {
 			String exp = operation.substring(14);
 			KeyEvent keyEvent = keyBinder.parseKeyEvent(exp);
 			dispatchKeyEvent(keyEvent);
+			return false;
+		}
+		else if (operation.startsWith("OPERATION_CTRL_")) {
+			String c = operation.substring(15);
+			// KeyEvent keyEvent = KeyEvent.ofCharacter(c, ModType.of(true, false, false));
+			// dispatchKeyEvent(keyEvent);
+			dispatchChar(c, true, false);
 			return false;
 		}
 		else if (operation.equals("OPERATION_CHAR")) {

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.messaging.Message;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
@@ -36,6 +37,8 @@ import org.springframework.shell.component.view.ListView.ListViewArgs;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -89,6 +92,20 @@ public class CatalogCommand extends AbstractShellComponent {
 			})
 			.subscribe();
 		eventLoop.onDestroy(disposable);
+
+		eventLoop.keyEvents()
+			.doOnNext(m -> {
+				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
+					Message<String> msg = ShellMessageBuilder.withPayload("int")
+						.setEventType(EventLoop.Type.SYSTEM)
+						.setPriority(0)
+						.build();
+					eventLoop.dispatch(msg);
+				}
+
+			})
+			.subscribe();
+
 
 		StatusBarView statusBar = statusBar();
 
