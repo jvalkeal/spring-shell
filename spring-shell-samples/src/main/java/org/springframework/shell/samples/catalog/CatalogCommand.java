@@ -17,6 +17,7 @@ package org.springframework.shell.samples.catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -31,14 +32,20 @@ import org.springframework.messaging.Message;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
+import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
+import org.springframework.shell.component.view.ListView.ListViewAction;
 import org.springframework.shell.component.view.ListView.ListViewArgs;
 import org.springframework.shell.component.view.StatusBarView;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.screen.Color;
+import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -51,10 +58,13 @@ import org.springframework.shell.standard.AbstractShellComponent;
 public class CatalogCommand extends AbstractShellComponent {
 
 	private final Logger log = LoggerFactory.getLogger(CatalogCommand.class);
+	// mapping from category name to scenarios(can belong to multiple categories)
 	private final Map<String, List<Scenario>> scenarioMap = new TreeMap<>();
+	private final Map<String, Scenario> scenarioNameMap = new HashMap<>();
 
 	public CatalogCommand(List<Scenario> scenarios) {
 		scenarios.forEach(s -> {
+			scenarioNameMap.put(s.getTitle(), s);
 			s.getCategories().forEach(category -> {
 				List<Scenario> catScenarios = scenarioMap.computeIfAbsent(category, key -> new ArrayList<>());
 				catScenarios.add(s);
@@ -62,25 +72,46 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
-
-
 	@Command(command = "catalog")
 	public void catalog(
 	) {
 		TerminalUI component = new TerminalUI(getTerminal());
 		EventLoop eventLoop = component.getEventLoop();
 
+		eventLoop.keyEvents()
+			.doOnNext(m -> {
+				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
+					Message<String> msg = ShellMessageBuilder.withPayload("int")
+						.setEventType(EventLoop.Type.SYSTEM)
+						.setPriority(0)
+						.build();
+					eventLoop.dispatch(msg);
+				}
+				else if ("w".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
+					// component.setRoot(box, true);
+				}
+			})
+			.subscribe();
+
+
+		AppView app = scenarioSelector(eventLoop, component);
+
+		component.setRoot(app, true);
+		component.run();
+	}
+
+	private AppView scenarioSelector(EventLoop eventLoop, TerminalUI component) {
 		AppView app = new AppView();
 
 		GridView grid = new GridView();
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView<String> scenarios = scenarios();
+		ListView<String> scenarios = scenarios(eventLoop);
 		ListView<String> categories = categories(eventLoop);
 
-		ParameterizedTypeReference<ListViewArgs<String>> typeRef = new ParameterizedTypeReference<ListViewArgs<String>>(){};
-		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, typeRef)
+		ParameterizedTypeReference<ListViewArgs<String>> typeRef1 = new ParameterizedTypeReference<ListViewArgs<String>>(){};
+		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, typeRef1)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				if (args.selected() != null) {
@@ -93,18 +124,20 @@ public class CatalogCommand extends AbstractShellComponent {
 			.subscribe();
 		eventLoop.onDestroy(disposable);
 
-		eventLoop.keyEvents()
-			.doOnNext(m -> {
-				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
-					Message<String> msg = ShellMessageBuilder.withPayload("int")
-						.setEventType(EventLoop.Type.SYSTEM)
-						.setPriority(0)
-						.build();
-					eventLoop.dispatch(msg);
+		ParameterizedTypeReference<ListViewAction<String>> typeRef2 = new ParameterizedTypeReference<ListViewAction<String>>(){};
+		Disposable disposable2 = eventLoop.events(EventLoop.Type.VIEW, typeRef2)
+			.filter(args -> args.view() == scenarios)
+			.doOnNext(args -> {
+				if (args.item() != null && "OpenSelectedItem".equals(args.action())) {
+					String title = args.item();
+					Scenario s = scenarioNameMap.get(title);
+					s.configure(eventLoop);
+					View v = s.getView();
+					component.setRoot(v, true);
 				}
-
 			})
 			.subscribe();
+		eventLoop.onDestroy(disposable2);
 
 
 		StatusBarView statusBar = statusBar();
@@ -115,8 +148,7 @@ public class CatalogCommand extends AbstractShellComponent {
 
 		app.setMain(grid);
 
-		component.setRoot(app, true);
-		component.run();
+		return app;
 	}
 
 	private ListView<String> categories(EventLoop eventLoop) {
@@ -131,22 +163,15 @@ public class CatalogCommand extends AbstractShellComponent {
 		return categories;
 	}
 
-	private ListView<String> scenarios() {
+	private ListView<String> scenarios(EventLoop eventLoop) {
 		ListView<String> scenarios = new ListView<>();
-		// List<ListItem> items = new ArrayList<>();
-		// scenarios.forEach(s -> {
-		// 	s.getCategories().forEach(c -> {
-		// 		items.add(new ListItem(c));
-		// 	});
-		// });
-		// categories.setItems(items);
-
+		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setShowBorder(true);
 
-		scenarios.getMessageListeners().register(e -> {
-			log.info("SCENARIOS {}", e);
-		});
+		// scenarios.getMessageListeners().register(e -> {
+		// 	log.info("SCENARIOS {}", e);
+		// });
 
 		return scenarios;
 	}

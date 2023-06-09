@@ -94,16 +94,16 @@ public class TerminalUI {
 		setFocus(root);
 		this.rootView = root;
 		this.fullScreen = fullScreen;
-		this.rootView.getMessageListeners().register(e -> {
-			View view = StaticShellMessageHeaderAccessor.getView(e);
-			if (view != null) {
-				if (e.getPayload() instanceof String s) {
-					if ("enter".equals(s)) {
-						this.terminal.raise(Signal.INT);
-					}
-				}
-			}
-		});
+		// this.rootView.getMessageListeners().register(e -> {
+		// 	View view = StaticShellMessageHeaderAccessor.getView(e);
+		// 	if (view != null) {
+		// 		if (e.getPayload() instanceof String s) {
+		// 			if ("enter".equals(s)) {
+		// 				this.terminal.raise(Signal.INT);
+		// 			}
+		// 		}
+		// 	}
+		// });
 	}
 
 	private View focus = null;

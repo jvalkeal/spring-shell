@@ -56,6 +56,7 @@ public class KeyBinder {
 		}
 
 		keyMap.bind("OPERATION_CTRL_q", ctrl('q'));
+		keyMap.bind("OPERATION_CTRL_w", ctrl('w'));
 
 		keyMap.bind("OPERATION_MOUSE", key(terminal, Capability.key_mouse));
 

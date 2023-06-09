@@ -19,15 +19,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.shell.component.view.event.EventLoop;
+
 /**
  * Base implementation of a {@link Scenario} helping to avoid some bloatware.
  *
  * @author Janne Valkealahti
  */
-public class AbstractScenario implements Scenario {
+public abstract class AbstractScenario implements Scenario {
 
 	private final List<String> categories = new ArrayList<>();
 	private final String title;
+	private EventLoop eventloop;
 
 	public AbstractScenario(String title, String... category) {
 		this(title, Arrays.asList(category));
@@ -46,6 +49,15 @@ public class AbstractScenario implements Scenario {
 	@Override
 	public String getTitle() {
 		return title;
+	}
+
+	@Override
+	public void configure(EventLoop eventloop) {
+		this.eventloop = eventloop;
+	}
+
+	protected EventLoop getEventloop() {
+		return eventloop;
 	}
 
 }

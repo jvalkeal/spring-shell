@@ -17,8 +17,11 @@ package org.springframework.shell.samples.catalog.scenario;
 
 import java.util.List;
 
+import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.event.EventLoop;
+
 /**
- * Scenario is an item which participates in a catalog showcase command.
+ * {@link Scenario} participates in a catalog showcase.
  *
  * @author Janne Valkealahti
  */
@@ -37,5 +40,14 @@ public interface Scenario {
 	 * @return title of a scenario
 	 */
 	String getTitle();
+
+	/**
+	 * Gets a {@link View} to be shown with a scenario.
+	 *
+	 * @return view of a scenario
+	 */
+	View getView();
+
+	void configure(EventLoop eventloop);
 
 }

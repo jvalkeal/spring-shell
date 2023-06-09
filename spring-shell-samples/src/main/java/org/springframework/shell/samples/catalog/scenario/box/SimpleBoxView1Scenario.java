@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.samples.catalog.scenario.box;
 
+import org.springframework.shell.component.view.BoxView;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +25,14 @@ public class SimpleBoxView1Scenario extends AbstractScenario {
 
 	public SimpleBoxView1Scenario() {
 		super("box1title", "box1");
+	}
+
+	@Override
+	public View getView() {
+		BoxView box = new BoxView();
+		box.setEventLoop(getEventloop());
+		box.setTitle("box1title");
+		box.setShowBorder(true);
+		return box;
 	}
 }

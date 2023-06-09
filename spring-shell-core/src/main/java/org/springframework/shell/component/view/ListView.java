@@ -96,6 +96,9 @@ public class ListView<T> extends BoxView {
 					case DOWN:
 						down();
 						break;
+					case ENTER:
+						enter();
+						break;
 					default:
 						break;
 				}
@@ -112,6 +115,11 @@ public class ListView<T> extends BoxView {
 	private void down() {
 		updateIndex(1);
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(selectedItem(), this)));
+	}
+
+	private void enter() {
+		log.info("XXX enter");
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "OpenSelectedItem", this)));
 	}
 
 	private T selectedItem() {
@@ -137,6 +145,9 @@ public class ListView<T> extends BoxView {
 	}
 
 	public record ListViewArgs<T>(T selected, View view) implements ViewAction {
+	}
+
+	public record ListViewAction<T>(T item, String action, View view) implements ViewAction {
 	}
 
 }
