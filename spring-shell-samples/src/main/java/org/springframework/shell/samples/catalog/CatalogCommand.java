@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.Message;
@@ -32,10 +29,10 @@ import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.control.AppView;
 import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.ListView;
-import org.springframework.shell.component.view.control.StatusBarView;
-import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.control.ListView.ListViewAction;
+import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
+import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
@@ -57,7 +54,7 @@ import org.springframework.util.StringUtils;
 @Command
 public class CatalogCommand extends AbstractShellComponent {
 
-	private final static Logger log = LoggerFactory.getLogger(CatalogCommand.class);
+	// ref types helping with deep nested generics from events
 	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF
 		= new ParameterizedTypeReference<ListViewAction<String>>() {};
 	private final static ParameterizedTypeReference<ListViewAction<ScenarioData>> LISTVIEW_SCENARIO_TYPEREF
@@ -78,6 +75,8 @@ public class CatalogCommand extends AbstractShellComponent {
 		EventLoop eventLoop = component.getEventLoop();
 		AppView app = scenarioBrowser(eventLoop, component);
 
+		// handle logic to switch between main scenario browser
+		// and currently active scenario
 		eventLoop.onDestroy(eventLoop.keyEvents()
 			.doOnNext(m -> {
 				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
@@ -96,6 +95,7 @@ public class CatalogCommand extends AbstractShellComponent {
 			})
 			.subscribe());
 
+		// start main scenario browser
 		component.setRoot(app, true);
 		component.run();
 	}
@@ -120,8 +120,10 @@ public class CatalogCommand extends AbstractShellComponent {
 	}
 
 	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
+		// we use main app view to represent scenario browser
 		AppView app = new AppView();
 
+		// category selector on left, scenario selector on right
 		GridView grid = new GridView();
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
@@ -129,6 +131,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> categories = categorySelector(eventLoop);
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
 
+		// handle event when scenario is chosen
 		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
 			.filter(args -> args.view() == scenarios)
 			.doOnNext(args -> {
@@ -146,6 +149,7 @@ public class CatalogCommand extends AbstractShellComponent {
 			})
 			.subscribe());
 
+		// handle event when category selection is changed
 		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
@@ -164,14 +168,12 @@ public class CatalogCommand extends AbstractShellComponent {
 			})
 			.subscribe());
 
+		// We place statusbar below categories and scenarios
 		StatusBarView statusBar = statusBar();
-
 		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
 		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
 		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
-
 		app.setMain(grid);
-
 		return app;
 	}
 
