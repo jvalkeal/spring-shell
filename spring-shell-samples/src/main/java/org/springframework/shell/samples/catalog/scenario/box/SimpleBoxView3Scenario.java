@@ -24,11 +24,11 @@ import org.springframework.stereotype.Component;
 public class SimpleBoxView3Scenario extends AbstractScenario {
 
 	public SimpleBoxView3Scenario() {
-		super("box3title", "box2");
+		super("box3title", "box3 desc", "box2");
 	}
 
 	@Override
-	public View getView() {
+	public View build() {
 		BoxView box = new BoxView();
 		box.setEventLoop(getEventloop());
 		box.setTitle("box3title");

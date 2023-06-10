@@ -29,26 +29,33 @@ import org.springframework.shell.component.view.event.EventLoop;
 public abstract class AbstractScenario implements Scenario {
 
 	private final List<String> categories = new ArrayList<>();
-	private final String title;
+	private final String name;
+	private final String description;
 	private EventLoop eventloop;
 
-	public AbstractScenario(String title, String... category) {
-		this(title, Arrays.asList(category));
+	public AbstractScenario(String name, String description, String... category) {
+		this(name, description, Arrays.asList(category));
 	}
 
-	public AbstractScenario(String title, List<String> categories) {
+	public AbstractScenario(String name, String description, List<String> categories) {
+		this.name = name;
+		this.description = description;
 		this.categories.addAll(categories);
-		this.title = title;
 	}
 
 	@Override
-	public List<String> getCategories() {
+	public List<String> categories() {
 		return categories;
 	}
 
 	@Override
-	public String getTitle() {
-		return title;
+	public String name() {
+		return name;
+	}
+
+	@Override
+	public String description() {
+		return description;
 	}
 
 	@Override

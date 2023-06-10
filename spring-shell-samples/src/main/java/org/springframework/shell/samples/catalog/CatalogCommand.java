@@ -63,8 +63,8 @@ public class CatalogCommand extends AbstractShellComponent {
 
 	public CatalogCommand(List<Scenario> scenarios) {
 		scenarios.forEach(sce -> {
-			scenarioMap.put(sce.getTitle(), sce);
-			sce.getCategories().forEach(cat -> {
+			scenarioMap.put(sce.name(), sce);
+			sce.categories().forEach(cat -> {
 				categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(sce);
 			});
 		});
@@ -115,7 +115,7 @@ public class CatalogCommand extends AbstractShellComponent {
 				if (args.item() != null) {
 					switch (args.action()) {
 						case "OpenSelectedItem":
-							View view = scenarioMap.get(args.item()).configure(eventLoop).getView();
+							View view = scenarioMap.get(args.item()).configure(eventLoop).build();
 							component.setRoot(view, true);
 							currentScenarioView = view;
 							break;
@@ -135,7 +135,7 @@ public class CatalogCommand extends AbstractShellComponent {
 						case "LineDown":
 							String selected = args.item();
 							List<Scenario> list = categoryMap.get(selected);
-							List<String> collect = list.stream().map(sce -> sce.getTitle()).collect(Collectors.toList());
+							List<String> collect = list.stream().map(sce -> sce.name()).collect(Collectors.toList());
 							scenarios.setItems(collect);
 							break;
 						default:

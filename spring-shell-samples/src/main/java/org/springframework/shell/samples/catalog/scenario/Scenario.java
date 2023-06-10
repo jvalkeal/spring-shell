@@ -32,21 +32,28 @@ public interface Scenario {
 	 *
 	 * @return categories of a scenario
 	 */
-	List<String> getCategories();
+	List<String> categories();
 
 	/**
-	 * Gets a title this scenario should use.
+	 * Gets a scenario name.
 	 *
-	 * @return title of a scenario
+	 * @return name of a scenario
 	 */
-	String getTitle();
+	String name();
 
 	/**
-	 * Gets a {@link View} to be shown with a scenario.
+	 * Gets a scenario description.
+	 *
+	 * @return description of a scenario
+	 */
+	String description();
+
+	/**
+	 * Build a {@link View} to be shown with a scenario.
 	 *
 	 * @return view of a scenario
 	 */
-	View getView();
+	View build();
 
 	/**
 	 * Configure scenario.
