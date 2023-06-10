@@ -18,7 +18,6 @@ package org.springframework.shell.component.view.control;
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
-import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
 import org.springframework.shell.component.view.screen.Screen;
@@ -30,32 +29,7 @@ import org.springframework.shell.component.view.screen.Screen;
  *
  * @author Janne Valkealahti
  */
-public interface View {
-
-	/**
-	 * Draw view into {@link Screen}. This is a main access point to draw
-	 * visible things into a screen.
-	 *
-	 * @param screen the screen
-	 */
-	void draw(Screen screen);
-
-	/**
-	 * Sets bounded box where this {@link View} should operate.
-	 *
-	 * @param x a x coord of a bounded box
-	 * @param y an y coord of a bounded box
-	 * @param width a width of a bounded box
-	 * @param height a height of a bounded box
-	 */
-	void setRect(int x, int y, int width, int height);
-
-	/**
-	 * Gets rectanle of a bounded box for this {@link View}.
-	 *
-	 * @return the rectanle of a bounded box
-	 */
-	Rectangle getRect();
+public interface View extends Control {
 
 	/**
 	 * Sets a layer index this {@code View} operates on.

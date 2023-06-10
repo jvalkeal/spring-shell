@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component.view.control;
 
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 
 public interface Control {
@@ -25,6 +26,13 @@ public interface Control {
 	 * @param screen the screen
 	 */
 	void draw(Screen screen);
+
+	/**
+	 * Gets rectanle of a bounded box for this {@link View}.
+	 *
+	 * @return the rectanle of a bounded box
+	 */
+	Rectangle getRect();
 
 	/**
 	 * Sets bounds where this {@link Control} should operate.
