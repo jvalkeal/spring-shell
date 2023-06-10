@@ -15,12 +15,31 @@
  */
 package org.springframework.shell.component.view.control;
 
+import org.springframework.shell.component.view.screen.Screen;
+
+/**
+ * Base interface for all cells. Typically a {@link Cell} is a building block in
+ * a {@link View} not needing to be aware of how it is drawn into a {@link Screen}
+ * but needs to aware of its "item", bounds via {@link Control} and other
+ * properties like {@code background}.
+ *
+ * @author Janne Valkealahti
+ */
 public interface Cell<T> extends Control {
 
+	/**
+	 * Get item bound to a cell.
+	 *
+	 * @return item bound to a cell
+	 */
 	T getItem();
+
+	/**
+	 * Sets an item to bound into a cell.
+	 *
+	 * @param item item to bound into a cell
+	 */
 	void setItem(T item);
-	boolean isSelected();
-	void updateSelected(boolean selected);
 
 	/**
 	 * Sets a background color.
@@ -28,5 +47,9 @@ public interface Cell<T> extends Control {
 	 * @param backgroundColor the background color
 	 */
 	void setBackgroundColor(int backgroundColor);
+
+	// XXX: think about selected methods
+	boolean isSelected();
+	void updateSelected(boolean selected);
 
 }

@@ -20,12 +20,10 @@ import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
-import org.springframework.shell.component.view.screen.Screen;
 
 /**
- * {@code View} is the interface for all {@code Views} on the {@link Screen} and
- * represents a visible element that can render itself and contains zero or more
- * nested {@code Views}.
+ * Base interface for all views. Represents a visible element that can render
+ * itself and contains zero or more nested {@code Views}.
  *
  * @author Janne Valkealahti
  */

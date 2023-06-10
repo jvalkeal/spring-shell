@@ -18,6 +18,14 @@ package org.springframework.shell.component.view.control;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 
+/**
+ * Base interface for all controls. {@link Control} is able to define a
+ * {@link Rectangle} it is bound to and draw into a {@link Screen}.
+ *
+ * @author Janne Valkealahti
+ * @see View
+ * @see Cell
+ */
 public interface Control {
 
 	/**
