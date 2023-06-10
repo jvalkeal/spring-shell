@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.samples.catalog.scenario;
 
-import java.util.List;
-
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.event.EventLoop;
 
@@ -27,26 +25,9 @@ import org.springframework.shell.component.view.event.EventLoop;
  */
 public interface Scenario {
 
-	/**
-	 * Gets a categories this scenario should be attached.
-	 *
-	 * @return categories of a scenario
-	 */
-	List<String> categories();
-
-	/**
-	 * Gets a scenario name.
-	 *
-	 * @return name of a scenario
-	 */
-	String name();
-
-	/**
-	 * Gets a scenario description.
-	 *
-	 * @return description of a scenario
-	 */
-	String description();
+	public static final String CATEGORY_LISTVIEW = "ListView";
+	public static final String CATEGORY_BOX1 = "box1";
+	public static final String CATEGORY_BOX2 = "box2";
 
 	/**
 	 * Build a {@link View} to be shown with a scenario.

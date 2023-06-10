@@ -17,17 +17,15 @@ package org.springframework.shell.samples.catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Disposable;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.Message;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
@@ -37,8 +35,8 @@ import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListViewAction;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
-import org.springframework.shell.component.view.control.ListCell;
 import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.ListCell;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -46,7 +44,10 @@ import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
+import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import org.springframework.shell.standard.AbstractShellComponent;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Main command access point to view showcase catalog.
@@ -59,21 +60,15 @@ public class CatalogCommand extends AbstractShellComponent {
 	private final static Logger log = LoggerFactory.getLogger(CatalogCommand.class);
 	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF
 		= new ParameterizedTypeReference<ListViewAction<String>>() {};
-	private final static ParameterizedTypeReference<ListViewAction<Scenario>> LISTVIEW_SCENARIO_TYPEREF
-		= new ParameterizedTypeReference<ListViewAction<Scenario>>() {};
+	private final static ParameterizedTypeReference<ListViewAction<ScenarioData>> LISTVIEW_SCENARIO_TYPEREF
+		= new ParameterizedTypeReference<ListViewAction<ScenarioData>>() {};
 
 	// mapping from category name to scenarios(can belong to multiple categories)
-	private final Map<String, List<Scenario>> categoryMap = new TreeMap<>();
-	private final Map<String, Scenario> scenarioMap = new HashMap<>();
+	private final Map<String, List<ScenarioData>> categoryMap = new TreeMap<>();
 	private View currentScenarioView = null;
 
 	public CatalogCommand(List<Scenario> scenarios) {
-		scenarios.forEach(sce -> {
-			scenarioMap.put(sce.name(), sce);
-			sce.categories().forEach(cat -> {
-				categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(sce);
-			});
-		});
+		mapScenarios(scenarios);
 	}
 
 	@Command(command = "catalog")
@@ -105,6 +100,22 @@ public class CatalogCommand extends AbstractShellComponent {
 		component.run();
 	}
 
+	private void mapScenarios(List<Scenario> scenarios) {
+		scenarios.forEach(sce -> {
+			ScenarioComponent ann = AnnotationUtils.findAnnotation(sce.getClass(), ScenarioComponent.class);
+			if (ann != null) {
+				String name = ann.name();
+				String description = ann.description();
+				String[] category = ann.category();
+				if (StringUtils.hasText(name) && StringUtils.hasText(description) && !ObjectUtils.isEmpty(category)) {
+					for (String cat : category) {
+						categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(new ScenarioData(sce, name, description, category));
+					}
+				}
+			}
+		});
+	}
+
 	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		AppView app = new AppView();
 
@@ -113,7 +124,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setColumnSize(30, 0);
 
 		ListView<String> categories = categorySelector(eventLoop);
-		ListView<Scenario> scenarios = scenarioSelector(eventLoop);
+		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
 
 		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
 			.filter(args -> args.view() == scenarios)
@@ -121,7 +132,7 @@ public class CatalogCommand extends AbstractShellComponent {
 				if (args.item() != null) {
 					switch (args.action()) {
 						case "OpenSelectedItem":
-							View view = scenarioMap.get(args.item().name()).configure(eventLoop).build();
+							View view = args.item().scenario().configure(eventLoop).build();
 							component.setRoot(view, true);
 							currentScenarioView = view;
 							break;
@@ -140,7 +151,7 @@ public class CatalogCommand extends AbstractShellComponent {
 						case "LineUp":
 						case "LineDown":
 							String selected = args.item();
-							List<Scenario> list = categoryMap.get(selected);
+							List<ScenarioData> list = categoryMap.get(selected);
 							scenarios.setItems(list);
 							break;
 						default:
@@ -166,31 +177,18 @@ public class CatalogCommand extends AbstractShellComponent {
 		categories.setEventLoop(eventLoop);
 		List<String> items = List.copyOf(categoryMap.keySet());
 		categories.setItems(items);
-
 		categories.setTitle("Categories");
 		categories.setShowBorder(true);
-
 		return categories;
 	}
 
-	private ListView<Scenario> scenarioSelector(EventLoop eventLoop) {
-		ListView<Scenario> scenarios = new ListView<>();
+	private ListView<ScenarioData> scenarioSelector(EventLoop eventLoop) {
+		ListView<ScenarioData> scenarios = new ListView<>();
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setShowBorder(true);
 		scenarios.setCellFactory(list -> new ScenarioListCell());
 		return scenarios;
-	}
-
-	static class ScenarioListCell extends ListCell<Scenario> {
-
-		@Override
-		public void draw(Screen screen) {
-			Rectangle rect = getRect();
-			Writer writer = screen.writerBuilder().build();
-			writer.text(String.format("%s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
-			writer.background(rect, getBackgroundColor());
-		}
 	}
 
 	private StatusBarView statusBar() {
@@ -199,6 +197,19 @@ public class CatalogCommand extends AbstractShellComponent {
 		StatusItem item2 = new StatusBarView.StatusItem("item2");
 		statusBar.setItems(Arrays.asList(item1, item2));
 		return statusBar;
+	}
+
+	private record ScenarioData(Scenario scenario, String name, String description, String[] category){};
+
+	private static class ScenarioListCell extends ListCell<ScenarioData> {
+
+		@Override
+		public void draw(Screen screen) {
+			Rectangle rect = getRect();
+			Writer writer = screen.writerBuilder().build();
+			writer.text(String.format("%s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
+			writer.background(rect, getBackgroundColor());
+		}
 	}
 
 }

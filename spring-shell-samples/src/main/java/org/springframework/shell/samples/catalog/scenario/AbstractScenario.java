@@ -15,10 +15,6 @@
  */
 package org.springframework.shell.samples.catalog.scenario;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.shell.component.view.event.EventLoop;
 
 /**
@@ -28,35 +24,7 @@ import org.springframework.shell.component.view.event.EventLoop;
  */
 public abstract class AbstractScenario implements Scenario {
 
-	private final List<String> categories = new ArrayList<>();
-	private final String name;
-	private final String description;
 	private EventLoop eventloop;
-
-	public AbstractScenario(String name, String description, String... category) {
-		this(name, description, Arrays.asList(category));
-	}
-
-	public AbstractScenario(String name, String description, List<String> categories) {
-		this.name = name;
-		this.description = description;
-		this.categories.addAll(categories);
-	}
-
-	@Override
-	public List<String> categories() {
-		return categories;
-	}
-
-	@Override
-	public String name() {
-		return name;
-	}
-
-	@Override
-	public String description() {
-		return description;
-	}
 
 	@Override
 	public Scenario configure(EventLoop eventloop) {

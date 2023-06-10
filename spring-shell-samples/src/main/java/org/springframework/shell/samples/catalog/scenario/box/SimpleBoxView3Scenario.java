@@ -18,14 +18,12 @@ package org.springframework.shell.samples.catalog.scenario.box;
 import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
-import org.springframework.stereotype.Component;
+import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-@Component
+import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOX2;
+
+@ScenarioComponent(name = "box3title", description = "box3 desc", category = { CATEGORY_BOX2 })
 public class SimpleBoxView3Scenario extends AbstractScenario {
-
-	public SimpleBoxView3Scenario() {
-		super("box3title", "box3 desc", "box2");
-	}
 
 	@Override
 	public View build() {

@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog.scenario.box;
+package org.springframework.shell.samples.catalog.scenario.listview;
 
-import org.springframework.shell.component.view.BoxView;
+import java.util.Arrays;
+
+import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOX2;
+import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_LISTVIEW;
 
-@ScenarioComponent(name = "box2title", description = "box2 desc", category = { CATEGORY_BOX2 })
-public class SimpleBoxView2Scenario extends AbstractScenario {
+@ScenarioComponent(name = "Basic", description = "Basic list", category = { CATEGORY_LISTVIEW })
+public class ListView1Scenario extends AbstractScenario {
 
 	@Override
 	public View build() {
-		BoxView box = new BoxView();
-		box.setEventLoop(getEventloop());
-		box.setTitle("box2title");
-		box.setShowBorder(true);
-		return box;
+		ListView<String> view = new ListView<>();
+		view.setEventLoop(getEventloop());
+		view.setItems(Arrays.asList("item1", "item2"));
+		return view;
 	}
+
 }
