@@ -32,20 +32,15 @@ import org.springframework.messaging.Message;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.AppView;
-import org.springframework.shell.component.view.BoxView;
 import org.springframework.shell.component.view.GridView;
 import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListViewAction;
-import org.springframework.shell.component.view.ListView.ListViewArgs;
 import org.springframework.shell.component.view.StatusBarView;
-import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
+import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
-import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
-import org.springframework.shell.component.view.screen.Color;
-import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -63,11 +58,10 @@ public class CatalogCommand extends AbstractShellComponent {
 	private final Map<String, Scenario> scenarioNameMap = new HashMap<>();
 
 	public CatalogCommand(List<Scenario> scenarios) {
-		scenarios.forEach(s -> {
-			scenarioNameMap.put(s.getTitle(), s);
-			s.getCategories().forEach(category -> {
-				List<Scenario> catScenarios = scenarioMap.computeIfAbsent(category, key -> new ArrayList<>());
-				catScenarios.add(s);
+		scenarios.forEach(sce -> {
+			scenarioNameMap.put(sce.getTitle(), sce);
+			sce.getCategories().forEach(cat -> {
+				scenarioMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(sce);
 			});
 		});
 	}
@@ -94,46 +88,59 @@ public class CatalogCommand extends AbstractShellComponent {
 			.subscribe();
 
 
-		AppView app = scenarioSelector(eventLoop, component);
+		AppView app = scenarioBrowser(eventLoop, component);
 
 		component.setRoot(app, true);
 		component.run();
 	}
 
-	private AppView scenarioSelector(EventLoop eventLoop, TerminalUI component) {
+	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		AppView app = new AppView();
 
 		GridView grid = new GridView();
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView<String> scenarios = scenarios(eventLoop);
-		ListView<String> categories = categories(eventLoop);
+		ListView<String> scenarios = scenarioSelector(eventLoop);
+		ListView<String> categories = categorySelector(eventLoop);
 
-		ParameterizedTypeReference<ListViewArgs<String>> typeRef1 = new ParameterizedTypeReference<ListViewArgs<String>>(){};
-		Disposable disposable = eventLoop.events(EventLoop.Type.VIEW, typeRef1)
-			.filter(args -> args.view() == categories)
+		ParameterizedTypeReference<ListViewAction<String>> typeRef2 = new ParameterizedTypeReference<ListViewAction<String>>(){};
+
+		Disposable disposable1 = eventLoop.events(EventLoop.Type.VIEW, typeRef2)
+			.filter(args -> args.view() == scenarios)
 			.doOnNext(args -> {
-				if (args.selected() != null) {
-					String selected = args.selected();
-					List<Scenario> list = scenarioMap.get(selected);
-					List<String> collect = list.stream().map(s -> s.getTitle()).collect(Collectors.toList());
-					scenarios.setItems(collect);
+				if (args.item() != null) {
+					switch (args.action()) {
+						case "OpenSelectedItem":
+							String title = args.item();
+							Scenario s = scenarioNameMap.get(title);
+							s.configure(eventLoop);
+							View v = s.getView();
+							component.setRoot(v, true);
+							break;
+						default:
+							break;
+					}
 				}
 			})
 			.subscribe();
-		eventLoop.onDestroy(disposable);
+		eventLoop.onDestroy(disposable1);
 
-		ParameterizedTypeReference<ListViewAction<String>> typeRef2 = new ParameterizedTypeReference<ListViewAction<String>>(){};
 		Disposable disposable2 = eventLoop.events(EventLoop.Type.VIEW, typeRef2)
-			.filter(args -> args.view() == scenarios)
+			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
-				if (args.item() != null && "OpenSelectedItem".equals(args.action())) {
-					String title = args.item();
-					Scenario s = scenarioNameMap.get(title);
-					s.configure(eventLoop);
-					View v = s.getView();
-					component.setRoot(v, true);
+				if (args.item() != null) {
+					switch (args.action()) {
+						case "LineUp":
+						case "LineDown":
+							String selected = args.item();
+							List<Scenario> list = scenarioMap.get(selected);
+							List<String> collect = list.stream().map(sce -> sce.getTitle()).collect(Collectors.toList());
+							scenarios.setItems(collect);
+							break;
+						default:
+							break;
+					}
 				}
 			})
 			.subscribe();
@@ -151,7 +158,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		return app;
 	}
 
-	private ListView<String> categories(EventLoop eventLoop) {
+	private ListView<String> categorySelector(EventLoop eventLoop) {
 		ListView<String> categories = new ListView<>();
 		categories.setEventLoop(eventLoop);
 		List<String> items = List.copyOf(scenarioMap.keySet());
@@ -163,7 +170,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		return categories;
 	}
 
-	private ListView<String> scenarios(EventLoop eventLoop) {
+	private ListView<String> scenarioSelector(EventLoop eventLoop) {
 		ListView<String> scenarios = new ListView<>();
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
