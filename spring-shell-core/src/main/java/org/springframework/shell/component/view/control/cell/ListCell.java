@@ -15,8 +15,8 @@
  */
 package org.springframework.shell.component.view.control.cell;
 
-import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.control.Cell;
+import org.springframework.shell.component.view.control.ListView;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;

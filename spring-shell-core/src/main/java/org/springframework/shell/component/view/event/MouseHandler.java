@@ -18,7 +18,7 @@ package org.springframework.shell.component.view.event;
 import org.jline.terminal.MouseEvent;
 
 import org.springframework.lang.Nullable;
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.View;
 
 /**
  * Handles mouse events in a form of {@link MouseHandlerArgs} and returns

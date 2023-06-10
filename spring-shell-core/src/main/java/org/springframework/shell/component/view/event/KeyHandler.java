@@ -16,7 +16,7 @@
 package org.springframework.shell.component.view.event;
 
 import org.springframework.lang.Nullable;
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.View;
 
 /**
  * Handles Key events in a form of {@link KeyHandlerArgs} and returns

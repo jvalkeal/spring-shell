@@ -17,6 +17,8 @@ package org.springframework.shell.component.view;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.control.BoxView;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoxViewTests extends AbstractViewTests {

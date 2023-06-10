@@ -17,6 +17,8 @@ package org.springframework.shell.component.view;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.control.BoxView;
+import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 
 import static org.assertj.core.api.Assertions.assertThat;

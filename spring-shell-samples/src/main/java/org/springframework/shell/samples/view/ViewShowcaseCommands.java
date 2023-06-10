@@ -30,7 +30,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
-import org.springframework.shell.component.view.BoxView;
+import org.springframework.shell.component.view.control.BoxView;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;

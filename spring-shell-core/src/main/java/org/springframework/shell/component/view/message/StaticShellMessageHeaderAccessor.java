@@ -23,7 +23,7 @@ import reactor.util.context.ContextView;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.event.EventLoop;
 
 /**

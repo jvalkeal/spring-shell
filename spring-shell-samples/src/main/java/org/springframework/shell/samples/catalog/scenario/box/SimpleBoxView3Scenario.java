@@ -15,8 +15,8 @@
  */
 package org.springframework.shell.samples.catalog.scenario.box;
 
-import org.springframework.shell.component.view.BoxView;
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.BoxView;
+import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 

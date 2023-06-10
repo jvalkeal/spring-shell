@@ -15,7 +15,7 @@
  */
 package org.springframework.shell.samples.catalog.scenario;
 
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.event.EventLoop;
 
 /**

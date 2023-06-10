@@ -17,8 +17,8 @@ package org.springframework.shell.samples.catalog.scenario.listview;
 
 import java.util.Arrays;
 
-import org.springframework.shell.component.view.ListView;
-import org.springframework.shell.component.view.View;
+import org.springframework.shell.component.view.control.ListView;
+import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
