@@ -94,6 +94,9 @@ public class CatalogCommand extends AbstractShellComponent {
 		component.run();
 	}
 
+	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF = new ParameterizedTypeReference<ListViewAction<String>>() {
+	};
+
 	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		AppView app = new AppView();
 
@@ -104,9 +107,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> scenarios = scenarioSelector(eventLoop);
 		ListView<String> categories = categorySelector(eventLoop);
 
-		ParameterizedTypeReference<ListViewAction<String>> typeRef2 = new ParameterizedTypeReference<ListViewAction<String>>(){};
-
-		Disposable disposable1 = eventLoop.events(EventLoop.Type.VIEW, typeRef2)
+		Disposable disposable1 = eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
 			.filter(args -> args.view() == scenarios)
 			.doOnNext(args -> {
 				if (args.item() != null) {
@@ -126,7 +127,7 @@ public class CatalogCommand extends AbstractShellComponent {
 			.subscribe();
 		eventLoop.onDestroy(disposable1);
 
-		Disposable disposable2 = eventLoop.events(EventLoop.Type.VIEW, typeRef2)
+		Disposable disposable2 = eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				if (args.item() != null) {

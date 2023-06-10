@@ -109,13 +109,11 @@ public class ListView<T> extends BoxView {
 
 	private void up() {
 		updateIndex(-1);
-		// dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(selectedItem(), this)));
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineUp", this)));
 	}
 
 	private void down() {
 		updateIndex(1);
-		// dispatch(ShellMessageBuilder.ofView(this, new ListViewArgs<>(selectedItem(), this)));
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineDown", this)));
 	}
 
@@ -145,9 +143,6 @@ public class ListView<T> extends BoxView {
 			}
 		}
 	}
-
-	// public record ListViewArgs<T>(T selected, View view) implements ViewAction {
-	// }
 
 	public record ListViewAction<T>(T item, String action, View view) implements ViewAction {
 	}
