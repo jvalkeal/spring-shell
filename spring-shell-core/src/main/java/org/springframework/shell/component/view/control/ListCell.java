@@ -38,6 +38,7 @@ public class ListCell<T> extends AbstractCell<T> {
 	}
 
 	public void updateItem(T item) {
+		setItem(item);
 		this.text = item.toString();
 	}
 

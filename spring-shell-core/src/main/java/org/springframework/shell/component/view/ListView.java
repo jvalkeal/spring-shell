@@ -69,6 +69,10 @@ public class ListView<T> extends BoxView {
 		super.drawInternal(screen);
 	}
 
+	public void setCellFactory(Function<ListView<T>, ListCell<T>> factory) {
+		this.factory = factory;
+	}
+
 	public void setItems(List<T> items) {
 		this.items.clear();
 		this.items.addAll(items);

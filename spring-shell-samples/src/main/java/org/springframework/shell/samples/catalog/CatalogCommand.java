@@ -37,10 +37,14 @@ import org.springframework.shell.component.view.ListView;
 import org.springframework.shell.component.view.ListView.ListViewAction;
 import org.springframework.shell.component.view.StatusBarView;
 import org.springframework.shell.component.view.StatusBarView.StatusItem;
+import org.springframework.shell.component.view.control.ListCell;
 import org.springframework.shell.component.view.View;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.standard.AbstractShellComponent;
 
@@ -55,6 +59,8 @@ public class CatalogCommand extends AbstractShellComponent {
 	private final static Logger log = LoggerFactory.getLogger(CatalogCommand.class);
 	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF
 		= new ParameterizedTypeReference<ListViewAction<String>>() {};
+	private final static ParameterizedTypeReference<ListViewAction<Scenario>> LISTVIEW_SCENARIO_TYPEREF
+		= new ParameterizedTypeReference<ListViewAction<Scenario>>() {};
 
 	// mapping from category name to scenarios(can belong to multiple categories)
 	private final Map<String, List<Scenario>> categoryMap = new TreeMap<>();
@@ -106,16 +112,16 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setRowSize(0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView<String> scenarios = scenarioSelector(eventLoop);
 		ListView<String> categories = categorySelector(eventLoop);
+		ListView<Scenario> scenarios = scenarioSelector(eventLoop);
 
-		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
+		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
 			.filter(args -> args.view() == scenarios)
 			.doOnNext(args -> {
 				if (args.item() != null) {
 					switch (args.action()) {
 						case "OpenSelectedItem":
-							View view = scenarioMap.get(args.item()).configure(eventLoop).build();
+							View view = scenarioMap.get(args.item().name()).configure(eventLoop).build();
 							component.setRoot(view, true);
 							currentScenarioView = view;
 							break;
@@ -135,8 +141,7 @@ public class CatalogCommand extends AbstractShellComponent {
 						case "LineDown":
 							String selected = args.item();
 							List<Scenario> list = categoryMap.get(selected);
-							List<String> collect = list.stream().map(sce -> sce.name()).collect(Collectors.toList());
-							scenarios.setItems(collect);
+							scenarios.setItems(list);
 							break;
 						default:
 							break;
@@ -168,12 +173,24 @@ public class CatalogCommand extends AbstractShellComponent {
 		return categories;
 	}
 
-	private ListView<String> scenarioSelector(EventLoop eventLoop) {
-		ListView<String> scenarios = new ListView<>();
+	private ListView<Scenario> scenarioSelector(EventLoop eventLoop) {
+		ListView<Scenario> scenarios = new ListView<>();
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setShowBorder(true);
+		scenarios.setCellFactory(list -> new ScenarioListCell());
 		return scenarios;
+	}
+
+	static class ScenarioListCell extends ListCell<Scenario> {
+
+		@Override
+		public void draw(Screen screen) {
+			Rectangle rect = getRect();
+			Writer writer = screen.writerBuilder().build();
+			writer.text(String.format("%s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
+			writer.background(rect, getBackgroundColor());
+		}
 	}
 
 	private StatusBarView statusBar() {
