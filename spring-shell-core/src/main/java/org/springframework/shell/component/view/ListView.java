@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.shell.component.view.control.ListCell;
+import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;

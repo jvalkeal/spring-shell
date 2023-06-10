@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.control;
+package org.springframework.shell.component.view.control.cell;
 
+import org.springframework.shell.component.view.control.Control;
 import org.springframework.shell.component.view.geom.Rectangle;
 
 public abstract class AbstractControl implements Control {
