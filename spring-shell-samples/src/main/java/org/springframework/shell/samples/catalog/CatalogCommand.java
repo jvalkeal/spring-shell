@@ -101,6 +101,7 @@ public class CatalogCommand extends AbstractShellComponent {
 	}
 
 	private void mapScenarios(List<Scenario> scenarios) {
+		// we blindly expect scenario to have ScenarioComponent annotation with all fields
 		scenarios.forEach(sce -> {
 			ScenarioComponent ann = AnnotationUtils.findAnnotation(sce.getClass(), ScenarioComponent.class);
 			if (ann != null) {
@@ -109,7 +110,9 @@ public class CatalogCommand extends AbstractShellComponent {
 				String[] category = ann.category();
 				if (StringUtils.hasText(name) && StringUtils.hasText(description) && !ObjectUtils.isEmpty(category)) {
 					for (String cat : category) {
-						categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(new ScenarioData(sce, name, description, category));
+						ScenarioData scenarioData = new ScenarioData(sce, name, description, category);
+						categoryMap.computeIfAbsent(Scenario.CATEGORY_ALL, key -> new ArrayList<>()).add(scenarioData);
+						categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(scenarioData);
 					}
 				}
 			}

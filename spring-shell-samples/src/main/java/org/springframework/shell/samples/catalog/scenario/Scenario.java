@@ -25,6 +25,8 @@ import org.springframework.shell.component.view.event.EventLoop;
  */
 public interface Scenario {
 
+	// Common category names
+	public static final String CATEGORY_ALL = "All Scenarios";
 	public static final String CATEGORY_LISTVIEW = "ListView";
 	public static final String CATEGORY_BOX1 = "box1";
 	public static final String CATEGORY_BOX2 = "box2";
