@@ -17,20 +17,26 @@ package org.springframework.shell.samples.catalog.scenario.box;
 
 import org.springframework.shell.component.view.control.BoxView;
 import org.springframework.shell.component.view.control.View;
+import org.springframework.shell.component.view.geom.HorizontalAlign;
+import org.springframework.shell.component.view.screen.Color;
+import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOX2;
+import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOXVIEW;
 
-@ScenarioComponent(name = "box2title", description = "box2 desc", category = { CATEGORY_BOX2 })
-public class SimpleBoxView2Scenario extends AbstractScenario {
+@ScenarioComponent(name = "Simple boxview", description = "BoxView with color and style", category = { CATEGORY_BOXVIEW })
+public class BoxView1 extends AbstractScenario {
 
 	@Override
 	public View build() {
 		BoxView box = new BoxView();
-		box.setEventLoop(getEventloop());
-		box.setTitle("box2title");
+		box.setTitle("Title");
 		box.setShowBorder(true);
+		box.setBackgroundColor(Color.KHAKI4);
+		box.setTitleColor(Color.RED);
+		box.setTitleStyle(ScreenItem.STYLE_BOLD | ScreenItem.STYLE_ITALIC);
+		box.setTitleAlign(HorizontalAlign.CENTER);
 		return box;
 	}
 }

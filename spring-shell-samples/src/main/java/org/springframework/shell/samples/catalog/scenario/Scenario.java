@@ -28,8 +28,9 @@ public interface Scenario {
 	// Common category names
 	public static final String CATEGORY_ALL = "All Scenarios";
 	public static final String CATEGORY_LISTVIEW = "ListView";
-	public static final String CATEGORY_BOX1 = "box1";
-	public static final String CATEGORY_BOX2 = "box2";
+	public static final String CATEGORY_BOXVIEW = "BoxView";
+	public static final String CATEGORY_LAYOUT = "Layout";
+	public static final String CATEGORY_OTHER = "Other";
 
 	/**
 	 * Build a {@link View} to be shown with a scenario.
