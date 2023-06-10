@@ -48,6 +48,12 @@ public interface Scenario {
 	 */
 	View getView();
 
-	void configure(EventLoop eventloop);
+	/**
+	 * Configure scenario.
+	 *
+	 * @param eventloop eventloop for scenario
+	 * @return scenario for chaining
+	 */
+	Scenario configure(EventLoop eventloop);
 
 }

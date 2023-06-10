@@ -52,8 +52,9 @@ public abstract class AbstractScenario implements Scenario {
 	}
 
 	@Override
-	public void configure(EventLoop eventloop) {
+	public Scenario configure(EventLoop eventloop) {
 		this.eventloop = eventloop;
+		return this;
 	}
 
 	protected EventLoop getEventloop() {

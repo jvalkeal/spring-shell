@@ -52,16 +52,20 @@ import org.springframework.shell.standard.AbstractShellComponent;
 @Command
 public class CatalogCommand extends AbstractShellComponent {
 
-	private final Logger log = LoggerFactory.getLogger(CatalogCommand.class);
+	private final static Logger log = LoggerFactory.getLogger(CatalogCommand.class);
+	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF
+		= new ParameterizedTypeReference<ListViewAction<String>>() {};
+
 	// mapping from category name to scenarios(can belong to multiple categories)
-	private final Map<String, List<Scenario>> scenarioMap = new TreeMap<>();
-	private final Map<String, Scenario> scenarioNameMap = new HashMap<>();
+	private final Map<String, List<Scenario>> categoryMap = new TreeMap<>();
+	private final Map<String, Scenario> scenarioMap = new HashMap<>();
+	private View currentScenarioView = null;
 
 	public CatalogCommand(List<Scenario> scenarios) {
 		scenarios.forEach(sce -> {
-			scenarioNameMap.put(sce.getTitle(), sce);
+			scenarioMap.put(sce.getTitle(), sce);
 			sce.getCategories().forEach(cat -> {
-				scenarioMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(sce);
+				categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(sce);
 			});
 		});
 	}
@@ -71,31 +75,29 @@ public class CatalogCommand extends AbstractShellComponent {
 	) {
 		TerminalUI component = new TerminalUI(getTerminal());
 		EventLoop eventLoop = component.getEventLoop();
+		AppView app = scenarioBrowser(eventLoop, component);
 
-		eventLoop.keyEvents()
+		eventLoop.onDestroy(eventLoop.keyEvents()
 			.doOnNext(m -> {
 				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
-					Message<String> msg = ShellMessageBuilder.withPayload("int")
-						.setEventType(EventLoop.Type.SYSTEM)
-						.setPriority(0)
-						.build();
-					eventLoop.dispatch(msg);
-				}
-				else if ("w".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
-					// component.setRoot(box, true);
+					if (currentScenarioView != null) {
+						currentScenarioView = null;
+						component.setRoot(app, true);
+					}
+					else {
+						Message<String> msg = ShellMessageBuilder.withPayload("int")
+							.setEventType(EventLoop.Type.SYSTEM)
+							.setPriority(0)
+							.build();
+						eventLoop.dispatch(msg);
+					}
 				}
 			})
-			.subscribe();
-
-
-		AppView app = scenarioBrowser(eventLoop, component);
+			.subscribe());
 
 		component.setRoot(app, true);
 		component.run();
 	}
-
-	private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF = new ParameterizedTypeReference<ListViewAction<String>>() {
-	};
 
 	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		AppView app = new AppView();
@@ -107,27 +109,24 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> scenarios = scenarioSelector(eventLoop);
 		ListView<String> categories = categorySelector(eventLoop);
 
-		Disposable disposable1 = eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
+		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
 			.filter(args -> args.view() == scenarios)
 			.doOnNext(args -> {
 				if (args.item() != null) {
 					switch (args.action()) {
 						case "OpenSelectedItem":
-							String title = args.item();
-							Scenario s = scenarioNameMap.get(title);
-							s.configure(eventLoop);
-							View v = s.getView();
-							component.setRoot(v, true);
+							View view = scenarioMap.get(args.item()).configure(eventLoop).getView();
+							component.setRoot(view, true);
+							currentScenarioView = view;
 							break;
 						default:
 							break;
 					}
 				}
 			})
-			.subscribe();
-		eventLoop.onDestroy(disposable1);
+			.subscribe());
 
-		Disposable disposable2 = eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
+		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
 			.filter(args -> args.view() == categories)
 			.doOnNext(args -> {
 				if (args.item() != null) {
@@ -135,7 +134,7 @@ public class CatalogCommand extends AbstractShellComponent {
 						case "LineUp":
 						case "LineDown":
 							String selected = args.item();
-							List<Scenario> list = scenarioMap.get(selected);
+							List<Scenario> list = categoryMap.get(selected);
 							List<String> collect = list.stream().map(sce -> sce.getTitle()).collect(Collectors.toList());
 							scenarios.setItems(collect);
 							break;
@@ -144,9 +143,7 @@ public class CatalogCommand extends AbstractShellComponent {
 					}
 				}
 			})
-			.subscribe();
-		eventLoop.onDestroy(disposable2);
-
+			.subscribe());
 
 		StatusBarView statusBar = statusBar();
 
@@ -162,7 +159,7 @@ public class CatalogCommand extends AbstractShellComponent {
 	private ListView<String> categorySelector(EventLoop eventLoop) {
 		ListView<String> categories = new ListView<>();
 		categories.setEventLoop(eventLoop);
-		List<String> items = List.copyOf(scenarioMap.keySet());
+		List<String> items = List.copyOf(categoryMap.keySet());
 		categories.setItems(items);
 
 		categories.setTitle("Categories");
@@ -176,11 +173,6 @@ public class CatalogCommand extends AbstractShellComponent {
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setShowBorder(true);
-
-		// scenarios.getMessageListeners().register(e -> {
-		// 	log.info("SCENARIOS {}", e);
-		// });
-
 		return scenarios;
 	}
 
