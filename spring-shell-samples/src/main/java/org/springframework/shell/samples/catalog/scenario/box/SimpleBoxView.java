@@ -26,7 +26,7 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOXVIEW;
 
 @ScenarioComponent(name = "Simple boxview", description = "BoxView with color and style", category = { CATEGORY_BOXVIEW })
-public class BoxView1 extends AbstractScenario {
+public class SimpleBoxView extends AbstractScenario {
 
 	@Override
 	public View build() {

@@ -25,7 +25,7 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_LAYOUT;
 
 @ScenarioComponent(name = "Simple gridview", description = "GridView sample", category = { CATEGORY_LAYOUT })
-public class GridView1 extends AbstractScenario {
+public class SimpleGridView extends AbstractScenario {
 
 	@Override
 	public View build() {
