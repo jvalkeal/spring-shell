@@ -18,6 +18,11 @@ package org.springframework.shell.component.view.control.cell;
 import org.springframework.shell.component.view.control.Control;
 import org.springframework.shell.component.view.geom.Rectangle;
 
+/**
+ * Base implementation of a {@link Control}.
+ *
+ * @author Janne Valkealahti
+ */
 public abstract class AbstractControl implements Control {
 
 	private int x = 0;
@@ -33,6 +38,7 @@ public abstract class AbstractControl implements Control {
 		this.height = height;
 	}
 
+	@Override
 	public Rectangle getRect() {
 		return new Rectangle(x, y, width, height);
 	}
