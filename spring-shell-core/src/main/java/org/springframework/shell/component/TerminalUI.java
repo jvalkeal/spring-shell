@@ -48,7 +48,6 @@ import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerR
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -71,6 +70,7 @@ public class TerminalUI {
 	private boolean fullScreen;
 	private final KeyBinder keyBinder;
 	private DefaultEventLoop eventLoop = new DefaultEventLoop();
+	private View focus = null;
 
 	/**
 	 * Constructs a handler with a given terminal.
@@ -85,7 +85,7 @@ public class TerminalUI {
 	}
 
 	/**
-	 * Sets a root view of this handler.
+	 * Sets a root view.
 	 *
 	 * @param root the root view
 	 * @param fullScreen if root view should request full screen
@@ -94,27 +94,6 @@ public class TerminalUI {
 		setFocus(root);
 		this.rootView = root;
 		this.fullScreen = fullScreen;
-		// this.rootView.getMessageListeners().register(e -> {
-		// 	View view = StaticShellMessageHeaderAccessor.getView(e);
-		// 	if (view != null) {
-		// 		if (e.getPayload() instanceof String s) {
-		// 			if ("enter".equals(s)) {
-		// 				this.terminal.raise(Signal.INT);
-		// 			}
-		// 		}
-		// 	}
-		// });
-	}
-
-	private View focus = null;
-	private void setFocus(@Nullable View view) {
-		if (focus != null) {
-			focus.focus(focus, false);
-		}
-		focus = view;
-		if (focus != null) {
-			focus.focus(focus, true);
-		}
 	}
 
 	/**
@@ -127,12 +106,31 @@ public class TerminalUI {
 		loop();
 	}
 
+	/**
+	 * Gets an {@link EventLoop}.
+	 *
+	 * @return an event loop
+	 */
 	public EventLoop getEventLoop() {
 		return eventLoop;
 	}
 
+	/**
+	 * Redraw a whole screen. Essentially a message is dispatched to an event loop
+	 * which is handled as soon as possible.
+	 */
 	public void redraw() {
 		getEventLoop().dispatch(ShellMessageBuilder.ofRedraw());
+	}
+
+	private void setFocus(@Nullable View view) {
+		if (focus != null) {
+			focus.focus(focus, false);
+		}
+		focus = view;
+		if (focus != null) {
+			focus.focus(focus, true);
+		}
 	}
 
 	private void render(int rows, int columns) {

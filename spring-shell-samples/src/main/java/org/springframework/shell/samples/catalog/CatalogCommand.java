@@ -71,9 +71,9 @@ public class CatalogCommand extends AbstractShellComponent {
 	@Command(command = "catalog")
 	public void catalog(
 	) {
-		TerminalUI component = new TerminalUI(getTerminal());
-		EventLoop eventLoop = component.getEventLoop();
-		AppView app = scenarioBrowser(eventLoop, component);
+		TerminalUI ui = new TerminalUI(getTerminal());
+		EventLoop eventLoop = ui.getEventLoop();
+		AppView app = scenarioBrowser(eventLoop, ui);
 
 		// handle logic to switch between main scenario browser
 		// and currently active scenario
@@ -82,7 +82,7 @@ public class CatalogCommand extends AbstractShellComponent {
 				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
 					if (currentScenarioView != null) {
 						currentScenarioView = null;
-						component.setRoot(app, true);
+						ui.setRoot(app, true);
 					}
 					else {
 						Message<String> msg = ShellMessageBuilder.withPayload("int")
@@ -96,8 +96,8 @@ public class CatalogCommand extends AbstractShellComponent {
 			.subscribe());
 
 		// start main scenario browser
-		component.setRoot(app, true);
-		component.run();
+		ui.setRoot(app, true);
+		ui.run();
 	}
 
 	private void mapScenarios(List<Scenario> scenarios) {
