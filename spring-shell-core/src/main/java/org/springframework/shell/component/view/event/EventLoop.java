@@ -72,6 +72,16 @@ public interface EventLoop {
 	 */
 	<T> Flux<T> events(EventLoop.Type type, Class<T> clazz);
 
+	/**
+	 * Specialisation of {@link #events()} which returns type safe
+	 * stream filtered by given eventloop message type and message
+	 * payload class type.
+	 *
+	 * @param <T> the type to expect
+	 * @param type the eventloop message type to filter
+	 * @param typeRef the parameterized type to filter
+	 * @return the filtered events from an event loop
+	 */
 	<T> Flux<T> events(EventLoop.Type type, ParameterizedTypeReference<T> typeRef);
 
 	/**
