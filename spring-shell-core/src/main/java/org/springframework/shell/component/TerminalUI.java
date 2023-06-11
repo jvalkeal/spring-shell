@@ -177,16 +177,18 @@ public class TerminalUI {
 	}
 
 	private void registerEventHandling() {
-		eventLoop.events()
+		// XXX: think this again
+		eventLoop.onDestroy(eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SIGNAL);
 			})
 			.doOnNext(m -> {
 				display();
 			})
-			.subscribe();
+			.subscribe());
 
-		eventLoop.events()
+		// XXX: think this again
+		eventLoop.onDestroy(eventLoop.events()
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SYSTEM);
 			})
@@ -201,25 +203,19 @@ public class TerminalUI {
 					}
 				}
 			})
-			.subscribe();
+			.subscribe());
 
-		eventLoop.keyEvents()
+		eventLoop.onDestroy(eventLoop.keyEvents()
 			.doOnNext(m -> {
 				handleKeyEvent(m);
 			})
-			.subscribe();
+			.subscribe());
 
-		eventLoop.events()
-			.filter(m -> {
-				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.MOUSE);
-			})
+		eventLoop.onDestroy(eventLoop.mouseEvents()
 			.doOnNext(m -> {
-				Object payload = m.getPayload();
-				if (payload instanceof MouseEvent p) {
-					handleMouseEvent(p);
-				}
+				handleMouseEvent(m);
 			})
-			.subscribe();
+			.subscribe());
 	}
 
 	private void handleKeyEvent(KeyEvent event) {
