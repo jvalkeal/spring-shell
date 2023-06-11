@@ -15,6 +15,17 @@
  */
 package org.springframework.shell.component.view.control;
 
+/**
+ * Base interface for view actions.
+ *
+ * @author Janne Valkealahti
+ */
 interface ViewAction {
+
+	/**
+	 * Gets a {@link View} for this action
+	 *
+	 * @return view for action
+	 */
 	View view();
 }

@@ -48,8 +48,18 @@ public interface Cell<T> extends Control {
 	 */
 	void setBackgroundColor(int backgroundColor);
 
-	// XXX: think about selected methods
+	/**
+	 * Return if cell is selected.
+	 *
+	 * @return true if cell is selected
+	 */
 	boolean isSelected();
+
+	/**
+	 * Update selected status.
+	 *
+	 * @param selected true if cell is selected
+	 */
 	void updateSelected(boolean selected);
 
 }
