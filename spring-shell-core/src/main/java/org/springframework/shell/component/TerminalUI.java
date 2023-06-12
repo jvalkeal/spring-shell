@@ -123,7 +123,7 @@ public class TerminalUI {
 		getEventLoop().dispatch(ShellMessageBuilder.ofRedraw());
 	}
 
-	private void setFocus(@Nullable View view) {
+	public void setFocus(@Nullable View view) {
 		if (focus != null) {
 			focus.focus(focus, false);
 		}

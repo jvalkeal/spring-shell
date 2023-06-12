@@ -97,6 +97,7 @@ public class CatalogCommand extends AbstractShellComponent {
 
 		// start main scenario browser
 		ui.setRoot(app, true);
+		ui.setFocus(categories);
 		ui.run();
 	}
 
@@ -119,6 +120,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
+	ListView<String> categories;
 	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		// we use main app view to represent scenario browser
 		AppView app = new AppView();
@@ -129,6 +131,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setColumnSize(30, 0);
 
 		ListView<String> categories = categorySelector(eventLoop);
+		this.categories = categories;
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
 
 		// handle event when scenario is chosen

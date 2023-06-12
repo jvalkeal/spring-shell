@@ -82,6 +82,9 @@ public class ListView<T> extends BoxView {
 			cells.add(c);
 			c.updateItem(i);
 		}
+		if (!this.items.isEmpty()) {
+			this.selected = 0;
+		}
 	}
 
 	@Override
