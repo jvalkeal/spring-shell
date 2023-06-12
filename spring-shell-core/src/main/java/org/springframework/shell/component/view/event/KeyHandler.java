@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.view.event;
 
+import java.util.function.Predicate;
+
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.control.View;
 
@@ -35,6 +37,32 @@ public interface KeyHandler {
 	 */
 	KeyHandlerResult handle(KeyHandlerArgs args);
 
+    // default <V> Function<T, V> andThen(Function<? super R, ? extends V> after) {
+    //     Objects.requireNonNull(after);
+    //     return (T t) -> after.apply(apply(t));
+    // }
+
+    default KeyHandler either(KeyHandler handler) {
+		if (handler != null) {
+			return (KeyHandlerArgs args) -> handler.handle(args);
+		}
+		return (KeyHandlerArgs args) -> handle(args);
+    }
+
+    default KeyHandler eitherx(KeyHandler handler, Predicate<KeyHandlerResult> predicate) {
+		return ddd -> {
+			KeyHandlerResult res = handler.handle(ddd);
+			if (predicate.test(res)) {
+				return res;
+			}
+			return handle(ddd);
+		};
+    }
+
+    default KeyHandler eitherxx(KeyHandler handler) {
+		return eitherx(handler, res -> res.consumed());
+    }
+
 	/**
 	 * Construct {@link KeyHandlerArgs} from a {@link KeyEvent}.
 	 *
@@ -53,8 +81,8 @@ public interface KeyHandler {
 	 * @param focus  the view
 	 * @return a Key handler result
 	 */
-	static KeyHandlerResult resultOf(KeyEvent event, View focus) {
-		return new KeyHandlerResult(event, false, focus, null);
+	static KeyHandlerResult resultOf(KeyEvent event, boolean consumed, View focus) {
+		return new KeyHandlerResult(event, consumed, focus, null);
 	}
 
 	/**

@@ -64,7 +64,7 @@ public class InputView extends BoxView {
 						break;
 				}
 			}
-			return KeyHandler.resultOf(event, null);
+			return KeyHandler.resultOf(event, true, null);
 		};
 	}
 

@@ -91,26 +91,29 @@ public class ListView<T> extends BoxView {
 	public KeyHandler getKeyHandler() {
 		return args -> {
 			KeyEvent event = args.event();
-
+			boolean consumed = true;
 			if (event.key() == null) {
 				String data = event.data();
 			}
 			else {
 				switch (event.key()) {
 					case UP:
+						log.info("XXX list UP");
 						up();
 						break;
 					case DOWN:
+						log.info("XXX list DOWN");
 						down();
 						break;
 					case ENTER:
 						enter();
 						break;
 					default:
+						consumed = false;
 						break;
 				}
 			}
-			return KeyHandler.resultOf(event, null);
+			return KeyHandler.resultOf(event, consumed, null);
 		};
 	}
 

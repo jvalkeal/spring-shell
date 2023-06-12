@@ -18,8 +18,10 @@ package org.springframework.shell.component.view.control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -63,10 +65,65 @@ public class AppView extends BoxView {
 
 	@Override
 	public KeyHandler getKeyHandler() {
-		if (main != null) {
-			return main.getKeyHandler();
-		}
-		return super.getKeyHandler();
+		// KeyHandler xxx = args -> {
+		// 	KeyHandler xxx2 = main.getKeyHandler();
+		// 	if (xxx2 != null) {
+		// 		KeyHandlerResult res = xxx2.handle(args);
+		// 		if (res.consumed()) {
+		// 			return KeyHandler.resultOf(res.event(), true, null);
+		// 		}
+		// 	}
+
+		// 	KeyEvent event = args.event();
+		// 	if (event.key() != null) {
+		// 		switch (event.key()) {
+		// 			case UP -> {
+		// 				log.info("XXX app UP");
+		// 			}
+		// 			case DOWN -> {
+		// 				log.info("XXX app DOWN");
+		// 			}
+		// 			case LEFT -> {
+		// 				log.info("XXX app LEFT");
+		// 			}
+		// 			case RIGHT -> {
+		// 				log.info("XXX app RIGHT");
+		// 			}
+		// 			default -> {}
+		// 		}
+		// 	}
+		// 	return KeyHandler.resultOf(args.event(), true, null);
+		// };
+
+		KeyHandler xxx1 = args -> {
+			KeyEvent event = args.event();
+			if (event.key() != null) {
+				switch (event.key()) {
+					case UP -> {
+						log.info("XXX app UP");
+					}
+					case DOWN -> {
+						log.info("XXX app DOWN");
+					}
+					case LEFT -> {
+						log.info("XXX app LEFT");
+					}
+					case RIGHT -> {
+						log.info("XXX app RIGHT");
+					}
+					default -> {}
+				}
+			}
+			return KeyHandler.resultOf(args.event(), true, null);
+		};
+
+		return xxx1.eitherxx(main.getKeyHandler());
+
+		// return xxx;
+		// if (main != null) {
+		// 	return main.getKeyHandler();
+		// }
+		// return super.getKeyHandler();
 	}
 
 	@Override
