@@ -82,9 +82,9 @@ public class ListView<T> extends BoxView {
 			cells.add(c);
 			c.updateItem(i);
 		}
-		if (!this.items.isEmpty()) {
-			this.selected = 0;
-		}
+		// if (!this.items.isEmpty()) {
+		// 	this.selected = 0;
+		// }
 	}
 
 	@Override
@@ -128,6 +128,13 @@ public class ListView<T> extends BoxView {
 	private void enter() {
 		log.info("XXX enter");
 		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "OpenSelectedItem", this)));
+	}
+
+	public void setSelected(int selected) {
+		if (this.selected != selected) {
+			this.selected = selected;
+			dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "SelectedChanged", this)));
+		}
 	}
 
 	private T selectedItem() {

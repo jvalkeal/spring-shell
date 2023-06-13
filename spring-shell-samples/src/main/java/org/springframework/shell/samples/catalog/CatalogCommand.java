@@ -101,6 +101,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		// start main scenario browser
 		ui.setRoot(app, true);
 		ui.setFocus(data.categories);
+		data.categories.setSelected(0);
 		ui.run();
 	}
 
@@ -167,6 +168,11 @@ public class CatalogCommand extends AbstractShellComponent {
 							String selected = args.item();
 							List<ScenarioData> list = categoryMap.get(selected);
 							scenarios.setItems(list);
+							break;
+						case "SelectedChanged":
+							String selected2 = args.item();
+							List<ScenarioData> list2 = categoryMap.get(selected2);
+							scenarios.setItems(list2);
 							break;
 						default:
 							break;
