@@ -37,30 +37,18 @@ public interface KeyHandler {
 	 */
 	KeyHandlerResult handle(KeyHandlerArgs args);
 
-    // default <V> Function<T, V> andThen(Function<? super R, ? extends V> after) {
-    //     Objects.requireNonNull(after);
-    //     return (T t) -> after.apply(apply(t));
-    // }
-
-    default KeyHandler either(KeyHandler handler) {
-		if (handler != null) {
-			return (KeyHandlerArgs args) -> handler.handle(args);
-		}
-		return (KeyHandlerArgs args) -> handle(args);
-    }
-
-    default KeyHandler eitherx(KeyHandler handler, Predicate<KeyHandlerResult> predicate) {
-		return ddd -> {
-			KeyHandlerResult res = handler.handle(ddd);
-			if (predicate.test(res)) {
-				return res;
+    default KeyHandler from(KeyHandler other, Predicate<KeyHandlerResult> predicate) {
+		return args -> {
+			KeyHandlerResult result = other.handle(args);
+			if (predicate.test(result)) {
+				return result;
 			}
-			return handle(ddd);
+			return handle(args);
 		};
     }
 
-    default KeyHandler eitherxx(KeyHandler handler) {
-		return eitherx(handler, res -> res.consumed());
+    default KeyHandler fromIfConsumed(KeyHandler other) {
+		return from(other, result -> result.consumed());
     }
 
 	/**

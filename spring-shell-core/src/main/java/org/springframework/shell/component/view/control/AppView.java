@@ -65,37 +65,7 @@ public class AppView extends BoxView {
 
 	@Override
 	public KeyHandler getKeyHandler() {
-		// KeyHandler xxx = args -> {
-		// 	KeyHandler xxx2 = main.getKeyHandler();
-		// 	if (xxx2 != null) {
-		// 		KeyHandlerResult res = xxx2.handle(args);
-		// 		if (res.consumed()) {
-		// 			return KeyHandler.resultOf(res.event(), true, null);
-		// 		}
-		// 	}
-
-		// 	KeyEvent event = args.event();
-		// 	if (event.key() != null) {
-		// 		switch (event.key()) {
-		// 			case UP -> {
-		// 				log.info("XXX app UP");
-		// 			}
-		// 			case DOWN -> {
-		// 				log.info("XXX app DOWN");
-		// 			}
-		// 			case LEFT -> {
-		// 				log.info("XXX app LEFT");
-		// 			}
-		// 			case RIGHT -> {
-		// 				log.info("XXX app RIGHT");
-		// 			}
-		// 			default -> {}
-		// 		}
-		// 	}
-		// 	return KeyHandler.resultOf(args.event(), true, null);
-		// };
-
-		KeyHandler xxx1 = args -> {
+		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			if (event.key() != null) {
 				switch (event.key()) {
@@ -116,14 +86,7 @@ public class AppView extends BoxView {
 			}
 			return KeyHandler.resultOf(args.event(), true, null);
 		};
-
-		return xxx1.eitherxx(main.getKeyHandler());
-
-		// return xxx;
-		// if (main != null) {
-		// 	return main.getKeyHandler();
-		// }
-		// return super.getKeyHandler();
+		return handler.fromIfConsumed(main != null ? main.getKeyHandler() : super.getKeyHandler());
 	}
 
 	@Override
