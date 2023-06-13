@@ -218,8 +218,8 @@ public class CatalogCommand extends AbstractShellComponent {
 
 	private StatusBarView statusBar() {
 		StatusBarView statusBar = new StatusBarView();
-		StatusItem item1 = new StatusBarView.StatusItem("item1");
-		StatusItem item2 = new StatusBarView.StatusItem("item2");
+		StatusItem item1 = new StatusBarView.StatusItem("CTRL-Q Quit");
+		StatusItem item2 = new StatusBarView.StatusItem("F10 Status Bar");
 		statusBar.setItems(Arrays.asList(item1, item2));
 		return statusBar;
 	}

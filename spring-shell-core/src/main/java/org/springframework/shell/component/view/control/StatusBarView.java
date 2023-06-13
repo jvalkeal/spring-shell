@@ -17,6 +17,7 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,6 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 public class StatusBarView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(StatusBarView.class);
-
 	private final List<StatusItem> items = new ArrayList<>();
 
 	@Override
@@ -43,18 +43,29 @@ public class StatusBarView extends BoxView {
 		log.debug("Drawing status bar to {}", rect);
 		Writer writer = screen.writerBuilder().build();
 		int x = rect.x();
-		for (StatusItem item : items) {
-			writer.text(item.getTitle(), x, rect.y());
-			x += item.getTitle().length();
+		ListIterator<StatusItem> iter = items.listIterator();
+		while (iter.hasNext()) {
+			StatusItem item = iter.next();
+			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " |" : "");
+			writer.text(text, x, rect.y());
+			x += text.length();
 		}
 		super.drawInternal(screen);
 	}
 
+	/**
+	 * Sets items.
+	 *
+	 * @param items status items
+	 */
 	public void setItems(List<StatusItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
+	/**
+	 * {@link StatusItem} represents an item in a {@link StatusBarView}.
+	 */
 	public static class StatusItem {
 
 		private String title;
