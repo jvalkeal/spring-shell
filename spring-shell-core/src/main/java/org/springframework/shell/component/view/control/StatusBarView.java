@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
@@ -51,6 +53,37 @@ public class StatusBarView extends BoxView {
 			x += text.length();
 		}
 		super.drawInternal(screen);
+	}
+
+	@Override
+	public MouseHandler getMouseHandler() {
+		return args -> {
+			View view = null;
+			MouseEvent event = args.event();
+			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+					&& event.getButton() == MouseEvent.Button.Button1) {
+				int x = event.getX();
+				int y = event.getY();
+				StatusItem itemAt = itemAt(x, y);
+				log.info("XXX itemAt {} {} {}", x, y, itemAt);
+			}
+			return MouseHandler.resultOf(args.event(), view);
+		};
+	}
+
+	private StatusItem itemAt(int x, int y) {
+		Rectangle rect = getRect();
+		if (!rect.contains(x, y)) {
+			return null;
+		}
+		int ix = 0;
+		for (StatusItem item : items) {
+			if (x < ix + item.getTitle().length()) {
+				return item;
+			}
+			ix += item.getTitle().length();
+		}
+		return null;
 	}
 
 	/**

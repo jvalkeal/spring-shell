@@ -195,7 +195,7 @@ public class CatalogCommand extends AbstractShellComponent {
 			));
 
 		// We place statusbar below categories and scenarios
-		StatusBarView statusBar = statusBar();
+		StatusBarView statusBar = statusBar(eventLoop);
 		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
 		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
 		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
@@ -222,8 +222,9 @@ public class CatalogCommand extends AbstractShellComponent {
 		return scenarios;
 	}
 
-	private StatusBarView statusBar() {
+	private StatusBarView statusBar(EventLoop eventLoop) {
 		StatusBarView statusBar = new StatusBarView();
+		statusBar.setEventLoop(eventLoop);
 		StatusItem item1 = new StatusBarView.StatusItem("CTRL-Q Quit");
 		StatusItem item2 = new StatusBarView.StatusItem("F10 Status Bar");
 		statusBar.setItems(Arrays.asList(item1, item2));
