@@ -23,6 +23,7 @@ import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 
 /**
@@ -77,9 +78,11 @@ public class AppView extends BoxView {
 					}
 					case LEFT -> {
 						log.info("XXX app LEFT");
+						dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
 					}
 					case RIGHT -> {
 						log.info("XXX app RIGHT");
+						dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
 					}
 					default -> {}
 				}
@@ -104,4 +107,8 @@ public class AppView extends BoxView {
 	public void setModal(View modal) {
 		this.modal = modal;
 	}
+
+	public record AppViewAction(String action, View view) implements ViewAction {
+	}
+
 }

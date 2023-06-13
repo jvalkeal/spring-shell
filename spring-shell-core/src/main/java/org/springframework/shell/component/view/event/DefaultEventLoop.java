@@ -40,6 +40,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.control.View;
+import org.springframework.shell.component.view.control.ViewAction;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.util.Assert;
@@ -137,6 +139,20 @@ public class DefaultEventLoop implements EventLoop {
 			.filter(m -> EventLoop.Type.MOUSE.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.map(m -> m.getPayload())
 			.ofType(MouseEvent.class);
+	}
+
+	@Override
+	public <T> Flux<T> viewEvents(Class<T> clazz) {
+		return events(EventLoop.Type.VIEW, clazz);
+	}
+
+	public <T extends ViewAction> Flux<T> viewActions(Class<T> clazz, View filterBy) {
+		return events(EventLoop.Type.VIEW, clazz).filter(args -> args.view() == filterBy);
+	}
+
+	@Override
+	public <T> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef) {
+		return events(EventLoop.Type.VIEW, typeRef);
 	}
 
 	@Override

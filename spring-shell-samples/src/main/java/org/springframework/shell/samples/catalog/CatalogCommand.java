@@ -33,6 +33,7 @@ import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.control.View;
+import org.springframework.shell.component.view.control.AppView.AppViewAction;
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
@@ -71,9 +72,11 @@ public class CatalogCommand extends AbstractShellComponent {
 	@Command(command = "catalog")
 	public void catalog(
 	) {
+		StatelessData data = new StatelessData();
 		TerminalUI ui = new TerminalUI(getTerminal());
+		data.ui = ui;
 		EventLoop eventLoop = ui.getEventLoop();
-		AppView app = scenarioBrowser(eventLoop, ui);
+		AppView app = scenarioBrowser(eventLoop, ui, data);
 
 		// handle logic to switch between main scenario browser
 		// and currently active scenario
@@ -97,7 +100,7 @@ public class CatalogCommand extends AbstractShellComponent {
 
 		// start main scenario browser
 		ui.setRoot(app, true);
-		ui.setFocus(categories);
+		ui.setFocus(data.categories);
 		ui.run();
 	}
 
@@ -120,10 +123,10 @@ public class CatalogCommand extends AbstractShellComponent {
 		});
 	}
 
-	ListView<String> categories;
-	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
+	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component, StatelessData data) {
 		// we use main app view to represent scenario browser
 		AppView app = new AppView();
+		app.setEventLoop(eventLoop);
 
 		// category selector on left, scenario selector on right
 		GridView grid = new GridView();
@@ -131,8 +134,9 @@ public class CatalogCommand extends AbstractShellComponent {
 		grid.setColumnSize(30, 0);
 
 		ListView<String> categories = categorySelector(eventLoop);
-		this.categories = categories;
+		data.categories = categories;
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
+		data.scenarios = scenarios;
 
 		// handle event when scenario is chosen
 		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
@@ -171,6 +175,19 @@ public class CatalogCommand extends AbstractShellComponent {
 			})
 			.subscribe());
 
+		eventLoop.onDestroy(eventLoop.viewActions(AppViewAction.class, app)
+			.subscribe(args -> {
+					switch (args.action()) {
+						case "NextView" -> {
+							data.ui.setFocus(scenarios);
+						}
+						case "PreviousView" -> {
+							data.ui.setFocus(categories);
+						}
+					}
+				}
+			));
+
 		// We place statusbar below categories and scenarios
 		StatusBarView statusBar = statusBar();
 		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
@@ -205,6 +222,12 @@ public class CatalogCommand extends AbstractShellComponent {
 		StatusItem item2 = new StatusBarView.StatusItem("item2");
 		statusBar.setItems(Arrays.asList(item1, item2));
 		return statusBar;
+	}
+
+	private static class StatelessData {
+		TerminalUI ui;
+		ListView<String> categories;
+		ListView<ScenarioData> scenarios;
 	}
 
 	private record ScenarioData(Scenario scenario, String name, String description, String[] category){};

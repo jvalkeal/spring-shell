@@ -15,6 +15,39 @@
  */
 package org.springframework.shell.component.view.event;
 
-public class KeyHandlerTests {
+import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+class KeyHandlerTests {
+
+	private static final KeyEvent EVENT = KeyEvent.ofCharacter("x");
+
+	@Test
+	void handlesThisIfOtherConsumes() {
+		TestKeyHandler h1 = new TestKeyHandler(false);
+		TestKeyHandler h2 = new TestKeyHandler(true);
+
+		KeyHandler h = h2.fromIfConsumed(h1);
+		h.handle(KeyHandler.argsOf(EVENT));
+		assertThat(h1.calls).isEqualTo(1);
+		assertThat(h2.calls).isEqualTo(1);
+	}
+
+	private static class TestKeyHandler implements KeyHandler {
+
+		boolean willConsume;
+		int calls;
+
+		TestKeyHandler(boolean willConsume) {
+			this.willConsume = willConsume;
+		}
+
+		@Override
+		public KeyHandlerResult handle(KeyHandlerArgs args) {
+			calls++;
+			return KeyHandler.resultOf(args.event(), willConsume, null);
+		}
+
+	}
 }

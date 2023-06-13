@@ -20,7 +20,7 @@ package org.springframework.shell.component.view.control;
  *
  * @author Janne Valkealahti
  */
-interface ViewAction {
+public interface ViewAction {
 
 	/**
 	 * Gets a {@link View} for this action
