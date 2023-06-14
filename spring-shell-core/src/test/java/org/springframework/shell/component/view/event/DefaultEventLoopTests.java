@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.event;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,11 @@ import reactor.test.StepVerifier;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
+import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
+import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultEventLoopTests {
 
@@ -115,6 +121,51 @@ class DefaultEventLoopTests {
 
 		loop.destroy();
 		verifier1.verify(Duration.ofSeconds(1));
+	}
+
+	static class TestEventLoopProcessor implements EventLoopProcessor {
+
+		int count;
+
+		@Override
+		public boolean canProcess(Message<?> message) {
+			return true;
+		}
+
+		@Override
+		public Flux<? extends Message<?>> process(Message<?> message) {
+			Message<?> m = MessageBuilder.fromMessage(message)
+				.setHeader("count", count++)
+				.build();
+			return Flux.just(m);
+		}
+	}
+
+	@Test
+	void processorCreatesSameMessagesForAll() {
+		TestEventLoopProcessor processor = new TestEventLoopProcessor();
+		loop = new DefaultEventLoop(Arrays.asList(processor));
+
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.assertNext(m -> {
+				Integer count = m.getHeaders().get("count", Integer.class);
+				assertThat(count).isEqualTo(0);
+			})
+			.thenCancel()
+			.verifyLater();
+
+		StepVerifier verifier2 = StepVerifier.create(loop.events())
+			.assertNext(m -> {
+				Integer count = m.getHeaders().get("count", Integer.class);
+				assertThat(count).isEqualTo(0);
+			})
+			.thenCancel()
+			.verifyLater();
+
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
+		loop.dispatch(message);
+		verifier1.verify(Duration.ofSeconds(1));
+		verifier2.verify(Duration.ofSeconds(1));
 	}
 
 }

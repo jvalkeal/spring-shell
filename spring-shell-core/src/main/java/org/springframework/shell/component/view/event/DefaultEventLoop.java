@@ -55,8 +55,8 @@ public class DefaultEventLoop implements EventLoop {
 
 	private final static Logger log = LoggerFactory.getLogger(DefaultEventLoop.class);
 	private final Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
-	private final Many<Message<?>> sink = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
-	private final Flux<Message<?>> sinkFlux = sink.asFlux().share();
+	private final Many<Message<?>> many = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
+	private Flux<Message<?>> sink;
 	// private final Sinks.Many<Boolean> subscribedSignal = Sinks.many().replay().limit(1);
 	private final Disposable.Composite disposables = Disposables.composite();
 	private final Scheduler scheduler = Schedulers.boundedElastic();
@@ -73,6 +73,25 @@ public class DefaultEventLoop implements EventLoop {
 			this.processors.addAll(processors);
 		}
 		this.processors.add(new AnimationEventLoopProcessor());
+		init();
+	}
+
+	private void init() {
+		sink = many.asFlux()
+			.flatMap(m -> {
+				Flux<? extends Message<?>> pm = null;
+				for (EventLoopProcessor processor : processors) {
+					if (processor.canProcess(m)) {
+						pm = processor.process(m);
+						break;
+					}
+				}
+				if (pm != null) {
+					return pm;
+				}
+				return Mono.just(m);
+			})
+			.share();
 	}
 
 	@Override
@@ -90,19 +109,7 @@ public class DefaultEventLoop implements EventLoop {
 
 	@Override
 	public Flux<Message<?>> events() {
-		return sinkFlux.share().flatMap(m -> {
-				Flux<? extends Message<?>> pm = null;
-				for (EventLoopProcessor processor : processors) {
-					if (processor.canProcess(m)) {
-						pm = processor.process(m);
-						break;
-					}
-				}
-				if (pm != null) {
-					return pm;
-				}
-				return Mono.just(m);
-			})
+		return sink
 			// .doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
 		;
 	}
@@ -171,7 +178,7 @@ public class DefaultEventLoop implements EventLoop {
 	// }
 
 	private boolean doSend(Message<?> message, long timeout) {
-		Assert.state(this.active && this.sink.currentSubscriberCount() > 0,
+		Assert.state(this.active && this.many.currentSubscriberCount() > 0,
 				() -> "The [" + this + "] doesn't have subscribers to accept messages");
 		long remainingTime = 0;
 		if (timeout > 0) {
@@ -190,13 +197,13 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	private boolean tryEmitMessage(Message<?> message) {
-		return switch (sink.tryEmitNext(message)) {
+		return switch (many.tryEmitNext(message)) {
 			case OK -> true;
 			case FAIL_NON_SERIALIZED, FAIL_OVERFLOW -> false;
 			case FAIL_ZERO_SUBSCRIBER ->
 					throw new IllegalStateException("The [" + this + "] doesn't have subscribers to accept messages");
 			case FAIL_TERMINATED, FAIL_CANCELLED ->
-					throw new IllegalStateException("Cannot emit messages into the cancelled or terminated sink: " + sink);
+					throw new IllegalStateException("Cannot emit messages into the cancelled or terminated sink: " + many);
 		};
 	}
 
@@ -253,7 +260,7 @@ public class DefaultEventLoop implements EventLoop {
 		this.active = false;
 		this.disposables.dispose();
 		// this.subscribedSignal.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
-		this.sink.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
+		this.many.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.scheduler.dispose();
 	}
 
