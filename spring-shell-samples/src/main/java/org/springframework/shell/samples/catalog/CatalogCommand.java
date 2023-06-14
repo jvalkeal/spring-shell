@@ -29,7 +29,9 @@ import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.control.AppView;
 import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.ListView;
+import org.springframework.shell.component.view.control.MenuBarView;
 import org.springframework.shell.component.view.control.ListView.ListViewAction;
+import org.springframework.shell.component.view.control.MenuBarView.MenuItem;
 import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.control.View;
@@ -131,7 +133,7 @@ public class CatalogCommand extends AbstractShellComponent {
 
 		// category selector on left, scenario selector on right
 		GridView grid = new GridView();
-		grid.setRowSize(0, 1);
+		grid.setRowSize(1, 0, 1);
 		grid.setColumnSize(30, 0);
 
 		ListView<String> categories = categorySelector(eventLoop);
@@ -195,10 +197,12 @@ public class CatalogCommand extends AbstractShellComponent {
 			));
 
 		// We place statusbar below categories and scenarios
+		MenuBarView menuBar = menuBar(eventLoop);
 		StatusBarView statusBar = statusBar(eventLoop);
-		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
-		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
-		grid.addItem(statusBar, 1, 0, 1, 2, 0, 0);
+		grid.addItem(menuBar, 0, 0, 1, 2, 0, 0);
+		grid.addItem(categories, 1, 0, 1, 1, 0, 0);
+		grid.addItem(scenarios, 1, 1, 1, 1, 0, 0);
+		grid.addItem(statusBar, 2, 0, 1, 2, 0, 0);
 		app.setMain(grid);
 		return app;
 	}
@@ -220,6 +224,15 @@ public class CatalogCommand extends AbstractShellComponent {
 		scenarios.setShowBorder(true);
 		scenarios.setCellFactory(list -> new ScenarioListCell());
 		return scenarios;
+	}
+
+	private MenuBarView menuBar(EventLoop eventLoop) {
+		MenuBarView menuBar = new MenuBarView();
+		menuBar.setEventLoop(eventLoop);
+		MenuItem item1 = new MenuBarView.MenuItem("File");
+		MenuItem item2 = new MenuBarView.MenuItem("Help");
+		menuBar.setItems(Arrays.asList(item1, item2));
+		return menuBar;
 	}
 
 	private StatusBarView statusBar(EventLoop eventLoop) {
