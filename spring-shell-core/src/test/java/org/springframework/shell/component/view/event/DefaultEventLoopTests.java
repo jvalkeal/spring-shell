@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.eventloop;
+package org.springframework.shell.component.view.event;
 
 import java.time.Duration;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,14 +26,39 @@ import reactor.test.StepVerifier;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.shell.component.view.event.DefaultEventLoop;
 
-class EventLoopTests {
+class DefaultEventLoopTests {
+
+	private DefaultEventLoop loop;
+
+	@BeforeEach
+	void setup() {
+		loop = new DefaultEventLoop();
+	}
+
+	@AfterEach
+	void clean() {
+		if (loop != null) {
+			loop.destroy();
+		}
+		loop = null;
+	}
 
 	@Test
-	void test1() {
-		DefaultEventLoop loop = new DefaultEventLoop();
+	void eventsGetIntoSingleSubsriber() {
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
+
+		loop.dispatch(message);
+		verifier1.verify(Duration.ofSeconds(1));
+	}
+
+	@Test
+	void eventsGetIntoMultipleSubsribers() {
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
@@ -50,22 +77,7 @@ class EventLoopTests {
 	}
 
 	@Test
-	void test2() {
-		DefaultEventLoop loop = new DefaultEventLoop();
-		Message<String> message = MessageBuilder.withPayload("TEST").build();
-
-		StepVerifier verifier1 = StepVerifier.create(loop.events())
-			.expectNextCount(1)
-			.thenCancel()
-			.verifyLater();
-
-		loop.dispatch(message);
-		verifier1.verify(Duration.ofSeconds(1));
-	}
-
-	@Test
-	void test21() {
-		DefaultEventLoop loop = new DefaultEventLoop();
+	void canDispatchFlux() {
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 		Flux<Message<String>> flux = Flux.just(message);
 
@@ -79,8 +91,7 @@ class EventLoopTests {
 	}
 
 	@Test
-	void test22() {
-		DefaultEventLoop loop = new DefaultEventLoop();
+	void canDispatchMono() {
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 		Mono<Message<String>> mono = Mono.just(message);
 
@@ -94,24 +105,7 @@ class EventLoopTests {
 	}
 
 	@Test
-	void test3() {
-		DefaultEventLoop loop = new DefaultEventLoop();
-		Message<String> message = MessageBuilder.withPayload("TEST").build();
-		Mono<Message<String>> just = Mono.just(message);
-
-		StepVerifier verifier1 = StepVerifier.create(loop.events())
-			.expectNextCount(1)
-			.thenCancel()
-			.verifyLater();
-
-		loop.subscribeTo(just);
-		verifier1.verify(Duration.ofSeconds(1));
-	}
-
-	@Test
-	void test4() {
-		DefaultEventLoop loop = new DefaultEventLoop();
-
+	void subsribtionCompletesWhenLoopDestroyed() {
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
 			.expectComplete()
 			.verifyLater();
