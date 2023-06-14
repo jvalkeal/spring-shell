@@ -57,7 +57,7 @@ public class DefaultEventLoop implements EventLoop {
 	private final Queue<Message<?>> messageQueue = new PriorityQueue<>(MessageComparator.comparingPriority());
 	private final Many<Message<?>> sink = Sinks.many().unicast().onBackpressureBuffer(messageQueue);
 	private final Flux<Message<?>> sinkFlux = sink.asFlux().share();
-	private final Sinks.Many<Boolean> subscribedSignal = Sinks.many().replay().limit(1);
+	// private final Sinks.Many<Boolean> subscribedSignal = Sinks.many().replay().limit(1);
 	private final Disposable.Composite disposables = Disposables.composite();
 	private final Scheduler scheduler = Schedulers.boundedElastic();
 	private volatile boolean active = true;
@@ -103,7 +103,7 @@ public class DefaultEventLoop implements EventLoop {
 				}
 				return Mono.just(m);
 			})
-			.doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
+			// .doFinally((s) -> subscribedSignal.tryEmitNext(sink.currentSubscriberCount() > 0))
 		;
 	}
 
@@ -252,7 +252,7 @@ public class DefaultEventLoop implements EventLoop {
 	public void destroy() {
 		this.active = false;
 		this.disposables.dispose();
-		this.subscribedSignal.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
+		// this.subscribedSignal.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.sink.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
 		this.scheduler.dispose();
 	}

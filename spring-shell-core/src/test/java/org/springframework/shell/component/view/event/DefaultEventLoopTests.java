@@ -18,7 +18,6 @@ package org.springframework.shell.component.view.event;
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -31,11 +30,6 @@ class DefaultEventLoopTests {
 
 	private DefaultEventLoop loop;
 
-	@BeforeEach
-	void setup() {
-		loop = new DefaultEventLoop();
-	}
-
 	@AfterEach
 	void clean() {
 		if (loop != null) {
@@ -44,8 +38,13 @@ class DefaultEventLoopTests {
 		loop = null;
 	}
 
+	private void initDefault() {
+		loop = new DefaultEventLoop();
+	}
+
 	@Test
-	void eventsGetIntoSingleSubsriber() {
+	void eventsGetIntoSingleSubscriber() {
+		initDefault();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
@@ -58,7 +57,8 @@ class DefaultEventLoopTests {
 	}
 
 	@Test
-	void eventsGetIntoMultipleSubsribers() {
+	void eventsGetIntoMultipleSubscriber() {
+		initDefault();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
@@ -78,6 +78,7 @@ class DefaultEventLoopTests {
 
 	@Test
 	void canDispatchFlux() {
+		initDefault();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 		Flux<Message<String>> flux = Flux.just(message);
 
@@ -92,6 +93,7 @@ class DefaultEventLoopTests {
 
 	@Test
 	void canDispatchMono() {
+		initDefault();
 		Message<String> message = MessageBuilder.withPayload("TEST").build();
 		Mono<Message<String>> mono = Mono.just(message);
 
@@ -106,6 +108,7 @@ class DefaultEventLoopTests {
 
 	@Test
 	void subsribtionCompletesWhenLoopDestroyed() {
+		initDefault();
 		StepVerifier verifier1 = StepVerifier.create(loop.events())
 			.expectComplete()
 			.verifyLater();
