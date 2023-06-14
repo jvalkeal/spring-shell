@@ -29,7 +29,7 @@ import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
- * {@link StatusBarView} shows {@link MenuItem items} horizontally and is
+ * {@link StatusBarView} shows {@link MenuBarItem items} horizontally and is
  * typically used in layouts which builds complete terminal UI's.
  *
  * @author Janne Valkealahti
@@ -37,7 +37,7 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 public class MenuBarView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(StatusBarView.class);
-	private final List<MenuItem> items = new ArrayList<>();
+	private final List<MenuBarItem> items = new ArrayList<>();
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -45,13 +45,15 @@ public class MenuBarView extends BoxView {
 		log.debug("Drawing status bar to {}", rect);
 		Writer writer = screen.writerBuilder().build();
 		int x = rect.x();
-		ListIterator<MenuItem> iter = items.listIterator();
+		ListIterator<MenuBarItem> iter = items.listIterator();
 		while (iter.hasNext()) {
-			MenuItem item = iter.next();
+			MenuBarItem item = iter.next();
 			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " |" : "");
 			writer.text(text, x, rect.y());
 			x += text.length();
 		}
+		// Writer writer2 = screen.writerBuilder().layer(1).build();
+		// writer2.border(rect.x(), rect.y()+1, 10, 5);
 		super.drawInternal(screen);
 	}
 
@@ -64,20 +66,20 @@ public class MenuBarView extends BoxView {
 					&& event.getButton() == MouseEvent.Button.Button1) {
 				int x = event.getX();
 				int y = event.getY();
-				MenuItem itemAt = itemAt(x, y);
+				MenuBarItem itemAt = itemAt(x, y);
 				log.info("XXX itemAt {} {} {}", x, y, itemAt);
 			}
 			return MouseHandler.resultOf(args.event(), view);
 		};
 	}
 
-	private MenuItem itemAt(int x, int y) {
+	private MenuBarItem itemAt(int x, int y) {
 		Rectangle rect = getRect();
 		if (!rect.contains(x, y)) {
 			return null;
 		}
 		int ix = 0;
-		for (MenuItem item : items) {
+		for (MenuBarItem item : items) {
 			if (x < ix + item.getTitle().length()) {
 				return item;
 			}
@@ -91,13 +93,40 @@ public class MenuBarView extends BoxView {
 	 *
 	 * @param items status items
 	 */
-	public void setItems(List<MenuItem> items) {
+	public void setItems(List<MenuBarItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
 	}
 
+	public static class Menu extends BoxView {
+
+	}
+
 	/**
-	 * {@link MenuItem} represents an item in a {@link StatusBarView}.
+	 * {@link MenuBarItem} represents an item in a {@link StatusBarView}.
+	 */
+	public static class MenuBarItem {
+
+		private String title;
+		private List<MenuItem> items;
+
+		public MenuBarItem(String title) {
+			this(title, null);
+		}
+
+		public MenuBarItem(String title, List<MenuItem> items) {
+			this.title = title;
+			this.items = items;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+	}
+
+	/**
+	 * {@link MenuBarItem} represents an item in a {@link StatusBarView}.
 	 */
 	public static class MenuItem {
 
