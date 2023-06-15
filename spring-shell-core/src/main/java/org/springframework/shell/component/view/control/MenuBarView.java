@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
@@ -58,10 +59,14 @@ public class MenuBarView extends BoxView {
 			writer.text(text, x, rect.y());
 			x += text.length();
 		}
-		// Writer writer2 = screen.writerBuilder().layer(1).build();
-		// writer2.border(rect.x(), rect.y()+1, 10, 5);
+		if (menuView != null) {
+			menuView.draw(screen);
+		}
 		super.drawInternal(screen);
 	}
+
+	MenuView menuView;
+	MenuBarItem itemAt;
 
 	@Override
 	public MouseHandler getMouseHandler() {
@@ -72,27 +77,43 @@ public class MenuBarView extends BoxView {
 					&& event.getButton() == MouseEvent.Button.Button1) {
 				int x = event.getX();
 				int y = event.getY();
-				// MenuBarItem itemAt = itemAt(x, y);
-				// log.info("XXX itemAt {} {} {}", x, y, itemAt);
+				MenuBarItem itemAt = itemAt(x, y);
+				log.info("XXX itemAt {} {} {}", x, y, itemAt);
+				if (itemAt != null) {
+					if (this.itemAt == itemAt) {
+						this.menuView = null;
+						this.itemAt = null;
+					}
+					else {
+						MenuView menuView = new MenuView(itemAt.getItems());
+						menuView.setShowBorder(true);
+						menuView.setBackgroundColor(Color.AQUAMARINE4);
+						menuView.setLayer(1);
+						Rectangle rect = getInnerRect();
+						menuView.setRect(rect.x(), rect.y()+1, 20, 10);
+						this.menuView = menuView;
+						this.itemAt = itemAt;
+					}
+				}
 			}
 			return MouseHandler.resultOf(args.event(), view);
 		};
 	}
 
-	// private MenuBarItem itemAt(int x, int y) {
-	// 	Rectangle rect = getRect();
-	// 	if (!rect.contains(x, y)) {
-	// 		return null;
-	// 	}
-	// 	int ix = 0;
-	// 	for (MenuBarItem item : items) {
-	// 		if (x < ix + item.getTitle().length()) {
-	// 			return item;
-	// 		}
-	// 		ix += item.getTitle().length();
-	// 	}
-	// 	return null;
-	// }
+	private MenuBarItem itemAt(int x, int y) {
+		Rectangle rect = getRect();
+		if (!rect.contains(x, y)) {
+			return null;
+		}
+		int ix = 0;
+		for (MenuBarItem item : items) {
+			if (x < ix + item.getTitle().length()) {
+				return item;
+			}
+			ix += item.getTitle().length();
+		}
+		return null;
+	}
 
 	/**
 	 * Sets items.

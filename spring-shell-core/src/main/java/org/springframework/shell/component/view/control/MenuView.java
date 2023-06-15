@@ -43,7 +43,7 @@ public class MenuView extends BoxView {
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		int y = rect.y();
-		Writer writer = screen.writerBuilder().build();
+		Writer writer = screen.writerBuilder().layer(getLayer()).build();
 		for (MenuItem item : items) {
 			writer.text(item.getTitle(), rect.x(), y);
 			y++;
