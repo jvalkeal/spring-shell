@@ -28,8 +28,7 @@ logging:
   file:
     name: shell.log
   level:
-    # root: debug
+    root: debug
     org:
       springframework:
-        shell: trace
-      jline: debug
+        shell: debug

@@ -94,6 +94,46 @@
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
             "projectName": "spring-shell-sample-e2e",
             "args": "e2e reg exit-code --arg1 fun"
+        },
+        {
+            "type": "java",
+            "name": "Sample view box",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-catalog",
+            "args": "view box"
+        },
+        {
+            "type": "java",
+            "name": "Sample view grid",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-catalog",
+            "args": "view grid"
+        },
+        {
+            "type": "java",
+            "name": "Sample view input",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-catalog",
+            "args": "view input"
+        },
+        {
+            "type": "java",
+            "name": "Sample catalog",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-catalog",
+            "args": "catalog"
+        },
+        {
+            "type": "java",
+            "name": "Sample view test",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-catalog",
+            "args": "view test"
         }
     ]
 }
