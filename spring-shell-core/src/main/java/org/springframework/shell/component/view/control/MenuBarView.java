@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -23,6 +24,7 @@ import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -39,16 +41,20 @@ public class MenuBarView extends BoxView {
 	private final Logger log = LoggerFactory.getLogger(StatusBarView.class);
 	private final List<MenuBarItem> items = new ArrayList<>();
 
+	public MenuBarView(MenuBarItem[] items) {
+		setItems(Arrays.asList(items));
+	}
+
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
-		log.debug("Drawing status bar to {}", rect);
+		log.debug("Drawing menu bar to {}", rect);
 		Writer writer = screen.writerBuilder().build();
 		int x = rect.x();
 		ListIterator<MenuBarItem> iter = items.listIterator();
 		while (iter.hasNext()) {
 			MenuBarItem item = iter.next();
-			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " |" : "");
+			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " " : "");
 			writer.text(text, x, rect.y());
 			x += text.length();
 		}
@@ -66,27 +72,27 @@ public class MenuBarView extends BoxView {
 					&& event.getButton() == MouseEvent.Button.Button1) {
 				int x = event.getX();
 				int y = event.getY();
-				MenuBarItem itemAt = itemAt(x, y);
-				log.info("XXX itemAt {} {} {}", x, y, itemAt);
+				// MenuBarItem itemAt = itemAt(x, y);
+				// log.info("XXX itemAt {} {} {}", x, y, itemAt);
 			}
 			return MouseHandler.resultOf(args.event(), view);
 		};
 	}
 
-	private MenuBarItem itemAt(int x, int y) {
-		Rectangle rect = getRect();
-		if (!rect.contains(x, y)) {
-			return null;
-		}
-		int ix = 0;
-		for (MenuBarItem item : items) {
-			if (x < ix + item.getTitle().length()) {
-				return item;
-			}
-			ix += item.getTitle().length();
-		}
-		return null;
-	}
+	// private MenuBarItem itemAt(int x, int y) {
+	// 	Rectangle rect = getRect();
+	// 	if (!rect.contains(x, y)) {
+	// 		return null;
+	// 	}
+	// 	int ix = 0;
+	// 	for (MenuBarItem item : items) {
+	// 		if (x < ix + item.getTitle().length()) {
+	// 			return item;
+	// 		}
+	// 		ix += item.getTitle().length();
+	// 	}
+	// 	return null;
+	// }
 
 	/**
 	 * Sets items.
@@ -96,10 +102,6 @@ public class MenuBarView extends BoxView {
 	public void setItems(List<MenuBarItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
-	}
-
-	public static class Menu extends BoxView {
-
 	}
 
 	/**
@@ -114,31 +116,18 @@ public class MenuBarView extends BoxView {
 			this(title, null);
 		}
 
-		public MenuBarItem(String title, List<MenuItem> items) {
+		public MenuBarItem(String title, MenuItem[] items) {
 			this.title = title;
-			this.items = items;
+			this.items = Arrays.asList(items);
 		}
 
 		public String getTitle() {
 			return title;
 		}
 
+		public List<MenuItem> getItems() {
+			return items;
+		}
 	}
 
-	/**
-	 * {@link MenuBarItem} represents an item in a {@link StatusBarView}.
-	 */
-	public static class MenuItem {
-
-		private String title;
-
-		public MenuItem(String title) {
-			this.title = title;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-	}
 }

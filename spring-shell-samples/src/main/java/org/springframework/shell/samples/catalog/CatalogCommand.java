@@ -30,8 +30,10 @@ import org.springframework.shell.component.view.control.AppView;
 import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.ListView;
 import org.springframework.shell.component.view.control.MenuBarView;
-import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.MenuBarView.MenuBarItem;
+import org.springframework.shell.component.view.control.MenuView.Menu;
+import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.control.View;
@@ -227,37 +229,21 @@ public class CatalogCommand extends AbstractShellComponent {
 	}
 
 	private MenuBarView menuBar(EventLoop eventLoop) {
-		MenuBarView menuBar = new MenuBarView();
+		MenuBarView menuBar = new MenuBarView(new MenuBarItem[] {
+			new MenuBarItem("menu1", new MenuItem[] {
+				new MenuItem("sub11"),
+				new MenuItem("sub12")
+			}),
+			new MenuBarItem("menu2", new MenuItem[] {
+				new MenuItem("sub21"),
+				new Menu("sub22", new MenuItem[] {
+					new MenuItem("sub221"),
+					new MenuItem("sub222")
+				})
+			})
+		});
 		menuBar.setEventLoop(eventLoop);
-		MenuBarItem item1 = new MenuBarView.MenuBarItem("File");
-		MenuBarItem item2 = new MenuBarView.MenuBarItem("Help");
-		menuBar.setItems(Arrays.asList(item1, item2));
 		return menuBar;
-
-		// MenuBar = new MenuBar (new MenuBarItem [] {
-		// 	new MenuBarItem ("_File", new MenuItem [] {
-		// 		new MenuItem ("_Quit", "Quit UI Catalog", () => RequestStop(), null, null, Key.Q | Key.CtrlMask)
-		// 	}),
-		// 	new MenuBarItem ("_Color Scheme", CreateColorSchemeMenuItems()),
-		// 	new MenuBarItem ("Diag_nostics", CreateDiagnosticMenuItems()),
-		// 	new MenuBarItem ("_Help", new MenuItem [] {
-		// 		new MenuItem ("_gui.cs API Overview", "", () => OpenUrl ("https://gui-cs.github.io/Terminal.Gui/articles/overview.html"), null, null, Key.F1),
-		// 		new MenuItem ("gui.cs _README", "", () => OpenUrl ("https://github.com/gui-cs/Terminal.Gui"), null, null, Key.F2),
-		// 		new MenuItem ("_About...",
-		// 			"About UI Catalog", () =>  MessageBox.Query ("About UI Catalog", _aboutMessage.ToString(), "_Ok"), null, null, Key.CtrlMask | Key.A),
-		// 	}),
-		// });
-
-
-		// contextMenu = new ContextMenu (x, y,
-		// new MenuBarItem (new MenuItem [] {
-		// 	new MenuItem ("_Configuration", "Show configuration", () => MessageBox.Query (50, 5, "Info", "This would open settings dialog", "Ok")),
-		// 	new MenuBarItem ("More options", new MenuItem [] {
-		// 		new MenuItem ("_Setup", "Change settings", () => MessageBox.Query (50, 5, "Info", "This would open setup dialog", "Ok")),
-		// 		new MenuItem ("_Maintenance", "Maintenance mode", () => MessageBox.Query (50, 5, "Info", "This would open maintenance dialog", "Ok")),
-		// 	}),
-		// 	new MenuBarItem ("_Languages", GetSupportedCultures ()),
-
 
 	}
 
