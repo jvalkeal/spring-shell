@@ -57,6 +57,7 @@ public class StatusBarView extends BoxView {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler()");
 		return args -> {
 			View view = null;
 			MouseEvent event = args.event();
@@ -67,7 +68,8 @@ public class StatusBarView extends BoxView {
 				StatusItem itemAt = itemAt(x, y);
 				log.info("XXX itemAt {} {} {}", x, y, itemAt);
 			}
-			return MouseHandler.resultOf(args.event(), view);
+			// status bar don't request focus
+			return MouseHandler.resultOf(args.event(), true, view, null);
 		};
 	}
 

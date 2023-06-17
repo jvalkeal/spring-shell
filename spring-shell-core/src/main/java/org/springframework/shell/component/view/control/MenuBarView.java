@@ -39,7 +39,7 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
  */
 public class MenuBarView extends BoxView {
 
-	private final Logger log = LoggerFactory.getLogger(StatusBarView.class);
+	private final Logger log = LoggerFactory.getLogger(MenuBarView.class);
 	private final List<MenuBarItem> items = new ArrayList<>();
 
 	public MenuBarView(MenuBarItem[] items) {
@@ -70,6 +70,7 @@ public class MenuBarView extends BoxView {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler()");
 		return args -> {
 			View view = null;
 			MouseEvent event = args.event();
@@ -77,6 +78,10 @@ public class MenuBarView extends BoxView {
 					&& event.getButton() == MouseEvent.Button.Button1) {
 				int x = event.getX();
 				int y = event.getY();
+				if (getInnerRect().contains(x, y)) {
+					view = this;
+				}
+
 				MenuBarItem itemAt = itemAt(x, y);
 				log.info("XXX itemAt {} {} {}", x, y, itemAt);
 				if (itemAt != null) {
@@ -90,13 +95,13 @@ public class MenuBarView extends BoxView {
 						menuView.setBackgroundColor(Color.AQUAMARINE4);
 						menuView.setLayer(1);
 						Rectangle rect = getInnerRect();
-						menuView.setRect(rect.x(), rect.y()+1, 20, 10);
+						menuView.setRect(rect.x(), rect.y()+1, 15, 10);
 						this.menuView = menuView;
 						this.itemAt = itemAt;
 					}
 				}
 			}
-			return MouseHandler.resultOf(args.event(), view);
+			return MouseHandler.resultOf(args.event(), true, view, null);
 		};
 	}
 

@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
@@ -89,6 +91,7 @@ public class ListView<T> extends BoxView {
 
 	@Override
 	public KeyHandler getKeyHandler() {
+		log.trace("getKeyHandler()");
 		return args -> {
 			KeyEvent event = args.event();
 			boolean consumed = true;
@@ -96,15 +99,12 @@ public class ListView<T> extends BoxView {
 				switch (event.key()) {
 					case UP -> {
 						up();
-						log.info("XXX list UP");
 					}
 					case DOWN -> {
 						down();
-						log.info("XXX list DOWN");
 					}
 					case ENTER -> {
 						enter();
-						log.info("XXX list ENTER");
 					}
 					default -> {
 						consumed = false;
@@ -113,6 +113,36 @@ public class ListView<T> extends BoxView {
 			}
 			return KeyHandler.resultOf(event, consumed, null);
 		};
+	}
+
+	@Override
+	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler() {}");
+		MouseHandler handler = args -> {
+			View view = null;
+			MouseEvent event = args.event();
+			int x = event.getX();
+			int y = event.getY();
+			if (getRect().contains(x, y)) {
+				if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Wheel) {
+					if (event.getButton() == MouseEvent.Button.WheelDown) {
+						view = this;
+						down();
+					}
+					else if (event.getButton() == MouseEvent.Button.WheelUp) {
+						view = this;
+						up();
+					}
+				}
+				else if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+						&& event.getButton() == MouseEvent.Button.Button1) {
+					view = this;
+				}
+
+			}
+			return MouseHandler.resultOf(args.event(), view != null, view, this);
+		};
+		return super.getMouseHandler().fromIfNotConsumed(handler);
 	}
 
 	private void up() {

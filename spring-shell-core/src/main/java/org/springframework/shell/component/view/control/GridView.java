@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
@@ -38,6 +41,7 @@ import org.springframework.shell.component.view.screen.Screen;
  */
 public class GridView extends BoxView {
 
+	private final static Logger log = LoggerFactory.getLogger(GridView.class);
 	private List<GridItem> gridItems = new ArrayList<>();
 	private int[] columnSize;
 	private int[] rowSize;
@@ -127,6 +131,7 @@ public class GridView extends BoxView {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler()");
 		return args -> {
 			View focus = null;
 			for (GridItem i : gridItems) {
@@ -136,12 +141,13 @@ public class GridView extends BoxView {
 					break;
 				}
 			}
-			return MouseHandler.resultOf(args.event(), focus);
+			return MouseHandler.resultOf(args.event(), true, focus, null);
 		};
 	}
 
 	@Override
 	public KeyHandler getKeyHandler() {
+		log.trace("getKeyHandler()");
 		for (GridItem i : gridItems) {
 			if (i.view.hasFocus()) {
 				return i.view.getKeyHandler();

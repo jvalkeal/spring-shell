@@ -51,6 +51,10 @@ public interface KeyHandler {
 		return from(other, result -> result.consumed());
     }
 
+    default KeyHandler fromIfNotConsumed(KeyHandler other) {
+		return from(other, result -> !result.consumed());
+    }
+
 	/**
 	 * Construct {@link KeyHandlerArgs} from a {@link KeyEvent}.
 	 *

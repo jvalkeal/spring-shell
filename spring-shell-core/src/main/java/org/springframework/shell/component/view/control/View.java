@@ -56,6 +56,7 @@ public interface View extends Control {
 	 * indicates view will not handle any mouse events.
 	 *
 	 * @return a view mouse handler
+	 * @see MouseHandler
 	 */
 	@Nullable
 	MouseHandler getMouseHandler();
@@ -65,6 +66,7 @@ public interface View extends Control {
 	 * indicates view will not handle any key events.
 	 *
 	 * @return a view mouse handler
+	 * @see KeyHandler
 	 */
 	@Nullable
 	KeyHandler getKeyHandler();

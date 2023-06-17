@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.control;
+
+import java.util.EnumSet;
 
 import org.assertj.core.api.AssertProvider;
+import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.BeforeEach;
 
-import org.springframework.shell.component.view.control.View;
+import org.springframework.shell.component.view.ScreenAssert;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.screen.DefaultScreen;
@@ -48,5 +51,20 @@ public class AbstractViewTests {
 
 	protected AssertProvider<ScreenAssert> forScreen(Screen screen) {
 		return () -> new ScreenAssert(screen);
+	}
+
+	protected MouseEvent mouseClick(int x, int y) {
+		return new MouseEvent(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	}
+
+	protected MouseEvent mouseWheelUp(int x, int y) {
+		return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	}
+
+	protected MouseEvent mouseWheelDown(int x, int y) {
+		return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
 	}
 }

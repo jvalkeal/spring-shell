@@ -358,6 +358,7 @@ public class DefaultScreen implements Screen, DisplayLines {
 
 		@Override
 		public void background(Rectangle rect, int color) {
+			log.trace("Background {} {}", color, rect);
 			Layer layer = getLayer(index);
 			for (int i = rect.y(); i < rect.y() + rect.height(); i++) {
 				for (int j = rect.x(); j < rect.x() + rect.width(); j++) {

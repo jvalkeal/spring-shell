@@ -21,6 +21,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
@@ -49,6 +51,18 @@ public class MenuView extends BoxView {
 			y++;
 		}
 		super.drawInternal(screen);
+	}
+
+	@Override
+	public KeyHandler getKeyHandler() {
+		log.trace("getKeyHandler()");
+		return super.getKeyHandler();
+	}
+
+	@Override
+	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler()");
+		return super.getMouseHandler();
 	}
 
 	public static class MenuItem  {

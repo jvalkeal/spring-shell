@@ -59,7 +59,9 @@ public class BoxView extends AbstractView {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler() {}", this);
 		return args -> {
+			// box view only handles "mouse click on button 1"
 			View view = null;
 			MouseEvent event = args.event();
 			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
@@ -70,7 +72,7 @@ public class BoxView extends AbstractView {
 					view = this;
 				}
 			}
-			return MouseHandler.resultOf(args.event(), view);
+			return MouseHandler.resultOf(args.event(), view != null, view, this);
 		};
 	}
 

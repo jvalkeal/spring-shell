@@ -55,6 +55,7 @@ public class AppView extends BoxView {
 
 	@Override
 	public MouseHandler getMouseHandler() {
+		log.trace("getMouseHandler()");
 		if (main != null) {
 			MouseHandler handler = main.getMouseHandler();
 			if (handler != null) {

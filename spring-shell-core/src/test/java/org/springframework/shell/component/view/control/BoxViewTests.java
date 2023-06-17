@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view;
+package org.springframework.shell.component.view.control;
 
+import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.control.BoxView;
+import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,5 +67,33 @@ class BoxViewTests extends AbstractViewTests {
 		view.setRect(0, 0, 80, 24);
 		view.draw(screen24x80);
 		assertThat(forScreen(screen24x80)).hasNoHorizontalText("title", 0, 1, 5);
+	}
+
+	@Test
+	void mouseClickInBounds() {
+		BoxView view = new BoxView();
+		view.setRect(0, 0, 80, 24);
+		MouseEvent event = mouseClick(0, 0);
+		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(event));
+		assertThat(result).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(event);
+			assertThat(r.consumed()).isTrue();
+			assertThat(r.focus()).isEqualTo(view);
+			assertThat(r.capture()).isEqualTo(view);
+		});
+	}
+
+	@Test
+	void mouseClickOutOfBounds() {
+		BoxView view = new BoxView();
+		view.setRect(0, 0, 80, 24);
+		MouseEvent event = mouseClick(100, 100);
+		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(event));
+		assertThat(result).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(event);
+			assertThat(r.consumed()).isFalse();
+			assertThat(r.focus()).isNull();
+			assertThat(r.capture()).isEqualTo(view);
+		});
 	}
 }

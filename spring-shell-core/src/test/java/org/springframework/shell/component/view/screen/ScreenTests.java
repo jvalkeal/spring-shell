@@ -17,7 +17,7 @@ package org.springframework.shell.component.view.screen;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.AbstractViewTests;
+import org.springframework.shell.component.view.control.AbstractViewTests;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;

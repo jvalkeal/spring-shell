@@ -53,7 +53,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Component handling {@link View} structures.
+ * {@link TerminalUI} is a main component orchestrating terminal, eventloop,
+ * key/mouse events and view structure to work together. In many ways it can
+ * be think of being a "main application" when terminal ui is shown in
+ * a screen.
  *
  * @author Janne Valkealahti
  */
@@ -219,11 +222,11 @@ public class TerminalUI {
 	}
 
 	private void handleKeyEvent(KeyEvent event) {
+		log.trace("handleKeyEvent {}", event);
 		if (rootView != null && rootView.hasFocus()) {
 			KeyHandler handler = rootView.getKeyHandler();
 			if (handler != null) {
 				KeyHandlerResult result = handler.handle(KeyHandler.argsOf(event));
-				log.debug(("handleKeyEvent {}"), result);
 				if (result.focus() != null) {
 					setFocus(result.focus());
 				}
@@ -232,11 +235,11 @@ public class TerminalUI {
 	}
 
 	private void handleMouseEvent(MouseEvent event) {
+		log.trace("handleMouseEvent {}", event);
 		if (rootView != null) {
 			MouseHandler handler = rootView.getMouseHandler();
 			if (handler != null) {
 				MouseHandlerResult result = handler.handle(MouseHandler.argsOf(event));
-				log.debug(("handleMouseEvent {}"), result);
 				if (result.focus() != null) {
 					setFocus(result.focus());
 				}

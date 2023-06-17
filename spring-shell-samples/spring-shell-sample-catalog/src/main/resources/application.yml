@@ -31,4 +31,4 @@ logging:
     root: debug
     org:
       springframework:
-        shell: debug
+        shell: trace
