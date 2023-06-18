@@ -18,7 +18,12 @@ package org.springframework.shell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.hibernate.validator.internal.properties.Getter;
+
+import org.springframework.shell.command.CommandRegistration;
 
 /**
  * A result to be handled by the {@link ResultHandler} when no command could be mapped to user input
@@ -26,9 +31,17 @@ import java.util.stream.Collectors;
 public class CommandNotFound extends RuntimeException {
 
 	private final List<String> words;
+	private final Map<String, CommandRegistration> registrations;
+	private final String text;
 
 	public CommandNotFound(List<String> words) {
+		this(words, null, null);
+	}
+
+	public CommandNotFound(List<String> words, Map<String, CommandRegistration> registrations, String text) {
 		this.words = words;
+		this.registrations = registrations;
+		this.text = text;
 	}
 
 	@Override
@@ -43,5 +56,13 @@ public class CommandNotFound extends RuntimeException {
 	 */
 	public List<String> getWords(){
 		return new ArrayList<>(words);
+	}
+
+	public Map<String, CommandRegistration> getRegistrations() {
+		return registrations;
+	}
+
+	public String getText() {
+		return text;
 	}
 }

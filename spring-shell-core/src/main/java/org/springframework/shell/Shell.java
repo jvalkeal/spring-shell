@@ -202,7 +202,7 @@ public class Shell {
 		String command = findLongestCommand(line, false);
 
 		if (command == null) {
-			return new CommandNotFound(words);
+			return new CommandNotFound(words, commandRegistry.getRegistrations(), input.rawText());
 		}
 
 		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
@@ -222,7 +222,7 @@ public class Shell {
 			.findFirst();
 
 		if (commandRegistration.isEmpty()) {
-			return new CommandNotFound(words);
+			return new CommandNotFound(words, commandRegistry.getRegistrations(), input.rawText());
 		}
 
 		if (this.exitCodeMappings != null) {

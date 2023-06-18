@@ -18,6 +18,14 @@
         },
         {
             "type": "java",
+            "name": "commands no command",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-commands",
+            "args": "wrong"
+        },
+        {
+            "type": "java",
             "name": "commands fail noarg",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
