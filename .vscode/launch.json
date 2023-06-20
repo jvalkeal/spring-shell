@@ -3,6 +3,14 @@
     "configurations": [
         {
             "type": "java",
+            "name": "attach commands",
+            "request": "attach",
+            "hostName": "localhost",
+            "projectName": "spring-shell-sample-commands",
+            "port": 8000
+        },
+        {
+            "type": "java",
             "name": "commands interactive",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
