@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.parser.Ast.AstResult;
 import org.springframework.shell.command.parser.Lexer.LexerResult;
 import org.springframework.shell.command.parser.Parser.ParseResult;
@@ -270,12 +271,14 @@ abstract class AbstractParsingTests {
 			.longNames("arg1")
 			.defaultValue("arg1default")
 			.type(String.class)
+			.arity(OptionArity.EXACTLY_ONE)
 			.position(0)
 			.and()
 		.withOption()
 			.longNames("arg2")
 			.defaultValue("arg2default")
 			.type(String.class)
+			.arity(OptionArity.EXACTLY_ONE)
 			.position(1)
 			.and()
 		.withTarget()

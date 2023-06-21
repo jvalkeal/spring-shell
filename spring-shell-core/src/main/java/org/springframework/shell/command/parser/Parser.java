@@ -156,8 +156,8 @@ public interface Parser {
 			this.config = config;
 		}
 
-		@Override
-		protected ParseResult buildResult() {
+		// @Override
+		protected ParseResult buildResultxx() {
 			CommandInfo info = commandModel.resolve(resolvedCommmand);
 			CommandRegistration registration = info != null ? info.registration : null;
 
@@ -215,6 +215,85 @@ public interface Parser {
 					}
 					i = j;
 				}
+
+				// can only validate after optionResults has been populated
+				messageResults.addAll(validateOptionNotMissing(registration));
+			}
+
+			return new ParseResult(registration, optionResults, argumentResults, messageResults, directiveResults);
+		}
+
+		@Override
+		protected ParseResult buildResult() {
+			CommandInfo info = commandModel.resolve(resolvedCommmand);
+			CommandRegistration registration = info != null ? info.registration : null;
+
+			List<MessageResult> messageResults = new ArrayList<>();
+			if (registration != null) {
+				messageResults.addAll(commonMessageResults);
+				messageResults.addAll(validateOptionIsValid(registration));
+
+				// we should already have options defined with arguments.
+				// go through positional arguments and fill using those and
+				// then fill from option default values.
+				Set<CommandOption> resolvedOptions = optionResults.stream()
+					.map(or -> or.option())
+					.collect(Collectors.toSet());
+
+				// get sorted list by position as we later match by order
+				List<CommandOption> optionsForArguments = registration.getOptions().stream()
+					.filter(o -> !resolvedOptions.contains(o))
+					.filter(o -> o.getPosition() > -1)
+					.sorted(Comparator.comparingInt(o -> o.getPosition()))
+					.collect(Collectors.toList());
+
+				// leftover arguments to match into needed options
+				List<String> argumentValues = argumentResults.stream()
+					.sorted(Comparator.comparingInt(ar -> ar.position()))
+					.map(ar -> ar.value())
+					.collect(Collectors.toList());
+
+				// try to find matching arguments
+				int i = 0;
+				for (CommandOption o : optionsForArguments) {
+					int aMax = o.getArityMax();
+					if (aMax < 0) {
+						aMax = optionsForArguments.size() == 1 ? Integer.MAX_VALUE : 1;
+					}
+					int j = i + aMax;
+					j = Math.min(argumentValues.size(), j);
+
+					List<String> asdf = argumentValues.subList(i, j);
+					if (asdf.isEmpty()) {
+						// don't arguments so only add if we know
+						// it's going to get added later via default value
+						if (o.getDefaultValue() == null) {
+							resolvedOptions.add(o);
+							optionResults.add(OptionResult.of(o, null));
+						}
+					}
+					else {
+						Object toConvertValue = asdf.size() == 1 ? asdf.get(0) : asdf;
+						Object value = convertOptionType(o, toConvertValue);
+						resolvedOptions.add(o);
+						optionResults.add(OptionResult.of(o, value));
+					}
+
+					if (j == argumentValues.size()) {
+						break;
+					}
+					i = j;
+				}
+
+				// possibly fill in from default values
+				registration.getOptions().stream()
+					.filter(o -> o.getDefaultValue() != null)
+					.filter(o -> !resolvedOptions.contains(o))
+					.forEach(o -> {
+						resolvedOptions.add(o);
+						Object value = convertOptionType(o, o.getDefaultValue());
+						optionResults.add(OptionResult.of(o, value));
+					});
 
 				// can only validate after optionResults has been populated
 				messageResults.addAll(validateOptionNotMissing(registration));

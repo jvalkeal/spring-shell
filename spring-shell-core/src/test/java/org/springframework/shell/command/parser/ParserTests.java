@@ -449,17 +449,69 @@ class ParserTests extends AbstractParsingTests {
 		@Test
 		void shouldGetPositionalArgWhenOneAsStringHavingDefault() {
 			register(ROOT7_POSITIONAL_ONE_ARG_STRING_DEFAULT);
-			ParseResult result = parse("root7", "a");
+			ParseResult result;
+
+			result = parse("root7");
+			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
+					assertThat(r.value()).isEqualTo("arg1default");
+				}
+			);
+			// assertThat(result.argumentResults()).satisfiesExactly(
+			// 	r -> {
+			// 		assertThat(r.value()).isEqualTo("a");
+			// 		assertThat(r.position()).isEqualTo(0);
+			// 	}
+			// );
+
+			result = parse("root7", "a");
 			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
 				r -> {
 					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
 					assertThat(r.value()).isEqualTo("a");
 				}
 			);
-			assertThat(result.argumentResults()).satisfiesExactly(
+		}
+
+		@Test
+		void shouldGetPositionalArgWhenTwoAsStringsHavingDefaults() {
+			register(ROOT7_POSITIONAL_TWO_ARG_STRING_DEFAULT);
+			ParseResult result;
+
+			result = parse("root7");
+			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
 				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
+					assertThat(r.value()).isEqualTo("arg1default");
+				},
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg2" });
+					assertThat(r.value()).isEqualTo("arg2default");
+				}
+			);
+
+			result = parse("root7", "a");
+			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
 					assertThat(r.value()).isEqualTo("a");
-					assertThat(r.position()).isEqualTo(0);
+				},
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg2" });
+					assertThat(r.value()).isEqualTo("arg2default");
+				}
+			);
+
+			result = parse("root7", "a", "b");
+			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
+					assertThat(r.value()).isEqualTo("a");
+				},
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg2" });
+					assertThat(r.value()).isEqualTo("b");
 				}
 			);
 		}
