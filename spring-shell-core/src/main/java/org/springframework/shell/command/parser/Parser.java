@@ -386,17 +386,31 @@ public interface Parser {
 					int max = currentOption.getArityMax() > 0 ? currentOption.getArityMax() : Integer.MAX_VALUE;
 					max = Math.min(max, currentOptionArgument.size());
 					List<String> toUse = currentOptionArgument.subList(0, max);
+					List<String> toUnused = currentOptionArgument.subList(max, currentOptionArgument.size());
+					toUnused.forEach(a -> {
+						argumentResults.add(ArgumentResult.of(a, commandArgumentPos++));
+					});
 
-					if (currentOption.getArityMin() > -1 && currentOptionArgument.size() < currentOption.getArityMin()) {
+					if (currentOption.getArityMin() > -1 && toUse.size() < currentOption.getArityMin()) {
 						String arg = currentOption.getLongNames()[0];
 						commonMessageResults.add(MessageResult.of(ParserMessage.NOT_ENOUGH_OPTION_ARGUMENTS, 0, arg,
-								currentOptionArgument.size()));
+								toUse.size()));
 					}
-					else if (currentOption.getArityMax() > -1 && currentOptionArgument.size() > currentOption.getArityMax()) {
+					else if (currentOption.getArityMax() > -1 && toUse.size() > currentOption.getArityMax()) {
 						String arg = currentOption.getLongNames()[0];
 						commonMessageResults.add(MessageResult.of(ParserMessage.TOO_MANY_OPTION_ARGUMENTS, 0, arg,
 								currentOption.getArityMax()));
 					}
+					// if (currentOption.getArityMin() > -1 && currentOptionArgument.size() < currentOption.getArityMin()) {
+					// 	String arg = currentOption.getLongNames()[0];
+					// 	commonMessageResults.add(MessageResult.of(ParserMessage.NOT_ENOUGH_OPTION_ARGUMENTS, 0, arg,
+					// 			currentOptionArgument.size()));
+					// }
+					// else if (currentOption.getArityMax() > -1 && currentOptionArgument.size() > currentOption.getArityMax()) {
+					// 	String arg = currentOption.getLongNames()[0];
+					// 	commonMessageResults.add(MessageResult.of(ParserMessage.TOO_MANY_OPTION_ARGUMENTS, 0, arg,
+					// 			currentOption.getArityMax()));
+					// }
 
 					Object value = null;
 					if (toUse.size() == 1) {

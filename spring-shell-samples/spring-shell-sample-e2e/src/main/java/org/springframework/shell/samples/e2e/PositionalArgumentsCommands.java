@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.samples.e2e;
 
+import org.springframework.shell.command.CommandRegistration.OptionArity;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.ShellComponent;
@@ -50,18 +51,18 @@ public class PositionalArgumentsCommands {
 
 		@Command(command = "positional-args-1")
 		public String testPositionalArgs1(
-				@Option() String arg1,
-				@Option() String arg2,
-				@Option() String arg3
+				@Option(arity = OptionArity.EXACTLY_ONE) String arg1,
+				@Option(arity = OptionArity.EXACTLY_ONE) String arg2,
+				@Option(arity = OptionArity.EXACTLY_ONE) String arg3
 		) {
 				return String.format("Hi arg1='%s' arg2='%s' arg3='%s'", arg1, arg2, arg3);
 		}
 
 		@Command(command = "positional-args-2")
 		public String testPositionalArgs2(
-				@Option(defaultValue = "defaultArg1") String arg1,
-				@Option(defaultValue = "defaultArg2") String arg2,
-				@Option() String arg3
+				@Option(arity = OptionArity.EXACTLY_ONE, defaultValue = "defaultArg1") String arg1,
+				@Option(arity = OptionArity.EXACTLY_ONE, defaultValue = "defaultArg2") String arg2,
+				@Option(arity = OptionArity.EXACTLY_ONE) String arg3
 		) {
 				return String.format("Hi arg1='%s' arg2='%s' arg3='%s'", arg1, arg2, arg3);
 		}
