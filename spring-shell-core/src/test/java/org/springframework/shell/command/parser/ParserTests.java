@@ -445,6 +445,24 @@ class ParserTests extends AbstractParsingTests {
 				}
 			);
 		}
+
+		@Test
+		void shouldGetPositionalArgWhenOneAsStringHavingDefault() {
+			register(ROOT7_POSITIONAL_ONE_ARG_STRING_DEFAULT);
+			ParseResult result = parse("root7", "a");
+			assertThat(result.optionResults()).isNotNull().satisfiesExactly(
+				r -> {
+					assertThat(r.option().getLongNames()).isEqualTo(new String[] { "arg1" });
+					assertThat(r.value()).isEqualTo("a");
+				}
+			);
+			assertThat(result.argumentResults()).satisfiesExactly(
+				r -> {
+					assertThat(r.value()).isEqualTo("a");
+					assertThat(r.position()).isEqualTo(0);
+				}
+			);
+		}
 	}
 
 }
