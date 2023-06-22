@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.command.annotation.support;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.core.annotation.MergedAnnotation;
@@ -91,6 +94,10 @@ class CommandAnnotationUtils {
 		return deduceStringArray(ALIAS, left, right);
 	}
 
+	static String[][] deduceAliasx(MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		return deduceStringArrayLeftPrefixes(ALIAS, left, right);
+	}
+
 	/**
 	 * Deduce {@link Command#group()} from annotations. Right side overrides if it
 	 * has value.
@@ -149,6 +156,19 @@ class CommandAnnotationUtils {
 		return mode;
 	}
 
+	private static String[][] deduceStringArrayLeftPrefixes(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {
+		List<String> prefix = Stream.of(left.getStringArray(field))
+			.filter(command -> StringUtils.hasText(command))
+			.map(command -> command.strip())
+			.collect(Collectors.toList());
+
+		return Stream.of(right.getStringArray(field))
+			.filter(command -> StringUtils.hasText(command))
+			.map(command -> command.strip())
+			.map(command -> Stream.concat(prefix.stream(), Stream.of(command)).collect(Collectors.toList()))
+			.map(arr -> arr.toArray(String[]::new))
+			.toArray(String[][]::new);
+	}
 
 	private static String[] deduceStringArray(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {
 		return Stream.of(left.getStringArray(field), right.getStringArray(field))

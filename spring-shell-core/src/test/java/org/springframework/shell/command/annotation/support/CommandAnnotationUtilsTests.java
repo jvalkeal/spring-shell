@@ -140,6 +140,11 @@ class CommandAnnotationUtilsTests {
 				.isEqualTo(new String[] { "five", "six", "seven" });
 		assertThat(CommandAnnotationUtils.deduceAlias(aliasDefault, aliasValues4))
 				.isEqualTo(new String[] { "eight", "nine" });
+
+
+		assertThat(CommandAnnotationUtils.deduceAliasx(aliasValues1, aliasValues2))
+				.isEqualTo(new String[][] { {"one", "two", "three"}, {"one", "two", "four"} });
+
 	}
 
 	private static MergedAnnotation<Command> groupValue1 = MergedAnnotations.from(GroupValues1.class)
