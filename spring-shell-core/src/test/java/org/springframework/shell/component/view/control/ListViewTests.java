@@ -42,7 +42,7 @@ class ListViewTests extends AbstractViewTests {
 	}
 
 	@Test
-	void keysMoveSelection() {
+	void arrowKeysMoveSelection() {
 		ListView<String> view = new ListView<>();
 		view.setRect(0, 0, 80, 24);
 		view.setItems(Arrays.asList("item1", "item2"));
@@ -65,7 +65,7 @@ class ListViewTests extends AbstractViewTests {
 	}
 
 	@Test
-	void mouseMoveSelection() {
+	void mouseWheelMoveSelection() {
 		ListView<String> view = new ListView<>();
 		view.setRect(0, 0, 80, 24);
 		view.setItems(Arrays.asList("item1", "item2"));

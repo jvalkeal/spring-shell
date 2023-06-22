@@ -32,7 +32,7 @@ import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
- * {@link StatusBarView} shows {@link MenuBarItem items} horizontally and is
+ * {@link MenuBarView} shows {@link MenuBarItem items} horizontally and is
  * typically used in layouts which builds complete terminal UI's.
  *
  * @author Janne Valkealahti

@@ -15,24 +15,24 @@
  */
 package org.springframework.shell.component.view.control;
 
-/**
- * Base interface for view actions.
- *
- * @author Janne Valkealahti
- */
-public interface ViewAction {
+import java.util.Arrays;
 
-	/**
-	 * Gets a {@link View} for this action
-	 *
-	 * @return view for action
-	 */
-	View view();
+import org.junit.jupiter.api.Test;
 
-	/**
-	 * Gets an {@code action} identifier for this action.
-	 *
-	 * @return action identifier
-	 */
-	String action();
+import org.springframework.shell.component.view.control.MenuView.MenuItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class MenuViewTests extends AbstractViewTests {
+
+	@Test
+	void hasBorder() {
+		MenuItem menuItem = new MenuView.MenuItem("sub1");
+		MenuView view = new MenuView(Arrays.asList(menuItem));
+		view.setShowBorder(true);
+		view.setRect(0, 0, 80, 24);
+		view.draw(screen24x80);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+	}
+
 }
