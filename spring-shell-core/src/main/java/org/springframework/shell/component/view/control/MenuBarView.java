@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Color;
@@ -41,6 +42,9 @@ public class MenuBarView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(MenuBarView.class);
 	private final List<MenuBarItem> items = new ArrayList<>();
+
+	MenuView menuView;
+	MenuBarItem itemAt;
 
 	public MenuBarView(MenuBarItem[] items) {
 		setItems(Arrays.asList(items));
@@ -65,8 +69,13 @@ public class MenuBarView extends BoxView {
 		super.drawInternal(screen);
 	}
 
-	MenuView menuView;
-	MenuBarItem itemAt;
+	@Override
+	public KeyHandler getKeyHandler() {
+		if (menuView != null) {
+			return menuView.getKeyHandler();
+		}
+		return super.getKeyHandler();
+	}
 
 	@Override
 	public MouseHandler getMouseHandler() {

@@ -21,6 +21,7 @@ import org.springframework.shell.component.view.control.AbstractViewTests;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -55,6 +56,23 @@ class ScreenTests extends AbstractViewTests {
 	}
 
 	@Test
+	void printsTextWithForegroundColor() {
+		Writer writer = screen24x80.writerBuilder().color(Color.RED).build();
+		writer.text("text", 0, 0);
+		assertThat(forScreen(screen24x80)).hasForegroundColor(0, 0, Color.RED);
+	}
+
+	@Test
+	void printsTextWithForegroundColorOnLayerTopOverrides() {
+		Writer writer0 = screen24x80.writerBuilder().layer(0).color(Color.BLACK).build();
+		Writer writer1 = screen24x80.writerBuilder().layer(1).color(Color.RED).build();
+		writer0.text("text", 0, 0);
+		assertThat(forScreen(screen24x80)).hasForegroundColor(0, 0, Color.BLACK);
+		writer1.text("text", 0, 0);
+		assertThat(forScreen(screen24x80)).hasForegroundColor(0, 0, Color.RED);
+	}
+
+	@Test
 	void printsTextAlign() {
 		Rectangle rect = new Rectangle(1, 1, 10, 10);
 		screen24x80.print("text", rect, HorizontalAlign.CENTER, VerticalAlign.CENTER);
@@ -68,12 +86,6 @@ class ScreenTests extends AbstractViewTests {
 		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 3, 1, 4);
 	}
 
-	// @Test
-	// void writeTextFromWriter() {
-	// 	screen24x80.writerBuilder().build().write("text", 0, 0);
-	// 	assertThat(forScreen(screen24x80)).hasHorizontalText("text", 0, 0, 4);
-	// }
-
 	@Test
 	void writeTextFromWriterLayerOverrides() {
 		DefaultScreen screen = new DefaultScreen(24, 80);
@@ -84,9 +96,6 @@ class ScreenTests extends AbstractViewTests {
 		assertThat(items[0][1].getContent()).isEqualTo("x");
 		assertThat(items[0][2].getContent()).isEqualTo("x");
 		assertThat(items[0][3].getContent()).isEqualTo("t");
-
-
-
 	}
 
 }

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +37,23 @@ class MenuViewTests extends AbstractViewTests {
 		view.setRect(0, 0, 80, 24);
 		view.draw(screen24x80);
 		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+	}
+
+	@Test
+	void firstItemShouldAlwaysBeSelected() {
+		MenuItem menuItem = new MenuView.MenuItem("sub1");
+		MenuView view = new MenuView(Arrays.asList(menuItem));
+		MenuItem selected = (MenuItem) ReflectionTestUtils.getField(view, "selected");
+		assertThat(menuItem).isSameAs(selected);
+	}
+
+	void upDownArrowsMovesSelection() {
+	}
+
+	void mouseWheelMovesSelection() {
+	}
+
+	void selectionShouldNotMoveOutOfBounds() {
 	}
 
 	@Test

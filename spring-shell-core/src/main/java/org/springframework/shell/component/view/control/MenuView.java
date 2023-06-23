@@ -15,16 +15,22 @@
  */
 package org.springframework.shell.component.view.control;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.lang.Nullable;
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
@@ -41,11 +47,51 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 public class MenuView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(MenuView.class);
-	private final List<MenuItem> items;
+	private final List<MenuItem> items = new ArrayList<>();
+	private MenuItem selected = null;
 
-	public MenuView(List<MenuItem> items) {
-		this.items = items;
+	/**
+	 * Construct menu view with no initial menu items.
+	 */
+	public MenuView() {
+		this(null);
 	}
+
+	/**
+	 * Construct menu view with menu items.
+	 *
+	 * @param items the menu items
+	 */
+	public MenuView(@Nullable List<MenuItem> items) {
+		setItems(items);
+		init();
+	}
+
+	private void init() {
+		addCommand("LineUp", () -> move(-1));
+		addKeyBinding(KeyType.UP, "LineUp");
+	}
+
+	Map<String, Runnable> commands = new HashMap<>();
+	private void addCommand(String command, Runnable runnable) {
+		commands.put(command, runnable);
+	}
+
+	Map<KeyType, String> bindings = new HashMap<>();
+	private void addKeyBinding(KeyType keyType, String command) {
+		bindings.put(keyType, command);
+	}
+
+	private void move(int count) {
+		log.trace("move(%s)", count);
+	}
+
+	// private void run(String command) {
+	// 	Runnable runnable = commands.get(command);
+	// 	if (runnable != null) {
+	// 		runnable.run();
+	// 	}
+	// }
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -54,12 +100,10 @@ public class MenuView extends BoxView {
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
 		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.WHITE).style(ScreenItem.STYLE_ITALIC).build();
 		for (MenuItem item : items) {
-			if (item.isSelected()) {
-				// log.info("XXX writer2");
+			if (item == selected) {
 				writer2.text(item.getTitle(), rect.x(), y);
 			}
 			else {
-				// log.info("XXX writer1");
 				writer.text(item.getTitle(), rect.x(), y);
 			}
 			y++;
@@ -70,7 +114,39 @@ public class MenuView extends BoxView {
 	@Override
 	public KeyHandler getKeyHandler() {
 		log.trace("getKeyHandler()");
-		return super.getKeyHandler();
+
+		KeyHandler handler = args -> {
+			KeyEvent event = args.event();
+			boolean consumed = true;
+			KeyType key = event.key();
+			if (key != null) {
+				String command = bindings.get(key);
+				if (command != null) {
+					Runnable runnable = commands.get(command);
+					runnable.run();
+				}
+			}
+			// if (event.key() != null) {
+			// 	switch (event.key()) {
+			// 		case UP -> {
+			// 			up();
+			// 		}
+			// 		case DOWN -> {
+			// 			down();
+			// 		}
+			// 		case ENTER -> {
+			// 			enter();
+			// 		}
+			// 		default -> {
+			// 			consumed = false;
+			// 		}
+			// 	}
+			// }
+			return KeyHandler.resultOf(event, consumed, null);
+		};
+
+		return handler;
+		// return super.getKeyHandler();
 	}
 
 	@Override
@@ -89,7 +165,7 @@ public class MenuView extends BoxView {
 
 				MenuItem itemAt = itemAt(x, y);
 				if (itemAt != null) {
-					itemAt.setSelected(true);
+					selected = itemAt;
 				}
 				log.info("XXX itemAt2 {} {} {}", x, y, itemAt);
 			}
@@ -97,6 +173,23 @@ public class MenuView extends BoxView {
 		};
 
 		// return super.getMouseHandler();
+	}
+
+	/**
+	 * Sets a new menu items. Will always clear existing items and if {@code null}
+	 * is passed this effectively keeps items empty.
+	 *
+	 * @param items the menu items
+	 */
+	public void setItems(@Nullable List<MenuItem> items) {
+		this.items.clear();
+		selected = null;
+		if (items != null) {
+			this.items.addAll(items);
+			if (!items.isEmpty()) {
+				selected = items.get(0);
+			}
+		}
 	}
 
 	private MenuItem itemAt(int x, int y) {
@@ -115,7 +208,6 @@ public class MenuView extends BoxView {
 
 		private String title;
 		private List<MenuItem> items;
-		private boolean selected;
 
 		public MenuItem(String title) {
 			this(title, new MenuItem[0]);
@@ -136,14 +228,6 @@ public class MenuView extends BoxView {
 
 		public List<MenuItem> getItems() {
 			return items;
-		}
-
-		public boolean isSelected() {
-			return selected;
-		}
-
-		public void setSelected(boolean selected) {
-			this.selected = selected;
 		}
 	}
 

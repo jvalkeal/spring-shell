@@ -39,9 +39,12 @@ public interface KeyHandler {
 
     default KeyHandler from(KeyHandler other, Predicate<KeyHandlerResult> predicate) {
 		return args -> {
-			KeyHandlerResult result = other.handle(args);
-			if (predicate.test(result)) {
-				return result;
+			// TODO: should we assert null or silently skip?
+			if (other != null) {
+				KeyHandlerResult result = other.handle(args);
+				if (predicate.test(result)) {
+					return result;
+				}
 			}
 			return handle(args);
 		};
