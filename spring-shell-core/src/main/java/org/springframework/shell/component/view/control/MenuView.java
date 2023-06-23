@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,9 @@ import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
 /**
@@ -49,8 +52,16 @@ public class MenuView extends BoxView {
 		Rectangle rect = getInnerRect();
 		int y = rect.y();
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
+		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.WHITE).style(ScreenItem.STYLE_ITALIC).build();
 		for (MenuItem item : items) {
-			writer.text(item.getTitle(), rect.x(), y);
+			if (item.isSelected()) {
+				// log.info("XXX writer2");
+				writer2.text(item.getTitle(), rect.x(), y);
+			}
+			else {
+				// log.info("XXX writer1");
+				writer.text(item.getTitle(), rect.x(), y);
+			}
 			y++;
 		}
 		super.drawInternal(screen);
@@ -65,48 +76,46 @@ public class MenuView extends BoxView {
 	@Override
 	public MouseHandler getMouseHandler() {
 		log.trace("getMouseHandler()");
-		// return args -> {
-		// 	View view = null;
-		// 	MouseEvent event = args.event();
-		// 	if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-		// 			&& event.getButton() == MouseEvent.Button.Button1) {
-		// 		int x = event.getX();
-		// 		int y = event.getY();
-		// 		if (getInnerRect().contains(x, y)) {
-		// 			view = this;
-		// 		}
+		return args -> {
+			View view = null;
+			MouseEvent event = args.event();
+			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+					&& event.getButton() == MouseEvent.Button.Button1) {
+				int x = event.getX();
+				int y = event.getY();
+				if (getInnerRect().contains(x, y)) {
+					view = this;
+				}
 
-		// 		MenuBarItem itemAt = itemAt(x, y);
-		// 		log.info("XXX itemAt {} {} {}", x, y, itemAt);
-		// 		if (itemAt != null) {
-		// 			if (this.itemAt == itemAt) {
-		// 				this.menuView = null;
-		// 				this.itemAt = null;
-		// 			}
-		// 			else {
-		// 				MenuView menuView = new MenuView(itemAt.getItems());
-		// 				menuView.setShowBorder(true);
-		// 				menuView.setBackgroundColor(Color.AQUAMARINE4);
-		// 				menuView.setLayer(1);
-		// 				Rectangle rect = getInnerRect();
-		// 				menuView.setRect(rect.x(), rect.y()+1, 15, 10);
-		// 				this.menuView = menuView;
-		// 				this.itemAt = itemAt;
-		// 			}
-		// 		}
-		// 	}
-		// 	return MouseHandler.resultOf(args.event(), true, view, null);
-		// };
+				MenuItem itemAt = itemAt(x, y);
+				if (itemAt != null) {
+					itemAt.setSelected(true);
+				}
+				log.info("XXX itemAt2 {} {} {}", x, y, itemAt);
+			}
+			return MouseHandler.resultOf(args.event(), true, view, null);
+		};
 
-		return super.getMouseHandler();
+		// return super.getMouseHandler();
+	}
+
+	private MenuItem itemAt(int x, int y) {
+		Rectangle rect = getRect();
+		if (!rect.contains(x, y)) {
+			return null;
+		}
+		int pos = y - rect.y();
+		if (pos > -1 && pos < items.size()) {
+			return items.get(pos);
+		}
+		return null;
 	}
 
 	public static class MenuItem  {
 
 		private String title;
 		private List<MenuItem> items;
-		private boolean enabled = true;
-		private boolean checked;
+		private boolean selected;
 
 		public MenuItem(String title) {
 			this(title, new MenuItem[0]);
@@ -128,6 +137,14 @@ public class MenuView extends BoxView {
 		public List<MenuItem> getItems() {
 			return items;
 		}
+
+		public boolean isSelected() {
+			return selected;
+		}
+
+		public void setSelected(boolean selected) {
+			this.selected = selected;
+		}
 	}
 
 	public static class Menu extends MenuItem {
@@ -148,7 +165,7 @@ public class MenuView extends BoxView {
 	void xxx() {
 		// commands LineUp LineDown
 		// events SelectionChanged
-		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction("LineDown", this)));
+		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction("OpenSelectedItem", this)));
 	}
 
 	public record MenuViewAction(String action, View view) implements ViewAction {

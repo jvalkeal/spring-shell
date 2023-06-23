@@ -50,7 +50,7 @@ public class MenuBarView extends BoxView {
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		log.debug("Drawing menu bar to {}", rect);
-		Writer writer = screen.writerBuilder().build();
+		Writer writer = screen.writerBuilder().color(Color.RED).build();
 		int x = rect.x();
 		ListIterator<MenuBarItem> iter = items.listIterator();
 		while (iter.hasNext()) {
@@ -99,6 +99,9 @@ public class MenuBarView extends BoxView {
 						this.menuView = menuView;
 						this.itemAt = itemAt;
 					}
+				}
+				else if (menuView != null) {
+					menuView.getMouseHandler().handle(args);
 				}
 			}
 			return MouseHandler.resultOf(args.event(), true, view, null);

@@ -17,9 +17,12 @@ package org.springframework.shell.component.view.control;
 
 import java.util.Arrays;
 
+import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +36,28 @@ class MenuViewTests extends AbstractViewTests {
 		view.setRect(0, 0, 80, 24);
 		view.draw(screen24x80);
 		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+	}
+
+	@Test
+	void mouseClickXXX() {
+		MenuItem menuItem = new MenuView.MenuItem("sub1");
+		MenuView view = new MenuView(Arrays.asList(menuItem));
+		// MenuItem menuItem = new MenuView.MenuItem("sub1");
+		// MenuBarItem menuBarItem = new MenuBarView.MenuBarItem("menu1", new MenuView.MenuItem[]{menuItem});
+		// MenuBarView view = new MenuBarView(new MenuBarView.MenuBarItem[]{menuBarItem});
+		view.setRect(0, 0, 10, 10);
+
+		MouseEvent click = mouseClick(0, 0);
+		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(click));
+		assertThat(result).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(click);
+			assertThat(r.consumed()).isTrue();
+			assertThat(r.focus()).isEqualTo(view);
+			// assertThat(r.capture()).isEqualTo(view);
+		});
+
+		// MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "menuView");
+		// assertThat(menuView).isNotNull();
 	}
 
 }
