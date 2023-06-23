@@ -17,28 +17,23 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.Message;
-import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
-import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.component.view.screen.Screen.Writer;
+import org.springframework.shell.component.view.screen.ScreenItem;
 
 /**
  * {@link MenuView} shows {@link MenuView} items vertically and is
@@ -76,26 +71,8 @@ public class MenuView extends BoxView {
 		addKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 	}
 
-	Map<String, Runnable> viewCommands = new HashMap<>();
-	private void addCommand(String viewCommand, Runnable runnable) {
-		viewCommands.put(viewCommand, runnable);
-	}
-
-	Map<KeyType, String> viewBindings = new HashMap<>();
-	private void addKeyBinding(KeyType keyType, String viewCommand) {
-		viewBindings.put(keyType, viewCommand);
-	}
-
 	private void move(int count) {
 		log.trace("move({})", count);
-	}
-
-	private void run(String command) {
-		Runnable runnable = viewCommands.get(command);
-		if (runnable != null) {
-			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
-			dispatch(message);
-		}
 	}
 
 	@Override
@@ -125,8 +102,8 @@ public class MenuView extends BoxView {
 			boolean consumed = true;
 			KeyType key = event.key();
 			if (key != null) {
-				String command = viewBindings.get(key);
-				run(command);
+				String command = getViewBindings().get(key);
+				scheduleRunCommand(command);
 			}
 			return KeyHandler.resultOf(event, consumed, null);
 		};

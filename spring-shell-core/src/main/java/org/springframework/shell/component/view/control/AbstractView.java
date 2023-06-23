@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.view.control;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
@@ -25,10 +27,12 @@ import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
 import org.springframework.shell.component.view.listener.ShellMessageListener;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 
 /**
@@ -48,6 +52,8 @@ public abstract class AbstractView implements View {
 	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
 	private int layer;
 	private EventLoop eventLoop;
+	private Map<String, Runnable> viewCommands = new HashMap<>();
+	private Map<KeyType, String> viewBindings = new HashMap<>();
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
@@ -140,6 +146,18 @@ public abstract class AbstractView implements View {
 		return eventLoop;
 	}
 
+	protected void addCommand(String viewCommand, Runnable runnable) {
+		viewCommands.put(viewCommand, runnable);
+	}
+
+	protected void addKeyBinding(KeyType keyType, String viewCommand) {
+		viewBindings.put(keyType, viewCommand);
+	}
+
+	protected Map<KeyType, String> getViewBindings() {
+		return viewBindings;
+	}
+
 	/**
 	 * Dispatch a {@link Message} into an event loop.
 	 *
@@ -151,6 +169,17 @@ public abstract class AbstractView implements View {
 		}
 		else {
 			log.warn("Can't dispatch message {} as eventloop is not set", message);
+		}
+	}
+
+	protected void scheduleRunCommand(String command) {
+		if (eventLoop == null) {
+			return;
+		}
+		Runnable runnable = viewCommands.get(command);
+		if (runnable != null) {
+			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
+			dispatch(message);
 		}
 	}
 
