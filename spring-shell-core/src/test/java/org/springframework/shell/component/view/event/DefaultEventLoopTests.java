@@ -27,6 +27,7 @@ import reactor.test.StepVerifier;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 
@@ -166,6 +167,29 @@ class DefaultEventLoopTests {
 		loop.dispatch(message);
 		verifier1.verify(Duration.ofSeconds(1));
 		verifier2.verify(Duration.ofSeconds(1));
+	}
+
+	@Test
+	void taskRunnableShouldExecute() {
+		initDefault();
+		TestRunnable task = new TestRunnable();
+		Message<TestRunnable> message = ShellMessageBuilder.withPayload(task).setEventType(EventLoop.Type.TASK).build();
+		StepVerifier verifier1 = StepVerifier.create(loop.events())
+			.expectNextCount(1)
+			.thenCancel()
+			.verifyLater();
+		loop.dispatch(message);
+		verifier1.verify(Duration.ofSeconds(1));
+		assertThat(task.count).isEqualTo(1);
+	}
+
+	static class TestRunnable implements Runnable {
+		int count = 0;
+
+		@Override
+		public void run() {
+			count++;
+		}
 	}
 
 }

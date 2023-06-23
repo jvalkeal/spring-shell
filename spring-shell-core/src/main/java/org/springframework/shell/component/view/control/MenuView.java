@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
+import org.springframework.messaging.Message;
+import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
@@ -83,15 +85,16 @@ public class MenuView extends BoxView {
 	}
 
 	private void move(int count) {
-		log.trace("move(%s)", count);
+		log.trace("move({})", count);
 	}
 
-	// private void run(String command) {
-	// 	Runnable runnable = commands.get(command);
-	// 	if (runnable != null) {
-	// 		runnable.run();
-	// 	}
-	// }
+	private void run(String command) {
+		Runnable runnable = commands.get(command);
+		if (runnable != null) {
+			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
+			dispatch(message);
+		}
+	}
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -121,10 +124,11 @@ public class MenuView extends BoxView {
 			KeyType key = event.key();
 			if (key != null) {
 				String command = bindings.get(key);
-				if (command != null) {
-					Runnable runnable = commands.get(command);
-					runnable.run();
-				}
+				run(command);
+				// if (command != null) {
+				// 	Runnable runnable = commands.get(command);
+				// 	runnable.run();
+				// }
 			}
 			// if (event.key() != null) {
 			// 	switch (event.key()) {

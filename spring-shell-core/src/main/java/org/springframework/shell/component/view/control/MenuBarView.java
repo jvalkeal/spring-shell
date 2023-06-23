@@ -100,6 +100,7 @@ public class MenuBarView extends BoxView {
 					}
 					else {
 						MenuView menuView = new MenuView(itemAt.getItems());
+						menuView.setEventLoop(getEventLoop());
 						menuView.setShowBorder(true);
 						menuView.setBackgroundColor(Color.AQUAMARINE4);
 						menuView.setLayer(1);

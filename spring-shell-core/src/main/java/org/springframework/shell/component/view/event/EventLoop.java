@@ -145,7 +145,9 @@ public interface EventLoop {
 		/**
 		 * User bindinds for custom events.
 		 */
-		USER
+		USER,
+
+		TASK
 	}
 
 	/**

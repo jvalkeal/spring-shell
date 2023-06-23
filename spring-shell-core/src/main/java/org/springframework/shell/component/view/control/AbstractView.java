@@ -136,6 +136,10 @@ public abstract class AbstractView implements View {
 		this.eventLoop = eventLoop;
 	}
 
+	protected EventLoop getEventLoop() {
+		return eventLoop;
+	}
+
 	/**
 	 * Dispatch a {@link Message} into an event loop.
 	 *

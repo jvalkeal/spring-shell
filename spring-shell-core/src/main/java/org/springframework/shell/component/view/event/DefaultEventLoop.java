@@ -73,6 +73,7 @@ public class DefaultEventLoop implements EventLoop {
 			this.processors.addAll(processors);
 		}
 		this.processors.add(new AnimationEventLoopProcessor());
+		this.processors.add(new TaskEventLoopProcessor());
 		init();
 	}
 
