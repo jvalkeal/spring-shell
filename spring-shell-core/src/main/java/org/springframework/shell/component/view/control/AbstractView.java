@@ -142,18 +142,40 @@ public abstract class AbstractView implements View {
 		this.eventLoop = eventLoop;
 	}
 
+	/**
+	 * Get an {@link EventLoop}.
+	 *
+	 * @return event loop
+	 */
 	protected EventLoop getEventLoop() {
 		return eventLoop;
 	}
 
+	/**
+	 * Register a {code view command} with a {@link Runnable}.
+	 *
+	 * @param viewCommand the view command
+	 * @param runnable the runnable
+	 */
 	protected void addCommand(String viewCommand, Runnable runnable) {
 		viewCommands.put(viewCommand, runnable);
 	}
 
+	/**
+	 * Register a {@link KeyType} with a {@code view command}.
+	 *
+	 * @param keyType the key type
+	 * @param viewCommand the view command
+	 */
 	protected void addKeyBinding(KeyType keyType, String viewCommand) {
 		viewBindings.put(keyType, viewCommand);
 	}
 
+	/**
+	 * Get view bindings.
+	 *
+	 * @return view bindings
+	 */
 	protected Map<KeyType, String> getViewBindings() {
 		return viewBindings;
 	}
@@ -172,6 +194,12 @@ public abstract class AbstractView implements View {
 		}
 	}
 
+	/**
+	 * Takes a view command and matches it against registered {@link Runnable} and
+	 * then schedules that to get executed in an event loop.
+	 *
+	 * @param command the view command
+	 */
 	protected void scheduleRunCommand(String command) {
 		if (eventLoop == null) {
 			return;
