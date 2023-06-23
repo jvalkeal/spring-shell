@@ -70,20 +70,20 @@ public class MenuView extends BoxView {
 	}
 
 	private void init() {
-		addCommand("LineUp", () -> move(-1));
-		addCommand("LineDown", () -> move(1));
-		addKeyBinding(KeyType.UP, "LineUp");
-		addKeyBinding(KeyType.DOWN, "LineDown");
+		addCommand(ViewCommand.LINE_UP, () -> move(-1));
+		addCommand(ViewCommand.LINE_DOWN, () -> move(1));
+		addKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
+		addKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 	}
 
-	Map<String, Runnable> commands = new HashMap<>();
-	private void addCommand(String command, Runnable runnable) {
-		commands.put(command, runnable);
+	Map<String, Runnable> viewCommands = new HashMap<>();
+	private void addCommand(String viewCommand, Runnable runnable) {
+		viewCommands.put(viewCommand, runnable);
 	}
 
-	Map<KeyType, String> bindings = new HashMap<>();
-	private void addKeyBinding(KeyType keyType, String command) {
-		bindings.put(keyType, command);
+	Map<KeyType, String> viewBindings = new HashMap<>();
+	private void addKeyBinding(KeyType keyType, String viewCommand) {
+		viewBindings.put(keyType, viewCommand);
 	}
 
 	private void move(int count) {
@@ -91,7 +91,7 @@ public class MenuView extends BoxView {
 	}
 
 	private void run(String command) {
-		Runnable runnable = commands.get(command);
+		Runnable runnable = viewCommands.get(command);
 		if (runnable != null) {
 			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
 			dispatch(message);
@@ -125,7 +125,7 @@ public class MenuView extends BoxView {
 			boolean consumed = true;
 			KeyType key = event.key();
 			if (key != null) {
-				String command = bindings.get(key);
+				String command = viewBindings.get(key);
 				run(command);
 			}
 			return KeyHandler.resultOf(event, consumed, null);
