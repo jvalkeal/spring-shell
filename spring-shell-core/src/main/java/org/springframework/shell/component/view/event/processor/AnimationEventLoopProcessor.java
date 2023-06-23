@@ -13,23 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.component.view.event;
+package org.springframework.shell.component.view.event.processor;
+
+import java.time.Duration;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
+import org.springframework.shell.component.view.event.EventLoop.Type;
+import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 
-public class TaskEventLoopProcessor implements EventLoopProcessor {
+/**
+ * {@link EventLoopProcessor} converting incoming message into animation tick
+ * messages.
+ *
+ * @author Janne Valkealahti
+ */
+public class AnimationEventLoopProcessor implements EventLoopProcessor {
 
 	@Override
 	public boolean canProcess(Message<?> message) {
-		if (EventLoop.Type.TASK.equals(StaticShellMessageHeaderAccessor.getEventType(message))) {
-			Object payload = message.getPayload();
-			if (payload instanceof Runnable r) {
+		if (EventLoop.Type.SYSTEM.equals(StaticShellMessageHeaderAccessor.getEventType(message))) {
+			if (message.getHeaders().containsKey("animationstart")) {
 				return true;
 			}
 		}
@@ -38,10 +47,16 @@ public class TaskEventLoopProcessor implements EventLoopProcessor {
 
 	@Override
 	public Flux<? extends Message<?>> process(Message<?> message) {
-		return Mono.just(message.getPayload())
-			.ofType(Runnable.class)
-			.flatMap(Mono::fromRunnable)
-			.then(Mono.just(MessageBuilder.withPayload(new Object()).build()))
-			.flux();
+		return Flux.range(0, 40)
+			.delayElements(Duration.ofMillis(100))
+			.map(i -> {
+				return MessageBuilder
+					.withPayload(i)
+					.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
+					.setHeader("animationtick", true)
+					.setHeader("animationfrom", 0)
+					.setHeader("animationto", 9)
+					.build();
+			});
 	}
 }

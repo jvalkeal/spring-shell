@@ -71,7 +71,9 @@ public class MenuView extends BoxView {
 
 	private void init() {
 		addCommand("LineUp", () -> move(-1));
+		addCommand("LineDown", () -> move(1));
 		addKeyBinding(KeyType.UP, "LineUp");
+		addKeyBinding(KeyType.DOWN, "LineDown");
 	}
 
 	Map<String, Runnable> commands = new HashMap<>();
@@ -125,32 +127,11 @@ public class MenuView extends BoxView {
 			if (key != null) {
 				String command = bindings.get(key);
 				run(command);
-				// if (command != null) {
-				// 	Runnable runnable = commands.get(command);
-				// 	runnable.run();
-				// }
 			}
-			// if (event.key() != null) {
-			// 	switch (event.key()) {
-			// 		case UP -> {
-			// 			up();
-			// 		}
-			// 		case DOWN -> {
-			// 			down();
-			// 		}
-			// 		case ENTER -> {
-			// 			enter();
-			// 		}
-			// 		default -> {
-			// 			consumed = false;
-			// 		}
-			// 	}
-			// }
 			return KeyHandler.resultOf(event, consumed, null);
 		};
 
 		return handler;
-		// return super.getKeyHandler();
 	}
 
 	@Override

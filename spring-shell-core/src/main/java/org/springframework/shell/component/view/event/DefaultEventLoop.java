@@ -42,6 +42,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.control.ViewAction;
+import org.springframework.shell.component.view.event.processor.AnimationEventLoopProcessor;
+import org.springframework.shell.component.view.event.processor.TaskEventLoopProcessor;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.util.Assert;
