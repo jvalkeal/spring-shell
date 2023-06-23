@@ -28,8 +28,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
-import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
-import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

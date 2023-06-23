@@ -202,7 +202,6 @@ public class SnakeGame extends AbstractScenario {
 			Snake snake;
 			Board board;
 			int direction;
-			boolean gameOver;
 
 			Game(Snake snake, Board board) {
 				this.snake = snake;
@@ -217,7 +216,6 @@ public class SnakeGame extends AbstractScenario {
 				Cell next = next(snake.head);
 				if (next == null || snake.checkCrash(next)) {
 					direction = 0;
-					gameOver = true;
 				}
 				else {
 					boolean foundFood = next.type == -1;

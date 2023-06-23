@@ -141,7 +141,6 @@ public class CatalogCommand extends AbstractShellComponent {
 		ListView<String> categories = categorySelector(eventLoop);
 		data.categories = categories;
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
-		data.scenarios = scenarios;
 
 		// handle event when scenario is chosen
 		eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
@@ -259,7 +258,7 @@ public class CatalogCommand extends AbstractShellComponent {
 	private static class StatelessData {
 		TerminalUI ui;
 		ListView<String> categories;
-		ListView<ScenarioData> scenarios;
+		// ListView<ScenarioData> scenarios;
 	}
 
 	private record ScenarioData(Scenario scenario, String name, String description, String[] category){};
