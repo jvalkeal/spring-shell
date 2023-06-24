@@ -201,7 +201,6 @@ public abstract class AbstractView implements View {
 		addKeyBinding(keyType, viewCommand);
 	}
 
-
 	/**
 	 * Get view bindings.
 	 *
