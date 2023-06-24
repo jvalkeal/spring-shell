@@ -36,4 +36,10 @@ public final class ViewCommand {
 	 */
 	public static String LINE_DOWN = "LineDown";
 
+	/**
+	 * Open selected item. In a some sort of view where something can be selected
+	 * and that active selected should be opened.
+	 */
+	public static String OPEN_SELECTED_ITEM = "OpenSelectedItem";
+
 }

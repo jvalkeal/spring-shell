@@ -27,6 +27,7 @@ import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
@@ -46,6 +47,10 @@ public class ListView<T> extends BoxView {
 
 	private final List<ListCell<T>> cells = new ArrayList<>();
 	private Function<ListView<T>, ListCell<T>> factory = listView -> new ListCell<>();
+
+	public ListView() {
+		init();
+	}
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -90,32 +95,6 @@ public class ListView<T> extends BoxView {
 	}
 
 	@Override
-	public KeyHandler getKeyHandler() {
-		log.trace("getKeyHandler()");
-		return args -> {
-			KeyEvent event = args.event();
-			boolean consumed = true;
-			if (event.key() != null) {
-				switch (event.key()) {
-					case UP -> {
-						up();
-					}
-					case DOWN -> {
-						down();
-					}
-					case ENTER -> {
-						enter();
-					}
-					default -> {
-						consumed = false;
-					}
-				}
-			}
-			return KeyHandler.resultOf(event, consumed, null);
-		};
-	}
-
-	@Override
 	public MouseHandler getMouseHandler() {
 		log.trace("getMouseHandler() {}");
 		MouseHandler handler = args -> {
@@ -143,6 +122,12 @@ public class ListView<T> extends BoxView {
 			return MouseHandler.resultOf(args.event(), view != null, view, this);
 		};
 		return super.getMouseHandler().fromIfNotConsumed(handler);
+	}
+
+	private void init() {
+		addKeyBindingCommand(KeyType.UP, ViewCommand.LINE_UP, () -> up());
+		addKeyBindingCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> down());
+		addKeyBindingCommand(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
 	}
 
 	private void up() {
