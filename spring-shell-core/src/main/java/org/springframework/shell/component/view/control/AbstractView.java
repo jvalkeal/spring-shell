@@ -238,7 +238,10 @@ public abstract class AbstractView implements View {
 		}
 		Runnable runnable = viewCommands.get(command);
 		if (runnable != null) {
-			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
+			Message<Runnable> message = ShellMessageBuilder
+				.withPayload(runnable)
+				.setEventType(EventLoop.Type.TASK)
+				.build();
 			dispatch(message);
 			return true;
 		}
