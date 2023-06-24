@@ -64,17 +64,6 @@ public class MenuView extends BoxView {
 		init();
 	}
 
-	private void init() {
-		addCommand(ViewCommand.LINE_UP, () -> move(-1));
-		addCommand(ViewCommand.LINE_DOWN, () -> move(1));
-		addKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
-		addKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
-	}
-
-	private void move(int count) {
-		log.trace("move({})", count);
-	}
-
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
@@ -91,24 +80,6 @@ public class MenuView extends BoxView {
 			y++;
 		}
 		super.drawInternal(screen);
-	}
-
-	@Override
-	public KeyHandler getKeyHandler() {
-		log.trace("getKeyHandler()");
-
-		KeyHandler handler = args -> {
-			KeyEvent event = args.event();
-			boolean consumed = true;
-			KeyType key = event.key();
-			if (key != null) {
-				String command = getViewBindings().get(key);
-				scheduleRunCommand(command);
-			}
-			return KeyHandler.resultOf(event, consumed, null);
-		};
-
-		return handler;
 	}
 
 	@Override
@@ -133,8 +104,6 @@ public class MenuView extends BoxView {
 			}
 			return MouseHandler.resultOf(args.event(), true, view, null);
 		};
-
-		// return super.getMouseHandler();
 	}
 
 	/**
@@ -152,6 +121,15 @@ public class MenuView extends BoxView {
 				selected = items.get(0);
 			}
 		}
+	}
+
+	private void init() {
+		addKeyBindingCommand(KeyType.UP, ViewCommand.LINE_UP, () -> move(-1));
+		addKeyBindingCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> move(1));
+	}
+
+	private void move(int count) {
+		log.trace("move({})", count);
 	}
 
 	private MenuItem itemAt(int x, int y) {

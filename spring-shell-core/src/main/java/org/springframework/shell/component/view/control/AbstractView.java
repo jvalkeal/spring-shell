@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
@@ -103,9 +104,23 @@ public abstract class AbstractView implements View {
 		return null;
 	}
 
+	/**
+	 * Handles keys by dispatching registered command runnable into an event loop.
+	 * Override to change default behaviour.
+	 */
 	@Override
 	public KeyHandler getKeyHandler() {
-		return null;
+		KeyHandler handler = args -> {
+			KeyEvent event = args.event();
+			boolean consumed = false;
+			KeyType key = event.key();
+			if (key != null) {
+				String command = getViewBindings().get(key);
+				consumed = dispatchRunCommand(command);
+			}
+			return KeyHandler.resultOf(event, consumed, null);
+		};
+		return handler;
 	}
 
 	@Override
@@ -172,6 +187,22 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
+	 * Register {@link Runnable} to get handled with a {@link KeyType} and a
+	 * {@code view command}.
+	 *
+	 * @param keyType the key type
+	 * @param viewCommand the view command
+	 * @param runnable the runnable
+	 * @see #addCommand(String, Runnable)
+	 * @see #addKeyBinding(KeyType, String)
+	 */
+	protected void addKeyBindingCommand(KeyType keyType, String viewCommand, Runnable runnable) {
+		addCommand(viewCommand, runnable);
+		addKeyBinding(keyType, viewCommand);
+	}
+
+
+	/**
 	 * Get view bindings.
 	 *
 	 * @return view bindings
@@ -196,19 +227,23 @@ public abstract class AbstractView implements View {
 
 	/**
 	 * Takes a view command and matches it against registered {@link Runnable} and
-	 * then schedules that to get executed in an event loop.
+	 * then schedules that to get executed in an event loop. Returns {@code true}
+	 * if a message was dispatched.
 	 *
 	 * @param command the view command
+	 * @return true if command was handled with matching registration
 	 */
-	protected void scheduleRunCommand(String command) {
+	protected boolean dispatchRunCommand(String command) {
 		if (eventLoop == null) {
-			return;
+			return false;
 		}
 		Runnable runnable = viewCommands.get(command);
 		if (runnable != null) {
 			Message<Runnable> message = ShellMessageBuilder.withPayload(runnable).setEventType(EventLoop.Type.TASK).build();
 			dispatch(message);
+			return true;
 		}
+		return false;
 	}
 
 	/**
