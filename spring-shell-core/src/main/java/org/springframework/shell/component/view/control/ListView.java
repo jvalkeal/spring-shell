@@ -46,6 +46,9 @@ public class ListView<T> extends BoxView {
 	private final List<ListCell<T>> cells = new ArrayList<>();
 	private Function<ListView<T>, ListCell<T>> factory = listView -> new ListCell<>();
 
+	/**
+	 * Construct list view with no initial items.
+	 */
 	public ListView() {
 		init();
 	}
