@@ -17,22 +17,13 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
-import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
-import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseBinding;
-import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
@@ -162,19 +153,12 @@ public class MenuView extends BoxView {
 	}
 
 	private void init() {
-		// registerKeyBindingRunnableCommand(KeyType.UP, ViewCommand.LINE_UP, () -> move(-1));
-		// registerKeyBindingRunnableCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> move(1));
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
 
 		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 
-		// registerMouseConsumerCommand("hi", event -> {
-		// 	log.info("XXX hi {}", event);
-		// });
-
-		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1, EnumSet.noneOf(MouseEvent.Modifier.class), "hi");
 	}
 
 	private void move(int count) {

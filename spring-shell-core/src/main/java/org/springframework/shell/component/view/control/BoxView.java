@@ -15,11 +15,9 @@
  */
 package org.springframework.shell.component.view.control;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
@@ -164,26 +162,23 @@ public class BoxView extends AbstractView {
 	 * @param screen the screen
 	 */
 	protected void drawInternal(Screen screen) {
+		log.trace("drawInternal() {}", this);
 		Rectangle rect = getRect();
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
 		if (backgroundColor > -1) {
 			screen.writerBuilder().layer(getLayer()).build().background(rect, backgroundColor);
-			// screen.setBackground(rect, backgroundColor);
 		}
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 			screen.writerBuilder().layer(getLayer()).build().border(rect.x(), rect.y(), rect.width(), rect.height());
-			// screen.printBorder(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {
 				Rectangle r = new Rectangle(rect.x() + 1, rect.y(), rect.width() - 2, 1);
 				if (titleColor > -1) {
 					screen.writerBuilder().layer(getLayer()).color(titleColor).style(titleStyle).build().text(title, r, titleAlign, VerticalAlign.TOP);
-					// screen.print(title, r, titleAlign, VerticalAlign.TOP, titleColor, titleStyle);
 				}
 				else {
 					screen.writerBuilder().layer(getLayer()).build().text(title, r, titleAlign, VerticalAlign.TOP);
-					// screen.print(title, r, titleAlign, VerticalAlign.TOP);
 				}
 			}
 		}

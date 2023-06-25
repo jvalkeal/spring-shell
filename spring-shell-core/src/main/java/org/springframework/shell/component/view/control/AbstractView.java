@@ -19,7 +19,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -29,12 +28,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseBinding;
 import org.springframework.shell.component.view.event.MouseBindingConsumer;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseHandler;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.listener.CompositeListener;
 import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
@@ -121,8 +120,6 @@ public abstract class AbstractView implements View {
 			if (command != null) {
 				view = this;
 				dispatchConsumerCommand(command, event);
-				// Consumer<MouseEvent> consumer = mouseCommands.get(command);
-				// consumer.accept(event);
 			}
 			return MouseHandler.resultOf(args.event(), view != null, view, this);
 		};
@@ -212,21 +209,6 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
-	 * Register {@link Runnable} to get handled with a {@link KeyType} and a
-	 * {@code view command}.
-	 *
-	 * @param keyType the key type
-	 * @param viewCommand the view command
-	 * @param runnable the runnable
-	 * @see #registerRunnableCommand(String, Runnable)
-	 * @see #registerKeyBinding(KeyType, String)
-	 */
-	protected void registerKeyBindingRunnableCommand(KeyType keyType, String viewCommand, Runnable runnable) {
-		registerRunnableCommand(viewCommand, runnable);
-		registerKeyBinding(keyType, viewCommand);
-	}
-
-	/**
 	 * Register a {@link KeyType} with a {@code mouse command}.
 	 *
 	 * @param keyType the key type
@@ -237,12 +219,18 @@ public abstract class AbstractView implements View {
 		mouseBindings.put(new MouseBinding(type, button, modifiers), mouseCommand);
 	}
 
+	/**
+	 * Register a {code view command} with a {@link MouseBindingConsumer}.
+	 *
+	 * @param viewCommand the view command
+	 * @param consumer the mouse binding consumer
+	 */
 	protected void registerMouseBindingConsumerCommand(String viewCommand, MouseBindingConsumer consumer) {
 		mouseCommands.put(viewCommand, consumer);
 	}
 
 	/**
-	 * get mouse bindings.
+	 * Get mouse bindings.
 	 *
 	 * @return mouse bindings
 	 */
@@ -274,7 +262,7 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
-	 * Takes a view command and matches it against registered {@link Runnable} and
+	 * Takes a {@code view command} and matches it against registered {@link Runnable} and
 	 * then schedules that to get executed in an event loop. Returns {@code true}
 	 * if a message was dispatched.
 	 *
@@ -297,6 +285,15 @@ public abstract class AbstractView implements View {
 		return false;
 	}
 
+	/**
+	 * Takes a {@code view command} and {@link MouseEvent} then matches it against
+	 * registered {@link MouseBindingConsumer} and then schedules that to get
+	 * executed in an event loop. Returns {@code true} if a message was dispatched.
+	 *
+	 * @param command the view command
+	 * @param event the mouse event
+	 * @return true if command was handled with matching registration
+	 */
 	protected boolean dispatchConsumerCommand(String command, MouseEvent event) {
 		if (eventLoop == null) {
 			return false;

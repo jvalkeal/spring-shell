@@ -25,9 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
-import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -126,9 +123,13 @@ public class ListView<T> extends BoxView {
 	// }
 
 	private void init() {
-		registerKeyBindingRunnableCommand(KeyType.UP, ViewCommand.LINE_UP, () -> up());
-		registerKeyBindingRunnableCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> down());
-		registerKeyBindingRunnableCommand(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
+		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
+		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+
+		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
+		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
+		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
 
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
