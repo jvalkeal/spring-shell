@@ -1,0 +1,6 @@
+[#appendix-tech-intro-uiframework]
+=== UI Framework
+ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
+
+This is a technical introduction to _UI Framework_.
+

@@ -22,6 +22,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
+import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 
 public class TaskEventLoopProcessor implements EventLoopProcessor {
@@ -33,15 +34,40 @@ public class TaskEventLoopProcessor implements EventLoopProcessor {
 			if (payload instanceof Runnable r) {
 				return true;
 			}
+			else if(payload instanceof MouseBindingConsumerArgs) {
+				return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
 	public Flux<? extends Message<?>> process(Message<?> message) {
+		Object payload = message.getPayload();
+		if (payload instanceof Runnable r) {
+			return processRunnable(message);
+		}
+		else if(payload instanceof MouseBindingConsumerArgs) {
+			return processConsumer(message);
+		}
+		// should not happen
+		throw new IllegalArgumentException();
+	}
+
+	private Flux<? extends Message<?>> processRunnable(Message<?> message) {
 		return Mono.just(message.getPayload())
 			.ofType(Runnable.class)
 			.flatMap(Mono::fromRunnable)
+			.then(Mono.just(MessageBuilder.withPayload(new Object()).build()))
+			.flux();
+	}
+
+	private Flux<? extends Message<?>> processConsumer(Message<?> message) {
+		return Mono.just(message.getPayload())
+			.ofType(MouseBindingConsumerArgs.class)
+			.flatMap(args -> Mono.fromRunnable(() -> {
+				args.consumer().accept(args.event());
+			}))
 			.then(Mono.just(MessageBuilder.withPayload(new Object()).build()))
 			.flux();
 	}

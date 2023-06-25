@@ -17,7 +17,11 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -27,6 +31,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseBinding;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -82,29 +87,62 @@ public class MenuView extends BoxView {
 		super.drawInternal(screen);
 	}
 
-	@Override
-	public MouseHandler getMouseHandler() {
-		log.trace("getMouseHandler()");
-		return args -> {
-			View view = null;
-			MouseEvent event = args.event();
-			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-					&& event.getButton() == MouseEvent.Button.Button1) {
-				int x = event.getX();
-				int y = event.getY();
-				if (getInnerRect().contains(x, y)) {
-					view = this;
-				}
+	// private Map<MouseBinding, String> mouseBindings = new HashMap<>();
+	// private Map<String, Consumer<MouseEvent>> mouseCommands = new HashMap<>();
 
-				MenuItem itemAt = itemAt(x, y);
-				if (itemAt != null) {
-					selected = itemAt;
-				}
-				log.info("XXX itemAt2 {} {} {}", x, y, itemAt);
-			}
-			return MouseHandler.resultOf(args.event(), true, view, null);
-		};
-	}
+	// record MouseBinding(MouseEvent.Type type, MouseEvent.Button button, EnumSet<MouseEvent.Modifier> modifiers) {
+	// }
+
+	// protected void registerMouseConsumerCommand(String viewCommand, Consumer<MouseEvent> consumer) {
+	// 	mouseCommands.put(viewCommand, consumer);
+	// }
+
+	// protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button, EnumSet<MouseEvent.Modifier> modifiers,
+	// 		String viewCommand) {
+	// 	mouseBindings.put(new MouseBinding(type, button, modifiers), viewCommand);
+	// }
+
+	// @Override
+	// public MouseHandler getMouseHandler() {
+	// 	log.trace("getMouseHandler()");
+	// 	MouseHandler handler = args -> {
+	// 		MouseEvent event = args.event();
+	// 		log.info("XXX mouse binding event {}", event);
+
+	// 		MouseEvent.Type type = event.getType();
+	// 		MouseEvent.Button button = event.getButton();
+	// 		EnumSet<MouseEvent.Modifier> modifiers = event.getModifiers();
+	// 		MouseBinding b = new MouseBinding(type, button, modifiers);
+
+	// 		// String string = mouseBindings.get(b);
+	// 		// Consumer<MouseEvent> consumer = mouseCommands.get(string);
+	// 		// consumer.accept(event);
+
+	// 		// log.info("XXX mouse binding command {}", string);
+
+	// 		return MouseHandler.resultOf(args.event(), true, null, null);
+	// 	};
+	// 	return handler;
+	// 	// return args -> {
+	// 	// 	View view = null;
+	// 	// 	MouseEvent event = args.event();
+	// 	// 	if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+	// 	// 			&& event.getButton() == MouseEvent.Button.Button1) {
+	// 	// 		int x = event.getX();
+	// 	// 		int y = event.getY();
+	// 	// 		if (getInnerRect().contains(x, y)) {
+	// 	// 			view = this;
+	// 	// 		}
+
+	// 	// 		MenuItem itemAt = itemAt(x, y);
+	// 	// 		if (itemAt != null) {
+	// 	// 			selected = itemAt;
+	// 	// 		}
+	// 	// 		log.info("XXX itemAt2 {} {} {}", x, y, itemAt);
+	// 	// 	}
+	// 	// 	return MouseHandler.resultOf(args.event(), true, view, null);
+	// 	// };
+	// }
 
 	/**
 	 * Sets a new menu items. Will always clear existing items and if {@code null}
@@ -124,8 +162,19 @@ public class MenuView extends BoxView {
 	}
 
 	private void init() {
-		addKeyBindingCommand(KeyType.UP, ViewCommand.LINE_UP, () -> move(-1));
-		addKeyBindingCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> move(1));
+		// registerKeyBindingRunnableCommand(KeyType.UP, ViewCommand.LINE_UP, () -> move(-1));
+		// registerKeyBindingRunnableCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> move(1));
+		registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
+		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
+
+		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
+		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
+
+		// registerMouseConsumerCommand("hi", event -> {
+		// 	log.info("XXX hi {}", event);
+		// });
+
+		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1, EnumSet.noneOf(MouseEvent.Modifier.class), "hi");
 	}
 
 	private void move(int count) {

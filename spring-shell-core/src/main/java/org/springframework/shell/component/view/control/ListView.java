@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 
@@ -94,40 +95,52 @@ public class ListView<T> extends BoxView {
 		// }
 	}
 
-	@Override
-	public MouseHandler getMouseHandler() {
-		log.trace("getMouseHandler() {}");
-		MouseHandler handler = args -> {
-			View view = null;
-			MouseEvent event = args.event();
-			int x = event.getX();
-			int y = event.getY();
-			if (getRect().contains(x, y)) {
-				if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Wheel) {
-					if (event.getButton() == MouseEvent.Button.WheelDown) {
-						view = this;
-						down();
-					}
-					else if (event.getButton() == MouseEvent.Button.WheelUp) {
-						view = this;
-						up();
-					}
-				}
-				else if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-						&& event.getButton() == MouseEvent.Button.Button1) {
-					view = this;
-				}
+	// @Override
+	// public MouseHandler getMouseHandler() {
+	// 	log.trace("getMouseHandler() {}");
+	// 	MouseHandler handler = args -> {
+	// 		View view = null;
+	// 		MouseEvent event = args.event();
+	// 		int x = event.getX();
+	// 		int y = event.getY();
+	// 		if (getRect().contains(x, y)) {
+	// 			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Wheel) {
+	// 				if (event.getButton() == MouseEvent.Button.WheelDown) {
+	// 					view = this;
+	// 					down();
+	// 				}
+	// 				else if (event.getButton() == MouseEvent.Button.WheelUp) {
+	// 					view = this;
+	// 					up();
+	// 				}
+	// 			}
+	// 			else if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+	// 					&& event.getButton() == MouseEvent.Button.Button1) {
+	// 				view = this;
+	// 			}
 
-			}
-			return MouseHandler.resultOf(args.event(), view != null, view, this);
-		};
-		return super.getMouseHandler().fromIfNotConsumed(handler);
-	}
+	// 		}
+	// 		return MouseHandler.resultOf(args.event(), view != null, view, this);
+	// 	};
+	// 	return super.getMouseHandler().fromIfNotConsumed(handler);
+	// }
 
 	private void init() {
-		addKeyBindingCommand(KeyType.UP, ViewCommand.LINE_UP, () -> up());
-		addKeyBindingCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> down());
-		addKeyBindingCommand(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+		registerKeyBindingRunnableCommand(KeyType.UP, ViewCommand.LINE_UP, () -> up());
+		registerKeyBindingRunnableCommand(KeyType.DOWN, ViewCommand.LINE_DOWN, () -> down());
+		registerKeyBindingRunnableCommand(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+
+		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
+		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+
+		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
+			up();
+		});
+		registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> {
+			down();
+		});
 	}
 
 	private void up() {
