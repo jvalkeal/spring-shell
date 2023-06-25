@@ -165,17 +165,17 @@ public class MenuView extends BoxView {
 		log.trace("move({})", count);
 	}
 
-	private MenuItem itemAt(int x, int y) {
-		Rectangle rect = getRect();
-		if (!rect.contains(x, y)) {
-			return null;
-		}
-		int pos = y - rect.y();
-		if (pos > -1 && pos < items.size()) {
-			return items.get(pos);
-		}
-		return null;
-	}
+	// private MenuItem itemAt(int x, int y) {
+	// 	Rectangle rect = getRect();
+	// 	if (!rect.contains(x, y)) {
+	// 		return null;
+	// 	}
+	// 	int pos = y - rect.y();
+	// 	if (pos > -1 && pos < items.size()) {
+	// 		return items.get(pos);
+	// 	}
+	// 	return null;
+	// }
 
 	public static class MenuItem  {
 

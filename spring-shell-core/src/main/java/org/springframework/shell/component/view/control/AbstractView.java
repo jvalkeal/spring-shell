@@ -42,7 +42,8 @@ import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 
 /**
- * Base implementation of a {@link View}.
+ * Base implementation of a {@link View} and its parent interface
+ * {@link Control} providing some common functionality for implementations.
  *
  * @author Janne Valkealahti
  */
@@ -107,11 +108,12 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
-	 * Handles mouse event by
+	 * Handles mouse events by dispatching registered consumers into an event loop.
+	 * Override to change default behaviour.
 	 */
 	@Override
 	public MouseHandler getMouseHandler() {
-		log.trace("getMouseHandler() {}");
+		log.trace("getMouseHandler() {}", this);
 		MouseHandler handler = args -> {
 			MouseEvent event = args.event();
 			MouseBinding binding = MouseBinding.of(event);
@@ -132,6 +134,7 @@ public abstract class AbstractView implements View {
 	 */
 	@Override
 	public KeyHandler getKeyHandler() {
+		log.trace("getKeyHandler() {}", this);
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			boolean consumed = false;
