@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public abstract class AbstractView implements View {
 	private EventLoop eventLoop;
 	private Map<String, Runnable> keyCommands = new HashMap<>();
 	private Map<KeyType, String> keyBindings = new HashMap<>();
-	private Map<MouseBinding, String> mouseBindings = new HashMap<>();
+	private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
 	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
 	@Override
@@ -118,10 +119,16 @@ public abstract class AbstractView implements View {
 			MouseEvent event = args.event();
 			MouseBinding binding = MouseBinding.of(event);
 			View view = null;
-			String command = getMouseBindings().get(binding);
-			if (command != null) {
-				view = this;
-				dispatchConsumerCommand(command, event);
+			MouseBindingValue mouseBindingValue = getMouseBindings().get(binding);
+			if (mouseBindingValue != null) {
+				if (mouseBindingValue.mousePredicate().test(event)) {
+					view = this;
+				}
+				String command = mouseBindingValue.mouseCommand();
+				if (command != null) {
+					// view = this;
+					dispatchConsumerCommand(command, event);
+				}
 			}
 			return MouseHandler.resultOf(args.event(), view != null, view, this);
 		};
@@ -218,9 +225,11 @@ public abstract class AbstractView implements View {
 	 * @param mouseCommand the mouse command
 	 */
 	protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button,
-			EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand) {
-		mouseBindings.put(new MouseBinding(type, button, modifiers), mouseCommand);
+			EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand, Predicate<MouseEvent> mousePredicate) {
+		mouseBindings.put(new MouseBinding(type, button, modifiers), new MouseBindingValue(mouseCommand, mousePredicate));
 	}
+
+	record MouseBindingValue(String mouseCommand, Predicate<MouseEvent> mousePredicate){}
 
 	/**
 	 * Register a {code mouse command} with a {@link MouseBindingConsumer}.
@@ -237,7 +246,7 @@ public abstract class AbstractView implements View {
 	 *
 	 * @return mouse bindings
 	 */
-	protected Map<MouseBinding, String> getMouseBindings() {
+	protected Map<MouseBinding, MouseBindingValue> getMouseBindings() {
 		return mouseBindings;
 	}
 

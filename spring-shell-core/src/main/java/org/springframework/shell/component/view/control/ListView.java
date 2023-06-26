@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -134,18 +135,27 @@ public class ListView<T> extends BoxView {
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
 
+		Predicate<MouseEvent> mousePredicate = event -> {
+			int x = event.getX();
+			int y = event.getY();
+			return getRect().contains(x, y);
+		};
+
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP, mousePredicate);
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
-		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN, mousePredicate);
+		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT, mousePredicate);
 
 		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
 			up();
 		});
 		registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> {
 			down();
+		});
+		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> {
+			log.info("XXX");
 		});
 	}
 
