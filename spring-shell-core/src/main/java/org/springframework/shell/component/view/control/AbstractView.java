@@ -223,13 +223,13 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
-	 * Register a {code view command} with a {@link MouseBindingConsumer}.
+	 * Register a {code mouse command} with a {@link MouseBindingConsumer}.
 	 *
-	 * @param viewCommand the view command
+	 * @param mouseCommand the mouse command
 	 * @param consumer the mouse binding consumer
 	 */
-	protected void registerMouseBindingConsumerCommand(String viewCommand, MouseBindingConsumer consumer) {
-		mouseCommands.put(viewCommand, consumer);
+	protected void registerMouseBindingConsumerCommand(String mouseCommand, MouseBindingConsumer consumer) {
+		mouseCommands.put(mouseCommand, consumer);
 	}
 
 	/**

@@ -138,6 +138,8 @@ public class ListView<T> extends BoxView {
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
 
 		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
 			up();
