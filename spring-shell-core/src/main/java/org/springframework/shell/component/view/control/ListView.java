@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
@@ -57,7 +56,6 @@ public class ListView<T> extends BoxView {
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
-		// Writer writer = screen.writerBuilder().build();
 		int y = rect.y();
 
 		int i = 0;
@@ -91,40 +89,7 @@ public class ListView<T> extends BoxView {
 			cells.add(c);
 			c.updateItem(i);
 		}
-		// if (!this.items.isEmpty()) {
-		// 	this.selected = 0;
-		// }
 	}
-
-	// @Override
-	// public MouseHandler getMouseHandler() {
-	// 	log.trace("getMouseHandler() {}");
-	// 	MouseHandler handler = args -> {
-	// 		View view = null;
-	// 		MouseEvent event = args.event();
-	// 		int x = event.getX();
-	// 		int y = event.getY();
-	// 		if (getRect().contains(x, y)) {
-	// 			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Wheel) {
-	// 				if (event.getButton() == MouseEvent.Button.WheelDown) {
-	// 					view = this;
-	// 					down();
-	// 				}
-	// 				else if (event.getButton() == MouseEvent.Button.WheelUp) {
-	// 					view = this;
-	// 					up();
-	// 				}
-	// 			}
-	// 			else if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-	// 					&& event.getButton() == MouseEvent.Button.Button1) {
-	// 				view = this;
-	// 			}
-
-	// 		}
-	// 		return MouseHandler.resultOf(args.event(), view != null, view, this);
-	// 	};
-	// 	return super.getMouseHandler().fromIfNotConsumed(handler);
-	// }
 
 	private void init() {
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
