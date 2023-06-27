@@ -43,5 +43,7 @@ public final class ViewCommand {
 	public static String OPEN_SELECTED_ITEM = "OpenSelectedItem";
 
 	public static String SELECT = "Select";
+	public static String LEFT = "Left";
+	public static String RIGHT = "Right";
 
 }

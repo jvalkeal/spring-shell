@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
@@ -47,7 +48,36 @@ public class MenuBarView extends BoxView {
 	MenuBarItem itemAt;
 
 	public MenuBarView(MenuBarItem[] items) {
+		init();
 		setItems(Arrays.asList(items));
+	}
+
+	private void init() {
+		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
+		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
+		registerRunnableCommand(ViewCommand.LEFT, () -> left());
+		registerRunnableCommand(ViewCommand.RIGHT, () -> right());
+
+		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
+		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
+		registerKeyBinding(KeyType.LEFT, ViewCommand.LEFT);
+		registerKeyBinding(KeyType.RIGHT, ViewCommand.RIGHT);
+	}
+
+	private void up() {
+		log.info("XXX up");
+	}
+
+	private void down() {
+		log.info("XXX down");
+	}
+
+	private void left() {
+		log.info("XXX left");
+	}
+
+	private void right() {
+		log.info("XXX right");
 	}
 
 	@Override
@@ -69,12 +99,23 @@ public class MenuBarView extends BoxView {
 		super.drawInternal(screen);
 	}
 
-	@Override
-	public KeyHandler getKeyHandler() {
-		if (menuView != null) {
-			return menuView.getKeyHandler();
-		}
-		return super.getKeyHandler();
+	// @Override
+	// public KeyHandler getKeyHandler() {
+	// 	if (menuView != null) {
+	// 		return menuView.getKeyHandler();
+	// 	}
+	// 	return super.getKeyHandler();
+	// }
+
+	private void showMenu(MenuBarItem item) {
+		MenuView menuView = new MenuView(itemAt.getItems());
+		menuView.setEventLoop(getEventLoop());
+		menuView.setShowBorder(true);
+		menuView.setBackgroundColor(Color.AQUAMARINE4);
+		menuView.setLayer(1);
+		Rectangle rect = getInnerRect();
+		menuView.setRect(rect.x(), rect.y()+1, 15, 10);
+
 	}
 
 	@Override
