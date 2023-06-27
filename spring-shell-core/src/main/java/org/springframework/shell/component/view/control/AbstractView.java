@@ -123,11 +123,11 @@ public abstract class AbstractView implements View {
 			if (mouseBindingValue != null) {
 				if (mouseBindingValue.mousePredicate().test(event)) {
 					view = this;
-				}
-				String command = mouseBindingValue.mouseCommand();
-				if (command != null) {
-					// view = this;
-					dispatchConsumerCommand(command, event);
+					String command = mouseBindingValue.mouseCommand();
+					if (command != null) {
+						// view = this;
+						dispatchConsumerCommand(command, event);
+					}
 				}
 			}
 			return MouseHandler.resultOf(args.event(), view != null, view, this);
@@ -219,15 +219,37 @@ public abstract class AbstractView implements View {
 	}
 
 	/**
-	 * Register a {@link KeyType} with a {@code mouse command}.
+	 * Register mouse binding with a {@code mouse command}.
 	 *
-	 * @param keyType the key type
+	 * @param type the mouse event type
+	 * @param button the mouse event button
+	 * @param modifiers the mouse event modifiers
 	 * @param mouseCommand the mouse command
+	 * @param mousePredicate the mouse event predicate
 	 */
 	protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button,
 			EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand, Predicate<MouseEvent> mousePredicate) {
 		mouseBindings.put(new MouseBinding(type, button, modifiers), new MouseBindingValue(mouseCommand, mousePredicate));
 	}
+
+	/**
+	 * Register mouse binding with a {@code mouse command}.
+	 *
+	 * @param type the mouse event type
+	 * @param button the mouse event button
+	 * @param modifiers the mouse event modifiers
+	 * @param mouseCommand the mouse command
+	 */
+	protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button,
+			EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand) {
+		Predicate<MouseEvent> predicate = event -> {
+			int x = event.getX();
+			int y = event.getY();
+			return getRect().contains(x, y);
+		};
+		registerMouseBinding(type, button, modifiers, mouseCommand, predicate);
+	}
+
 
 	record MouseBindingValue(String mouseCommand, Predicate<MouseEvent> mousePredicate){}
 

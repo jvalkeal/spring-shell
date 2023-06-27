@@ -135,18 +135,12 @@ public class ListView<T> extends BoxView {
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
 
-		Predicate<MouseEvent> mousePredicate = event -> {
-			int x = event.getX();
-			int y = event.getY();
-			return getRect().contains(x, y);
-		};
-
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP, mousePredicate);
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN, mousePredicate);
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
 		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT, mousePredicate);
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
 		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
 			up();
@@ -155,7 +149,6 @@ public class ListView<T> extends BoxView {
 			down();
 		});
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> {
-			log.info("XXX");
 		});
 	}
 
