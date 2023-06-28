@@ -44,7 +44,7 @@ public class MenuView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(MenuView.class);
 	private final List<MenuItem> items = new ArrayList<>();
-	private MenuItem selected = null;
+	private int selected = -1;
 
 	/**
 	 * Construct menu view with no initial menu items.
@@ -76,75 +76,20 @@ public class MenuView extends BoxView {
 		Rectangle rect = getInnerRect();
 		int y = rect.y();
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
-		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.WHITE).style(ScreenItem.STYLE_ITALIC).build();
+		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.RED).style(ScreenItem.STYLE_ITALIC).build();
+		int i = 0;
 		for (MenuItem item : items) {
-			if (item == selected) {
+			if (selected == i) {
 				writer2.text(item.getTitle(), rect.x(), y);
 			}
 			else {
 				writer.text(item.getTitle(), rect.x(), y);
 			}
+			i++;
 			y++;
 		}
 		super.drawInternal(screen);
 	}
-
-	// private Map<MouseBinding, String> mouseBindings = new HashMap<>();
-	// private Map<String, Consumer<MouseEvent>> mouseCommands = new HashMap<>();
-
-	// record MouseBinding(MouseEvent.Type type, MouseEvent.Button button, EnumSet<MouseEvent.Modifier> modifiers) {
-	// }
-
-	// protected void registerMouseConsumerCommand(String viewCommand, Consumer<MouseEvent> consumer) {
-	// 	mouseCommands.put(viewCommand, consumer);
-	// }
-
-	// protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button, EnumSet<MouseEvent.Modifier> modifiers,
-	// 		String viewCommand) {
-	// 	mouseBindings.put(new MouseBinding(type, button, modifiers), viewCommand);
-	// }
-
-	// @Override
-	// public MouseHandler getMouseHandler() {
-	// 	log.trace("getMouseHandler()");
-	// 	MouseHandler handler = args -> {
-	// 		MouseEvent event = args.event();
-	// 		log.info("XXX mouse binding event {}", event);
-
-	// 		MouseEvent.Type type = event.getType();
-	// 		MouseEvent.Button button = event.getButton();
-	// 		EnumSet<MouseEvent.Modifier> modifiers = event.getModifiers();
-	// 		MouseBinding b = new MouseBinding(type, button, modifiers);
-
-	// 		// String string = mouseBindings.get(b);
-	// 		// Consumer<MouseEvent> consumer = mouseCommands.get(string);
-	// 		// consumer.accept(event);
-
-	// 		// log.info("XXX mouse binding command {}", string);
-
-	// 		return MouseHandler.resultOf(args.event(), true, null, null);
-	// 	};
-	// 	return handler;
-	// 	// return args -> {
-	// 	// 	View view = null;
-	// 	// 	MouseEvent event = args.event();
-	// 	// 	if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-	// 	// 			&& event.getButton() == MouseEvent.Button.Button1) {
-	// 	// 		int x = event.getX();
-	// 	// 		int y = event.getY();
-	// 	// 		if (getInnerRect().contains(x, y)) {
-	// 	// 			view = this;
-	// 	// 		}
-
-	// 	// 		MenuItem itemAt = itemAt(x, y);
-	// 	// 		if (itemAt != null) {
-	// 	// 			selected = itemAt;
-	// 	// 		}
-	// 	// 		log.info("XXX itemAt2 {} {} {}", x, y, itemAt);
-	// 	// 	}
-	// 	// 	return MouseHandler.resultOf(args.event(), true, view, null);
-	// 	// };
-	// }
 
 	/**
 	 * Sets a new menu items. Will always clear existing items and if {@code null}
@@ -154,11 +99,11 @@ public class MenuView extends BoxView {
 	 */
 	public void setItems(@Nullable List<MenuItem> items) {
 		this.items.clear();
-		selected = null;
+		selected = -1;
 		if (items != null) {
 			this.items.addAll(items);
 			if (!items.isEmpty()) {
-				selected = items.get(0);
+				selected = 0;
 			}
 		}
 	}
@@ -180,6 +125,7 @@ public class MenuView extends BoxView {
 
 	private void move(int count) {
 		log.trace("move({})", count);
+		selected += count;
 	}
 
 	private void select(MouseEvent event) {
@@ -187,7 +133,6 @@ public class MenuView extends BoxView {
 		int x = event.getX();
 		int y = event.getY();
 		MenuItem itemAt = itemAt(x, y);
-		selected = itemAt;
 	}
 
 	private MenuItem itemAt(int x, int y) {
@@ -197,7 +142,11 @@ public class MenuView extends BoxView {
 		}
 		int pos = y - rect.y() - 1;
 		if (pos > -1 && pos < items.size()) {
-			return items.get(pos);
+			MenuItem i = items.get(pos);
+			if (i != null) {
+				selected = pos;
+			}
+			return i;
 		}
 		return null;
 	}

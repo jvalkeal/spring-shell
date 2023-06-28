@@ -43,8 +43,8 @@ class MenuViewTests extends AbstractViewTests {
 	void firstItemShouldAlwaysBeSelected() {
 		MenuItem menuItem = new MenuView.MenuItem("sub1");
 		MenuView view = new MenuView(Arrays.asList(menuItem));
-		MenuItem selected = (MenuItem) ReflectionTestUtils.getField(view, "selected");
-		assertThat(menuItem).isSameAs(selected);
+		Integer selected = (Integer) ReflectionTestUtils.getField(view, "selected");
+		assertThat(selected).isEqualTo(0);
 	}
 
 	void upDownArrowsMovesSelection() {
@@ -74,10 +74,8 @@ class MenuViewTests extends AbstractViewTests {
 			assertThat(r.capture()).isEqualTo(view);
 		});
 
-		MenuItem menuItem = (MenuItem) ReflectionTestUtils.getField(view, "selected");
-		assertThat(menuItem).isNotNull().satisfies(i -> {
-			assertThat(i.getTitle()).isEqualTo("sub2");
-		});
+		Integer selected = (Integer) ReflectionTestUtils.getField(view, "selected");
+		assertThat(selected).isEqualTo(1);
 	}
 
 }

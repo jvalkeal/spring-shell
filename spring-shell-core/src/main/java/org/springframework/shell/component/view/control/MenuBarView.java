@@ -134,14 +134,24 @@ public class MenuBarView extends BoxView {
 		currentMenuView = menuView;
 	}
 
-	// @Override
-	// public KeyHandler getKeyHandler() {
-	// 	KeyHandler handler = args -> {
-	// 		KeyEvent event = args.event();
-	// 		return KeyHandler.resultOf(event, false, null);
-	// 	};
-	// 	return super.getKeyHandler();
-	// }
+	@Override
+	public KeyHandler getKeyHandler() {
+		KeyHandler handler = args -> {
+			KeyEvent event = args.event();
+			KeyHandler h = null;
+			if (currentMenuView != null) {
+				h = currentMenuView.getKeyHandler();
+			}
+			if (h == null) {
+				h = super.getKeyHandler();
+			}
+			if (h != null) {
+				return h.handle(args);
+			}
+			return KeyHandler.resultOf(event, false, null);
+		};
+		return handler;
+	}
 
 	// @Override
 	// public KeyHandler getKeyHandler() {
