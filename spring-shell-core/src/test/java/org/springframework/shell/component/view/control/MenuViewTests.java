@@ -58,11 +58,13 @@ class MenuViewTests extends AbstractViewTests {
 
 	@Test
 	void mouseClickXXX() {
-		MenuItem menuItem = new MenuView.MenuItem("sub1");
-		MenuView view = new MenuView(Arrays.asList(menuItem));
 		// MenuItem menuItem = new MenuView.MenuItem("sub1");
-		// MenuBarItem menuBarItem = new MenuBarView.MenuBarItem("menu1", new MenuView.MenuItem[]{menuItem});
-		// MenuBarView view = new MenuBarView(new MenuBarView.MenuBarItem[]{menuBarItem});
+		// MenuView view = new MenuView(Arrays.asList(menuItem));
+
+		MenuView view = new MenuView(new MenuItem[] {
+			new MenuItem("sub1")
+		});
+
 		view.setRect(0, 0, 10, 10);
 
 		MouseEvent click = mouseClick(0, 0);

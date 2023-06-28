@@ -17,8 +17,11 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
+import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,16 @@ public class MenuView extends BoxView {
 	 * Construct menu view with no initial menu items.
 	 */
 	public MenuView() {
-		this(null);
+		this(new MenuItem[0]);
+	}
+
+	/**
+	 * Construct menu view with menu items.
+	 *
+	 * @param items the menu items
+	 */
+	public MenuView(MenuItem[] items) {
+		this(items != null ? Arrays.asList(items) : Collections.emptyList());
 	}
 
 	/**
@@ -57,7 +69,6 @@ public class MenuView extends BoxView {
 	 */
 	public MenuView(@Nullable List<MenuItem> items) {
 		setItems(items);
-		init();
 	}
 
 	@Override
@@ -152,12 +163,18 @@ public class MenuView extends BoxView {
 		}
 	}
 
-	private void init() {
+	@Override
+	protected void initInternal() {
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
 
 		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
+
+		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
+
+		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
 	}
 
@@ -165,17 +182,21 @@ public class MenuView extends BoxView {
 		log.trace("move({})", count);
 	}
 
-	// private MenuItem itemAt(int x, int y) {
-	// 	Rectangle rect = getRect();
-	// 	if (!rect.contains(x, y)) {
-	// 		return null;
-	// 	}
-	// 	int pos = y - rect.y();
-	// 	if (pos > -1 && pos < items.size()) {
-	// 		return items.get(pos);
-	// 	}
-	// 	return null;
-	// }
+	private void select(MouseEvent event) {
+		log.trace("select({})", event);
+	}
+
+	private MenuItem itemAt(int x, int y) {
+		Rectangle rect = getRect();
+		if (!rect.contains(x, y)) {
+			return null;
+		}
+		int pos = y - rect.y();
+		if (pos > -1 && pos < items.size()) {
+			return items.get(pos);
+		}
+		return null;
+	}
 
 	public static class MenuItem  {
 

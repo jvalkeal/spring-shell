@@ -19,11 +19,14 @@ import java.util.EnumSet;
 
 import org.assertj.core.api.AssertProvider;
 import org.jline.terminal.MouseEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.shell.component.view.ScreenAssert;
+import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -33,13 +36,41 @@ public class AbstractViewTests {
 	protected Screen screen7x10;
 	protected Screen screen10x10;
 	protected Screen screen0x0;
+	protected DefaultEventLoop eventLoop;
 
 	@BeforeEach
-	void setupScreens() {
+	void setup() {
 		screen24x80 = new DefaultScreen(24, 80);
 		screen7x10 = new DefaultScreen(7, 10);
 		screen0x0 = new DefaultScreen();
 		screen10x10 = new DefaultScreen(10, 10);
+		eventLoop = new DefaultEventLoop();
+	}
+
+	@AfterEach
+	void cleanup() {
+		if (eventLoop != null) {
+			eventLoop.destroy();
+		}
+		eventLoop = null;
+	}
+
+	protected void configure(View view) {
+		if (eventLoop != null) {
+			if (view instanceof AbstractView v) {
+				v.setEventLoop(eventLoop);
+			}
+			eventLoop.onDestroy(eventLoop.mouseEvents()
+				.doOnNext(m -> {
+					view.getMouseHandler().handle(MouseHandler.argsOf(m));
+				})
+				.subscribe());
+			eventLoop.onDestroy(eventLoop.keyEvents()
+				.doOnNext(m -> {
+					view.getKeyHandler().handle(KeyHandler.argsOf(m));
+				})
+				.subscribe());
+		}
 	}
 
 	protected void dispatchEvent(View view, KeyEvent event) {

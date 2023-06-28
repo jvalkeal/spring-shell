@@ -65,6 +65,26 @@ public abstract class AbstractView implements View {
 	private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
 	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
+	public AbstractView() {
+		init();
+	}
+	/**
+	 * Initialize a view. Mostly reserved for future use and simply calls
+	 * {@link #initInternal()}.
+	 *
+	 * @see #initInternal()
+	 */
+	protected final void init() {
+		initInternal();
+	}
+
+	/**
+	 * Internal init method called from {@link #init()}. Override to do something
+	 * usefull. Typically key and mousebindings are registered from this method.
+	 */
+	protected void initInternal() {
+	};
+
 	@Override
 	public void setRect(int x, int y, int width, int height) {
 		this.x = x;
@@ -91,6 +111,14 @@ public abstract class AbstractView implements View {
 	public final void draw(Screen screen) {
 		drawInternal(screen);
 	}
+
+	/**
+	 * Component internal drawing method. Implementing classes needs to define this
+	 * method to draw something into a {@link Screen}.
+	 *
+	 * @param screen the screen
+	 */
+	protected abstract void drawInternal(Screen screen);
 
 	@Override
 	public void focus(View view, boolean focus) {
@@ -352,12 +380,4 @@ public abstract class AbstractView implements View {
 	protected ShellMessageListener getShellMessageListener() {
 		return messageListerer;
 	}
-
-	/**
-	 * Component internal drawing method. Implementing classes needs to define this
-	 * method to draw something into a {@link Screen}.
-	 *
-	 * @param screen the screen
-	 */
-	protected abstract void drawInternal(Screen screen);
 }

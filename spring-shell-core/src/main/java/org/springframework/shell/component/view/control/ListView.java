@@ -50,7 +50,6 @@ public class ListView<T> extends BoxView {
 	 * Construct list view with no initial items.
 	 */
 	public ListView() {
-		init();
 	}
 
 	@Override
@@ -91,7 +90,8 @@ public class ListView<T> extends BoxView {
 		}
 	}
 
-	private void init() {
+	@Override
+	protected void initInternal() {
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
 		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());

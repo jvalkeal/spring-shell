@@ -42,6 +42,7 @@ class MenuBarViewTests extends AbstractViewTests {
 		MenuItem menuItem = new MenuView.MenuItem("sub1");
 		MenuBarItem menuBarItem = new MenuBarView.MenuBarItem("menu1", new MenuView.MenuItem[]{menuItem});
 		MenuBarView view = new MenuBarView(new MenuBarView.MenuBarItem[]{menuBarItem});
+		configure(view);
 		view.setRect(0, 0, 10, 10);
 
 		MouseEvent click = mouseClick(0, 0);
@@ -53,7 +54,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			// assertThat(r.capture()).isEqualTo(view);
 		});
 
-		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "menuView");
+		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
 		assertThat(menuView).isNotNull();
 	}
 
