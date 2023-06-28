@@ -58,4 +58,36 @@ class MenuBarViewTests extends AbstractViewTests {
 		assertThat(menuView).isNotNull();
 	}
 
+	@Test
+	void menuHasPositionRelativeToHeader() {
+		MenuBarView view = new MenuBarView(new MenuBarItem[] {
+			new MenuBarItem("menu1", new MenuItem[] {
+				new MenuItem("sub11")
+			}),
+			new MenuBarItem("menu2", new MenuItem[] {
+				new MenuItem("sub21")
+			})
+		});
+		configure(view);
+		view.setRect(0, 0, 20, 1);
+
+		MouseEvent click = mouseClick(7, 0);
+		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(click));
+		assertThat(result).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(click);
+			assertThat(r.consumed()).isTrue();
+			assertThat(r.focus()).isEqualTo(view);
+			assertThat(r.capture()).isEqualTo(view);
+		});
+
+		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
+		assertThat(menuView).isNotNull().satisfies(m -> {
+			assertThat(m.getRect()).satisfies(r -> {
+				assertThat(r.x()).isEqualTo(6);
+			});
+		});
+
+	}
+
+
 }
