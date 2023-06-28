@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
@@ -132,6 +133,15 @@ public class MenuBarView extends BoxView {
 		menuView.setRect(rect.x(), rect.y()+1, 15, 10);
 		currentMenuView = menuView;
 	}
+
+	// @Override
+	// public KeyHandler getKeyHandler() {
+	// 	KeyHandler handler = args -> {
+	// 		KeyEvent event = args.event();
+	// 		return KeyHandler.resultOf(event, false, null);
+	// 	};
+	// 	return super.getKeyHandler();
+	// }
 
 	// @Override
 	// public KeyHandler getKeyHandler() {

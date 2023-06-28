@@ -184,6 +184,10 @@ public class MenuView extends BoxView {
 
 	private void select(MouseEvent event) {
 		log.trace("select({})", event);
+		int x = event.getX();
+		int y = event.getY();
+		MenuItem itemAt = itemAt(x, y);
+		selected = itemAt;
 	}
 
 	private MenuItem itemAt(int x, int y) {
@@ -191,7 +195,7 @@ public class MenuView extends BoxView {
 		if (!rect.contains(x, y)) {
 			return null;
 		}
-		int pos = y - rect.y();
+		int pos = y - rect.y() - 1;
 		if (pos > -1 && pos < items.size()) {
 			return items.get(pos);
 		}

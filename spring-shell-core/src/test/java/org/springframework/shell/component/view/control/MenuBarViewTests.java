@@ -51,7 +51,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			assertThat(r.event()).isEqualTo(click);
 			assertThat(r.consumed()).isTrue();
 			assertThat(r.focus()).isEqualTo(view);
-			// assertThat(r.capture()).isEqualTo(view);
+			assertThat(r.capture()).isEqualTo(view);
 		});
 
 		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");

@@ -57,27 +57,27 @@ class MenuViewTests extends AbstractViewTests {
 	}
 
 	@Test
-	void mouseClickXXX() {
-		// MenuItem menuItem = new MenuView.MenuItem("sub1");
-		// MenuView view = new MenuView(Arrays.asList(menuItem));
-
+	void mouseClickSelectsItem() {
 		MenuView view = new MenuView(new MenuItem[] {
-			new MenuItem("sub1")
+			new MenuItem("sub1"),
+			new MenuItem("sub2")
 		});
-
+		configure(view);
 		view.setRect(0, 0, 10, 10);
 
-		MouseEvent click = mouseClick(0, 0);
+		MouseEvent click = mouseClick(0, 2);
 		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(click));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(click);
 			assertThat(r.consumed()).isTrue();
 			assertThat(r.focus()).isEqualTo(view);
-			// assertThat(r.capture()).isEqualTo(view);
+			assertThat(r.capture()).isEqualTo(view);
 		});
 
-		// MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "menuView");
-		// assertThat(menuView).isNotNull();
+		MenuItem menuItem = (MenuItem) ReflectionTestUtils.getField(view, "selected");
+		assertThat(menuItem).isNotNull().satisfies(i -> {
+			assertThat(i.getTitle()).isEqualTo("sub2");
+		});
 	}
 
 }
