@@ -38,24 +38,37 @@ class MenuBarViewTests extends AbstractViewTests {
 	}
 
 	@Test
-	void mouseClickOpensMenu() {
+	void mouseClicksSameOpensAndClosesMenu() {
 		MenuItem menuItem = new MenuView.MenuItem("sub1");
 		MenuBarItem menuBarItem = new MenuBarView.MenuBarItem("menu1", new MenuView.MenuItem[]{menuItem});
 		MenuBarView view = new MenuBarView(new MenuBarView.MenuBarItem[]{menuBarItem});
 		configure(view);
 		view.setRect(0, 0, 10, 10);
 
-		MouseEvent click = mouseClick(0, 0);
-		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(click));
-		assertThat(result).isNotNull().satisfies(r -> {
-			assertThat(r.event()).isEqualTo(click);
+		MouseEvent click1 = mouseClick(0, 0);
+		MouseHandlerResult result1 = view.getMouseHandler().handle(MouseHandler.argsOf(click1));
+		assertThat(result1).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(click1);
 			assertThat(r.consumed()).isTrue();
 			assertThat(r.focus()).isEqualTo(view);
 			assertThat(r.capture()).isEqualTo(view);
 		});
 
-		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
-		assertThat(menuView).isNotNull();
+		MenuView menuView1 = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
+		assertThat(menuView1).isNotNull();
+
+		MouseEvent click2 = mouseClick(0, 0);
+		MouseHandlerResult result2 = view.getMouseHandler().handle(MouseHandler.argsOf(click2));
+		assertThat(result2).isNotNull().satisfies(r -> {
+			assertThat(r.event()).isEqualTo(click2);
+			assertThat(r.consumed()).isTrue();
+			assertThat(r.focus()).isEqualTo(view);
+			assertThat(r.capture()).isEqualTo(view);
+		});
+
+		MenuView menuView2 = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
+		assertThat(menuView2).isNull();
+
 	}
 
 	@Test
@@ -83,7 +96,7 @@ class MenuBarViewTests extends AbstractViewTests {
 		MenuView menuView = (MenuView) ReflectionTestUtils.getField(view, "currentMenuView");
 		assertThat(menuView).isNotNull().satisfies(m -> {
 			assertThat(m.getRect()).satisfies(r -> {
-				assertThat(r.x()).isEqualTo(6);
+				assertThat(r.x()).isEqualTo(7);
 			});
 		});
 

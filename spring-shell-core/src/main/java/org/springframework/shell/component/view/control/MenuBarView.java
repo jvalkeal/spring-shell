@@ -17,6 +17,7 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,9 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
@@ -45,12 +45,31 @@ public class MenuBarView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(MenuBarView.class);
 	private final List<MenuBarItem> items = new ArrayList<>();
-
 	private MenuView currentMenuView;
-	private MenuBarItem activeItem;
+	private int activeItemIndex = -1;
 
+	/**
+	 * Construct menubar view with menubar items.
+	 *
+	 * @param items the menubar items
+	 */
 	public MenuBarView(MenuBarItem[] items) {
 		setItems(Arrays.asList(items));
+	}
+
+	/**
+	 * Sets a selected index. If given index is not within bounds of size of items,
+	 * selection is set to {@code -1} effectively un-selecting active item.
+	 *
+	 * @param index the new index
+	 */
+	public void setSelected(int index) {
+		if (index >= items.size() || index < 0) {
+			activeItemIndex = -1;
+		}
+		else {
+			activeItemIndex = index;
+		}
 	}
 
 	@Override
@@ -72,34 +91,92 @@ public class MenuBarView extends BoxView {
 	}
 
 	private void up() {
-		log.info("XXX up");
+		if (activeItemIndex > 0) {
+			setSelected(activeItemIndex - 1);
+		}
 	}
 
 	private void down() {
-		log.info("XXX down");
+		if (activeItemIndex + 1 < items.size()) {
+			setSelected(activeItemIndex + 1);
+		}
 	}
 
 	private void left() {
-		log.info("XXX left");
 	}
 
 	private void right() {
-		log.info("XXX right");
+	}
+
+	private int indexAtPosition(int x, int y) {
+		Rectangle rect = getRect();
+		if (!rect.contains(x, y)) {
+			return -1;
+		}
+		int i = 0;
+		int p = 1;
+		for (MenuBarItem item : items) {
+			p += item.getTitle().length() + 1;
+			if (x < p) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	private int positionAtIndex(int index) {
+		int i = 0;
+		int x = 1;
+		for (MenuBarItem item : items) {
+			if (i == index) {
+				return x;
+			}
+			x += item.getTitle().length() + 1;
+			i++;
+		}
+		return x;
 	}
 
 	private void select(MouseEvent event) {
-		log.info("XXX select");
 		int x = event.getX();
 		int y = event.getY();
-		MenuBarItem itemAt = itemAt(x, y);
-		if (itemAt != null && itemAt != activeItem) {
-			activeItem = itemAt;
-			showMenu(itemAt);
+		int i = indexAtPosition(x, y);
+		if (i > -1) {
+			if (i == activeItemIndex) {
+				setSelected(-1);
+			}
+			else {
+				setSelected(i);
+			}
 		}
-		else {
-			activeItem = null;
+		checkMenuView();
+	}
+
+	private void checkMenuView() {
+		if (activeItemIndex < 0) {
 			currentMenuView = null;
 		}
+		else {
+			MenuBarItem item = items.get(activeItemIndex);
+			currentMenuView = buildMenuView(item);
+		}
+	}
+
+	private MenuView buildMenuView(MenuBarItem item) {
+		MenuView menuView = new MenuView(item.getItems());
+		menuView.setEventLoop(getEventLoop());
+		menuView.setShowBorder(true);
+		menuView.setBackgroundColor(Color.AQUAMARINE4);
+		menuView.setLayer(1);
+		Integer max = item.getItems().stream()
+			.map(i -> i.getTitle().length())
+			.max(Comparator.naturalOrder())
+			.orElse(1);
+		Rectangle rect = getInnerRect();
+		int x = positionAtIndex(activeItemIndex);
+		menuView.setRect(rect.x() + x, rect.y() + 1, max + 2, items.size() + 2);
+		return menuView;
 	}
 
 	@Override
@@ -112,7 +189,8 @@ public class MenuBarView extends BoxView {
 		ListIterator<MenuBarItem> iter = items.listIterator();
 		while (iter.hasNext()) {
 			MenuBarItem item = iter.next();
-			Writer writer = activeItem == item ? writer2 : writer1;
+			int index = iter.previousIndex();
+			Writer writer = activeItemIndex == index ? writer2 : writer1;
 			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " " : "");
 			writer.text(text, x, rect.y());
 			x += text.length();
@@ -121,17 +199,6 @@ public class MenuBarView extends BoxView {
 			currentMenuView.draw(screen);
 		}
 		super.drawInternal(screen);
-	}
-
-	private void showMenu(MenuBarItem item) {
-		MenuView menuView = new MenuView(item.getItems());
-		menuView.setEventLoop(getEventLoop());
-		menuView.setShowBorder(true);
-		menuView.setBackgroundColor(Color.AQUAMARINE4);
-		menuView.setLayer(1);
-		Rectangle rect = getInnerRect();
-		menuView.setRect(rect.x(), rect.y()+1, 15, 10);
-		currentMenuView = menuView;
 	}
 
 	@Override
@@ -151,70 +218,6 @@ public class MenuBarView extends BoxView {
 			return KeyHandler.resultOf(event, false, null);
 		};
 		return handler;
-	}
-
-	// @Override
-	// public KeyHandler getKeyHandler() {
-	// 	if (menuView != null) {
-	// 		return menuView.getKeyHandler();
-	// 	}
-	// 	return super.getKeyHandler();
-	// }
-
-	// @Override
-	// public MouseHandler getMouseHandler() {
-	// 	log.trace("getMouseHandler()");
-	// 	return args -> {
-	// 		View view = null;
-	// 		MouseEvent event = args.event();
-	// 		if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-	// 				&& event.getButton() == MouseEvent.Button.Button1) {
-	// 			int x = event.getX();
-	// 			int y = event.getY();
-	// 			if (getInnerRect().contains(x, y)) {
-	// 				view = this;
-	// 			}
-
-	// 			MenuBarItem itemAt = itemAt(x, y);
-	// 			log.info("XXX itemAt {} {} {}", x, y, itemAt);
-	// 			if (itemAt != null) {
-	// 				if (this.itemAt == itemAt) {
-	// 					this.menuView = null;
-	// 					this.itemAt = null;
-	// 				}
-	// 				else {
-	// 					MenuView menuView = new MenuView(itemAt.getItems());
-	// 					menuView.setEventLoop(getEventLoop());
-	// 					menuView.setShowBorder(true);
-	// 					menuView.setBackgroundColor(Color.AQUAMARINE4);
-	// 					menuView.setLayer(1);
-	// 					Rectangle rect = getInnerRect();
-	// 					menuView.setRect(rect.x(), rect.y()+1, 15, 10);
-	// 					this.menuView = menuView;
-	// 					this.itemAt = itemAt;
-	// 				}
-	// 			}
-	// 			else if (menuView != null) {
-	// 				menuView.getMouseHandler().handle(args);
-	// 			}
-	// 		}
-	// 		return MouseHandler.resultOf(args.event(), true, view, null);
-	// 	};
-	// }
-
-	private MenuBarItem itemAt(int x, int y) {
-		Rectangle rect = getRect();
-		if (!rect.contains(x, y)) {
-			return null;
-		}
-		int ix = 0;
-		for (MenuBarItem item : items) {
-			if (x < ix + item.getTitle().length()) {
-				return item;
-			}
-			ix += item.getTitle().length();
-		}
-		return null;
 	}
 
 	/**
