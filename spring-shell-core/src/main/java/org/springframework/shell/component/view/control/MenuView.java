@@ -71,6 +71,23 @@ public class MenuView extends BoxView {
 		setItems(items);
 	}
 
+	/**
+	 * Sets a new menu items. Will always clear existing items and if {@code null}
+	 * is passed this effectively keeps items empty.
+	 *
+	 * @param items the menu items
+	 */
+	public void setItems(@Nullable List<MenuItem> items) {
+		this.items.clear();
+		selected = -1;
+		if (items != null) {
+			this.items.addAll(items);
+			if (!items.isEmpty()) {
+				selected = 0;
+			}
+		}
+	}
+
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
@@ -89,23 +106,6 @@ public class MenuView extends BoxView {
 			y++;
 		}
 		super.drawInternal(screen);
-	}
-
-	/**
-	 * Sets a new menu items. Will always clear existing items and if {@code null}
-	 * is passed this effectively keeps items empty.
-	 *
-	 * @param items the menu items
-	 */
-	public void setItems(@Nullable List<MenuItem> items) {
-		this.items.clear();
-		selected = -1;
-		if (items != null) {
-			this.items.addAll(items);
-			if (!items.isEmpty()) {
-				selected = 0;
-			}
-		}
 	}
 
 	@Override
@@ -151,6 +151,11 @@ public class MenuView extends BoxView {
 		return null;
 	}
 
+	/**
+	 * {@link MenuItem} represents an item in a {@link MenuView}.
+	 *
+	 * @see Menu
+	 */
 	public static class MenuItem  {
 
 		private String title;
@@ -178,6 +183,12 @@ public class MenuView extends BoxView {
 		}
 	}
 
+	/**
+	 * {@link Menu} represents an item in a {@link MenuView} being a specialisation
+	 * of {@link MenuItem} indicating it having a sub-menu.
+	 *
+	 * @see MenuItem
+	 */
 	public static class Menu extends MenuItem {
 
 		public Menu(String title) {

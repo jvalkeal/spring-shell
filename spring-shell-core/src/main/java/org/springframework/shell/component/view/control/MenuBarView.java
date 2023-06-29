@@ -231,7 +231,7 @@ public class MenuBarView extends BoxView {
 	}
 
 	/**
-	 * {@link MenuBarItem} represents an item in a {@link StatusBarView}.
+	 * {@link MenuBarItem} represents an item in a {@link MenuBarView}.
 	 */
 	public static class MenuBarItem {
 
