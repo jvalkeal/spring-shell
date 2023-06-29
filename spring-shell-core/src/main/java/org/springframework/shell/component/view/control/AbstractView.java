@@ -321,6 +321,7 @@ public abstract class AbstractView implements View {
 		else {
 			log.warn("Can't dispatch message {} as eventloop is not set", message);
 		}
+		getShellMessageListener().onMessage(message);
 	}
 
 	/**

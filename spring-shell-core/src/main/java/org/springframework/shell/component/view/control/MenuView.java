@@ -112,15 +112,22 @@ public class MenuView extends BoxView {
 	protected void initInternal() {
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
+		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
 
 		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
+		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
 
 		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
+	}
+
+	private void enter() {
+		log.info("XXX enter");
+		xxx();
 	}
 
 	private void move(int count) {
