@@ -24,6 +24,8 @@ import java.util.function.Predicate;
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
+import reactor.core.Disposables;
 
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -65,6 +67,15 @@ public abstract class AbstractView implements View {
 	public AbstractView() {
 		init();
 	}
+
+	private final Disposable.Composite disposables = Disposables.composite();
+	protected void addDisposable(Disposable disposable) {
+		disposables.add(disposable);
+	}
+	public void dispose() {
+		disposables.dispose();
+	}
+
 	/**
 	 * Initialize a view. Mostly reserved for future use and simply calls
 	 * {@link #initInternal()}.

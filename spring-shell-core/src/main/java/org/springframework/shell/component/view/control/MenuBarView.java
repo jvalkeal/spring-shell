@@ -25,6 +25,7 @@ import java.util.ListIterator;
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyEvent;
@@ -155,12 +156,23 @@ public class MenuBarView extends BoxView {
 
 	private void checkMenuView() {
 		if (activeItemIndex < 0) {
-			currentMenuView = null;
+			// if (currentMenuView != null) {
+			// 	currentMenuView.dispose();
+			// }
+			// currentMenuView = null;
+			// closeCurrentMenuView();
 		}
 		else {
 			MenuBarItem item = items.get(activeItemIndex);
 			currentMenuView = buildMenuView(item);
 		}
+	}
+
+	private void closeCurrentMenuView() {
+		if (currentMenuView != null) {
+			currentMenuView.dispose();
+		}
+		currentMenuView = null;
 	}
 
 	private MenuView buildMenuView(MenuBarItem item) {
@@ -179,6 +191,14 @@ public class MenuBarView extends BoxView {
 		// menuView.getMessageListeners().register(message -> {
 		// 	log.info("XXX message2 {}", message);
 		// });
+
+		Disposable d = getEventLoop().viewActions(MenuView.MenuViewAction.class, menuView)
+			.doOnNext(a -> {
+				log.info("XXX action2 {}", a);
+				closeCurrentMenuView();
+			})
+			.subscribe();
+		menuView.addDisposable(d);
 		return menuView;
 	}
 
