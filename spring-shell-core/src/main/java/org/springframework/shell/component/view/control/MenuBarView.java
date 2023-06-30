@@ -170,7 +170,7 @@ public class MenuBarView extends BoxView {
 
 	private void closeCurrentMenuView() {
 		if (currentMenuView != null) {
-			currentMenuView.dispose();
+			currentMenuView.destroy();
 		}
 		currentMenuView = null;
 	}
@@ -198,7 +198,7 @@ public class MenuBarView extends BoxView {
 				closeCurrentMenuView();
 			})
 			.subscribe();
-		menuView.addDisposable(d);
+		menuView.onDestroy(d);
 		return menuView;
 	}
 

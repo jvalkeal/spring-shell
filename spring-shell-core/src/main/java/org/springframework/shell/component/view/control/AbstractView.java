@@ -50,6 +50,7 @@ import org.springframework.shell.component.view.screen.Screen;
 public abstract class AbstractView implements View {
 
 	private final static Logger log = LoggerFactory.getLogger(AbstractView.class);
+	private final Disposable.Composite disposables = Disposables.composite();
 	private int x = 0;
 	private int y = 0;
 	private int width = 0;
@@ -67,11 +68,20 @@ public abstract class AbstractView implements View {
 		init();
 	}
 
-	private final Disposable.Composite disposables = Disposables.composite();
-	protected void addDisposable(Disposable disposable) {
+	/**
+	 * Register {@link Disposable} to get disposed when view terminates.
+	 *
+	 * @param disposable a disposable to dispose
+	 */
+	protected void onDestroy(Disposable disposable) {
 		disposables.add(disposable);
 	}
-	public void dispose() {
+
+	/**
+	 * Cleans running state of a {@link View} so that it can be left to get garbage
+	 * collected.
+	 */
+	public void destroy() {
 		disposables.dispose();
 	}
 
@@ -90,7 +100,7 @@ public abstract class AbstractView implements View {
 	 * usefull. Typically key and mousebindings are registered from this method.
 	 */
 	protected void initInternal() {
-	};
+	}
 
 	@Override
 	public void setRect(int x, int y, int width, int height) {
