@@ -18,8 +18,6 @@ package org.springframework.shell.component.view.control;
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
-import org.springframework.shell.component.view.listener.CompositeListener;
-import org.springframework.shell.component.view.listener.ShellMessageListener;
 
 /**
  * Base interface for all views. Represents a visible element that can render

@@ -36,9 +36,6 @@ import org.springframework.shell.component.view.event.MouseBindingConsumer;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
-import org.springframework.shell.component.view.listener.CompositeListener;
-import org.springframework.shell.component.view.listener.CompositeShellMessageListener;
-import org.springframework.shell.component.view.listener.ShellMessageListener;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 
