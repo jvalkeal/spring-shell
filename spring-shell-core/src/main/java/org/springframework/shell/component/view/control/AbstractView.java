@@ -57,7 +57,7 @@ public abstract class AbstractView implements View {
 	private int height = 0;
 	private BiFunction<Screen, Rectangle, Rectangle> drawFunction;
 	private boolean hasFocus;
-	private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
+	// private final CompositeShellMessageListener messageListerer = new CompositeShellMessageListener();
 	private int layer;
 	private EventLoop eventLoop;
 	private Map<String, Runnable> keyCommands = new HashMap<>();
@@ -183,10 +183,10 @@ public abstract class AbstractView implements View {
 		return handler;
 	}
 
-	@Override
-	public CompositeListener<ShellMessageListener> getMessageListeners() {
-		return messageListerer;
-	}
+	// @Override
+	// public CompositeListener<ShellMessageListener> getMessageListeners() {
+	// 	return messageListerer;
+	// }
 
 	/**
 	 * Sets a callback function which is invoked after a {@link View} has been
@@ -321,7 +321,7 @@ public abstract class AbstractView implements View {
 		else {
 			log.warn("Can't dispatch message {} as eventloop is not set", message);
 		}
-		getShellMessageListener().onMessage(message);
+		// getShellMessageListener().onMessage(message);
 	}
 
 	/**
@@ -373,12 +373,12 @@ public abstract class AbstractView implements View {
 		return false;
 	}
 
-	/**
-	 * Gets a {@link ShellMessageListener} which can be used to dispatch an event.
-	 *
-	 * @return a shell message listener
-	 */
-	protected ShellMessageListener getShellMessageListener() {
-		return messageListerer;
-	}
+	// /**
+	//  * Gets a {@link ShellMessageListener} which can be used to dispatch an event.
+	//  *
+	//  * @return a shell message listener
+	//  */
+	// protected ShellMessageListener getShellMessageListener() {
+	// 	return messageListerer;
+	// }
 }

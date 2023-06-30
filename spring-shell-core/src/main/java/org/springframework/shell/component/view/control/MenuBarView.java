@@ -176,9 +176,9 @@ public class MenuBarView extends BoxView {
 		Rectangle rect = getInnerRect();
 		int x = positionAtIndex(activeItemIndex);
 		menuView.setRect(rect.x() + x, rect.y() + 1, max + 2, items.size() + 2);
-		menuView.getMessageListeners().register(message -> {
-			log.info("XXX message2 {}", message);
-		});
+		// menuView.getMessageListeners().register(message -> {
+		// 	log.info("XXX message2 {}", message);
+		// });
 		return menuView;
 	}
 

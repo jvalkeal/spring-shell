@@ -71,11 +71,11 @@ public interface View extends Control {
 	@Nullable
 	KeyHandler getKeyHandler();
 
-	/**
-	 * Get composite listener used for registration.
-	 *
-	 * @return
-	 */
-	CompositeListener<ShellMessageListener> getMessageListeners();
+	// /**
+	//  * Get composite listener used for registration.
+	//  *
+	//  * @return
+	//  */
+	// CompositeListener<ShellMessageListener> getMessageListeners();
 
 }

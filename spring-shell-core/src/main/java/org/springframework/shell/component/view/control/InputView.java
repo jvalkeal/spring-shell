@@ -83,11 +83,11 @@ public class InputView extends BoxView {
 	}
 
 	private void enter(KeyEvent event) {
-		getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("enter", this));
+		// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("enter", this));
 	}
 
 	private void leave(KeyEvent event) {
-		getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("leave", this));
+		// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("leave", this));
 	}
 
 	private void add(String data) {
