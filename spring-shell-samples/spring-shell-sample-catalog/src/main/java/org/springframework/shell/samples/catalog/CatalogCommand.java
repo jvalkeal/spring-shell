@@ -27,17 +27,16 @@ import org.springframework.messaging.Message;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.control.AppView;
+import org.springframework.shell.component.view.control.AppView.AppViewAction;
 import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.ListView;
+import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.MenuBarView;
 import org.springframework.shell.component.view.control.MenuBarView.MenuBarItem;
-import org.springframework.shell.component.view.control.MenuView.Menu;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
-import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.control.View;
-import org.springframework.shell.component.view.control.AppView.AppViewAction;
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
@@ -228,22 +227,19 @@ public class CatalogCommand extends AbstractShellComponent {
 	}
 
 	private MenuBarView menuBar(EventLoop eventLoop) {
-		MenuBarView menuBar = new MenuBarView(new MenuBarItem[] {
-			new MenuBarItem("menu1", new MenuItem[] {
-				new MenuItem("sub11"),
-				new MenuItem("sub12")
-			}),
-			new MenuBarItem("menu2", new MenuItem[] {
-				new MenuItem("sub21"),
-				new Menu("sub22", new MenuItem[] {
-					new MenuItem("sub221"),
-					new MenuItem("sub222")
-				})
-			})
-		});
+		MenuBarView menuBar = MenuBarView.of(
+			MenuBarItem.of("File",
+				MenuItem.of("Quit")),
+			MenuBarItem.of("Theme",
+				MenuItem.of("Dump"),
+				MenuItem.of("Funky")
+			),
+			MenuBarItem.of("Help",
+				MenuItem.of("About"))
+		);
+
 		menuBar.setEventLoop(eventLoop);
 		return menuBar;
-
 	}
 
 	private StatusBarView statusBar(EventLoop eventLoop) {

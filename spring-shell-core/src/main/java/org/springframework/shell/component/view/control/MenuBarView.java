@@ -58,6 +58,10 @@ public class MenuBarView extends BoxView {
 		setItems(Arrays.asList(items));
 	}
 
+	public static MenuBarView of(MenuBarItem... items) {
+		return new MenuBarView(items);
+	}
+
 	/**
 	 * Sets a selected index. If given index is not within bounds of size of items,
 	 * selection is set to {@code -1} effectively un-selecting active item.
@@ -156,11 +160,7 @@ public class MenuBarView extends BoxView {
 
 	private void checkMenuView() {
 		if (activeItemIndex < 0) {
-			// if (currentMenuView != null) {
-			// 	currentMenuView.dispose();
-			// }
-			// currentMenuView = null;
-			// closeCurrentMenuView();
+			closeCurrentMenuView();
 		}
 		else {
 			MenuBarItem item = items.get(activeItemIndex);
@@ -188,14 +188,13 @@ public class MenuBarView extends BoxView {
 		Rectangle rect = getInnerRect();
 		int x = positionAtIndex(activeItemIndex);
 		menuView.setRect(rect.x() + x, rect.y() + 1, max + 2, items.size() + 2);
-		// menuView.getMessageListeners().register(message -> {
-		// 	log.info("XXX message2 {}", message);
-		// });
 
 		Disposable d = getEventLoop().viewActions(MenuView.MenuViewAction.class, menuView)
 			.doOnNext(a -> {
 				log.info("XXX action2 {}", a);
-				closeCurrentMenuView();
+				if (ViewCommand.OPEN_SELECTED_ITEM == a.action()) {
+					closeCurrentMenuView();
+				}
 			})
 			.subscribe();
 		menuView.onDestroy(d);
@@ -268,6 +267,10 @@ public class MenuBarView extends BoxView {
 		public MenuBarItem(String title, MenuItem[] items) {
 			this.title = title;
 			this.items = Arrays.asList(items);
+		}
+
+		public static MenuBarItem of(String title, MenuItem... items) {
+			return new MenuBarItem(title, items);
 		}
 
 		public String getTitle() {

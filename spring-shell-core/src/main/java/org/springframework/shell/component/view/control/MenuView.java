@@ -127,7 +127,7 @@ public class MenuView extends BoxView {
 
 	private void enter() {
 		log.info("XXX enter");
-		xxx();
+		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction(ViewCommand.OPEN_SELECTED_ITEM, this)));
 	}
 
 	private void move(int count) {
@@ -181,6 +181,10 @@ public class MenuView extends BoxView {
 			this.items = items;
 		}
 
+		public static MenuItem of(String title) {
+			return new MenuItem(title);
+		}
+
 		public String getTitle() {
 			return title;
 		}
@@ -209,12 +213,10 @@ public class MenuView extends BoxView {
 		public Menu(String title, List<MenuItem> items) {
 			super(title, items);
 		}
-	}
 
-	void xxx() {
-		// commands LineUp LineDown
-		// events SelectionChanged
-		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction("OpenSelectedItem", this)));
+		public static Menu of(String title, MenuItem... items) {
+			return new Menu(title, items);
+		}
 	}
 
 	public record MenuViewAction(String action, View view) implements ViewAction {
