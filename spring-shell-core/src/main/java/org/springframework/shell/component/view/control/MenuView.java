@@ -132,6 +132,13 @@ public class MenuView extends BoxView {
 		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
+		registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> move(1));
+		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> move(-1));
+		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
+
 	}
 
 	private void keySelect() {
@@ -144,8 +151,11 @@ public class MenuView extends BoxView {
 	}
 
 	private void setSelected(int index) {
-		if (index >= items.size() || index < 0) {
-			activeItemIndex = -1;
+		if (index >= items.size()) {
+			activeItemIndex = 0;
+		}
+		else if(index < 0) {
+			activeItemIndex = items.size() - 1;
 		}
 		else {
 			if (activeItemIndex != index) {
@@ -160,7 +170,6 @@ public class MenuView extends BoxView {
 		log.trace("select({})", event);
 		int x = event.getX();
 		int y = event.getY();
-		// MenuItem itemAt = itemAt(x, y);
 		setSelected(indexAtPosition(x, y));
 	}
 
@@ -179,21 +188,26 @@ public class MenuView extends BoxView {
 		return -1;
 	}
 
-	// private MenuItem itemAt(int x, int y) {
-	// 	Rectangle rect = getRect();
-	// 	if (!rect.contains(x, y)) {
-	// 		return null;
-	// 	}
-	// 	int pos = y - rect.y() - 1;
-	// 	if (pos > -1 && pos < items.size()) {
-	// 		MenuItem i = items.get(pos);
-	// 		if (i != null) {
-	// 			activeItemIndex = pos;
-	// 		}
-	// 		return i;
-	// 	}
-	// 	return null;
-	// }
+	/**
+	 * Specifies how a {@link MenuItem} shows selection state.
+	 */
+	public enum MenuItemCheckStyle {
+
+		/**
+		 * The menu item will be shown normally, with no check indicator. The default.
+		 */
+		NOCHECK,
+
+		/**
+		 * The menu item will indicate checked/un-checked state.
+		 */
+		CHECKED,
+
+		/**
+		 * The menu item is part of a menu radio group and will indicate selected state.
+		 */
+		RADIO
+	}
 
 	/**
 	 * {@link MenuItem} represents an item in a {@link MenuView}.
@@ -203,6 +217,7 @@ public class MenuView extends BoxView {
 	public static class MenuItem  {
 
 		private String title;
+		private MenuItemCheckStyle checkStyle = MenuItemCheckStyle.NOCHECK;
 		private List<MenuItem> items;
 
 		public MenuItem(String title) {
@@ -224,6 +239,10 @@ public class MenuView extends BoxView {
 
 		public String getTitle() {
 			return title;
+		}
+
+		public MenuItemCheckStyle getCheckStyle() {
+			return checkStyle;
 		}
 
 		public List<MenuItem> getItems() {

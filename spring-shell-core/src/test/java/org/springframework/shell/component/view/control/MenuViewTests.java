@@ -26,6 +26,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.control.MenuView.MenuItemCheckStyle;
 import org.springframework.shell.component.view.control.MenuView.MenuViewAction;
 import org.springframework.shell.component.view.control.MenuView.MenuViewItemAction;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
@@ -64,6 +65,15 @@ class MenuViewTests extends AbstractViewTests {
 			view.setRect(0, 0, 80, 24);
 			view.draw(screen24x80);
 			assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
+		}
+
+		@Test
+		void defaultItemCheckStyleIsNoCheck() {
+			MenuItem menuItem = new MenuView.MenuItem("sub1");
+			MenuView view = new MenuView(Arrays.asList(menuItem));
+			assertThat(view.getItems()).allSatisfy(item -> {
+				assertThat(item.getCheckStyle()).isEqualTo(MenuItemCheckStyle.NOCHECK);
+			});
 		}
 
 	}
@@ -107,13 +117,39 @@ class MenuViewTests extends AbstractViewTests {
 			assertThat(selected).isEqualTo(1);
 		}
 
+		@Test
 		void upArrowMovesSelection() {
+			Integer selected;
+
+			handleKey(view, KeyType.UP);
+			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
+			assertThat(selected).isEqualTo(1);
 		}
 
+		@Test
 		void wheelMovesSelection() {
+			Integer selected;
+
+			handleMouseWheelDown(view, 0, 1);
+			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
+			assertThat(selected).isEqualTo(1);
+
+			handleMouseWheelUp(view, 0, 1);
+			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
+			assertThat(selected).isEqualTo(0);
 		}
 
+		@Test
 		void selectionShouldNotMoveOutOfBounds() {
+			Integer selected;
+
+			handleKey(view, KeyType.DOWN);
+			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
+			assertThat(selected).isEqualTo(1);
+
+			handleKey(view, KeyType.DOWN);
+			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
+			assertThat(selected).isEqualTo(0);
 		}
 
 		void canSelectManually() {

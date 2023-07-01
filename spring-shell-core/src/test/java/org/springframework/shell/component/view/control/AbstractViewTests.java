@@ -109,6 +109,16 @@ public class AbstractViewTests {
 		return view.getMouseHandler().handle(MouseHandler.argsOf(click));
 	}
 
+	protected MouseHandlerResult handleMouseWheelDown(View view, int x, int y) {
+		MouseEvent wheel = mouseWheelDown(x, y);
+		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
+	}
+
+	protected MouseHandlerResult handleMouseWheelUp(View view, int x, int y) {
+		MouseEvent wheel = mouseWheelUp(x, y);
+		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
+	}
+
 	protected MouseEvent mouseWheelUp(int x, int y) {
 		return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
 				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
