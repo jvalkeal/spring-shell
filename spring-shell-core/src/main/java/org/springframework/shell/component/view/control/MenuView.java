@@ -32,6 +32,8 @@ import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.shell.component.view.screen.ScreenItem;
 
 /**
@@ -138,7 +140,6 @@ public class MenuView extends BoxView {
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
-
 	}
 
 	private void keySelect() {
@@ -216,12 +217,31 @@ public class MenuView extends BoxView {
 	 */
 	public static class MenuItem  {
 
-		private String title;
-		private MenuItemCheckStyle checkStyle = MenuItemCheckStyle.NOCHECK;
-		private List<MenuItem> items;
+		private final String title;
+		private final MenuItemCheckStyle checkStyle;// = MenuItemCheckStyle.NOCHECK;
+		private final List<MenuItem> items;
 
+		/**
+		 * Construct menu item with a title.
+		 *
+		 * @param title the title
+		 */
 		public MenuItem(String title) {
-			this(title, new MenuItem[0]);
+			this(title, MenuItemCheckStyle.NOCHECK);
+		}
+
+		/**
+		 * Construct menu item with a title and a check style.
+		 *
+		 * @param title the title
+		 * @param checkStyle the check style
+		 */
+		public MenuItem(String title, MenuItemCheckStyle checkStyle) {
+			Assert.state(StringUtils.hasText(title), "title must have text");
+			Assert.notNull(checkStyle, "check style cannot be null");
+			this.title = title;
+			this.checkStyle = checkStyle;
+			this.items = null;
 		}
 
 		protected MenuItem(String title, MenuItem[] items) {
@@ -229,22 +249,50 @@ public class MenuView extends BoxView {
 		}
 
 		protected MenuItem(String title, List<MenuItem> items) {
+			Assert.state(StringUtils.hasText(title), "title must have text");
+			Assert.notNull(items, "Sub items cannot be null");
 			this.title = title;
 			this.items = items;
+			this.checkStyle = null;
 		}
 
+		/**
+		 * Return a {@link MenuItem} with a given {@code title}.
+		 *
+		 * @param title the title
+		 * @return a menu item
+		 */
 		public static MenuItem of(String title) {
 			return new MenuItem(title);
 		}
 
+		/**
+		 * Get a {@code title}. Never null, empty or just having white spaces.
+		 *
+		 * @return a title
+		 */
 		public String getTitle() {
 			return title;
 		}
 
+		/**
+		 * Gets a check style. This will be {@code null} if constructed via
+		 * {@link Menu} as style doesn't apply items being a sub-menu.
+		 *
+		 * @return a check style
+		 */
+		@Nullable
 		public MenuItemCheckStyle getCheckStyle() {
 			return checkStyle;
 		}
 
+		/**
+		 * Gets sub menu items. This will be {@code null} if not constructed via
+		 * {@link Menu} as plain {@link MenuItem} can't have other items.
+		 *
+		 * @return a menu items
+		 */
+		@Nullable
 		public List<MenuItem> getItems() {
 			return items;
 		}
@@ -258,18 +306,42 @@ public class MenuView extends BoxView {
 	 */
 	public static class Menu extends MenuItem {
 
+		/**
+		 * Construct menu with a title.
+		 *
+		 * @param title the title
+		 */
 		public Menu(String title) {
 			super(title);
 		}
 
+		/**
+		 * Construct menu with a title and a menu items.
+		 *
+		 * @param title the title
+		 * @param items the menu items
+		 */
 		public Menu(String title, MenuItem[] items) {
 			super(title, items);
 		}
 
+		/**
+		 * Construct menu with a title and a menu items.
+		 *
+		 * @param title the title
+		 * @param items the menu items
+		 */
 		public Menu(String title, List<MenuItem> items) {
 			super(title, items);
 		}
 
+		/**
+		 * Return a {@link Menu} with a given {@code title} and {@link MenuItem}s.
+		 *
+		 * @param title the title
+		 * @param items the menu items
+		 * @return a menu
+		 */
 		public static Menu of(String title, MenuItem... items) {
 			return new Menu(title, items);
 		}

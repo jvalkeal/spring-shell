@@ -39,19 +39,23 @@ class MenuViewTests extends AbstractViewTests {
 
 	private static final String SELECTED_FIELD = "activeItemIndex";
 
-	@Test
-	void constructView() {
-		MenuView view;
-		view = new MenuView(new MenuItem[] {
-			MenuItem.of("sub1"),
-			MenuItem.of("sub2")
-		});
-		assertThat(view.getItems()).hasSize(2);
-		view = new MenuView(new MenuItem[] {
-			new MenuItem("sub1"),
-			new MenuItem("sub2")
-		});
-		assertThat(view.getItems()).hasSize(2);
+	@Nested
+	class Construction {
+
+		@Test
+		void constructView() {
+			MenuView view;
+			view = new MenuView(new MenuItem[] {
+				MenuItem.of("sub1"),
+				MenuItem.of("sub2")
+			});
+			assertThat(view.getItems()).hasSize(2);
+			view = new MenuView(new MenuItem[] {
+				new MenuItem("sub1"),
+				new MenuItem("sub2")
+			});
+			assertThat(view.getItems()).hasSize(2);
+		}
 	}
 
 	@Nested
@@ -158,6 +162,16 @@ class MenuViewTests extends AbstractViewTests {
 	}
 
 	@Nested
+	class RadioSelection {
+
+	}
+
+	@Nested
+	class CheckSelection {
+
+	}
+
+	@Nested
 	class Events {
 
 		MenuView view;
@@ -220,6 +234,31 @@ class MenuViewTests extends AbstractViewTests {
 			verifier.verify(Duration.ofSeconds(1));
 		}
 
+	}
+
+	@Nested
+	class Visual {
+		MenuView view;
+
+		@BeforeEach
+		void setup() {
+			view = new MenuView(new MenuItem[] {
+				MenuItem.of("sub1"),
+				MenuItem.of("sub2")
+			});
+			configure(view);
+			view.setRect(0, 0, 10, 10);
+		}
+
+		@Test
+		void hasDefaultItemSelected() {
+			MenuItem menuItem = new MenuView.MenuItem("sub1");
+			MenuView view = new MenuView(Arrays.asList(menuItem));
+			view.setShowBorder(true);
+			view.setRect(0, 0, 80, 24);
+			view.draw(screen24x80);
+			assertThat(forScreen(screen24x80)).hasHorizontalText("sub1", 0, 1, 5);
+		}
 	}
 
 }
