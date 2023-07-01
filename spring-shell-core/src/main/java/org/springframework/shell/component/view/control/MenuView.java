@@ -44,7 +44,7 @@ public class MenuView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(MenuView.class);
 	private final List<MenuItem> items = new ArrayList<>();
-	private int selected = -1;
+	private int activeItemIndex = -1;
 
 	/**
 	 * Construct menu view with no initial menu items.
@@ -79,13 +79,22 @@ public class MenuView extends BoxView {
 	 */
 	public void setItems(@Nullable List<MenuItem> items) {
 		this.items.clear();
-		selected = -1;
+		activeItemIndex = -1;
 		if (items != null) {
 			this.items.addAll(items);
 			if (!items.isEmpty()) {
-				selected = 0;
+				activeItemIndex = 0;
 			}
 		}
+	}
+
+	/**
+	 * Gets a menu items.
+	 *
+	 * @return the menu items
+	 */
+	public List<MenuItem> getItems() {
+		return items;
 	}
 
 	@Override
@@ -96,7 +105,7 @@ public class MenuView extends BoxView {
 		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.RED).style(ScreenItem.STYLE_ITALIC).build();
 		int i = 0;
 		for (MenuItem item : items) {
-			if (selected == i) {
+			if (activeItemIndex == i) {
 				writer2.text(item.getTitle(), rect.x(), y);
 			}
 			else {
@@ -112,51 +121,79 @@ public class MenuView extends BoxView {
 	protected void initInternal() {
 		registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
-		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> keySelect());
 
 		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
 		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
 		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
 
-		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
+		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
 
 		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
 	}
 
-	private void enter() {
-		log.info("XXX enter");
+	private void keySelect() {
 		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction(ViewCommand.OPEN_SELECTED_ITEM, this)));
 	}
 
 	private void move(int count) {
 		log.trace("move({})", count);
-		selected += count;
+		setSelected(activeItemIndex + count);
 	}
 
-	private void select(MouseEvent event) {
+	private void setSelected(int index) {
+		if (index >= items.size() || index < 0) {
+			activeItemIndex = -1;
+		}
+		else {
+			if (activeItemIndex != index) {
+				activeItemIndex = index;
+				MenuItem item = items.get(index);
+				dispatch(ShellMessageBuilder.ofView(this, new MenuViewItemAction(item, ViewCommand.SELECTION_CHANGED, this)));
+			}
+		}
+	}
+
+	private void mouseSelect(MouseEvent event) {
 		log.trace("select({})", event);
 		int x = event.getX();
 		int y = event.getY();
-		MenuItem itemAt = itemAt(x, y);
+		// MenuItem itemAt = itemAt(x, y);
+		setSelected(indexAtPosition(x, y));
 	}
 
-	private MenuItem itemAt(int x, int y) {
+	private int indexAtPosition(int x, int y) {
 		Rectangle rect = getRect();
 		if (!rect.contains(x, y)) {
-			return null;
+			return -1;
 		}
 		int pos = y - rect.y() - 1;
 		if (pos > -1 && pos < items.size()) {
 			MenuItem i = items.get(pos);
 			if (i != null) {
-				selected = pos;
+				return pos;
 			}
-			return i;
 		}
-		return null;
+		return -1;
 	}
+
+	// private MenuItem itemAt(int x, int y) {
+	// 	Rectangle rect = getRect();
+	// 	if (!rect.contains(x, y)) {
+	// 		return null;
+	// 	}
+	// 	int pos = y - rect.y() - 1;
+	// 	if (pos > -1 && pos < items.size()) {
+	// 		MenuItem i = items.get(pos);
+	// 		if (i != null) {
+	// 			activeItemIndex = pos;
+	// 		}
+	// 		return i;
+	// 	}
+	// 	return null;
+	// }
 
 	/**
 	 * {@link MenuItem} represents an item in a {@link MenuView}.
@@ -220,6 +257,9 @@ public class MenuView extends BoxView {
 	}
 
 	public record MenuViewAction(String action, View view) implements ViewAction {
+	}
+
+	public record MenuViewItemAction(MenuItem menuItem, String action, View view) implements ViewAction {
 	}
 
 }

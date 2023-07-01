@@ -45,5 +45,6 @@ public final class ViewCommand {
 	public static String SELECT = "Select";
 	public static String LEFT = "Left";
 	public static String RIGHT = "Right";
+	public static String SELECTION_CHANGED = "SelectionChanged";
 
 }

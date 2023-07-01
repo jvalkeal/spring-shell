@@ -25,8 +25,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.shell.component.view.ScreenAssert;
 import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
 
@@ -84,9 +87,26 @@ public class AbstractViewTests {
 		return () -> new ScreenAssert(screen);
 	}
 
+	protected KeyHandlerResult handleKey(View view, KeyType key) {
+		return handleKeyEvent(view, KeyEvent.ofType(key));
+	}
+
+	protected KeyHandlerResult handleKeyEvent(View view, KeyEvent key) {
+		return view.getKeyHandler().handle(KeyHandler.argsOf(key));
+	}
+
 	protected MouseEvent mouseClick(int x, int y) {
 		return new MouseEvent(MouseEvent.Type.Released, MouseEvent.Button.Button1,
 				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	}
+
+	protected MouseHandlerResult handleMouseClick(View view, int x, int y) {
+		MouseEvent click = mouseClick(0, 2);
+		return handleMouseClick(view, click);
+	}
+
+	protected MouseHandlerResult handleMouseClick(View view, MouseEvent click) {
+		return view.getMouseHandler().handle(MouseHandler.argsOf(click));
 	}
 
 	protected MouseEvent mouseWheelUp(int x, int y) {
