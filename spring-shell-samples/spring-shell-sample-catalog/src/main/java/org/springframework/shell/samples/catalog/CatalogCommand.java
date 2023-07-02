@@ -34,6 +34,7 @@ import org.springframework.shell.component.view.control.ListView.ListViewAction;
 import org.springframework.shell.component.view.control.MenuBarView;
 import org.springframework.shell.component.view.control.MenuBarView.MenuBarItem;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.control.MenuView.MenuItemCheckStyle;
 import org.springframework.shell.component.view.control.StatusBarView;
 import org.springframework.shell.component.view.control.StatusBarView.StatusItem;
 import org.springframework.shell.component.view.control.View;
@@ -231,8 +232,8 @@ public class CatalogCommand extends AbstractShellComponent {
 			MenuBarItem.of("File",
 				MenuItem.of("Quit")),
 			MenuBarItem.of("Theme",
-				MenuItem.of("Dump"),
-				MenuItem.of("Funky")
+				MenuItem.of("Dump", MenuItemCheckStyle.RADIO),
+				MenuItem.of("Funky", MenuItemCheckStyle.RADIO)
 			),
 			MenuBarItem.of("Help",
 				MenuItem.of("About"))

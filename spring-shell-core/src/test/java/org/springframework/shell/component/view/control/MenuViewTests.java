@@ -45,14 +45,28 @@ class MenuViewTests extends AbstractViewTests {
 		@Test
 		void constructView() {
 			MenuView view;
+
 			view = new MenuView(new MenuItem[] {
 				MenuItem.of("sub1"),
 				MenuItem.of("sub2")
 			});
 			assertThat(view.getItems()).hasSize(2);
+
 			view = new MenuView(new MenuItem[] {
 				new MenuItem("sub1"),
 				new MenuItem("sub2")
+			});
+			assertThat(view.getItems()).hasSize(2);
+
+			view = new MenuView(new MenuItem[] {
+				MenuItem.of("sub1", MenuItemCheckStyle.RADIO),
+				MenuItem.of("sub2", MenuItemCheckStyle.RADIO)
+			});
+			assertThat(view.getItems()).hasSize(2);
+
+			view = new MenuView(new MenuItem[] {
+				new MenuItem("sub1", MenuItemCheckStyle.RADIO),
+				new MenuItem("sub2", MenuItemCheckStyle.RADIO)
 			});
 			assertThat(view.getItems()).hasSize(2);
 		}
@@ -162,12 +176,72 @@ class MenuViewTests extends AbstractViewTests {
 	}
 
 	@Nested
-	class RadioSelection {
+	class Checked {
 
-	}
+		MenuItem sub1;
+		MenuItem sub2;
+		MenuItem sub3;
+		MenuItem sub4;
+		MenuItem sub5;
+		MenuItem sub6;
+		MenuView view;
 
-	@Nested
-	class CheckSelection {
+		@BeforeEach
+		void setup() {
+			sub1 = MenuItem.of("sub1", MenuItemCheckStyle.NOCHECK);
+			sub2 = MenuItem.of("sub2", MenuItemCheckStyle.NOCHECK);
+			sub3 = MenuItem.of("sub3", MenuItemCheckStyle.CHECKED);
+			sub4 = MenuItem.of("sub4", MenuItemCheckStyle.CHECKED);
+			sub5 = MenuItem.of("sub5", MenuItemCheckStyle.RADIO);
+			sub6 = MenuItem.of("sub6", MenuItemCheckStyle.RADIO);
+		}
+
+		@Test
+		void onlyNocheckDontAddPrefix() {
+			view = new MenuView(new MenuItem[] { sub1, sub2 });
+			view.setShowBorder(true);
+			configure(view);
+			view.setRect(0, 0, 10, 10);
+			view.draw(screen10x10);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("sub1", 0, 1, 5);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("sub2", 0, 2, 5);
+		}
+
+		@Test
+		void showsCheckedInRadio() {
+			sub5.setChecked(true);
+			view = new MenuView(new MenuItem[] { sub5, sub6 });
+			view.setShowBorder(true);
+			configure(view);
+			view.setRect(0, 0, 10, 10);
+			view.draw(screen10x10);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[x] sub5", 0, 1, 9);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[ ] sub6", 0, 2, 9);
+		}
+
+		@Test
+		void showsCheckedInNonRadio() {
+			sub4.setChecked(true);
+			view = new MenuView(new MenuItem[] { sub3, sub4 });
+			view.setShowBorder(true);
+			configure(view);
+			view.setRect(0, 0, 10, 10);
+			view.draw(screen10x10);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[ ] sub3", 0, 1, 9);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[x] sub4", 0, 2, 9);
+		}
+
+		@Test
+		void mixedAddPrefixforNocheck() {
+			view = new MenuView(new MenuItem[] { sub1, sub3, sub4 });
+			view.setShowBorder(true);
+			configure(view);
+			view.setRect(0, 0, 10, 10);
+			view.draw(screen10x10);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("    sub1", 0, 1, 9);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[ ] sub3", 0, 2, 9);
+			assertThat(forScreen(screen10x10)).hasHorizontalText("[ ] sub4", 0, 3, 9);
+		}
 
 	}
 

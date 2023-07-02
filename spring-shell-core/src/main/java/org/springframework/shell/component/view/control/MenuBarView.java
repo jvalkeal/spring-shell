@@ -31,6 +31,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
@@ -181,13 +182,10 @@ public class MenuBarView extends BoxView {
 		menuView.setShowBorder(true);
 		menuView.setBackgroundColor(Color.AQUAMARINE4);
 		menuView.setLayer(1);
-		Integer max = item.getItems().stream()
-			.map(i -> i.getTitle().length())
-			.max(Comparator.naturalOrder())
-			.orElse(1);
 		Rectangle rect = getInnerRect();
 		int x = positionAtIndex(activeItemIndex);
-		menuView.setRect(rect.x() + x, rect.y() + 1, max + 2, items.size() + 2);
+		Dimension dim = menuView.getPreferredDimension();
+		menuView.setRect(rect.x() + x, rect.y() + 1, dim.width(), dim.height());
 
 		Disposable d = getEventLoop().viewActions(MenuView.MenuViewAction.class, menuView)
 			.doOnNext(a -> {

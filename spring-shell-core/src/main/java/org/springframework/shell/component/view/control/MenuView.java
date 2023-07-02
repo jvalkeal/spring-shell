@@ -27,14 +27,15 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
+import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.shell.component.view.screen.ScreenItem;
 
 /**
  * {@link MenuView} shows {@link MenuView} items vertically and is
@@ -99,6 +100,30 @@ public class MenuView extends BoxView {
 		return items;
 	}
 
+	/**
+	 * Gets a preferred dimension menu needs to show it's content.
+	 *
+	 * @return preferred dimension
+	 */
+	public Dimension getPreferredDimension() {
+		int width = 0;
+		int height = items.size();
+		if (isShowBorder()) {
+			height += 2;
+		}
+		for (MenuItem item : items) {
+			int l = item.getTitle().length();
+			if (item.getCheckStyle() != MenuItemCheckStyle.CHECKED) {
+				l += 4;
+				if (isShowBorder()) {
+					l += 2;
+				}
+			}
+			width = Math.max(width, l);
+		}
+		return new Dimension(width, height);
+	}
+
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
@@ -106,12 +131,25 @@ public class MenuView extends BoxView {
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
 		Writer writer2 = screen.writerBuilder().layer(getLayer()).color(Color.RED).style(ScreenItem.STYLE_ITALIC).build();
 		int i = 0;
+		boolean hasCheck = false;
 		for (MenuItem item : items) {
+			if (item.getCheckStyle() != MenuItemCheckStyle.NOCHECK) {
+				hasCheck = true;
+				break;
+			}
+		}
+		for (MenuItem item : items) {
+			String prefix = hasCheck
+					? (item.getCheckStyle() != MenuItemCheckStyle.NOCHECK
+						? (item.isChecked() ? "[x] " : "[ ] ")
+						: "    ")
+					: "";
+			String text = prefix + item.getTitle();
 			if (activeItemIndex == i) {
-				writer2.text(item.getTitle(), rect.x(), y);
+				writer2.text(text, rect.x(), y);
 			}
 			else {
-				writer.text(item.getTitle(), rect.x(), y);
+				writer.text(text, rect.x(), y);
 			}
 			i++;
 			y++;
@@ -220,6 +258,7 @@ public class MenuView extends BoxView {
 		private final String title;
 		private final MenuItemCheckStyle checkStyle;// = MenuItemCheckStyle.NOCHECK;
 		private final List<MenuItem> items;
+		private boolean checked;
 
 		/**
 		 * Construct menu item with a title.
@@ -267,6 +306,18 @@ public class MenuView extends BoxView {
 		}
 
 		/**
+		 * Return a {@link MenuItem} with a given {@code title} and a
+		 * {@code check style}.
+		 *
+		 * @param title the title
+		 * @param checkStyle the check style
+		 * @return a menu item
+		 */
+		public static MenuItem of(String title, MenuItemCheckStyle checkStyle) {
+			return new MenuItem(title, checkStyle);
+		}
+
+		/**
 		 * Get a {@code title}. Never null, empty or just having white spaces.
 		 *
 		 * @return a title
@@ -284,6 +335,24 @@ public class MenuView extends BoxView {
 		@Nullable
 		public MenuItemCheckStyle getCheckStyle() {
 			return checkStyle;
+		}
+
+		/**
+		 * Sets a checked state.
+		 *
+		 * @param checked checked state
+		 */
+		public void setChecked(boolean checked) {
+			this.checked = checked;
+		}
+
+		/**
+		 * Gets a checked state.
+		 *
+		 * @return checked state
+		 */
+		public boolean isChecked() {
+			return checked;
 		}
 
 		/**
