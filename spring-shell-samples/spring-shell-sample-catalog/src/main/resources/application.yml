@@ -1,0 +1,15 @@
+spring:
+  main:
+    banner-mode: off
+## disable console logging
+logging:
+  pattern:
+    console:
+## log debug from a cli
+#  file:
+#    name: shell.log
+#  level:
+#    root: debug
+#    org:
+#      springframework:
+#        shell: debug
