@@ -2,13 +2,8 @@ spring:
   main:
     banner-mode: off
   shell:
-    interactive:
-      enabled: false
-    script:
-      enabled: false
-  #   primary:
-  #     enabled: true
-  #     command: catalog
+    noninteractive:
+      primary-command: catalog
 ## disable console logging
 logging:
   pattern:

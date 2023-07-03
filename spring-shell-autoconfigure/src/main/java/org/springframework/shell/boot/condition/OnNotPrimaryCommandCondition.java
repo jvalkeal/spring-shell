@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog;
+package org.springframework.shell.boot.condition;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.shell.command.annotation.CommandScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 
-@Configuration
-@CommandScan
-class CatalogConfiguration {
+public class OnNotPrimaryCommandCondition extends NoneNestedConditions {
+
+	public OnNotPrimaryCommandCondition() {
+		super(ConfigurationPhase.REGISTER_BEAN);
+	}
+
+	@ConditionalOnProperty(prefix = "spring.shell.noninteractive", value = "primary-command", matchIfMissing = false)
+	static class NotPrimaryCommandCondition {
+	}
+
 }
