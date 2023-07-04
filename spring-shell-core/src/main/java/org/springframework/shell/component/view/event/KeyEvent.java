@@ -81,4 +81,31 @@ public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
 			return name;
 		}
 	}
+
+	//     mask         special keys                  unicode keys                    ascii keys
+	// [         ] [                     ] [                                 ] [                     ]
+	// 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01
+
+	public static class Key {
+
+		public static final int A = 65;
+		public static final int Ax = 0x41;
+		public static final int a = 97;
+
+		public static final int t2 = 0x00000000;
+		public static final int t3 = 0xffffffff;
+
+		public static final int CharMask = 0x000fffff;
+		public static final int SpecialMask = 0xfff00000;
+
+		public static final int ShiftMask = 0x10000000;
+		public static final int CtrlMask = 0x40000000;
+		public static final int AltMask = 0x80000000;
+
+
+		public static final int CursorUp = 0x100000;
+		public static final int CursorDown = 0x100001;
+		public static final int CursorLeft = 0x100002;
+		public static final int CursorRight = 0x100003;
+	}
 }
