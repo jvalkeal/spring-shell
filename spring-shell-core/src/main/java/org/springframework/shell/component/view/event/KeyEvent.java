@@ -89,23 +89,82 @@ public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
 	public static class Key {
 
 		public static final int A = 65;
-		public static final int Ax = 0x41;
+		public static final int B = 66;
+		public static final int C = 67;
+		public static final int D = 68;
+		public static final int E = 69;
+		public static final int F = 70;
+		public static final int G = 71;
+		public static final int H = 72;
+		public static final int I = 73;
+		public static final int J = 74;
+		public static final int K = 75;
+		public static final int L = 76;
+		public static final int M = 77;
+		public static final int N = 78;
+		public static final int O = 79;
+		public static final int P = 80;
+		public static final int Q = 81;
+		public static final int R = 82;
+		public static final int S = 83;
+		public static final int T = 84;
+		public static final int U = 85;
+		public static final int V = 86;
+		public static final int W = 87;
+		public static final int X = 88;
+		public static final int Y = 89;
+		public static final int Z = 90;
+
 		public static final int a = 97;
-
-		public static final int t2 = 0x00000000;
-		public static final int t3 = 0xffffffff;
-
-		public static final int CharMask = 0x000fffff;
-		public static final int SpecialMask = 0xfff00000;
-
-		public static final int ShiftMask = 0x10000000;
-		public static final int CtrlMask = 0x40000000;
-		public static final int AltMask = 0x80000000;
-
+		public static final int b = 98;
+		public static final int c = 99;
+		public static final int d = 100;
+		public static final int e = 101;
+		public static final int f = 102;
+		public static final int g = 103;
+		public static final int h = 104;
+		public static final int i = 105;
+		public static final int j = 106;
+		public static final int k = 107;
+		public static final int l = 108;
+		public static final int m = 109;
+		public static final int n = 110;
+		public static final int o = 111;
+		public static final int p = 112;
+		public static final int q = 113;
+		public static final int r = 114;
+		public static final int s = 115;
+		public static final int t = 116;
+		public static final int u = 117;
+		public static final int v = 118;
+		public static final int w = 119;
+		public static final int x = 120;
+		public static final int y = 121;
+		public static final int z = 122;
 
 		public static final int CursorUp = 0x100000;
 		public static final int CursorDown = 0x100001;
 		public static final int CursorLeft = 0x100002;
 		public static final int CursorRight = 0x100003;
+
+		// public static final int CharMask = 0x000fffff;
+		// public static final int SpecialMask = 0xfff00000;
+		// public static final int ShiftMask = 0x10000000;
+		// public static final int CtrlMask = 0x40000000;
+		// public static final int AltMask = 0x80000000;
+
+		public static final int Char = 0x1000000;
+		public static final int Mouse = 0x1000001;
+		public static final int Unicode = 0x1000002;
+
 	}
+
+	public static class KeyMask {
+		public static final int CharMask = 0x000fffff;
+		public static final int SpecialMask = 0xfff00000;
+		public static final int ShiftMask = 0x10000000;
+		public static final int CtrlMask = 0x40000000;
+		public static final int AltMask = 0x80000000;
+	}
+
 }

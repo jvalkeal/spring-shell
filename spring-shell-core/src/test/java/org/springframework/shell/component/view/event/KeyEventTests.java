@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.event.KeyEvent.KeyMask;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,10 +63,36 @@ class KeyEventTests {
 		// Key.A 	0x00000041
 		// A_CTRL	0x40000041
 		// A_plain 	0x00000041
-		int A_CTRL = Key.A | Key.CtrlMask;
-		int A_plain = A_CTRL ^ Key.CtrlMask;
-		assertThat((A_CTRL >> Key.CtrlMask) & 1).isEqualTo(1);
+		int A_CTRL = Key.A | KeyMask.CtrlMask;
+		int A_plain = A_CTRL ^ KeyMask.CtrlMask;
+		assertThat((A_CTRL >> KeyMask.CtrlMask) & 1).isEqualTo(1);
 		assertThat(A_plain).isEqualTo(65);
+	}
+
+	@Test
+	void test3() {
+		// Key.A 	0x00000041
+		// A_CTRL	0x40000041
+		// A_plain 	0x00000041
+		int A_CTRL = Key.A | KeyMask.CtrlMask;
+		int A_plain = A_CTRL & ~0xF0000000;
+		// number &= ~(1UL << n);
+		assertThat((A_CTRL >> KeyMask.CtrlMask) & 1).isEqualTo(1);
+		assertThat(A_plain).isEqualTo(65);
+	}
+
+	@Test
+	void test4() {
+		int CU = Key.CursorUp;
+		int CU_CTRL = Key.CursorUp | KeyMask.CtrlMask;
+		int A_CTRL = Key.A | KeyMask.CtrlMask;
+
+		int CU_plain = CU & 0x0FF00000;
+		int CU_CTRL_plain = CU_CTRL & 0x0FF00000;
+		int A_CTRL_plain = A_CTRL & 0x0FF00000;
+		assertThat(CU_plain).isNotEqualTo(0);
+		assertThat(CU_CTRL_plain).isNotEqualTo(0);
+		assertThat(A_CTRL_plain).isEqualTo(0);
 	}
 
 	// @Nested

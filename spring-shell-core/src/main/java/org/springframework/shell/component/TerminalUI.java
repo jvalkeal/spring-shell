@@ -40,6 +40,9 @@ import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyBinder;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.event.KeyEvent.KeyMask;
+import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyEvent.ModType;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
@@ -65,7 +68,8 @@ public class TerminalUI {
 	private final static Logger log = LoggerFactory.getLogger(TerminalUI.class);
 	private final Terminal terminal;
 	private final BindingReader bindingReader;
-	private final KeyMap<String> keyMap = new KeyMap<>();
+	// private final KeyMap<String> keyMap = new KeyMap<>();
+	private final KeyMap<Integer> keyMapxxx = new KeyMap<>();
 	private final DefaultScreen virtualDisplay = new DefaultScreen();
 	private Display display;
 	private Size size;
@@ -103,7 +107,7 @@ public class TerminalUI {
 	 * Run and start execution loop. This method blocks until run loop exits.
 	 */
 	public void run() {
-		bindKeyMap(keyMap);
+		bindKeyMapxxx(keyMapxxx);
 		display = new Display(terminal, fullScreen);
 		size = new Size();
 		loop();
@@ -270,7 +274,8 @@ public class TerminalUI {
 
 			while (true) {
 				display();
-				boolean exit = read(bindingReader, keyMap);
+				// boolean exit = read(bindingReader, keyMap);
+				boolean exit = readxxx(bindingReader, keyMapxxx);
 				if (exit) {
 					break;
 				}
@@ -295,8 +300,59 @@ public class TerminalUI {
 		}
 	}
 
-	private void bindKeyMap(KeyMap<String> keyMap) {
-		keyBinder.bindAll(keyMap);
+	// private void bindKeyMap(KeyMap<String> keyMap) {
+	// 	keyBinder.bindAll(keyMap);
+	// }
+	private void bindKeyMapxxx(KeyMap<Integer> keyMap) {
+		keyBinder.bindAllxxx(keyMap);
+	}
+
+	private boolean readxxx(BindingReader bindingReader, KeyMap<Integer> keyMapxxx) {
+        Thread readThread = Thread.currentThread();
+		terminal.handle(Signal.INT, signal -> {
+			log.debug("Handling signal {}", signal);
+			readThread.interrupt();
+		});
+
+		Integer operation = null;
+		try {
+			operation = bindingReader.readBinding(keyMapxxx);
+			log.debug("Read got operation {}", operation);
+        } catch (IOError e) {
+            // Ignore Ctrl+C interrupts and just exit the loop
+			log.trace("Read binding error {}", e);
+		}
+		if (operation == null) {
+			return true;
+		}
+
+		if ((operation & 0x0FF00000) != 0) {
+			int c = operation & ~0xF0000000;
+			KeyEvent keyEvent = null;
+			if (c == KeyEvent.Key.CursorDown) {
+				keyEvent = KeyEvent.ofType(KeyType.DOWN);
+			}
+			if (keyEvent != null) {
+				dispatchKeyEvent(keyEvent);
+			}
+		}
+
+		if (((operation >> KeyMask.CtrlMask) & 1) == 1) {
+			int c = operation & ~0xF0000000;
+			String cc = new String(new char[]{(char)c});
+			dispatchChar(cc, true, false);
+		}
+
+		if (operation == KeyEvent.Key.Char) {
+			String lastBinding = bindingReader.getLastBinding();
+			dispatchChar(lastBinding, false, false);
+		}
+
+		if (operation == KeyEvent.Key.Mouse) {
+			mouseEvent();
+		}
+
+		return false;
 	}
 
 	private boolean read(BindingReader bindingReader, KeyMap<String> keyMap) {

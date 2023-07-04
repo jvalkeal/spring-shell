@@ -49,6 +49,23 @@ public class KeyBinder {
 		return prefix;
 	}
 
+	public void bindAllxxx(KeyMap<Integer> keyMap) {
+
+		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
+			keyMap.bind(KeyEvent.Key.Char, Character.toString(i));
+		}
+
+		keyMap.bind(KeyEvent.Key.q | KeyEvent.KeyMask.CtrlMask, ctrl('q'));
+
+		keyMap.bind(KeyEvent.Key.Mouse, key(terminal, Capability.key_mouse));
+
+		keyMap.bind(KeyEvent.Key.CursorLeft, key(terminal, Capability.key_left));
+		keyMap.bind(KeyEvent.Key.CursorRight, key(terminal, Capability.key_right));
+		keyMap.bind(KeyEvent.Key.CursorUp, key(terminal, Capability.key_up));
+		keyMap.bind(KeyEvent.Key.CursorDown, key(terminal, Capability.key_down));
+
+	}
+
 	public void bindAll(KeyMap<String> keyMap) {
 
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
