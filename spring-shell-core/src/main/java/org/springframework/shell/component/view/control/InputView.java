@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.control;
 
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -34,36 +35,30 @@ public class InputView extends BoxView {
 	@Override
 	public KeyHandler getKeyHandler() {
 		return args -> {
-			// XXX missing
 			KeyEvent event = args.event();
-			// if (event.key() == null) {
-			// 	String data = event.data();
-			// 	add(data);
-			// }
-			// else {
-			// 	switch (event.key()) {
-			// 		case ENTER:
-			// 			enter(event);
-			// 			break;
-			// 		case TAB:
-			// 			leave(event);
-			// 			break;
-			// 		case BACKSPACE:
-			// 			backspace();
-			// 			break;
-			// 		case DELETE:
-			// 			delete();
-			// 			break;
-			// 		case LEFT:
-			// 			left();
-			// 			break;
-			// 		case RIGHT:
-			// 			right();
-			// 			break;
-			// 		default:
-			// 			break;
-			// 	}
-			// }
+			if (event.isKey(Key.Backspace)) {
+				backspace();
+			}
+			if (event.isKey(Key.Delete)) {
+				delete();
+			}
+			else if (event.isKey(Key.CursorLeft)) {
+				left();
+			}
+			else if (event.isKey(Key.CursorRight)) {
+				right();
+			}
+			else if (event.isKey(Key.Enter)) {
+				enter(event);
+			}
+			else if (event.isKey(Key.Tab)) {
+				leave(event);
+			}
+			else {
+				int plainKey = event.getPlainKey();
+				add(new String(new char[]{(char)plainKey}));
+			}
+
 			return KeyHandler.resultOf(event, true, null);
 		};
 	}
