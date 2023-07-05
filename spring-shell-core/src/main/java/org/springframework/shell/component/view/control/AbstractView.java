@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jline.terminal.MouseEvent;
@@ -257,6 +258,42 @@ public abstract class AbstractView implements View {
 		keyBindings.put(keyType, viewCommand);
 	}
 
+	private Map<Integer, KeyBindingValue> keyBindingsx = new HashMap<>();
+	protected void registerKeyBinding1(Integer keyType, String keyCommand) {
+		registerKeyBinding4(keyType, keyCommand, null, null);
+	}
+	protected void registerKeyBinding2(Integer keyType, Consumer<KeyEvent> keyConsumer) {
+		registerKeyBinding4(keyType, null, keyConsumer, null);
+	}
+	protected void registerKeyBinding3(Integer keyType, Runnable keyRunnable) {
+		registerKeyBinding4(keyType, null, null, keyRunnable);
+	}
+	protected void registerKeyBinding4(Integer keyType, String keyCommand, Consumer<KeyEvent> keyConsumer, Runnable keyRunnable) {
+		keyBindingsx.compute(keyType, (key, old) -> {
+			return KeyBindingValue.of(old, keyCommand, keyConsumer, keyRunnable);
+		});
+	}
+	record KeyBindingValue(String keyCommand, Consumer<KeyEvent> keyConsumer, Runnable keyRunnable) {
+		static KeyBindingValue of(KeyBindingValue old, String keyCommand, Consumer<KeyEvent> keyConsumer,
+				Runnable keyRunnable) {
+			if (old == null) {
+				return new KeyBindingValue(keyCommand, keyConsumer, keyRunnable);
+			}
+			return new KeyBindingValue(keyCommand != null ? keyCommand : old.keyCommand(),
+					keyConsumer != null ? keyConsumer : old.keyConsumer(),
+					keyRunnable != null ? keyRunnable : old.keyRunnable());
+		}
+	}
+
+	/**
+	 * Get key bindings.
+	 *
+	 * @return key bindings
+	 */
+	protected Map<Integer, String> getKeyBindings() {
+		return keyBindings;
+	}
+
 	/**
 	 * Register mouse binding with a {@code mouse command}.
 	 *
@@ -289,8 +326,9 @@ public abstract class AbstractView implements View {
 		registerMouseBinding(type, button, modifiers, mouseCommand, predicate);
 	}
 
+	record MouseBindingValue(String mouseCommand, Predicate<MouseEvent> mousePredicate) {
+	}
 
-	record MouseBindingValue(String mouseCommand, Predicate<MouseEvent> mousePredicate){}
 
 	/**
 	 * Register a {code mouse command} with a {@link MouseBindingConsumer}.
@@ -309,15 +347,6 @@ public abstract class AbstractView implements View {
 	 */
 	protected Map<MouseBinding, MouseBindingValue> getMouseBindings() {
 		return mouseBindings;
-	}
-
-	/**
-	 * Get key bindings.
-	 *
-	 * @return key bindings
-	 */
-	protected Map<Integer, String> getKeyBindings() {
-		return keyBindings;
 	}
 
 	/**

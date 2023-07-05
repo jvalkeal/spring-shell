@@ -15,6 +15,10 @@
  */
 package org.springframework.shell.component.view.control;
 
+import java.util.EnumSet;
+
+import org.jline.terminal.MouseEvent;
+
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
@@ -33,8 +37,23 @@ public class InputView extends BoxView {
 	private int cursorPosition = 0;
 
 	@Override
+	protected void initInternal() {
+		// registerRunnableCommand(ViewCommand.RIGHT, () -> right());
+		// registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
+
+
+
+		// registerKeyCommandXxx1(ViewCommand.RIGHT, () -> right());
+
+		registerKeyBinding1(Key.CursorRight, ViewCommand.RIGHT);
+		registerKeyBinding2(Key.CursorRight, event -> right());
+		registerKeyBinding3(Key.CursorRight, () -> right());
+
+	}
+
+	@Override
 	public KeyHandler getKeyHandler() {
-		return args -> {
+		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			if (event.isKey(Key.Backspace)) {
 				backspace();
@@ -61,6 +80,7 @@ public class InputView extends BoxView {
 
 			return KeyHandler.resultOf(event, true, null);
 		};
+		return handler;
 	}
 
 	@Override
