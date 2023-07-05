@@ -45,9 +45,11 @@ public class InputView extends BoxView {
 
 		// registerKeyCommandXxx1(ViewCommand.RIGHT, () -> right());
 
-		registerKeyBinding1(Key.CursorRight, ViewCommand.RIGHT);
+		// registerKeyBinding1(Key.CursorRight, ViewCommand.RIGHT);
 		registerKeyBinding2(Key.CursorRight, event -> right());
-		registerKeyBinding3(Key.CursorRight, () -> right());
+		// registerKeyBinding3(Key.CursorRight, () -> right());
+		// registerKeyBinding2(Key.Delete, event -> delete());
+		registerKeyBinding3(Key.Backspace, () -> backspace());
 
 	}
 
@@ -55,32 +57,33 @@ public class InputView extends BoxView {
 	public KeyHandler getKeyHandler() {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
-			if (event.isKey(Key.Backspace)) {
-				backspace();
-			}
-			if (event.isKey(Key.Delete)) {
-				delete();
-			}
-			else if (event.isKey(Key.CursorLeft)) {
-				left();
-			}
-			else if (event.isKey(Key.CursorRight)) {
-				right();
-			}
-			else if (event.isKey(Key.Enter)) {
-				enter(event);
-			}
-			else if (event.isKey(Key.Tab)) {
-				leave(event);
-			}
-			else {
+			// if (event.isKey(Key.Backspace)) {
+			// 	backspace();
+			// }
+			// if (event.isKey(Key.Delete)) {
+			// 	delete();
+			// }
+			// else if (event.isKey(Key.CursorLeft)) {
+			// 	left();
+			// }
+			// else if (event.isKey(Key.CursorRight)) {
+			// 	right();
+			// }
+			// else if (event.isKey(Key.Enter)) {
+			// 	enter(event);
+			// }
+			// else if (event.isKey(Key.Tab)) {
+			// 	leave(event);
+			// }
+			// else {
 				int plainKey = event.getPlainKey();
 				add(new String(new char[]{(char)plainKey}));
-			}
+			// }
 
 			return KeyHandler.resultOf(event, true, null);
 		};
-		return handler;
+		return handler.fromIfConsumed(super.getKeyHandler());
+		// return handler;
 	}
 
 	@Override

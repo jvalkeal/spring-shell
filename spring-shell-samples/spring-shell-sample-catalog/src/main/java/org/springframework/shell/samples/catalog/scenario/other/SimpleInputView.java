@@ -27,10 +27,11 @@ public class SimpleInputView extends AbstractScenario {
 
 	@Override
 	public View build() {
-		InputView input = new InputView();
-		input.setTitle("Input");
-		input.setShowBorder(true);
-		return input;
+		InputView view = new InputView();
+		view.setEventLoop(getEventloop());
+		view.setTitle("Input");
+		view.setShowBorder(true);
+		return view;
 	}
 
 }

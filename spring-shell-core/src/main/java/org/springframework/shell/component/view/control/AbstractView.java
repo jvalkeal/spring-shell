@@ -194,6 +194,11 @@ public abstract class AbstractView implements View {
 			if (key != null) {
 				String command = getKeyBindings().get(key);
 				consumed = dispatchRunCommand(command);
+				KeyBindingValue keyBindingValue = keyBindingsx.get(key);
+				if (keyBindingValue != null) {
+					consumed = dispatchRunCommand(keyBindingValue);
+				}
+
 			}
 			return KeyHandler.resultOf(event, consumed, null);
 		};
@@ -376,6 +381,22 @@ public abstract class AbstractView implements View {
 			return false;
 		}
 		Runnable runnable = keyCommands.get(command);
+		if (runnable != null) {
+			Message<Runnable> message = ShellMessageBuilder
+				.withPayload(runnable)
+				.setEventType(EventLoop.Type.TASK)
+				.build();
+			dispatch(message);
+			return true;
+		}
+		return false;
+	}
+
+	protected boolean dispatchRunCommand(KeyBindingValue command) {
+		if (eventLoop == null) {
+			return false;
+		}
+		Runnable runnable = command.keyRunnable();
 		if (runnable != null) {
 			Message<Runnable> message = ShellMessageBuilder
 				.withPayload(runnable)
