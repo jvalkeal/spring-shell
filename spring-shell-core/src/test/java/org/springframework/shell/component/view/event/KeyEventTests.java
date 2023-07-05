@@ -42,6 +42,15 @@ class KeyEventTests {
 		assertThat(KeyEvent.of(Key.A | KeyMask.CtrlMask).isKey(Key.A)).isTrue();
 		assertThat(KeyEvent.of(Key.CursorDown).isKey(Key.CursorDown)).isTrue();
 		assertThat(KeyEvent.of(Key.CursorLeft).isKey(Key.CursorRight)).isFalse();
+
+	}
+
+	@Test
+	void isKey2() {
+		assertThat(KeyEvent.of(Key.A).isKey()).isTrue();
+		assertThat(KeyEvent.of(Key.Backspace).isKey()).isFalse();
+
+
 	}
 
 }

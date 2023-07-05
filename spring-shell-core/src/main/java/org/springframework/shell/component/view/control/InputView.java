@@ -57,6 +57,7 @@ public class InputView extends BoxView {
 	public KeyHandler getKeyHandler() {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
+			boolean consumed = false;
 			// if (event.isKey(Key.Backspace)) {
 			// 	backspace();
 			// }
@@ -76,11 +77,14 @@ public class InputView extends BoxView {
 			// 	leave(event);
 			// }
 			// else {
+			if (event.isKey()) {
+				consumed = true;
 				int plainKey = event.getPlainKey();
 				add(new String(new char[]{(char)plainKey}));
+			}
 			// }
 
-			return KeyHandler.resultOf(event, true, null);
+			return KeyHandler.resultOf(event, consumed, null);
 		};
 		return handler.fromIfConsumed(super.getKeyHandler());
 		// return handler;

@@ -42,6 +42,10 @@ public record KeyEvent(int key) {
 		return (key & ~0xF0000000) == match;
 	}
 
+	public boolean isKey() {
+		return (key & ~KeyMask.CharMask) == 0;
+	}
+
 	public static class Key {
 
 		public static final int A = 65;
