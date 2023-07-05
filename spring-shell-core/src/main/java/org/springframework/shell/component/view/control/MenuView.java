@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -163,9 +163,9 @@ public class MenuView extends BoxView {
 		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
 		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> keySelect());
 
-		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
-		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
-		registerKeyBinding(KeyType.ENTER, ViewCommand.OPEN_SELECTED_ITEM);
+		registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
+		registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
+		registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
 

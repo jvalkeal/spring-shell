@@ -34,35 +34,36 @@ public class InputView extends BoxView {
 	@Override
 	public KeyHandler getKeyHandler() {
 		return args -> {
+			// XXX missing
 			KeyEvent event = args.event();
-			if (event.key() == null) {
-				String data = event.data();
-				add(data);
-			}
-			else {
-				switch (event.key()) {
-					case ENTER:
-						enter(event);
-						break;
-					case TAB:
-						leave(event);
-						break;
-					case BACKSPACE:
-						backspace();
-						break;
-					case DELETE:
-						delete();
-						break;
-					case LEFT:
-						left();
-						break;
-					case RIGHT:
-						right();
-						break;
-					default:
-						break;
-				}
-			}
+			// if (event.key() == null) {
+			// 	String data = event.data();
+			// 	add(data);
+			// }
+			// else {
+			// 	switch (event.key()) {
+			// 		case ENTER:
+			// 			enter(event);
+			// 			break;
+			// 		case TAB:
+			// 			leave(event);
+			// 			break;
+			// 		case BACKSPACE:
+			// 			backspace();
+			// 			break;
+			// 		case DELETE:
+			// 			delete();
+			// 			break;
+			// 		case LEFT:
+			// 			left();
+			// 			break;
+			// 		case RIGHT:
+			// 			right();
+			// 			break;
+			// 		default:
+			// 			break;
+			// 	}
+			// }
 			return KeyHandler.resultOf(event, true, null);
 		};
 	}

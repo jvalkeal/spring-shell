@@ -31,7 +31,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseBinding;
 import org.springframework.shell.component.view.event.MouseBindingConsumer;
@@ -60,7 +59,7 @@ public abstract class AbstractView implements View {
 	private int layer;
 	private EventLoop eventLoop;
 	private Map<String, Runnable> keyCommands = new HashMap<>();
-	private Map<KeyType, String> keyBindings = new HashMap<>();
+	private Map<Integer, String> keyBindings = new HashMap<>();
 	private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
 	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
@@ -190,7 +189,7 @@ public abstract class AbstractView implements View {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			boolean consumed = false;
-			KeyType key = event.key();
+			Integer key = event.key();
 			if (key != null) {
 				String command = getKeyBindings().get(key);
 				consumed = dispatchRunCommand(command);
@@ -254,7 +253,7 @@ public abstract class AbstractView implements View {
 	 * @param keyType the key type
 	 * @param viewCommand the view command
 	 */
-	protected void registerKeyBinding(KeyType keyType, String viewCommand) {
+	protected void registerKeyBinding(Integer keyType, String viewCommand) {
 		keyBindings.put(keyType, viewCommand);
 	}
 
@@ -317,7 +316,7 @@ public abstract class AbstractView implements View {
 	 *
 	 * @return key bindings
 	 */
-	protected Map<KeyType, String> getKeyBindings() {
+	protected Map<Integer, String> getKeyBindings() {
 		return keyBindings;
 	}
 

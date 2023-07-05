@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.shell.component.view.ScreenAssert;
 import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.event.MouseHandler;
@@ -87,8 +87,8 @@ public class AbstractViewTests {
 		return () -> new ScreenAssert(screen);
 	}
 
-	protected KeyHandlerResult handleKey(View view, KeyType key) {
-		return handleKeyEvent(view, KeyEvent.ofType(key));
+	protected KeyHandlerResult handleKey(View view, Integer key) {
+		return handleKeyEvent(view, KeyEvent.of(key));
 	}
 
 	protected KeyHandlerResult handleKeyEvent(View view, KeyEvent key) {

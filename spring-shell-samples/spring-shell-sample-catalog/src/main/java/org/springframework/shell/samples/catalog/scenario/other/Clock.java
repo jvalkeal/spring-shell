@@ -93,48 +93,49 @@ public class Clock extends AbstractScenario {
 		// handle keys
 		getEventloop().keyEvents()
 			.doOnNext(e -> {
-				switch (e.key()) {
-					case DOWN:
-						if (vAlign.get() == VerticalAlign.TOP) {
-							vAlign.set(VerticalAlign.CENTER);
-						}
-						else if (vAlign.get() == VerticalAlign.CENTER) {
-							vAlign.set(VerticalAlign.BOTTOM);
-						}
-						break;
-					case UP:
-						if (vAlign.get() == VerticalAlign.BOTTOM) {
-							vAlign.set(VerticalAlign.CENTER);
-						}
-						else if (vAlign.get() == VerticalAlign.CENTER) {
-							vAlign.set(VerticalAlign.TOP);
-						}
-						break;
-					case LEFT:
-						if (hAlign.get() == HorizontalAlign.RIGHT) {
-							hAlign.set(HorizontalAlign.CENTER);
-						}
-						else if (hAlign.get() == HorizontalAlign.CENTER) {
-							hAlign.set(HorizontalAlign.LEFT);
-						}
-						break;
-					case RIGHT:
-						Message<String> animStart = MessageBuilder
-							.withPayload("")
-							.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
-							.setHeader("animationstart", true)
-							.build();
-						getEventloop().dispatch(animStart);
-						// if (hAlign.get() == HorizontalAlign.LEFT) {
-						// 	hAlign.set(HorizontalAlign.CENTER);
-						// }
-						// else if (hAlign.get() == HorizontalAlign.CENTER) {
-						// 	hAlign.set(HorizontalAlign.RIGHT);
-						// }
-						break;
-					default:
-						break;
-				}
+				// XXX missing
+				// switch (e.key()) {
+				// 	case DOWN:
+				// 		if (vAlign.get() == VerticalAlign.TOP) {
+				// 			vAlign.set(VerticalAlign.CENTER);
+				// 		}
+				// 		else if (vAlign.get() == VerticalAlign.CENTER) {
+				// 			vAlign.set(VerticalAlign.BOTTOM);
+				// 		}
+				// 		break;
+				// 	case UP:
+				// 		if (vAlign.get() == VerticalAlign.BOTTOM) {
+				// 			vAlign.set(VerticalAlign.CENTER);
+				// 		}
+				// 		else if (vAlign.get() == VerticalAlign.CENTER) {
+				// 			vAlign.set(VerticalAlign.TOP);
+				// 		}
+				// 		break;
+				// 	case LEFT:
+				// 		if (hAlign.get() == HorizontalAlign.RIGHT) {
+				// 			hAlign.set(HorizontalAlign.CENTER);
+				// 		}
+				// 		else if (hAlign.get() == HorizontalAlign.CENTER) {
+				// 			hAlign.set(HorizontalAlign.LEFT);
+				// 		}
+				// 		break;
+				// 	case RIGHT:
+				// 		Message<String> animStart = MessageBuilder
+				// 			.withPayload("")
+				// 			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
+				// 			.setHeader("animationstart", true)
+				// 			.build();
+				// 		getEventloop().dispatch(animStart);
+				// 		// if (hAlign.get() == HorizontalAlign.LEFT) {
+				// 		// 	hAlign.set(HorizontalAlign.CENTER);
+				// 		// }
+				// 		// else if (hAlign.get() == HorizontalAlign.CENTER) {
+				// 		// 	hAlign.set(HorizontalAlign.RIGHT);
+				// 		// }
+				// 		break;
+				// 	default:
+				// 		break;
+				// }
 			})
 			.subscribe();
 

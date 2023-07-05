@@ -40,7 +40,7 @@ import org.springframework.shell.component.view.control.StatusBarView.StatusItem
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.EventLoop;
-import org.springframework.shell.component.view.event.KeyEvent.ModType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
@@ -86,7 +86,7 @@ public class CatalogCommand extends AbstractShellComponent {
 		// and currently active scenario
 		eventLoop.onDestroy(eventLoop.keyEvents()
 			.doOnNext(m -> {
-				if ("q".equals(m.data()) && m.mod().contains(ModType.CTRL)) {
+				if (m.getPlainKey() == Key.q && m.hasCtrl()) {
 					if (currentScenarioView != null) {
 						currentScenarioView = null;
 						ui.setRoot(app, true);

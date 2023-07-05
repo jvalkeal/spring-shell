@@ -29,7 +29,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.control.MenuView.MenuItemCheckStyle;
 import org.springframework.shell.component.view.control.MenuView.MenuViewAction;
 import org.springframework.shell.component.view.control.MenuView.MenuViewItemAction;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -130,7 +130,7 @@ class MenuViewTests extends AbstractViewTests {
 		void downArrowMovesSelection() {
 			Integer selected;
 
-			handleKey(view, KeyType.DOWN);
+			handleKey(view, Key.CursorDown);
 			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
 			assertThat(selected).isEqualTo(1);
 		}
@@ -139,7 +139,7 @@ class MenuViewTests extends AbstractViewTests {
 		void upArrowMovesSelection() {
 			Integer selected;
 
-			handleKey(view, KeyType.UP);
+			handleKey(view, Key.CursorUp);
 			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
 			assertThat(selected).isEqualTo(1);
 		}
@@ -161,11 +161,11 @@ class MenuViewTests extends AbstractViewTests {
 		void selectionShouldNotMoveOutOfBounds() {
 			Integer selected;
 
-			handleKey(view, KeyType.DOWN);
+			handleKey(view, Key.CursorDown);
 			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
 			assertThat(selected).isEqualTo(1);
 
-			handleKey(view, KeyType.DOWN);
+			handleKey(view, Key.CursorDown);
 			selected = (Integer) ReflectionTestUtils.getField(view, SELECTED_FIELD);
 			assertThat(selected).isEqualTo(0);
 		}
@@ -291,7 +291,7 @@ class MenuViewTests extends AbstractViewTests {
 				.thenCancel()
 				.verifyLater();
 
-			handleKey(view, KeyType.ENTER);
+			handleKey(view, Key.Enter);
 			verifier.verify(Duration.ofSeconds(1));
 		}
 
@@ -304,7 +304,7 @@ class MenuViewTests extends AbstractViewTests {
 				.thenCancel()
 				.verifyLater();
 
-			handleKey(view, KeyType.DOWN);
+			handleKey(view, Key.CursorDown);
 			verifier.verify(Duration.ofSeconds(1));
 		}
 

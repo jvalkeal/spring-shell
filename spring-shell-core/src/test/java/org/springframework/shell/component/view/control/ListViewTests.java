@@ -24,7 +24,7 @@ import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -49,8 +49,8 @@ class ListViewTests extends AbstractViewTests {
 		view.setItems(Arrays.asList("item1", "item2"));
 		assertThat(ReflectionTestUtils.getField(view, "selected")).isEqualTo(-1);
 
-		KeyEvent eventDown = KeyEvent.ofType(KeyType.DOWN);
-		KeyEvent eventUp = KeyEvent.ofType(KeyType.UP);
+		KeyEvent eventDown = KeyEvent.of(Key.CursorDown);
+		KeyEvent eventUp = KeyEvent.of(Key.CursorUp);
 		KeyHandlerResult result = view.getKeyHandler().handle(KeyHandler.argsOf(eventDown));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(eventDown);

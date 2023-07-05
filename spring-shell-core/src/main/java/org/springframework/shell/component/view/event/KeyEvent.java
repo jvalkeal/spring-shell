@@ -15,76 +15,27 @@
  */
 package org.springframework.shell.component.view.event;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+public record KeyEvent(int key) {
 
-public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
-
-	public static KeyEvent ofCharacter(String data) {
-		return new KeyEvent(data, null, EnumSet.noneOf(ModType.class));
+	public static KeyEvent of(int key) {
+		return new KeyEvent(key);
 	}
 
-	public static KeyEvent ofCharacter(String data, EnumSet<ModType> mod) {
-		return new KeyEvent(data, null, mod);
+
+	public boolean hasCtrl() {
+		return ((key >> 30) & 1) == 1;
 	}
 
-	public static KeyEvent ofType(KeyType type) {
-		return new KeyEvent(null, type, EnumSet.noneOf(ModType.class));
+	public int getPlainKey() {
+		return key & ~0xFFF00000;
 	}
 
-	public static KeyEvent ofType(KeyType type, EnumSet<ModType> mod) {
-		return new KeyEvent(null, type, mod);
+	public boolean isKey(int match) {
+		return (key & ~0xF0000000) == match;
 	}
-
-	public enum ModType {
-		CTRL,
-		ALT,
-		SHIFT;
-
-		public static EnumSet<ModType> of(boolean ctrl, boolean alt, boolean shift) {
-			if (!ctrl && !alt && !shift) {
-				return EnumSet.noneOf(ModType.class);
-			}
-			ArrayList<ModType> list = new ArrayList<ModType>();
-			if (ctrl) {
-				list.add(CTRL);
-			}
-			if (alt) {
-				list.add(ALT);
-			}
-			if (shift) {
-				list.add(SHIFT);
-			}
-			return EnumSet.copyOf(list);
-		}
-	}
-
-	public enum KeyType {
-		CHAR("Character"),
-		BACKTAB("BACKTAB"),
-		ENTER("Enter"),
-		TAB("Tab"),
-		DOWN("DownArrow"),
-		UP("UpArrow"),
-		LEFT("LeftArrow"),
-		RIGHT("RightArrow"),
-		BACKSPACE("Backspace"),
-		DELETE("Delete");
-
-		private final String name;
-
-		KeyType(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-	}
-
 	//     mask         special keys                  unicode keys                    ascii keys
 	// [         ] [                     ] [                                 ] [                     ]
-	// 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01
+	// 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
 
 	public static class Key {
 
@@ -146,12 +97,11 @@ public record KeyEvent(String data, KeyType key, EnumSet<ModType> mod) {
 		public static final int CursorDown = 0x100001;
 		public static final int CursorLeft = 0x100002;
 		public static final int CursorRight = 0x100003;
-
-		// public static final int CharMask = 0x000fffff;
-		// public static final int SpecialMask = 0xfff00000;
-		// public static final int ShiftMask = 0x10000000;
-		// public static final int CtrlMask = 0x40000000;
-		// public static final int AltMask = 0x80000000;
+		public static final int Enter = 0x100004;
+		public static final int Backspace = 0x100005;
+		public static final int Delete = 0x100006;
+		public static final int Tab = 0x100007;
+		public static final int Backtab = 0x100008;
 
 		public static final int Char = 0x1000000;
 		public static final int Mouse = 0x1000001;

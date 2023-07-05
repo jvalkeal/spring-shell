@@ -28,7 +28,7 @@ import reactor.core.Disposable;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyEvent.KeyType;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -84,10 +84,10 @@ public class MenuBarView extends BoxView {
 		registerRunnableCommand(ViewCommand.LEFT, () -> left());
 		registerRunnableCommand(ViewCommand.RIGHT, () -> right());
 
-		registerKeyBinding(KeyType.UP, ViewCommand.LINE_UP);
-		registerKeyBinding(KeyType.DOWN, ViewCommand.LINE_DOWN);
-		registerKeyBinding(KeyType.LEFT, ViewCommand.LEFT);
-		registerKeyBinding(KeyType.RIGHT, ViewCommand.RIGHT);
+		registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
+		registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
+		registerKeyBinding(Key.CursorLeft, ViewCommand.LEFT);
+		registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
 

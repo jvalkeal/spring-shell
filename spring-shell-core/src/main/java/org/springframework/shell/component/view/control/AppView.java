@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
@@ -68,26 +69,13 @@ public class AppView extends BoxView {
 	public KeyHandler getKeyHandler() {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
-			if (event.key() != null) {
-				switch (event.key()) {
-					case UP -> {
-						log.info("XXX app UP");
-					}
-					case DOWN -> {
-						log.info("XXX app DOWN");
-					}
-					case LEFT -> {
-						log.info("XXX app LEFT");
-						dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
-					}
-					case RIGHT -> {
-						log.info("XXX app RIGHT");
-						dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
-					}
-					default -> {}
-				}
+			if (event.isKey(Key.CursorLeft)) {
+				dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
 			}
-			return KeyHandler.resultOf(args.event(), true, null);
+			else if (event.isKey(Key.CursorRight)) {
+				dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
+			}
+			return KeyHandler.resultOf(event, true, null);
 		};
 		return handler.fromIfConsumed(main != null ? main.getKeyHandler() : super.getKeyHandler());
 	}

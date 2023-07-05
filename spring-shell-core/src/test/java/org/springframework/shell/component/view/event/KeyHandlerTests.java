@@ -17,11 +17,13 @@ package org.springframework.shell.component.view.event;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.event.KeyEvent.Key;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KeyHandlerTests {
 
-	private static final KeyEvent EVENT = KeyEvent.ofCharacter("x");
+	private static final KeyEvent EVENT = KeyEvent.of(Key.x);
 
 	@Test
 	void handlesThisIfOtherConsumes() {

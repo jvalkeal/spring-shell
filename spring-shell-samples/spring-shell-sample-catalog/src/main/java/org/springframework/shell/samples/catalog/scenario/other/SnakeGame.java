@@ -44,22 +44,23 @@ public class SnakeGame extends AbstractScenario {
 		// handle arrow keys to game
 		getEventloop().keyEvents()
 			.doOnNext(e -> {
-				switch (e.key()) {
-					case DOWN:
-						direction.set(1);
-						break;
-					case UP:
-						direction.set(-1);
-						break;
-					case LEFT:
-						direction.set(-2);
-						break;
-					case RIGHT:
-						direction.set(2);
-						break;
-					default:
-						break;
-				}
+				// XXX missing
+				// switch (e.key()) {
+				// 	case DOWN:
+				// 		direction.set(1);
+				// 		break;
+				// 	case UP:
+				// 		direction.set(-1);
+				// 		break;
+				// 	case LEFT:
+				// 		direction.set(-2);
+				// 		break;
+				// 	case RIGHT:
+				// 		direction.set(2);
+				// 		break;
+				// 	default:
+				// 		break;
+				// }
 				snakeGame.update(direction.get());
 			})
 			.subscribe();

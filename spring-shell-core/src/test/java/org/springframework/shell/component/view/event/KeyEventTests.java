@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.component.view.event;
 
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.event.KeyEvent.Key;
@@ -25,83 +24,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class KeyEventTests {
 
-	// set bit
-	// i | (1 << n)
-	// get bit
-	// (i >> n) & 1
-
-	// 1 << Key.CharMask
-	// 80000000
-
-	// 0x80000041
-	// ----------
-	// 0x00000041
-
-
 	@Test
-	void test1() {
-
-		// int a = Key.A | (1 << Key.CharMask);
-		// // 0x80000041
-		// String hex = Integer.toHexString(1 << Key.CharMask);
-		// // int a1 = a | (1 >> Key.CharMask);
-		// a = a | (1 << Key.CtrlMask);
-		// a = a | (1 << Key.ShiftMask);
-		// a = a | (1 << Key.AltMask);
-		// assertThat((a >> Key.CharMask) & 1).isEqualTo(1);
-		// assertThat((a >> Key.CtrlMask) & 1).isEqualTo(1);
-		// assertThat((a >> Key.ShiftMask) & 1).isEqualTo(1);
-		// assertThat((a >> Key.AltMask) & 1).isEqualTo(1);
-
-		// // assertThat(a1).isEqualTo(65);
-
-		// // assertThat((Key.A >> Key.CharMask) & 1).isEqualTo(1);
+	void hasCtrl() {
+		assertThat(KeyEvent.of(Key.A).hasCtrl()).isFalse();
+		assertThat(KeyEvent.of(Key.A | KeyMask.CtrlMask).hasCtrl()).isTrue();
 	}
 
 	@Test
-	void test2() {
-		// Key.A 	0x00000041
-		// A_CTRL	0x40000041
-		// A_plain 	0x00000041
-		int A_CTRL = Key.A | KeyMask.CtrlMask;
-		int A_plain = A_CTRL ^ KeyMask.CtrlMask;
-		assertThat((A_CTRL >> KeyMask.CtrlMask) & 1).isEqualTo(1);
-		assertThat(A_plain).isEqualTo(65);
+	void plainKey() {
+		assertThat(KeyEvent.of(Key.A).getPlainKey()).isEqualTo(Key.A);
+		assertThat(KeyEvent.of(Key.A | KeyMask.CtrlMask).getPlainKey()).isEqualTo(Key.A);
 	}
 
 	@Test
-	void test3() {
-		// Key.A 	0x00000041
-		// A_CTRL	0x40000041
-		// A_plain 	0x00000041
-		int A_CTRL = Key.A | KeyMask.CtrlMask;
-		int A_plain = A_CTRL & ~0xF0000000;
-		// number &= ~(1UL << n);
-		assertThat((A_CTRL >> KeyMask.CtrlMask) & 1).isEqualTo(1);
-		assertThat(A_plain).isEqualTo(65);
+	void isKey() {
+		assertThat(KeyEvent.of(Key.A).isKey(Key.A)).isTrue();
+		assertThat(KeyEvent.of(Key.A | KeyMask.CtrlMask).isKey(Key.A)).isTrue();
+		assertThat(KeyEvent.of(Key.CursorDown).isKey(Key.CursorDown)).isTrue();
+		assertThat(KeyEvent.of(Key.CursorLeft).isKey(Key.CursorRight)).isFalse();
 	}
 
-	@Test
-	void test4() {
-		int CU = Key.CursorUp;
-		int CU_CTRL = Key.CursorUp | KeyMask.CtrlMask;
-		int A_CTRL = Key.A | KeyMask.CtrlMask;
-
-		int CU_plain = CU & 0x0FF00000;
-		int CU_CTRL_plain = CU_CTRL & 0x0FF00000;
-		int A_CTRL_plain = A_CTRL & 0x0FF00000;
-		assertThat(CU_plain).isNotEqualTo(0);
-		assertThat(CU_CTRL_plain).isNotEqualTo(0);
-		assertThat(A_CTRL_plain).isEqualTo(0);
-	}
-
-	// @Nested
-	// static class Keys {
-
-	// 	@Test
-	// 	void test() {
-	// 		// (i >> n) & 1
-	// 		assertThat((Key.A >> Key.CharMask) & 1).isEqualTo(1);
-	// 	}
-	// }
 }
