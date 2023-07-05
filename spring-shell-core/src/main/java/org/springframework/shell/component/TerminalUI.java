@@ -296,7 +296,7 @@ public class TerminalUI {
 	}
 
 	private void bindKeyMap(KeyMap<Integer> keyMap) {
-		keyBinder.bindAllxxx(keyMap);
+		keyBinder.bindAll(keyMap);
 	}
 
 	private boolean read(BindingReader bindingReader, KeyMap<Integer> keyMapxxx) {
