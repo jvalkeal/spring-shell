@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog;
+package org.springframework.shell.component.view.event;
 
-import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.shell.command.annotation.CommandScan;
+import java.util.EnumSet;
 
-@SpringBootApplication
-@CommandScan
-public class SpringShellApplication {
+import org.jline.terminal.MouseEvent;
+import org.jline.terminal.MouseEvent.Button;
+import org.jline.terminal.MouseEvent.Modifier;
+import org.jline.terminal.MouseEvent.Type;
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication application = new SpringApplication(SpringShellApplication.class);
-		application.setBannerMode(Mode.OFF);
-		application.run(args);
+public record MouseBinding(Type type, Button button, EnumSet<Modifier> modifiers) {
+
+	public static MouseBinding of(MouseEvent event) {
+		return new MouseBinding(event.getType(), event.getButton(), event.getModifiers());
 	}
-
 }

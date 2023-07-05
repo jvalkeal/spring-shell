@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog;
+package org.springframework.shell.component.view.control;
 
-import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.shell.command.annotation.CommandScan;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-@CommandScan
-public class SpringShellApplication {
+import org.springframework.shell.component.view.event.KeyEvent;
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication application = new SpringApplication(SpringShellApplication.class);
-		application.setBannerMode(Mode.OFF);
-		application.run(args);
+import static org.assertj.core.api.Assertions.assertThat;
+
+class InputViewTests extends AbstractViewTests {
+
+	@Test
+	void shouldShowInput() {
+		InputView view = new InputView();
+		view.setShowBorder(true);
+		view.setRect(0, 0, 80, 24);
+
+		dispatchEvent(view, KeyEvent.of(1));
+		view.draw(screen24x80);
+
+		assertThat(forScreen(screen24x80)).hasHorizontalText("1", 1, 1, 1);
+		assertThat(forScreen(screen24x80)).hasCursorInPosition(2, 1);
 	}
-
 }

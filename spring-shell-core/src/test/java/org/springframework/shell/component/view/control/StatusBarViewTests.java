@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog;
+package org.springframework.shell.component.view.control;
 
-import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.shell.command.annotation.CommandScan;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-@CommandScan
-public class SpringShellApplication {
+import static org.assertj.core.api.Assertions.assertThat;
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication application = new SpringApplication(SpringShellApplication.class);
-		application.setBannerMode(Mode.OFF);
-		application.run(args);
+class StatusBarViewTests extends AbstractViewTests {
+
+	@Test
+	void hasBorder() {
+		StatusBarView view = new StatusBarView();
+		view.setShowBorder(true);
+		view.setRect(0, 0, 80, 24);
+		view.draw(screen24x80);
+		assertThat(forScreen(screen24x80)).hasBorder(0, 0, 80, 24);
 	}
 
 }

@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.samples.catalog;
+package org.springframework.shell.component.view.control;
 
-import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.shell.command.annotation.CommandScan;
+/**
+ * Base interface for view actions.
+ *
+ * @author Janne Valkealahti
+ */
+public interface ViewAction {
 
-@SpringBootApplication
-@CommandScan
-public class SpringShellApplication {
+	/**
+	 * Gets a {@link View} for this action
+	 *
+	 * @return view for action
+	 */
+	View view();
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication application = new SpringApplication(SpringShellApplication.class);
-		application.setBannerMode(Mode.OFF);
-		application.run(args);
-	}
-
+	/**
+	 * Gets an {@code action} identifier for this action.
+	 *
+	 * @return action identifier
+	 */
+	String action();
 }
