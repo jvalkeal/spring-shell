@@ -153,21 +153,27 @@ public class TerminalUI {
 			display.reset();
 			rootView.setRect(0, 0, size.getColumns(), size.getRows());
 			virtualDisplay.resize(size.getRows(), size.getColumns());
+			virtualDisplay.setShowCursor(false);
 			render(size.getRows(), size.getColumns());
 		}
 		else {
 			display.resize(size.getRows(), size.getColumns());
 			Rectangle rect = rootView.getRect();
 			virtualDisplay.resize(rect.height(), rect.width());
+			virtualDisplay.setShowCursor(false);
 			render(rect.height(), rect.width());
 		}
 
 		List<AttributedString> newLines = virtualDisplay.getScreenLines();
+
 		int targetCursorPos = 0;
 		if (virtualDisplay.isShowCursor()) {
 			terminal.puts(Capability.cursor_visible);
 			targetCursorPos = size.cursorPos(virtualDisplay.getCursorPosition().y(), virtualDisplay.getCursorPosition().x());
 			log.debug("Display targetCursorPos {}", targetCursorPos);
+		}
+		else {
+			terminal.puts(Capability.cursor_invisible);
 		}
 		display.update(newLines, targetCursorPos);
 	}
