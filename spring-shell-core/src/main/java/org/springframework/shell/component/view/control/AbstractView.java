@@ -31,6 +31,8 @@ import reactor.core.Disposables;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.KeyBindingConsumer;
+import org.springframework.shell.component.view.event.KeyBindingConsumerArgs;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseBinding;
@@ -59,8 +61,8 @@ public abstract class AbstractView implements View {
 	private boolean hasFocus;
 	private int layer;
 	private EventLoop eventLoop;
-	private Map<String, Runnable> keyCommands = new HashMap<>();
-	private Map<Integer, String> keyBindings = new HashMap<>();
+	// private Map<String, Runnable> keyCommands = new HashMap<>();
+	// private Map<Integer, String> keyBindings = new HashMap<>();
 	private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
 	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
@@ -192,8 +194,8 @@ public abstract class AbstractView implements View {
 			boolean consumed = false;
 			Integer key = event.key();
 			if (key != null) {
-				String command = getKeyBindings().get(key);
-				consumed = dispatchRunCommand(command);
+				// String command = getKeyBindings().get(key);
+				// consumed = dispatchRunCommand(command);
 				KeyBindingValue keyBindingValue = keyBindingsx.get(key);
 				if (keyBindingValue != null) {
 					consumed = dispatchRunCommand(event, keyBindingValue);
@@ -264,22 +266,24 @@ public abstract class AbstractView implements View {
 	// }
 
 	private Map<Integer, KeyBindingValue> keyBindingsx = new HashMap<>();
-	protected void registerKeyBinding1(Integer keyType, String keyCommand) {
-		registerKeyBinding4(keyType, keyCommand, null, null);
+	protected void registerKeyBinding(Integer keyType, String keyCommand) {
+		registerKeyBinding(keyType, keyCommand, null, null);
 	}
-	protected void registerKeyBinding2(Integer keyType, Consumer<KeyEvent> keyConsumer) {
-		registerKeyBinding4(keyType, null, keyConsumer, null);
+	protected void registerKeyBinding(Integer keyType, KeyBindingConsumer keyConsumer) {
+		registerKeyBinding(keyType, null, keyConsumer, null);
 	}
-	protected void registerKeyBinding3(Integer keyType, Runnable keyRunnable) {
-		registerKeyBinding4(keyType, null, null, keyRunnable);
+	protected void registerKeyBinding(Integer keyType, Runnable keyRunnable) {
+		registerKeyBinding(keyType, null, null, keyRunnable);
 	}
-	protected void registerKeyBinding4(Integer keyType, String keyCommand, Consumer<KeyEvent> keyConsumer, Runnable keyRunnable) {
+
+	private void registerKeyBinding(Integer keyType, String keyCommand, KeyBindingConsumer keyConsumer, Runnable keyRunnable) {
 		keyBindingsx.compute(keyType, (key, old) -> {
 			return KeyBindingValue.of(old, keyCommand, keyConsumer, keyRunnable);
 		});
 	}
-	record KeyBindingValue(String keyCommand, Consumer<KeyEvent> keyConsumer, Runnable keyRunnable) {
-		static KeyBindingValue of(KeyBindingValue old, String keyCommand, Consumer<KeyEvent> keyConsumer,
+
+	record KeyBindingValue(String keyCommand, KeyBindingConsumer keyConsumer, Runnable keyRunnable) {
+		static KeyBindingValue of(KeyBindingValue old, String keyCommand, KeyBindingConsumer keyConsumer,
 				Runnable keyRunnable) {
 			if (old == null) {
 				return new KeyBindingValue(keyCommand, keyConsumer, keyRunnable);
@@ -295,8 +299,11 @@ public abstract class AbstractView implements View {
 	 *
 	 * @return key bindings
 	 */
-	protected Map<Integer, String> getKeyBindings() {
-		return keyBindings;
+	// protected Map<Integer, String> getKeyBindings() {
+	// 	return keyBindings;
+	// }
+	protected Map<Integer, KeyBindingValue> getKeyBindings() {
+		return keyBindingsx;
 	}
 
 	/**
@@ -376,21 +383,21 @@ public abstract class AbstractView implements View {
 	 * @param command the view command
 	 * @return true if command was handled with matching registration
 	 */
-	protected boolean dispatchRunCommand(String command) {
-		if (eventLoop == null) {
-			return false;
-		}
-		Runnable runnable = keyCommands.get(command);
-		if (runnable != null) {
-			Message<Runnable> message = ShellMessageBuilder
-				.withPayload(runnable)
-				.setEventType(EventLoop.Type.TASK)
-				.build();
-			dispatch(message);
-			return true;
-		}
-		return false;
-	}
+	// protected boolean dispatchRunCommand(String command) {
+	// 	if (eventLoop == null) {
+	// 		return false;
+	// 	}
+	// 	Runnable runnable = keyCommands.get(command);
+	// 	if (runnable != null) {
+	// 		Message<Runnable> message = ShellMessageBuilder
+	// 			.withPayload(runnable)
+	// 			.setEventType(EventLoop.Type.TASK)
+	// 			.build();
+	// 		dispatch(message);
+	// 		return true;
+	// 	}
+	// 	return false;
+	// }
 
 	protected boolean dispatchRunCommand(KeyEvent event, KeyBindingValue command) {
 		if (eventLoop == null) {
@@ -400,6 +407,15 @@ public abstract class AbstractView implements View {
 		if (runnable != null) {
 			Message<Runnable> message = ShellMessageBuilder
 				.withPayload(runnable)
+				.setEventType(EventLoop.Type.TASK)
+				.build();
+			dispatch(message);
+			return true;
+		}
+		KeyBindingConsumer keyConsumer = command.keyConsumer();
+		if (keyConsumer != null) {
+			Message<KeyBindingConsumerArgs> message = ShellMessageBuilder
+				.withPayload(new KeyBindingConsumerArgs(keyConsumer, event))
 				.setEventType(EventLoop.Type.TASK)
 				.build();
 			dispatch(message);

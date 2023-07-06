@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.KeyBindingConsumerArgs;
 import org.springframework.shell.component.view.event.EventLoop.EventLoopProcessor;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
@@ -32,6 +33,9 @@ public class TaskEventLoopProcessor implements EventLoopProcessor {
 		if (EventLoop.Type.TASK.equals(StaticShellMessageHeaderAccessor.getEventType(message))) {
 			Object payload = message.getPayload();
 			if (payload instanceof Runnable r) {
+				return true;
+			}
+			else if(payload instanceof KeyBindingConsumerArgs) {
 				return true;
 			}
 			else if(payload instanceof MouseBindingConsumerArgs) {
@@ -47,8 +51,11 @@ public class TaskEventLoopProcessor implements EventLoopProcessor {
 		if (payload instanceof Runnable r) {
 			return processRunnable(message);
 		}
+		else if(payload instanceof KeyBindingConsumerArgs) {
+			return processKeyConsumer(message);
+		}
 		else if(payload instanceof MouseBindingConsumerArgs) {
-			return processConsumer(message);
+			return processMouseConsumer(message);
 		}
 		// should not happen
 		throw new IllegalArgumentException();
@@ -62,9 +69,19 @@ public class TaskEventLoopProcessor implements EventLoopProcessor {
 			.flux();
 	}
 
-	private Flux<? extends Message<?>> processConsumer(Message<?> message) {
+	private Flux<? extends Message<?>> processMouseConsumer(Message<?> message) {
 		return Mono.just(message.getPayload())
 			.ofType(MouseBindingConsumerArgs.class)
+			.flatMap(args -> Mono.fromRunnable(() -> {
+				args.consumer().accept(args.event());
+			}))
+			.then(Mono.just(MessageBuilder.withPayload(new Object()).build()))
+			.flux();
+	}
+
+	private Flux<? extends Message<?>> processKeyConsumer(Message<?> message) {
+		return Mono.just(message.getPayload())
+			.ofType(KeyBindingConsumerArgs.class)
 			.flatMap(args -> Mono.fromRunnable(() -> {
 				args.consumer().accept(args.event());
 			}))

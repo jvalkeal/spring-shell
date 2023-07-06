@@ -167,9 +167,9 @@ public class MenuView extends BoxView {
 		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
 		// registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
 
-		registerKeyBinding3(Key.CursorUp, () -> move(-1));
-		registerKeyBinding3(Key.CursorDown, () -> move(1));
-		registerKeyBinding3(Key.Enter, () -> keySelect());
+		registerKeyBinding(Key.CursorUp, () -> move(-1));
+		registerKeyBinding(Key.CursorDown, () -> move(1));
+		registerKeyBinding(Key.Enter, () -> keySelect());
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
 

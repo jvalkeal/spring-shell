@@ -100,9 +100,9 @@ public class ListView<T> extends BoxView {
 		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
 		// registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
 
-		registerKeyBinding3(Key.CursorUp, () -> up());
-		registerKeyBinding3(Key.CursorDown, () -> down());
-		registerKeyBinding3(Key.Enter, () -> enter());
+		registerKeyBinding(Key.CursorUp, () -> up());
+		registerKeyBinding(Key.CursorDown, () -> down());
+		registerKeyBinding(Key.Enter, () -> enter());
 
 
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,

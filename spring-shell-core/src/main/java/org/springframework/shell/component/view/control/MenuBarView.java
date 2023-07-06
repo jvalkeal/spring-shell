@@ -89,10 +89,10 @@ public class MenuBarView extends BoxView {
 		// registerKeyBinding(Key.CursorLeft, ViewCommand.LEFT);
 		// registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
 
-		registerKeyBinding3(Key.CursorUp, () -> up());
-		registerKeyBinding3(Key.CursorDown, () -> down());
-		registerKeyBinding3(Key.CursorLeft, () -> left());
-		registerKeyBinding3(Key.CursorRight, () -> right());
+		registerKeyBinding(Key.CursorUp, () -> up());
+		registerKeyBinding(Key.CursorDown, () -> down());
+		registerKeyBinding(Key.CursorLeft, () -> left());
+		registerKeyBinding(Key.CursorRight, () -> right());
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
 

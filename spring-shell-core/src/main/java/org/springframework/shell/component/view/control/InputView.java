@@ -47,15 +47,15 @@ public class InputView extends BoxView {
 
 		// registerKeyBinding1(Key.CursorRight, ViewCommand.RIGHT);
 
-		// registerKeyBinding2(Key.CursorLeft, event -> left());
-		// registerKeyBinding2(Key.CursorRight, event -> right());
-		registerKeyBinding3(Key.CursorLeft, () -> left());
-		registerKeyBinding3(Key.CursorRight, () -> right());
+		registerKeyBinding(Key.CursorLeft, event -> left());
+		registerKeyBinding(Key.CursorRight, event -> right());
+		// registerKeyBinding(Key.CursorLeft, () -> left());
+		// registerKeyBinding(Key.CursorRight, () -> right());
 
 
 		// registerKeyBinding3(Key.CursorRight, () -> right());
 		// registerKeyBinding2(Key.Delete, event -> delete());
-		registerKeyBinding3(Key.Backspace, () -> backspace());
+		registerKeyBinding(Key.Backspace, () -> backspace());
 
 	}
 
