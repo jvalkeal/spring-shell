@@ -212,6 +212,17 @@ public class Catalog {
 		return categories;
 	}
 
+	private static class ScenarioListCell extends ListCell<ScenarioData> {
+
+		@Override
+		public void draw(Screen screen) {
+			Rectangle rect = getRect();
+			Writer writer = screen.writerBuilder().build();
+			writer.text(String.format("%-20s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
+			writer.background(rect, getBackgroundColor());
+		}
+	}
+
 	private ListView<ScenarioData> scenarioSelector(EventLoop eventLoop) {
 		ListView<ScenarioData> scenarios = new ListView<>();
 		scenarios.setEventLoop(eventLoop);
@@ -253,16 +264,5 @@ public class Catalog {
 	}
 
 	private record ScenarioData(Scenario scenario, String name, String description, String[] category){};
-
-	private static class ScenarioListCell extends ListCell<ScenarioData> {
-
-		@Override
-		public void draw(Screen screen) {
-			Rectangle rect = getRect();
-			Writer writer = screen.writerBuilder().build();
-			writer.text(String.format("%s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
-			writer.background(rect, getBackgroundColor());
-		}
-	}
 
 }

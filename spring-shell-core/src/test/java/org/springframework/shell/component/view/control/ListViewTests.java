@@ -18,12 +18,17 @@ package org.springframework.shell.component.view.control;
 import java.util.Arrays;
 
 import org.jline.terminal.MouseEvent;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
+import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -91,6 +96,33 @@ class ListViewTests extends AbstractViewTests {
 
 	static int selected(ListView<?> view) {
 		return (int) ReflectionTestUtils.getField(view, "selected");
+	}
+
+	@Nested
+	class Visual {
+
+		@Test
+		void customCellFactory() {
+			ListView<String> view = new ListView<>();
+			view.setShowBorder(true);
+			view.setCellFactory(list -> new TestListCell());
+			view.setRect(0, 0, 80, 24);
+			view.setItems(Arrays.asList("item1"));
+			view.draw(screen24x80);
+			assertThat(forScreen(screen24x80)).hasHorizontalText("pre-item1-post", 0, 1, 16);
+		}
+
+		static class TestListCell extends ListCell<String> {
+
+			@Override
+			public void draw(Screen screen) {
+				Rectangle rect = getRect();
+				Writer writer = screen.writerBuilder().build();
+				writer.text(String.format("pre-%s-post", getItem()), rect.x(), rect.y());
+				writer.background(rect, getBackgroundColor());
+			}
+		}
+
 	}
 
 }

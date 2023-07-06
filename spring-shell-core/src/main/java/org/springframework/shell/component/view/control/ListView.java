@@ -75,6 +75,11 @@ public class ListView<T> extends BoxView {
 		super.drawInternal(screen);
 	}
 
+	/**
+	 * Sets a cell factory.
+	 *
+	 * @param factory the cell factory
+	 */
 	public void setCellFactory(Function<ListView<T>, ListCell<T>> factory) {
 		this.factory = factory;
 	}
@@ -92,18 +97,9 @@ public class ListView<T> extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		// registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
-		// registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
-		// registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
-
-		// registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
-		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
-		// registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
-
 		registerKeyBinding(Key.CursorUp, () -> up());
 		registerKeyBinding(Key.CursorDown, () -> down());
 		registerKeyBinding(Key.Enter, () -> enter());
-
 
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
