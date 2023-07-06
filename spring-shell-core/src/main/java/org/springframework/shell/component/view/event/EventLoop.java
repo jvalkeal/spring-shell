@@ -67,6 +67,7 @@ public interface EventLoop {
 	<T> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef);
 	<T extends ViewAction> Flux<T> viewActions(Class<T> clazz, View filterBy);
 
+	<T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy);
 	<T extends ViewEvent> Flux<T> viewEvents(Class<T> clazz, View filterBy);
 
 	/**

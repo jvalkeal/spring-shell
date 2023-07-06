@@ -120,23 +120,28 @@ public class ListView<T> extends BoxView {
 
 	private void up() {
 		updateIndex(-1);
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineUp", this)));
+		// dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineUp", this)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewSelectedItemChangedEvent<>(this, new ListViewItemEventArgs<>(selectedItem()))));
 	}
 
 	private void down() {
 		updateIndex(1);
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineDown", this)));
+		// dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "LineDown", this)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewSelectedItemChangedEvent<>(this, new ListViewItemEventArgs<>(selectedItem()))));
 	}
 
 	private void enter() {
 		log.info("XXX enter");
-		dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "OpenSelectedItem", this)));
+		// dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "OpenSelectedItem", this)));
+		dispatch(ShellMessageBuilder.ofView(this, new ListViewOpenSelectedItemEvent<>(this, new ListViewItemEventArgs<>(selectedItem()))));
 	}
 
 	public void setSelected(int selected) {
 		if (this.selected != selected) {
 			this.selected = selected;
-			dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "SelectedChanged", this)));
+			// dispatch(ShellMessageBuilder.ofView(this, new ListViewAction<>(selectedItem(), "SelectedChanged", this)));
+			// dispatch(ShellMessageBuilder.ofView(this, new ListViewSelectedItemChangedEvent<>(this, new ListViewItemEventArgs<>(selectedItem()))));
+			dispatch(ShellMessageBuilder.ofView(this, ListViewSelectedItemChangedEvent.of(this, selectedItem())));
 		}
 	}
 
@@ -162,7 +167,28 @@ public class ListView<T> extends BoxView {
 		}
 	}
 
-	public record ListViewAction<T>(T item, String action, View view) implements ViewAction {
+	public record ListViewItemEventArgs<T>(T item) implements ViewEventArgs {
+
+		public static <T> ListViewItemEventArgs<T> of(T item) {
+			return new ListViewItemEventArgs<T>(item);
+		}
 	}
+
+	public record ListViewOpenSelectedItemEvent<T>(View view, ListViewItemEventArgs<T> args) implements ViewEvent {
+
+		public static <T> ListViewOpenSelectedItemEvent<T> of(View view, T item) {
+			return new ListViewOpenSelectedItemEvent<T>(view, ListViewItemEventArgs.of(item));
+		}
+	}
+
+	public record ListViewSelectedItemChangedEvent<T>(View view, ListViewItemEventArgs<T> args) implements ViewEvent {
+
+		public static <T> ListViewSelectedItemChangedEvent<T> of(View view, T item) {
+			return new ListViewSelectedItemChangedEvent<T>(view, ListViewItemEventArgs.of(item));
+		}
+	}
+
+	// public record ListViewAction<T>(T item, String action, View view) implements ViewAction {
+	// }
 
 }
