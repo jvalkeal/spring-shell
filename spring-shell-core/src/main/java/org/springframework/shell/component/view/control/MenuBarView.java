@@ -79,15 +79,20 @@ public class MenuBarView extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
-		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
-		registerRunnableCommand(ViewCommand.LEFT, () -> left());
-		registerRunnableCommand(ViewCommand.RIGHT, () -> right());
+		// registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
+		// registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
+		// registerRunnableCommand(ViewCommand.LEFT, () -> left());
+		// registerRunnableCommand(ViewCommand.RIGHT, () -> right());
 
-		registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
-		registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
-		registerKeyBinding(Key.CursorLeft, ViewCommand.LEFT);
-		registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
+		// registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
+		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
+		// registerKeyBinding(Key.CursorLeft, ViewCommand.LEFT);
+		// registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
+
+		registerKeyBinding3(Key.CursorUp, () -> up());
+		registerKeyBinding3(Key.CursorDown, () -> down());
+		registerKeyBinding3(Key.CursorLeft, () -> left());
+		registerKeyBinding3(Key.CursorRight, () -> right());
 
 		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
 

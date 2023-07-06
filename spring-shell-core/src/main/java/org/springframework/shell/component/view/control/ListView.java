@@ -92,13 +92,18 @@ public class ListView<T> extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
-		registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
-		registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
+		// registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
+		// registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
+		// registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> enter());
 
-		registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
-		registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
-		registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
+		// registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
+		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
+		// registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
+
+		registerKeyBinding3(Key.CursorUp, () -> up());
+		registerKeyBinding3(Key.CursorDown, () -> down());
+		registerKeyBinding3(Key.Enter, () -> enter());
+
 
 		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
 				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);

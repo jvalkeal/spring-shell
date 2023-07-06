@@ -196,7 +196,7 @@ public abstract class AbstractView implements View {
 				consumed = dispatchRunCommand(command);
 				KeyBindingValue keyBindingValue = keyBindingsx.get(key);
 				if (keyBindingValue != null) {
-					consumed = dispatchRunCommand(keyBindingValue);
+					consumed = dispatchRunCommand(event, keyBindingValue);
 				}
 
 			}
@@ -249,9 +249,9 @@ public abstract class AbstractView implements View {
 	 * @param viewCommand the view command
 	 * @param runnable the runnable
 	 */
-	protected void registerRunnableCommand(String viewCommand, Runnable runnable) {
-		keyCommands.put(viewCommand, runnable);
-	}
+	// protected void registerRunnableCommand(String viewCommand, Runnable runnable) {
+	// 	keyCommands.put(viewCommand, runnable);
+	// }
 
 	/**
 	 * Register a {@link KeyType} with a {@code view command}.
@@ -259,9 +259,9 @@ public abstract class AbstractView implements View {
 	 * @param keyType the key type
 	 * @param viewCommand the view command
 	 */
-	protected void registerKeyBinding(Integer keyType, String viewCommand) {
-		keyBindings.put(keyType, viewCommand);
-	}
+	// protected void registerKeyBinding(Integer keyType, String viewCommand) {
+	// 	keyBindings.put(keyType, viewCommand);
+	// }
 
 	private Map<Integer, KeyBindingValue> keyBindingsx = new HashMap<>();
 	protected void registerKeyBinding1(Integer keyType, String keyCommand) {
@@ -392,7 +392,7 @@ public abstract class AbstractView implements View {
 		return false;
 	}
 
-	protected boolean dispatchRunCommand(KeyBindingValue command) {
+	protected boolean dispatchRunCommand(KeyEvent event, KeyBindingValue command) {
 		if (eventLoop == null) {
 			return false;
 		}
