@@ -70,11 +70,9 @@ public class AppView extends BoxView {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			if (event.isKey(Key.CursorLeft)) {
-				// dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
 				dispatch(ShellMessageBuilder.ofView(this, AppViewEvent.of(this, AppViewEventArgs.Direction.PREVIOUS)));
 			}
 			else if (event.isKey(Key.CursorRight)) {
-				// dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
 				dispatch(ShellMessageBuilder.ofView(this, AppViewEvent.of(this, AppViewEventArgs.Direction.NEXT)));
 			}
 			return KeyHandler.resultOf(event, true, null);
