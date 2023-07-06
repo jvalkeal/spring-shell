@@ -324,6 +324,12 @@ public class TerminalUI {
 				dispatchKeyEvent(KeyEvent.of(lastBinding.charAt(0)));
 			}
 		}
+		else if (operation == KeyEvent.Key.Unicode) {
+			String lastBinding = bindingReader.getLastBinding();
+			if (StringUtils.hasLength(lastBinding)) {
+				dispatchKeyEvent(KeyEvent.of(lastBinding.charAt(0)));
+			}
+		}
 		else if (operation == KeyEvent.Key.Mouse) {
 			mouseEvent();
 		}

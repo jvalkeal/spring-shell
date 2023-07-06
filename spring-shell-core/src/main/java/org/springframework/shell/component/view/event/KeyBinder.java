@@ -19,6 +19,7 @@ import org.jline.keymap.KeyMap;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.util.Assert;
 
 import static org.jline.keymap.KeyMap.alt;
@@ -37,6 +38,8 @@ public class KeyBinder {
 	}
 
 	public void bindAll(KeyMap<Integer> keyMap) {
+
+		keyMap.setUnicode(Key.Unicode);
 
 		for (char i = 32; i < KeyMap.KEYMAP_LENGTH - 1; i++) {
 			keyMap.bind(KeyEvent.Key.Char, Character.toString(i));

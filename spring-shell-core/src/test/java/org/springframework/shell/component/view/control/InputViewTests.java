@@ -29,10 +29,23 @@ class InputViewTests extends AbstractViewTests {
 		view.setShowBorder(true);
 		view.setRect(0, 0, 80, 24);
 
-		dispatchEvent(view, KeyEvent.of(1));
+		dispatchEvent(view, KeyEvent.of('1'));
 		view.draw(screen24x80);
 
 		assertThat(forScreen(screen24x80)).hasHorizontalText("1", 1, 1, 1);
+		assertThat(forScreen(screen24x80)).hasCursorInPosition(2, 1);
+	}
+
+	@Test
+	void shouldShowUnicode() {
+		InputView view = new InputView();
+		view.setShowBorder(true);
+		view.setRect(0, 0, 80, 24);
+
+		dispatchEvent(view, KeyEvent.of('★'));
+		view.draw(screen24x80);
+
+		assertThat(forScreen(screen24x80)).hasHorizontalText("★", 1, 1, 1);
 		assertThat(forScreen(screen24x80)).hasCursorInPosition(2, 1);
 	}
 }
