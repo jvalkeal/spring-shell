@@ -70,10 +70,12 @@ public class AppView extends BoxView {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			if (event.isKey(Key.CursorLeft)) {
-				dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
+				// dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("PreviousView", this)));
+				dispatch(ShellMessageBuilder.ofView(this, AppViewEvent.of(this, AppViewEventArgs.Direction.PREVIOUS)));
 			}
 			else if (event.isKey(Key.CursorRight)) {
-				dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
+				// dispatch(ShellMessageBuilder.ofView(this, new AppViewAction("NextView", this)));
+				dispatch(ShellMessageBuilder.ofView(this, AppViewEvent.of(this, AppViewEventArgs.Direction.NEXT)));
 			}
 			return KeyHandler.resultOf(event, true, null);
 		};
@@ -96,7 +98,36 @@ public class AppView extends BoxView {
 		this.modal = modal;
 	}
 
-	public record AppViewAction(String action, View view) implements ViewAction {
+	/**
+	 * {@link ViewEventArgs} for {@link AppViewEvent}.
+	 *
+	 * @param direction the direction enumeration
+	 */
+	public record AppViewEventArgs(Direction direction) implements ViewEventArgs {
+
+		/**
+		 * Direction where next selection should go.
+		 */
+		public enum Direction {
+			PREVIOUS,
+			NEXT
+		}
+
+		public static AppViewEventArgs of(Direction direction) {
+			return new AppViewEventArgs(direction);
+		}
 	}
 
+	/**
+	 * {@link ViewEvent} indicating direction for a next selection.
+	 *
+	 * @param view the view sending an event
+	 * @param args the event args
+	 */
+	public record AppViewEvent(View view, AppViewEventArgs args) implements ViewEvent {
+
+		public static AppViewEvent of(View view, AppViewEventArgs.Direction direction) {
+			return new AppViewEvent(view, AppViewEventArgs.of(direction));
+		}
+	}
 }

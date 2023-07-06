@@ -28,7 +28,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.TerminalUI;
 import org.springframework.shell.component.view.control.AppView;
-import org.springframework.shell.component.view.control.AppView.AppViewAction;
+import org.springframework.shell.component.view.control.AppView.AppViewEvent;
 import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.ListView;
 import org.springframework.shell.component.view.control.ListView.ListViewAction;
@@ -178,15 +178,11 @@ public class Catalog {
 			})
 			.subscribe());
 
-		eventLoop.onDestroy(eventLoop.viewActions(AppViewAction.class, app)
-			.subscribe(args -> {
-					switch (args.action()) {
-						case "NextView" -> {
-							data.ui.setFocus(scenarios);
-						}
-						case "PreviousView" -> {
-							data.ui.setFocus(categories);
-						}
+		eventLoop.onDestroy(eventLoop.viewEvents(AppViewEvent.class, app)
+			.subscribe(event -> {
+					switch (event.args().direction()) {
+						case NEXT -> data.ui.setFocus(scenarios);
+						case PREVIOUS -> data.ui.setFocus(categories);
 					}
 				}
 			));
