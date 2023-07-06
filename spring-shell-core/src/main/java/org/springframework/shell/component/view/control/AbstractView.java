@@ -61,8 +61,7 @@ public abstract class AbstractView implements View {
 	private boolean hasFocus;
 	private int layer;
 	private EventLoop eventLoop;
-	// private Map<String, Runnable> keyCommands = new HashMap<>();
-	// private Map<Integer, String> keyBindings = new HashMap<>();
+	private Map<Integer, KeyBindingValue> keyBindings = new HashMap<>();
 	private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
 	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
@@ -194,9 +193,7 @@ public abstract class AbstractView implements View {
 			boolean consumed = false;
 			Integer key = event.key();
 			if (key != null) {
-				// String command = getKeyBindings().get(key);
-				// consumed = dispatchRunCommand(command);
-				KeyBindingValue keyBindingValue = keyBindingsx.get(key);
+				KeyBindingValue keyBindingValue = getKeyBindings().get(key);
 				if (keyBindingValue != null) {
 					consumed = dispatchRunCommand(event, keyBindingValue);
 				}
@@ -245,39 +242,20 @@ public abstract class AbstractView implements View {
 		return eventLoop;
 	}
 
-	/**
-	 * Register a {code view command} with a {@link Runnable}.
-	 *
-	 * @param viewCommand the view command
-	 * @param runnable the runnable
-	 */
-	// protected void registerRunnableCommand(String viewCommand, Runnable runnable) {
-	// 	keyCommands.put(viewCommand, runnable);
-	// }
-
-	/**
-	 * Register a {@link KeyType} with a {@code view command}.
-	 *
-	 * @param keyType the key type
-	 * @param viewCommand the view command
-	 */
-	// protected void registerKeyBinding(Integer keyType, String viewCommand) {
-	// 	keyBindings.put(keyType, viewCommand);
-	// }
-
-	private Map<Integer, KeyBindingValue> keyBindingsx = new HashMap<>();
 	protected void registerKeyBinding(Integer keyType, String keyCommand) {
 		registerKeyBinding(keyType, keyCommand, null, null);
 	}
+
 	protected void registerKeyBinding(Integer keyType, KeyBindingConsumer keyConsumer) {
 		registerKeyBinding(keyType, null, keyConsumer, null);
 	}
+
 	protected void registerKeyBinding(Integer keyType, Runnable keyRunnable) {
 		registerKeyBinding(keyType, null, null, keyRunnable);
 	}
 
 	private void registerKeyBinding(Integer keyType, String keyCommand, KeyBindingConsumer keyConsumer, Runnable keyRunnable) {
-		keyBindingsx.compute(keyType, (key, old) -> {
+		keyBindings.compute(keyType, (key, old) -> {
 			return KeyBindingValue.of(old, keyCommand, keyConsumer, keyRunnable);
 		});
 	}
@@ -299,11 +277,8 @@ public abstract class AbstractView implements View {
 	 *
 	 * @return key bindings
 	 */
-	// protected Map<Integer, String> getKeyBindings() {
-	// 	return keyBindings;
-	// }
 	protected Map<Integer, KeyBindingValue> getKeyBindings() {
-		return keyBindingsx;
+		return keyBindings;
 	}
 
 	/**

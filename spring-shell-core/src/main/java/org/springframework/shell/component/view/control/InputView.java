@@ -15,10 +15,6 @@
  */
 package org.springframework.shell.component.view.control;
 
-import java.util.EnumSet;
-
-import org.jline.terminal.MouseEvent;
-
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
@@ -38,25 +34,10 @@ public class InputView extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		// registerRunnableCommand(ViewCommand.RIGHT, () -> right());
-		// registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
-
-
-
-		// registerKeyCommandXxx1(ViewCommand.RIGHT, () -> right());
-
-		// registerKeyBinding1(Key.CursorRight, ViewCommand.RIGHT);
-
 		registerKeyBinding(Key.CursorLeft, event -> left());
 		registerKeyBinding(Key.CursorRight, event -> right());
-		// registerKeyBinding(Key.CursorLeft, () -> left());
-		// registerKeyBinding(Key.CursorRight, () -> right());
-
-
-		// registerKeyBinding3(Key.CursorRight, () -> right());
-		// registerKeyBinding2(Key.Delete, event -> delete());
+		registerKeyBinding(Key.Delete, () -> delete());
 		registerKeyBinding(Key.Backspace, () -> backspace());
-
 	}
 
 	@Override
@@ -64,36 +45,14 @@ public class InputView extends BoxView {
 		KeyHandler handler = args -> {
 			KeyEvent event = args.event();
 			boolean consumed = false;
-			// if (event.isKey(Key.Backspace)) {
-			// 	backspace();
-			// }
-			// if (event.isKey(Key.Delete)) {
-			// 	delete();
-			// }
-			// else if (event.isKey(Key.CursorLeft)) {
-			// 	left();
-			// }
-			// else if (event.isKey(Key.CursorRight)) {
-			// 	right();
-			// }
-			// else if (event.isKey(Key.Enter)) {
-			// 	enter(event);
-			// }
-			// else if (event.isKey(Key.Tab)) {
-			// 	leave(event);
-			// }
-			// else {
 			if (event.isKey()) {
 				consumed = true;
 				int plainKey = event.getPlainKey();
 				add(new String(new char[]{(char)plainKey}));
 			}
-			// }
-
 			return KeyHandler.resultOf(event, consumed, null);
 		};
 		return handler.fromIfConsumed(super.getKeyHandler());
-		// return handler;
 	}
 
 	@Override
@@ -110,13 +69,13 @@ public class InputView extends BoxView {
 		return text.toString();
 	}
 
-	private void enter(KeyEvent event) {
-		// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("enter", this));
-	}
+	// private void enter(KeyEvent event) {
+	// 	// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("enter", this));
+	// }
 
-	private void leave(KeyEvent event) {
-		// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("leave", this));
-	}
+	// private void leave(KeyEvent event) {
+	// 	// getShellMessageListener().onMessage(ShellMessageBuilder.ofViewFocus("leave", this));
+	// }
 
 	private void add(String data) {
 		text.append(data);
