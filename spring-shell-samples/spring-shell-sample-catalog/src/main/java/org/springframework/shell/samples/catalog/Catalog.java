@@ -55,10 +55,6 @@ import org.springframework.util.StringUtils;
 public class Catalog {
 
 	// ref types helping with deep nested generics from events
-	// private final static ParameterizedTypeReference<ListViewAction<String>> LISTVIEW_STRING_TYPEREF
-	// 	= new ParameterizedTypeReference<ListViewAction<String>>() {};
-	// private final static ParameterizedTypeReference<ListViewAction<ScenarioData>> LISTVIEW_SCENARIO_TYPEREF
-	// 	= new ParameterizedTypeReference<ListViewAction<ScenarioData>>() {};
 	private final static ParameterizedTypeReference<ListViewOpenSelectedItemEvent<ScenarioData>> LISTVIEW_SCENARIO_TYPEREF
 		= new ParameterizedTypeReference<ListViewOpenSelectedItemEvent<ScenarioData>>() {};
 	private final static ParameterizedTypeReference<ListViewSelectedItemChangedEvent<String>> LISTVIEW_STRING_TYPEREF
@@ -142,23 +138,6 @@ public class Catalog {
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
 
 		// handle event when scenario is chosen
-		// eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_SCENARIO_TYPEREF)
-		// 	.filter(args -> args.view() == scenarios)
-		// 	.doOnNext(args -> {
-		// 		if (args.item() != null) {
-		// 			switch (args.action()) {
-		// 				case "OpenSelectedItem":
-		// 					View view = args.item().scenario().configure(eventLoop).build();
-		// 					component.setRoot(view, true);
-		// 					currentScenarioView = view;
-		// 					break;
-		// 				default:
-		// 					break;
-		// 			}
-		// 		}
-		// 	})
-		// 	.subscribe());
-
 		eventLoop.onDestroy(eventLoop.viewEvents(LISTVIEW_SCENARIO_TYPEREF, scenarios)
 			.subscribe(event -> {
 				View view = event.args().item().scenario().configure(eventLoop).build();
@@ -167,6 +146,7 @@ public class Catalog {
 			}));
 
 
+		// handle event when category selection is changed
 		eventLoop.onDestroy(eventLoop.viewEvents(LISTVIEW_STRING_TYPEREF, categories)
 			.subscribe(event -> {
 				if (event.args().item() != null) {
@@ -176,30 +156,7 @@ public class Catalog {
 				}
 			}));
 
-		// handle event when category selection is changed
-		// eventLoop.onDestroy(eventLoop.events(EventLoop.Type.VIEW, LISTVIEW_STRING_TYPEREF)
-		// 	.filter(args -> args.view() == categories)
-		// 	.doOnNext(args -> {
-		// 		if (args.item() != null) {
-		// 			switch (args.action()) {
-		// 				case "LineUp":
-		// 				case "LineDown":
-		// 					String selected = args.item();
-		// 					List<ScenarioData> list = categoryMap.get(selected);
-		// 					scenarios.setItems(list);
-		// 					break;
-		// 				case "SelectedChanged":
-		// 					String selected2 = args.item();
-		// 					List<ScenarioData> list2 = categoryMap.get(selected2);
-		// 					scenarios.setItems(list2);
-		// 					break;
-		// 				default:
-		// 					break;
-		// 			}
-		// 		}
-		// 	})
-		// 	.subscribe());
-
+		// handle focus change between lists
 		eventLoop.onDestroy(eventLoop.viewEvents(AppViewEvent.class, app)
 			.subscribe(event -> {
 					switch (event.args().direction()) {
