@@ -52,6 +52,8 @@ public class SnakeGameScenario extends AbstractScenario {
 		view.setTitle("Snake");
 		view.setShowBorder(true);
 
+		// we're outside of a view so no bindings,
+		// just subscribe to events and handle what is needed.
 		getEventloop().onDestroy(getEventloop().keyEvents()
 			.subscribe(event -> {
 				Integer direction = switch (event.key()) {
