@@ -305,7 +305,7 @@ public class TerminalUI {
 		keyBinder.bindAll(keyMap);
 	}
 
-	private boolean read(BindingReader bindingReader, KeyMap<Integer> keyMapxxx) {
+	private boolean read(BindingReader bindingReader, KeyMap<Integer> keyMap) {
         Thread readThread = Thread.currentThread();
 		terminal.handle(Signal.INT, signal -> {
 			log.debug("Handling signal {}", signal);
@@ -314,7 +314,7 @@ public class TerminalUI {
 
 		Integer operation = null;
 		try {
-			operation = bindingReader.readBinding(keyMapxxx);
+			operation = bindingReader.readBinding(keyMap);
 			log.debug("Read got operation {}", operation);
         } catch (IOError e) {
             // Ignore Ctrl+C interrupts and just exit the loop
