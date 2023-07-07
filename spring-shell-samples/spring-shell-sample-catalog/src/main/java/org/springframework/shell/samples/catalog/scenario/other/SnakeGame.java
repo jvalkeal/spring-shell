@@ -24,43 +24,44 @@ import reactor.core.publisher.Flux;
 
 import org.springframework.shell.component.view.control.BoxView;
 import org.springframework.shell.component.view.control.View;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;
 
+/**
+ * Scenario implementing a classic snake game.
+ *
+ * @author Janne Valkealahti
+ */
 @ScenarioComponent(name = "Snake", description = "Classic snake game", category = { CATEGORY_OTHER })
 public class SnakeGame extends AbstractScenario {
 
 	@Override
 	public View build() {
 		SnakeGamex snakeGame = new SnakeGamex(10, 10);
-		BoxView root = new BoxView();
-		root.setTitle("Snake");
-		root.setShowBorder(true);
+		BoxView view = new BoxView();
+		view.setTitle("Snake");
+		view.setShowBorder(true);
 
 		AtomicInteger direction = new AtomicInteger();
-		// handle arrow keys to game
 		getEventloop().keyEvents()
 			.doOnNext(e -> {
-				// XXX missing
-				// switch (e.key()) {
-				// 	case DOWN:
-				// 		direction.set(1);
-				// 		break;
-				// 	case UP:
-				// 		direction.set(-1);
-				// 		break;
-				// 	case LEFT:
-				// 		direction.set(-2);
-				// 		break;
-				// 	case RIGHT:
-				// 		direction.set(2);
-				// 		break;
-				// 	default:
-				// 		break;
-				// }
+				if (e.isKey(Key.CursorDown)) {
+					direction.set(1);
+				}
+				else if (e.isKey(Key.CursorUp)) {
+					direction.set(-1);
+				}
+				else if (e.isKey(Key.CursorLeft)) {
+					direction.set(-2);
+				}
+				else if (e.isKey(Key.CursorRight)) {
+					direction.set(2);
+				}
 				snakeGame.update(direction.get());
 			})
 			.subscribe();
@@ -69,18 +70,19 @@ public class SnakeGame extends AbstractScenario {
 		Disposable gameInterval = Flux.interval(Duration.ofMillis(500))
 			.doOnNext(l -> {
 				snakeGame.update(0);
-				// component.redraw();
+				getEventloop().dispatch(ShellMessageBuilder.ofRedraw());
 			})
 			.subscribe();
+
 		// dispose when event loop is getting destroyd
 		getEventloop().onDestroy(gameInterval);
 
 		// draw game area
-		root.setDrawFunction((screen, rect) -> {
+		view.setDrawFunction((screen, rect) -> {
 			snakeGame.draw(screen);
 			return rect;
 		});
-		return root;
+		return view;
 	}
 
 	/**

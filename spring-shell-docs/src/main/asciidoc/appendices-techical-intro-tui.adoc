@@ -41,6 +41,11 @@ tbd
 tbd
 
 === Catalog App
-Catalog application is showing various ways how UI Framework can be used. In this section we discuss how this application works.
-It can be considered to be a reference application as its using most of the features available and tries to follow
-best practictises.
+Catalog application is showing various ways how Terminal UI Framework can be used.
+In this section we discuss how this application works. It can be considered to be
+a reference application as its using most of the features available and tries
+to follow best practices.
+
+==== Create Scenario
+Every `Scenario` essentially is a sample code of a `View` as that's what catalog
+app demonstrates.
