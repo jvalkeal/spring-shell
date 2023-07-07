@@ -26,7 +26,7 @@ import org.jline.terminal.Terminal;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.Message;
-import org.springframework.shell.component.TerminalUI;
+import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.component.view.control.AppView;
 import org.springframework.shell.component.view.control.AppView.AppViewEvent;
 import org.springframework.shell.component.view.control.GridView;
