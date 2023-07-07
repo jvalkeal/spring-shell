@@ -27,9 +27,11 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.control.BoxView;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
@@ -63,81 +65,69 @@ public class ClockScenario extends AbstractScenario {
 		getEventloop().dispatch(dates);
 
 		// process dates
-		getEventloop().events()
+		getEventloop().onDestroy(getEventloop().events()
 			.filter(m -> EventLoop.Type.USER.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
-			.doOnNext(message -> {
-				if(message.getPayload() instanceof String s) {
+			.subscribe(m -> {
+				if (m.getPayload() instanceof String s) {
 					ref.set(s);
-					// component.redraw();
+					getEventloop().dispatch(ShellMessageBuilder.ofRedraw());
 				}
-			})
-			.subscribe();
+			}));
 
 		// testing for animations for now
 		AtomicInteger animX = new AtomicInteger();
-		getEventloop().events()
+		getEventloop().onDestroy(getEventloop().events()
 			.filter(m -> EventLoop.Type.SYSTEM.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.filter(m -> m.getHeaders().containsKey("animationtick"))
-			.doOnNext(message -> {
-				Object payload = message.getPayload();
+			.subscribe(m -> {
+				Object payload = m.getPayload();
 				if (payload instanceof Integer i) {
 					animX.set(i);
-					// component.redraw();
+					getEventloop().dispatch(ShellMessageBuilder.ofRedraw());
 				}
-			})
-			.subscribe();
+			}));
 
 		AtomicReference<HorizontalAlign> hAlign = new AtomicReference<>(HorizontalAlign.CENTER);
 		AtomicReference<VerticalAlign> vAlign = new AtomicReference<>(VerticalAlign.CENTER);
 
-		// handle keys
-		getEventloop().keyEvents()
-			.doOnNext(e -> {
-				// XXX missing
-				// switch (e.key()) {
-				// 	case DOWN:
-				// 		if (vAlign.get() == VerticalAlign.TOP) {
-				// 			vAlign.set(VerticalAlign.CENTER);
-				// 		}
-				// 		else if (vAlign.get() == VerticalAlign.CENTER) {
-				// 			vAlign.set(VerticalAlign.BOTTOM);
-				// 		}
-				// 		break;
-				// 	case UP:
-				// 		if (vAlign.get() == VerticalAlign.BOTTOM) {
-				// 			vAlign.set(VerticalAlign.CENTER);
-				// 		}
-				// 		else if (vAlign.get() == VerticalAlign.CENTER) {
-				// 			vAlign.set(VerticalAlign.TOP);
-				// 		}
-				// 		break;
-				// 	case LEFT:
-				// 		if (hAlign.get() == HorizontalAlign.RIGHT) {
-				// 			hAlign.set(HorizontalAlign.CENTER);
-				// 		}
-				// 		else if (hAlign.get() == HorizontalAlign.CENTER) {
-				// 			hAlign.set(HorizontalAlign.LEFT);
-				// 		}
-				// 		break;
-				// 	case RIGHT:
-				// 		Message<String> animStart = MessageBuilder
-				// 			.withPayload("")
-				// 			.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
-				// 			.setHeader("animationstart", true)
-				// 			.build();
-				// 		getEventloop().dispatch(animStart);
-				// 		// if (hAlign.get() == HorizontalAlign.LEFT) {
-				// 		// 	hAlign.set(HorizontalAlign.CENTER);
-				// 		// }
-				// 		// else if (hAlign.get() == HorizontalAlign.CENTER) {
-				// 		// 	hAlign.set(HorizontalAlign.RIGHT);
-				// 		// }
-				// 		break;
-				// 	default:
-				// 		break;
-				// }
-			})
-			.subscribe();
+		getEventloop().onDestroy(getEventloop().keyEvents()
+			.subscribe(event -> {
+				switch (event.key()) {
+					case Key.CursorDown -> {
+						if (vAlign.get() == VerticalAlign.TOP) {
+							vAlign.set(VerticalAlign.CENTER);
+						}
+						else if (vAlign.get() == VerticalAlign.CENTER) {
+							vAlign.set(VerticalAlign.BOTTOM);
+						}
+					}
+					case Key.CursorUp -> {
+						if (vAlign.get() == VerticalAlign.BOTTOM) {
+							vAlign.set(VerticalAlign.CENTER);
+						}
+						else if (vAlign.get() == VerticalAlign.CENTER) {
+							vAlign.set(VerticalAlign.TOP);
+						}
+					}
+					case Key.CursorLeft -> {
+						if (hAlign.get() == HorizontalAlign.RIGHT) {
+							hAlign.set(HorizontalAlign.CENTER);
+						}
+						else if (hAlign.get() == HorizontalAlign.CENTER) {
+							hAlign.set(HorizontalAlign.LEFT);
+						}
+					}
+					case Key.CursorRight -> {
+						Message<String> animStart = MessageBuilder
+							.withPayload("")
+							.setHeader(ShellMessageHeaderAccessor.EVENT_TYPE, EventLoop.Type.SYSTEM)
+							.setHeader("animationstart", true)
+							.build();
+						getEventloop().dispatch(animStart);
+					}
+				};
+
+			}));
 
 		// draw current date
 		root.setDrawFunction((screen, rect) -> {
@@ -152,5 +142,4 @@ public class ClockScenario extends AbstractScenario {
 		});
 		return root;
 	}
-
 }
