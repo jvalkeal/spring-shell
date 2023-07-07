@@ -52,6 +52,12 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+/**
+ * Catalog app logic. Builds a simple application ui where scenarios can be
+ * selected and run.
+ *
+ * @author Janne Valkealahti
+ */
 public class Catalog {
 
 	// ref types helping with deep nested generics from events
@@ -72,10 +78,32 @@ public class Catalog {
 		mapScenarios(scenarios);
 	}
 
+	private void mapScenarios(List<Scenario> scenarios) {
+		// we blindly expect scenario to have ScenarioComponent annotation with all fields
+		scenarios.forEach(sce -> {
+			ScenarioComponent ann = AnnotationUtils.findAnnotation(sce.getClass(), ScenarioComponent.class);
+			if (ann != null) {
+				String name = ann.name();
+				String description = ann.description();
+				String[] category = ann.category();
+				if (StringUtils.hasText(name) && StringUtils.hasText(description) && !ObjectUtils.isEmpty(category)) {
+					for (String cat : category) {
+						ScenarioData scenarioData = new ScenarioData(sce, name, description, category);
+						categoryMap.computeIfAbsent(Scenario.CATEGORY_ALL, key -> new ArrayList<>()).add(scenarioData);
+						categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(scenarioData);
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * Main run loop. Builds the ui and exits when user requests exit.
+	 */
 	public void run() {
 		ui = new TerminalUI(terminal);
 		EventLoop eventLoop = ui.getEventLoop();
-		AppView app = scenarioBrowser(eventLoop, ui);
+		AppView app = buildScenarioBrowser(eventLoop, ui);
 
 		// handle logic to switch between main scenario browser
 		// and currently active scenario
@@ -104,26 +132,7 @@ public class Catalog {
 		ui.run();
 	}
 
-	private void mapScenarios(List<Scenario> scenarios) {
-		// we blindly expect scenario to have ScenarioComponent annotation with all fields
-		scenarios.forEach(sce -> {
-			ScenarioComponent ann = AnnotationUtils.findAnnotation(sce.getClass(), ScenarioComponent.class);
-			if (ann != null) {
-				String name = ann.name();
-				String description = ann.description();
-				String[] category = ann.category();
-				if (StringUtils.hasText(name) && StringUtils.hasText(description) && !ObjectUtils.isEmpty(category)) {
-					for (String cat : category) {
-						ScenarioData scenarioData = new ScenarioData(sce, name, description, category);
-						categoryMap.computeIfAbsent(Scenario.CATEGORY_ALL, key -> new ArrayList<>()).add(scenarioData);
-						categoryMap.computeIfAbsent(cat, key -> new ArrayList<>()).add(scenarioData);
-					}
-				}
-			}
-		});
-	}
-
-	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
+	private AppView buildScenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		// we use main app view to represent scenario browser
 		AppView app = new AppView();
 		app.setEventLoop(eventLoop);
@@ -133,8 +142,8 @@ public class Catalog {
 		grid.setRowSize(1, 0, 1);
 		grid.setColumnSize(30, 0);
 
-		categories = categorySelector(eventLoop);
-		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
+		categories = buildCategorySelector(eventLoop);
+		ListView<ScenarioData> scenarios = buildScenarioSelector(eventLoop);
 
 		// handle event when scenario is chosen
 		eventLoop.onDestroy(eventLoop.viewEvents(LISTVIEW_SCENARIO_TYPEREF, scenarios)
@@ -166,8 +175,8 @@ public class Catalog {
 			));
 
 		// We place statusbar below categories and scenarios
-		MenuBarView menuBar = menuBar(eventLoop);
-		StatusBarView statusBar = statusBar(eventLoop);
+		MenuBarView menuBar = buildMenuBar(eventLoop);
+		StatusBarView statusBar = buildStatusBar(eventLoop);
 		grid.addItem(menuBar, 0, 0, 1, 2, 0, 0);
 		grid.addItem(categories, 1, 0, 1, 1, 0, 0);
 		grid.addItem(scenarios, 1, 1, 1, 1, 0, 0);
@@ -176,7 +185,7 @@ public class Catalog {
 		return app;
 	}
 
-	private ListView<String> categorySelector(EventLoop eventLoop) {
+	private ListView<String> buildCategorySelector(EventLoop eventLoop) {
 		ListView<String> categories = new ListView<>();
 		categories.setEventLoop(eventLoop);
 		List<String> items = List.copyOf(categoryMap.keySet());
@@ -197,7 +206,7 @@ public class Catalog {
 		}
 	}
 
-	private ListView<ScenarioData> scenarioSelector(EventLoop eventLoop) {
+	private ListView<ScenarioData> buildScenarioSelector(EventLoop eventLoop) {
 		ListView<ScenarioData> scenarios = new ListView<>();
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
@@ -206,7 +215,7 @@ public class Catalog {
 		return scenarios;
 	}
 
-	private MenuBarView menuBar(EventLoop eventLoop) {
+	private MenuBarView buildMenuBar(EventLoop eventLoop) {
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
 				MenuItem.of("Quit")),
@@ -222,7 +231,7 @@ public class Catalog {
 		return menuBar;
 	}
 
-	private StatusBarView statusBar(EventLoop eventLoop) {
+	private StatusBarView buildStatusBar(EventLoop eventLoop) {
 		StatusBarView statusBar = new StatusBarView();
 		statusBar.setEventLoop(eventLoop);
 		StatusItem item1 = new StatusBarView.StatusItem("CTRL-Q Quit");
