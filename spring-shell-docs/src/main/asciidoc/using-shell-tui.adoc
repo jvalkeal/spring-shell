@@ -1,6 +1,9 @@
 [[using-shell-tui]]
 == Terminal UI
 
-tbd
+_Terminal UI Framework_ is a toolkit to build rich console apps. This section is
+for those using existing features. If you're planning to go deeper possibly
+creating your own components <<appendix-tech-intro-tui>> provides more detailed
+information.
 
 include::using-shell-tui-intro.adoc[]

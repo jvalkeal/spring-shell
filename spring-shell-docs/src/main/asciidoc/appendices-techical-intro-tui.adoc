@@ -1,5 +1,5 @@
 [appendix]
-[#appendix-tech-intro-uiframework]
+[#appendix-tech-intro-tui]
 == Terminal UI
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
