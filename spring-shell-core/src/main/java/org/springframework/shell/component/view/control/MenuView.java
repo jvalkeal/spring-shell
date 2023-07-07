@@ -159,14 +159,6 @@ public class MenuView extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		// registerRunnableCommand(ViewCommand.LINE_UP, () -> move(-1));
-		// registerRunnableCommand(ViewCommand.LINE_DOWN, () -> move(1));
-		// registerRunnableCommand(ViewCommand.OPEN_SELECTED_ITEM, () -> keySelect());
-
-		// registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
-		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
-		// registerKeyBinding(Key.Enter, ViewCommand.OPEN_SELECTED_ITEM);
-
 		registerKeyBinding(Key.CursorUp, () -> move(-1));
 		registerKeyBinding(Key.CursorDown, () -> move(1));
 		registerKeyBinding(Key.Enter, () -> keySelect());
@@ -185,7 +177,6 @@ public class MenuView extends BoxView {
 	}
 
 	private void keySelect() {
-		// dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction(ViewCommand.OPEN_SELECTED_ITEM, this)));
 		MenuItem item = items.get(activeItemIndex);
 		dispatch(ShellMessageBuilder.ofView(this, MenuViewOpenSelectedItemEvent.of(this, item)));
 	}
@@ -206,7 +197,6 @@ public class MenuView extends BoxView {
 			if (activeItemIndex != index) {
 				activeItemIndex = index;
 				MenuItem item = items.get(index);
-				// dispatch(ShellMessageBuilder.ofView(this, new MenuViewItemAction(item, ViewCommand.SELECTION_CHANGED, this)));
 				dispatch(ShellMessageBuilder.ofView(this, MenuViewSelectedItemChangedEvent.of(this, item)));
 			}
 		}

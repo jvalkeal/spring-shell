@@ -79,16 +79,6 @@ public class MenuBarView extends BoxView {
 
 	@Override
 	protected void initInternal() {
-		// registerRunnableCommand(ViewCommand.LINE_UP, () -> up());
-		// registerRunnableCommand(ViewCommand.LINE_DOWN, () -> down());
-		// registerRunnableCommand(ViewCommand.LEFT, () -> left());
-		// registerRunnableCommand(ViewCommand.RIGHT, () -> right());
-
-		// registerKeyBinding(Key.CursorUp, ViewCommand.LINE_UP);
-		// registerKeyBinding(Key.CursorDown, ViewCommand.LINE_DOWN);
-		// registerKeyBinding(Key.CursorLeft, ViewCommand.LEFT);
-		// registerKeyBinding(Key.CursorRight, ViewCommand.RIGHT);
-
 		registerKeyBinding(Key.CursorUp, () -> up());
 		registerKeyBinding(Key.CursorDown, () -> down());
 		registerKeyBinding(Key.CursorLeft, () -> left());
