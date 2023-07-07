@@ -64,6 +64,8 @@ public class Catalog {
 	private final Map<String, List<ScenarioData>> categoryMap = new TreeMap<>();
 	private final Terminal terminal;
 	private View currentScenarioView = null;
+	private TerminalUI ui;
+	private ListView<String> categories;
 
 	public Catalog(Terminal terminal, List<Scenario> scenarios) {
 		this.terminal = terminal;
@@ -71,11 +73,9 @@ public class Catalog {
 	}
 
 	public void run() {
-		StatelessData data = new StatelessData();
-		TerminalUI ui = new TerminalUI(terminal);
-		data.ui = ui;
+		ui = new TerminalUI(terminal);
 		EventLoop eventLoop = ui.getEventLoop();
-		AppView app = scenarioBrowser(eventLoop, ui, data);
+		AppView app = scenarioBrowser(eventLoop, ui);
 
 		// handle logic to switch between main scenario browser
 		// and currently active scenario
@@ -99,8 +99,8 @@ public class Catalog {
 
 		// start main scenario browser
 		ui.setRoot(app, true);
-		ui.setFocus(data.categories);
-		data.categories.setSelected(0);
+		ui.setFocus(categories);
+		categories.setSelected(0);
 		ui.run();
 	}
 
@@ -123,7 +123,7 @@ public class Catalog {
 		});
 	}
 
-	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component, StatelessData data) {
+	private AppView scenarioBrowser(EventLoop eventLoop, TerminalUI component) {
 		// we use main app view to represent scenario browser
 		AppView app = new AppView();
 		app.setEventLoop(eventLoop);
@@ -133,8 +133,7 @@ public class Catalog {
 		grid.setRowSize(1, 0, 1);
 		grid.setColumnSize(30, 0);
 
-		ListView<String> categories = categorySelector(eventLoop);
-		data.categories = categories;
+		categories = categorySelector(eventLoop);
 		ListView<ScenarioData> scenarios = scenarioSelector(eventLoop);
 
 		// handle event when scenario is chosen
@@ -160,8 +159,8 @@ public class Catalog {
 		eventLoop.onDestroy(eventLoop.viewEvents(AppViewEvent.class, app)
 			.subscribe(event -> {
 					switch (event.args().direction()) {
-						case NEXT -> data.ui.setFocus(scenarios);
-						case PREVIOUS -> data.ui.setFocus(categories);
+						case NEXT -> ui.setFocus(scenarios);
+						case PREVIOUS -> ui.setFocus(categories);
 					}
 				}
 			));
@@ -230,12 +229,6 @@ public class Catalog {
 		StatusItem item2 = new StatusBarView.StatusItem("F10 Status Bar");
 		statusBar.setItems(Arrays.asList(item1, item2));
 		return statusBar;
-	}
-
-	private static class StatelessData {
-		TerminalUI ui;
-		ListView<String> categories;
-		// ListView<ScenarioData> scenarios;
 	}
 
 	private record ScenarioData(Scenario scenario, String name, String description, String[] category){};
