@@ -38,7 +38,7 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;
 
 @ScenarioComponent(name = "Clock", description = "Showing time ticks", category = { CATEGORY_OTHER })
-public class Clock extends AbstractScenario {
+public class ClockScenario extends AbstractScenario {
 
 	@Override
 	public View build() {

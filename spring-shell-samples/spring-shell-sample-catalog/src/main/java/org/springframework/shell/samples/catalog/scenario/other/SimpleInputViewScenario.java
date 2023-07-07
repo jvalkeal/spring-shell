@@ -23,7 +23,7 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;;
 
 @ScenarioComponent(name = "Simple inputview", description = "InputView sample", category = { CATEGORY_OTHER })
-public class SimpleInputView extends AbstractScenario {
+public class SimpleInputViewScenario extends AbstractScenario {
 
 	@Override
 	public View build() {
