@@ -42,40 +42,32 @@ public class SnakeGameScenario extends AbstractScenario {
 
 	@Override
 	public View build() {
-		SnakeGamex snakeGame = new SnakeGamex(10, 10);
+		SnakeGame snakeGame = new SnakeGame(10, 10);
 		BoxView view = new BoxView();
 		view.setTitle("Snake");
 		view.setShowBorder(true);
 
-		AtomicInteger direction = new AtomicInteger();
-		getEventloop().keyEvents()
-			.doOnNext(e -> {
-				if (e.isKey(Key.CursorDown)) {
-					direction.set(1);
+		getEventloop().onDestroy(getEventloop().keyEvents()
+			.subscribe(event -> {
+				Integer direction = switch (event.key()) {
+					case Key.CursorDown -> 1;
+					case Key.CursorUp -> -1;
+					case Key.CursorLeft -> -2;
+					case Key.CursorRight -> 2;
+					default -> 0;
+				};
+				if (direction != null) {
+					snakeGame.update(direction);
 				}
-				else if (e.isKey(Key.CursorUp)) {
-					direction.set(-1);
-				}
-				else if (e.isKey(Key.CursorLeft)) {
-					direction.set(-2);
-				}
-				else if (e.isKey(Key.CursorRight)) {
-					direction.set(2);
-				}
-				snakeGame.update(direction.get());
-			})
-			.subscribe();
+			}));
 
 		// schedule game updates
-		Disposable gameInterval = Flux.interval(Duration.ofMillis(500))
-			.doOnNext(l -> {
-				snakeGame.update(0);
-				getEventloop().dispatch(ShellMessageBuilder.ofRedraw());
-			})
-			.subscribe();
-
-		// dispose when event loop is getting destroyd
-		getEventloop().onDestroy(gameInterval);
+		getEventloop().onDestroy(Flux.interval(Duration.ofMillis(500))
+				.subscribe(l -> {
+					snakeGame.update(0);
+					getEventloop().dispatch(ShellMessageBuilder.ofRedraw());
+				}
+			));
 
 		// draw game area
 		view.setDrawFunction((screen, rect) -> {
@@ -93,11 +85,11 @@ public class SnakeGameScenario extends AbstractScenario {
 	 * 4. Game ends if snake eats itself or goes out of bounds
 	 * 5. Game ends if perfect score is established
 	 */
-	private static class SnakeGamex {
+	private static class SnakeGame {
 		Board board;
 		Game game;
 
-		SnakeGamex(int rows, int cols) {
+		SnakeGame(int rows, int cols) {
 			// snake starts from a center
 			Cell initial = new Cell(rows / 2, cols / 2, 1);
 			Snake snake = new Snake(initial);
@@ -262,5 +254,4 @@ public class SnakeGameScenario extends AbstractScenario {
 			}
 		}
 	}
-
 }
