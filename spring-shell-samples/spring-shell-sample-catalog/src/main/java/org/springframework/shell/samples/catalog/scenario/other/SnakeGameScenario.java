@@ -38,7 +38,7 @@ import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGO
  * @author Janne Valkealahti
  */
 @ScenarioComponent(name = "Snake", description = "Classic snake game", category = { CATEGORY_OTHER })
-public class SnakeGame extends AbstractScenario {
+public class SnakeGameScenario extends AbstractScenario {
 
 	@Override
 	public View build() {
