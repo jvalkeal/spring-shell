@@ -25,7 +25,7 @@ import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_LISTVIEW;
 
 @ScenarioComponent(name = "Basic", description = "Basic list", category = { CATEGORY_LISTVIEW })
-public class SimpleListView extends AbstractScenario {
+public class SimpleListViewScenario extends AbstractScenario {
 
 	@Override
 	public View build() {
