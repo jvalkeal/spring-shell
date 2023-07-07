@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.shell.component.view.ScreenAssert;
 import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
-import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.event.MouseHandler;
