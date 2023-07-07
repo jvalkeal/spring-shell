@@ -152,13 +152,13 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
-	public <T> Flux<T> viewEvents(Class<T> clazz) {
+	public <T extends ViewEvent> Flux<T> viewEvents(Class<T> clazz) {
 		return events(EventLoop.Type.VIEW, clazz);
 	}
 
 	@Override
-	public <T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy) {
-		return events(EventLoop.Type.VIEW, typeRef).filter(args -> args.view() == filterBy);
+	public <T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef) {
+		return events(EventLoop.Type.VIEW, typeRef);
 	}
 
 	@Override
@@ -167,8 +167,8 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
-	public <T> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef) {
-		return events(EventLoop.Type.VIEW, typeRef);
+	public <T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy) {
+		return events(EventLoop.Type.VIEW, typeRef).filter(args -> args.view() == filterBy);
 	}
 
 	@Override

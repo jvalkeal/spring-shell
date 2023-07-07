@@ -62,11 +62,43 @@ public interface EventLoop {
 	 */
 	Flux<MouseEvent> mouseEvents();
 
-	<T> Flux<T> viewEvents(Class<T> clazz);
-	<T> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef);
+	/**
+	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.
+	 *
+	 * @param <T> the type to expect
+	 * @param clazz the type class to filter
+	 * @return the filtered events from an event loop
+	 */
+	<T extends ViewEvent> Flux<T> viewEvents(Class<T> clazz);
 
-	<T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy);
+	/**
+	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.
+	 *
+	 * @param <T> the type to expect
+	 * @param typeRef the parameterized type to filter
+	 * @return the filtered events from an event loop
+	 */
+	<T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef);
+
+	/**
+	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.
+	 *
+	 * @param <T> the type to expect
+	 * @param clazz the type class to filter
+	 * @param filterBy the view to filter
+	 * @return the filtered events from an event loop
+	 */
 	<T extends ViewEvent> Flux<T> viewEvents(Class<T> clazz, View filterBy);
+
+	/**
+	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.
+	 *
+	 * @param <T> the type to expect
+	 * @param typeRef the parameterized type to filter
+	 * @param filterBy the view to filter
+	 * @return the filtered events from an event loop
+	 */
+	<T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy);
 
 	/**
 	 * Specialisation of {@link #events()} which returns type safe
