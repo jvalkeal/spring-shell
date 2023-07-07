@@ -1,45 +1,46 @@
+[appendix]
 [#appendix-tech-intro-uiframework]
-=== UI Framework
+== Terminal UI
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
 This is a technical introduction to _UI Framework_.
 
 _UI Framework_ is a toolkit to build rich console apps.
 
-==== Control
+=== Control
 tbd
 
-==== View
+=== View
 tbd
 
-==== EventLoop
+=== EventLoop
 tbd
 
-==== KeyHandler
+=== KeyHandler
 tbd
 
-==== MouseHandler
+=== MouseHandler
 tbd
 
-==== Screen
+=== Screen
 tbd
 
-==== Event Loop
+=== Event Loop
 tbd
 
-==== Key Handling
+=== Key Handling
 tbd
 
-==== Mouse Handling
+=== Mouse Handling
 tbd
 
-==== Writing to Screen
+=== Writing to Screen
 tbd
 
-==== Build-in Views
+=== Build-in Views
 tbd
 
-==== Catalog App
+=== Catalog App
 Catalog application is showing various ways how UI Framework can be used. In this section we discuss how this application works.
 It can be considered to be a reference application as its using most of the features available and tries to follow
 best practictises.
