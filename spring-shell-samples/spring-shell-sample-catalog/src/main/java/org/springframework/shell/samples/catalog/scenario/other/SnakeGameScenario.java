@@ -17,9 +17,7 @@ package org.springframework.shell.samples.catalog.scenario.other;
 
 import java.time.Duration;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 import org.springframework.shell.component.view.control.BoxView;
@@ -34,6 +32,13 @@ import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGO
 
 /**
  * Scenario implementing a classic snake game.
+ *
+ * Game logic.
+ * 1. Snake starts in a center, initial direction needs arrow key
+ * 2. Arrows control snake direction
+ * 3. Eating a food crows a snake, new food is generated
+ * 4. Game ends if snake eats itself or goes out of bounds
+ * 5. Game ends if perfect score is established
  *
  * @author Janne Valkealahti
  */
@@ -77,14 +82,6 @@ public class SnakeGameScenario extends AbstractScenario {
 		return view;
 	}
 
-	/**
-	 * Classic snake game logic.
-	 * 1. Snake starts in a center, initial direction needs arrow key
-	 * 2. Arrows control snake direction
-	 * 3. Eating a food crows a snake, new food is generated
-	 * 4. Game ends if snake eats itself or goes out of bounds
-	 * 5. Game ends if perfect score is established
-	 */
 	private static class SnakeGame {
 		Board board;
 		Game game;
@@ -120,138 +117,138 @@ public class SnakeGameScenario extends AbstractScenario {
 				}
 			}
 		}
+	}
 
-		class Cell {
-			final int row, col;
-			// 0 - empty, > 0 - snake, < 0 - food
-			int type;
+	private static class Cell {
+		final int row, col;
+		// 0 - empty, > 0 - snake, < 0 - food
+		int type;
 
-			Cell(int row, int col, int type) {
-				this.row = row;
-				this.col = col;
-				this.type = type;
+		Cell(int row, int col, int type) {
+			this.row = row;
+			this.col = col;
+			this.type = type;
+		}
+	}
+
+	private static class Board {
+		final int rows, cols;
+		Cell[][] cells;
+
+		Board(int rows, int cols, Cell initial) {
+			this.rows = rows;
+			this.cols = cols;
+			cells = new Cell[rows][cols];
+			for (int row = 0; row < rows; row++) {
+				for (int col = 0; col < cols; col++) {
+					cells[row][col] = new Cell(row, col, 0);
+				}
+			}
+			cells[initial.row][initial.col] = initial;
+			food();
+		}
+
+		void food() {
+			int row = 0, column = 0;
+			while (true) {
+				row = (int) (Math.random() * rows);
+				column = (int) (Math.random() * cols);
+				if (cells[row][column].type != 1)
+					break;
+			}
+			cells[row][column].type = -1;
+		}
+	}
+
+	private static class Snake {
+		LinkedList<Cell> cells = new LinkedList<>();
+		Cell head;
+
+		Snake(Cell cell) {
+			head = cell;
+			cells.add(head);
+			head.type = 1;
+		}
+
+		void move(Cell cell, boolean grow) {
+			if (!grow) {
+				Cell tail = cells.removeLast();
+				tail.type = 0;
+			}
+			head = cell;
+			head.type = 1;
+			cells.addFirst(head);
+		}
+
+		boolean checkCrash(Cell next) {
+			for (Cell cell : cells) {
+				// log.info("Check cell {} {}", cell, next);
+				if (cell == next) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	private static class Game {
+		Snake snake;
+		Board board;
+		int direction;
+
+		Game(Snake snake, Board board) {
+			this.snake = snake;
+			this.board = board;
+			this.direction = 0;
+		}
+
+		void update() {
+			if (direction == 0) {
+				return;
+			}
+			Cell next = next(snake.head);
+			if (next == null || snake.checkCrash(next)) {
+				direction = 0;
+			}
+			else {
+				boolean foundFood = next.type == -1;
+				snake.move(next, foundFood);
+				// log.info("Next cell type {}", next.type);
+				if (foundFood) {
+					board.food();
+				}
 			}
 		}
 
-		class Board {
-			final int rows, cols;
-			Cell[][] cells;
-
-			Board(int rows, int cols, Cell initial) {
-				this.rows = rows;
-				this.cols = cols;
-				cells = new Cell[rows][cols];
-				for (int row = 0; row < rows; row++) {
-					for (int col = 0; col < cols; col++) {
-						cells[row][col] = new Cell(row, col, 0);
-					}
-				}
-				cells[initial.row][initial.col] = initial;
-				food();
-			}
-
-			void food() {
-				int row = 0, column = 0;
-				while (true) {
-					row = (int) (Math.random() * rows);
-					column = (int) (Math.random() * cols);
-					if (cells[row][column].type != 1)
-						break;
-				}
-				cells[row][column].type = -1;
-			}
-		}
-
-		class Snake {
-			LinkedList<Cell> cells = new LinkedList<>();
-			Cell head;
-
-			Snake(Cell cell) {
-				head = cell;
-				cells.add(head);
-				head.type = 1;
-			}
-
-			void move(Cell cell, boolean grow) {
-				if (!grow) {
-					Cell tail = cells.removeLast();
-					tail.type = 0;
-				}
-				head = cell;
-				head.type = 1;
-				cells.addFirst(head);
-			}
-
-			boolean checkCrash(Cell next) {
-				for (Cell cell : cells) {
-					// log.info("Check cell {} {}", cell, next);
-					if (cell == next) {
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-
-		class Game {
-			Snake snake;
-			Board board;
-			int direction;
-
-			Game(Snake snake, Board board) {
-				this.snake = snake;
-				this.board = board;
-				this.direction = 0;
-			}
-
-			void update() {
-				if (direction == 0) {
-					return;
-				}
-				Cell next = next(snake.head);
-				if (next == null || snake.checkCrash(next)) {
-					direction = 0;
-				}
-				else {
-					boolean foundFood = next.type == -1;
-					snake.move(next, foundFood);
-					// log.info("Next cell type {}", next.type);
-					if (foundFood) {
-						board.food();
-					}
+		Cell next(Cell cell) {
+			int row = cell.row;
+			int col = cell.col;
+			// return null if we're about to go out of bounds
+			if (direction == 2) {
+				col++;
+				if (col >= board.cols) {
+					return null;
 				}
 			}
-
-			Cell next(Cell cell) {
-				int row = cell.row;
-				int col = cell.col;
-				// return null if we're about to go out of bounds
-				if (direction == 2) {
-					col++;
-					if (col >= board.cols) {
-						return null;
-					}
+			else if (direction == -2) {
+				col--;
+				if (col < 0) {
+					return null;
 				}
-				else if (direction == -2) {
-					col--;
-					if (col < 0) {
-						return null;
-					}
-				}
-				else if (direction == 1) {
-					row++;
-					if (row >= board.rows) {
-						return null;
-					}
-				}
-				else if (direction == -1) {
-					row--;
-					if (row < 0) {
-						return null;
-					}
-				}
-				return board.cells[row][col];
 			}
+			else if (direction == 1) {
+				row++;
+				if (row >= board.rows) {
+					return null;
+				}
+			}
+			else if (direction == -1) {
+				row--;
+				if (row < 0) {
+					return null;
+				}
+			}
+			return board.cells[row][col];
 		}
 	}
 }
