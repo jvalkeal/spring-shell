@@ -33,7 +33,7 @@ public class ListCell<T> extends AbstractCell<T> {
 	@Override
 	public void draw(Screen screen) {
 		Rectangle rect = getRect();
-		Writer writer = screen.writerBuilder().build();
+		Writer writer = screen.writerBuilder().style(getStyle()).color(getForegroundColor()).build();
 		writer.text(text, rect.x(), rect.y());
 		writer.background(rect, getBackgroundColor());
 	}

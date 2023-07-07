@@ -91,6 +91,46 @@ public class ScreenAssert extends AbstractAssert<ScreenAssert, Screen> {
 	}
 
 	/**
+	 * Verifies that the actual {@link Screen} has a foreground style in a position.
+	 *
+	 * @param x a x position in a screen
+	 * @param y a y position in a screen
+	 * @param color the style
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasStyle(int x, int y, int style) {
+		isNotNull();
+		ScreenItem[][] items = actual.getItems();
+		ScreenItem i = items[y][x];
+		int expectedStyle = i.getStyle();
+		if (expectedStyle != style) {
+			failWithMessage("Expecting a Screen to have style <%s> position <%s,%s> but was <%s>", style, x, y,
+			expectedStyle);
+		}
+		return this;
+	}
+
+	/**
+	 * Verifies that the actual {@link Screen} has a background color in a position.
+	 *
+	 * @param x a x position in a screen
+	 * @param y a y position in a screen
+	 * @param color the color
+	 * @return this assertion object
+	 */
+	public ScreenAssert hasBackgroundColor(int x, int y, int color) {
+		isNotNull();
+		ScreenItem[][] items = actual.getItems();
+		ScreenItem i = items[y][x];
+		int expectedColor = i.getBackground();
+		if (expectedColor != color) {
+			failWithMessage("Expecting a Screen to have background color <%s> position <%s,%s> but was <%s>", color, x, y,
+					expectedColor);
+		}
+		return this;
+	}
+
+	/**
 	 * Verifies that a given bounded box is legal for a screen and that characters
 	 * along border look like border characters.
 	 *

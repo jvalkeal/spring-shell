@@ -21,6 +21,8 @@ public abstract class AbstractCell<T> extends AbstractControl implements Cell<T>
 
 	private boolean selected;
 	private T item;
+	private int style = -1;
+	private int foregroundColor = -1;
 	private int backgroundColor = -1;
 
 	@Override
@@ -44,8 +46,26 @@ public abstract class AbstractCell<T> extends AbstractControl implements Cell<T>
 	}
 
 	@Override
+	public void setStyle(int style) {
+		this.style = style;
+	}
+
+	@Override
+	public void setForegroundColor(int foregroundColor) {
+		this.foregroundColor = foregroundColor;
+	}
+
+	@Override
 	public void setBackgroundColor(int backgroundColor) {
 		this.backgroundColor = backgroundColor;
+	}
+
+	public int getStyle() {
+		return style;
+	}
+
+	public int getForegroundColor() {
+		return foregroundColor;
 	}
 
 	public int getBackgroundColor() {

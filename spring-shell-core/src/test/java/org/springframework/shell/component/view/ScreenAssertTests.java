@@ -18,9 +18,12 @@ package org.springframework.shell.component.view;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.DefaultScreen;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.ScreenItem;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -52,6 +55,41 @@ class ScreenAssertTests {
 		assertThatExceptionOfType(AssertionError.class)
 			.isThrownBy(() -> assertThat(forScreen(screen)).hasForegroundColor(0, 0, Color.BLUE))
 			.withMessageContaining("Expecting a Screen to have foreground color <255> position <0,0> but was <16711680>");
+	}
+
+	@Test
+	void hasStyleShouldPass() {
+		Screen screen = new DefaultScreen(5, 5);
+		screen.writerBuilder().style(ScreenItem.STYLE_BOLD).build().text("test", 0, 0);
+		assertThat(forScreen(screen)).hasStyle(0, 0, ScreenItem.STYLE_BOLD);
+	}
+
+	@Test
+	void hasStyleShouldFail() {
+		Screen screen = new DefaultScreen(5, 5);
+		screen.writerBuilder().build().text("test", 0, 0);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasStyle(0, 0, ScreenItem.STYLE_BOLD))
+			.withMessageContaining("Expecting a Screen to have style <1> position <0,0> but was <-1>");
+	}
+
+	@Test
+	void hasBackgroundColorShouldPass() {
+		Screen screen = new DefaultScreen(5, 5);
+		Writer writer = screen.writerBuilder().build();
+		writer.background(new Rectangle(0, 0, 5, 5), Color.BLUE);
+		writer.text("test", 0, 0);
+		assertThat(forScreen(screen)).hasBackgroundColor(0, 0, Color.BLUE);
+	}
+
+	@Test
+	void hasBackgroundColorShouldFail() {
+		Screen screen = new DefaultScreen(5, 5);
+		Writer writer = screen.writerBuilder().build();
+		writer.text("test", 0, 0);
+		assertThatExceptionOfType(AssertionError.class)
+			.isThrownBy(() -> assertThat(forScreen(screen)).hasBackgroundColor(0, 0, Color.BLUE))
+			.withMessageContaining("Expecting a Screen to have background color <255> position <0,0> but was <-1>");
 	}
 
 	@Test

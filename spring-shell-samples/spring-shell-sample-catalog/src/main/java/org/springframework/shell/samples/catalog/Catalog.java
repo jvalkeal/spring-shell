@@ -200,7 +200,7 @@ public class Catalog {
 		@Override
 		public void draw(Screen screen) {
 			Rectangle rect = getRect();
-			Writer writer = screen.writerBuilder().build();
+			Writer writer = screen.writerBuilder().style(getStyle()).build();
 			writer.text(String.format("%-20s %s", getItem().name(), getItem().description()), rect.x(), rect.y());
 			writer.background(rect, getBackgroundColor());
 		}

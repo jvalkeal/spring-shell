@@ -42,6 +42,20 @@ public interface Cell<T> extends Control {
 	void setItem(T item);
 
 	/**
+	 * Sets a style.
+	 *
+	 * @param style the style
+	 */
+	void setStyle(int style);
+
+	/**
+	 * Sets a foreground color.
+	 *
+	 * @param foregroundColor the background color
+	 */
+	void setForegroundColor(int foregroundColor);
+
+	/**
 	 * Sets a background color.
 	 *
 	 * @param backgroundColor the background color

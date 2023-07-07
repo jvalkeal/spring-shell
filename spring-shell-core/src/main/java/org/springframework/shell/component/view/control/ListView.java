@@ -28,8 +28,8 @@ import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
-import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.ScreenItem;
 
 /**
  * {@link ListView} shows {@code list items} vertically.
@@ -62,11 +62,12 @@ public class ListView<T> extends BoxView {
 			c.setRect(rect.x(), y++, rect.width(), 1);
 			if (i == selected) {
 				c.updateSelected(true);
-				c.setBackgroundColor(Color.BLUE4);
+				c.setStyle(ScreenItem.STYLE_BOLD);
 			}
 			else {
 				c.updateSelected(false);
 				c.setBackgroundColor(-1);
+				c.setStyle(-1);
 			}
 			c.updateSelected(i == selected);
 			c.draw(screen);
