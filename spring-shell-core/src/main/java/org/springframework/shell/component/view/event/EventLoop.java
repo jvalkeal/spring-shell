@@ -24,7 +24,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.Message;
 import org.springframework.shell.component.view.control.View;
-import org.springframework.shell.component.view.control.ViewAction;
 import org.springframework.shell.component.view.control.ViewEvent;
 
 /**
@@ -65,7 +64,6 @@ public interface EventLoop {
 
 	<T> Flux<T> viewEvents(Class<T> clazz);
 	<T> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef);
-	<T extends ViewAction> Flux<T> viewActions(Class<T> clazz, View filterBy);
 
 	<T extends ViewEvent> Flux<T> viewEvents(ParameterizedTypeReference<T> typeRef, View filterBy);
 	<T extends ViewEvent> Flux<T> viewEvents(Class<T> clazz, View filterBy);

@@ -41,7 +41,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.shell.component.view.control.View;
-import org.springframework.shell.component.view.control.ViewAction;
 import org.springframework.shell.component.view.control.ViewEvent;
 import org.springframework.shell.component.view.event.processor.AnimationEventLoopProcessor;
 import org.springframework.shell.component.view.event.processor.TaskEventLoopProcessor;
@@ -155,10 +154,6 @@ public class DefaultEventLoop implements EventLoop {
 	@Override
 	public <T> Flux<T> viewEvents(Class<T> clazz) {
 		return events(EventLoop.Type.VIEW, clazz);
-	}
-
-	public <T extends ViewAction> Flux<T> viewActions(Class<T> clazz, View filterBy) {
-		return events(EventLoop.Type.VIEW, clazz).filter(args -> args.view() == filterBy);
 	}
 
 	@Override
