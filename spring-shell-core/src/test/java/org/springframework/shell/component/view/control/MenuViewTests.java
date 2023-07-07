@@ -27,8 +27,8 @@ import reactor.test.StepVerifier;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.control.MenuView.MenuItemCheckStyle;
-import org.springframework.shell.component.view.control.MenuView.MenuViewAction;
-import org.springframework.shell.component.view.control.MenuView.MenuViewItemAction;
+import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
+import org.springframework.shell.component.view.control.MenuView.MenuViewSelectedItemChangedEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -264,8 +264,8 @@ class MenuViewTests extends AbstractViewTests {
 		void handlesMouseClickInItem() {
 			MouseEvent click = mouseClick(0, 2);
 
-			Flux<MenuViewItemAction> actions = eventLoop.viewEvents(MenuViewItemAction.class)
-				.filter(a -> ViewCommand.SELECTION_CHANGED.equals(a.action()));
+			Flux<MenuViewSelectedItemChangedEvent> actions = eventLoop
+					.viewEvents(MenuViewSelectedItemChangedEvent.class);
 			StepVerifier verifier = StepVerifier.create(actions)
 				.expectNextCount(1)
 				.thenCancel()
@@ -284,8 +284,8 @@ class MenuViewTests extends AbstractViewTests {
 
 		@Test
 		void keySelectSendsEvent() {
-			Flux<MenuViewAction> actions = eventLoop.viewEvents(MenuViewAction.class)
-				.filter(a -> ViewCommand.OPEN_SELECTED_ITEM.equals(a.action()));
+			Flux<MenuViewOpenSelectedItemEvent> actions = eventLoop
+					.viewEvents(MenuViewOpenSelectedItemEvent.class);
 			StepVerifier verifier = StepVerifier.create(actions)
 				.expectNextCount(1)
 				.thenCancel()
@@ -297,8 +297,8 @@ class MenuViewTests extends AbstractViewTests {
 
 		@Test
 		void selectionChangedSendsEvent() {
-			Flux<MenuViewItemAction> actions = eventLoop.viewEvents(MenuViewItemAction.class)
-				.filter(a -> ViewCommand.SELECTION_CHANGED.equals(a.action()));
+			Flux<MenuViewSelectedItemChangedEvent> actions = eventLoop
+					.viewEvents(MenuViewSelectedItemChangedEvent.class);
 			StepVerifier verifier = StepVerifier.create(actions)
 				.expectNextCount(1)
 				.thenCancel()

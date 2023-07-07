@@ -24,9 +24,9 @@ import java.util.ListIterator;
 import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Disposable;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
+import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
@@ -190,16 +190,11 @@ public class MenuBarView extends BoxView {
 		int x = positionAtIndex(activeItemIndex);
 		Dimension dim = menuView.getPreferredDimension();
 		menuView.setRect(rect.x() + x, rect.y() + 1, dim.width(), dim.height());
+		menuView.onDestroy(getEventLoop().viewEvents(MenuViewOpenSelectedItemEvent.class, menuView)
+			.subscribe(event -> {
+				closeCurrentMenuView();
+			}));
 
-		Disposable d = getEventLoop().viewActions(MenuView.MenuViewAction.class, menuView)
-			.doOnNext(a -> {
-				log.info("XXX action2 {}", a);
-				if (ViewCommand.OPEN_SELECTED_ITEM == a.action()) {
-					closeCurrentMenuView();
-				}
-			})
-			.subscribe();
-		menuView.onDestroy(d);
 		return menuView;
 	}
 

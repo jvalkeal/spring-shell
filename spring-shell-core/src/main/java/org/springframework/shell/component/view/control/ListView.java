@@ -32,7 +32,7 @@ import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 
 /**
- * {@link ListView} shows {@link ListItem items} vertically.
+ * {@link ListView} shows {@code list items} vertically.
  *
  * @author Janne Valkealahti
  */

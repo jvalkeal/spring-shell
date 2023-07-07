@@ -185,7 +185,9 @@ public class MenuView extends BoxView {
 	}
 
 	private void keySelect() {
-		dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction(ViewCommand.OPEN_SELECTED_ITEM, this)));
+		// dispatch(ShellMessageBuilder.ofView(this, new MenuViewAction(ViewCommand.OPEN_SELECTED_ITEM, this)));
+		MenuItem item = items.get(activeItemIndex);
+		dispatch(ShellMessageBuilder.ofView(this, MenuViewOpenSelectedItemEvent.of(this, item)));
 	}
 
 	private void move(int count) {
@@ -204,7 +206,8 @@ public class MenuView extends BoxView {
 			if (activeItemIndex != index) {
 				activeItemIndex = index;
 				MenuItem item = items.get(index);
-				dispatch(ShellMessageBuilder.ofView(this, new MenuViewItemAction(item, ViewCommand.SELECTION_CHANGED, this)));
+				// dispatch(ShellMessageBuilder.ofView(this, new MenuViewItemAction(item, ViewCommand.SELECTION_CHANGED, this)));
+				dispatch(ShellMessageBuilder.ofView(this, MenuViewSelectedItemChangedEvent.of(this, item)));
 			}
 		}
 	}
@@ -420,10 +423,43 @@ public class MenuView extends BoxView {
 		}
 	}
 
-	public record MenuViewAction(String action, View view) implements ViewAction {
+	/**
+	 * {@link ViewEventArgs} for {@link MenuViewOpenSelectedItemEvent} and
+	 * {@link MenuViewSelectedItemChangedEvent}.
+	 *
+	 * @param item the menu view item
+	 */
+	public record MenuViewItemEventArgs(MenuItem item) implements ViewEventArgs {
+
+		public static MenuViewItemEventArgs of(MenuItem item) {
+			return new MenuViewItemEventArgs(item);
+		}
 	}
 
-	public record MenuViewItemAction(MenuItem menuItem, String action, View view) implements ViewAction {
+	/**
+	 * {@link ViewEvent} indicating that selected item has been requested to open.
+	 *
+	 * @param view the view sending an event
+	 * @param args the event args
+	 */
+	public record MenuViewOpenSelectedItemEvent(View view, MenuViewItemEventArgs args) implements ViewEvent {
+
+		public static MenuViewOpenSelectedItemEvent of(View view, MenuItem item) {
+			return new MenuViewOpenSelectedItemEvent(view, MenuViewItemEventArgs.of(item));
+		}
+	}
+
+	/**
+	 * {@link ViewEvent} indicating that selected item has changed.
+	 *
+	 * @param view the view sending an event
+	 * @param args the event args
+	 */
+	public record MenuViewSelectedItemChangedEvent(View view, MenuViewItemEventArgs args) implements ViewEvent {
+
+		public static MenuViewSelectedItemChangedEvent of(View view, MenuItem item) {
+			return new MenuViewSelectedItemChangedEvent(view, MenuViewItemEventArgs.of(item));
+		}
 	}
 
 }
