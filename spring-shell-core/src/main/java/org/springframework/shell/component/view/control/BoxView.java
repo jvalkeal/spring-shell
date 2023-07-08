@@ -18,6 +18,7 @@ package org.springframework.shell.component.view.control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
@@ -44,7 +45,7 @@ public class BoxView extends AbstractView {
 	private int paddingBottom;
 	private int paddingLeft;
 	private int paddingRight;
-	private int backgroundColor = -1;
+	private Integer backgroundColor = -1;
 	private int titleColor = -1;
 	private int titleStyle = -1;
 	private HorizontalAlign titleAlign;
@@ -120,11 +121,13 @@ public class BoxView extends AbstractView {
 	}
 
 	/**
-	 * Sets a background color.
+	 * Sets a background color. If color is set to {@code null} it indicates that
+	 * background should be set to be {@code empty} causing possible layer to be
+	 * non-transparent.
 	 *
 	 * @param backgroundColor the background color
 	 */
-	public void setBackgroundColor(int backgroundColor) {
+	public void setBackgroundColor(@Nullable Integer backgroundColor) {
 		this.backgroundColor = backgroundColor;
 	}
 
@@ -167,7 +170,10 @@ public class BoxView extends AbstractView {
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
-		if (backgroundColor > -1) {
+		if (backgroundColor == null) {
+			screen.writerBuilder().layer(getLayer()).build().background(rect, -1);
+		}
+		else if (backgroundColor > -1) {
 			screen.writerBuilder().layer(getLayer()).build().background(rect, backgroundColor);
 		}
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {

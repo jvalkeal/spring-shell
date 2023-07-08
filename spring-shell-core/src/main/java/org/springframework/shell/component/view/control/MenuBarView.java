@@ -32,9 +32,9 @@ import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
-import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
+import org.springframework.shell.component.view.screen.ScreenItem;
 
 /**
  * {@link MenuBarView} shows {@link MenuBarItem items} horizontally and is
@@ -174,7 +174,7 @@ public class MenuBarView extends BoxView {
 		MenuView menuView = new MenuView(item.getItems());
 		menuView.setEventLoop(getEventLoop());
 		menuView.setShowBorder(true);
-		menuView.setBackgroundColor(Color.AQUAMARINE4);
+		menuView.setBackgroundColor(null);
 		menuView.setLayer(1);
 		Rectangle rect = getInnerRect();
 		int x = positionAtIndex(activeItemIndex);
@@ -193,7 +193,7 @@ public class MenuBarView extends BoxView {
 		Rectangle rect = getInnerRect();
 		log.debug("Drawing menu bar to {}", rect);
 		Writer writer1 = screen.writerBuilder().build();
-		Writer writer2 = screen.writerBuilder().color(Color.RED).build();
+		Writer writer2 = screen.writerBuilder().style(ScreenItem.STYLE_BOLD).build();
 		int x = rect.x();
 		ListIterator<MenuBarItem> iter = items.listIterator();
 		while (iter.hasNext()) {
