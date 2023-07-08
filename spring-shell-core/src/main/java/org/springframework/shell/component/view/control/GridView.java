@@ -508,7 +508,7 @@ public class GridView extends BoxView {
 
 			// Draw border around primitive.
 			if (isShowBorders()) {
-				screen.printBorder(item.x - 1, item.y - 1, item.w + 2, item.h + 2);
+				screen.writerBuilder().build().border(item.x - 1, item.y - 1, item.w + 2, item.h + 2);
 			}
 		}
 	}

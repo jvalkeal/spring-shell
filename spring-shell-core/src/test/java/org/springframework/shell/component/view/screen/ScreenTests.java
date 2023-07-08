@@ -45,7 +45,7 @@ class ScreenTests extends AbstractViewTests {
 
 	@Test
 	void printInBoxShows() {
-		screen10x10.printBorder(0, 0, 10, 10);
+		screen10x10.writerBuilder().build().border(0, 0, 10, 10);
 		assertThat(forScreen(screen10x10)).hasBorder(0, 0, 10, 10);
 	}
 

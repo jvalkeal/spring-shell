@@ -111,7 +111,7 @@ public class SnakeGameScenario extends AbstractScenario {
 			Cell[][] cells = board.cells;
 
 			// draw game area border
-			screen.printBorder(2, 2, board.cols + 2, board.rows + 2);
+			screen.writerBuilder().build().border(2, 2, board.cols + 2, board.rows + 2);
 
 			// draw info
 			String info = game.gameOver ? "Game Over" : String.format("Points %s", game.points);
