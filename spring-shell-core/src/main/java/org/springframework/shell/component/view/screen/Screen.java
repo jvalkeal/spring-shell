@@ -65,9 +65,30 @@ public interface Screen {
 	 */
 	WriterBuilder writerBuilder();
 
-	void print(String text, int x, int y, int width);
+	/**
+	 * Resize a screen.
+	 *
+	 * @param rows the new row count
+	 * @param columns the new column count
+	 */
 	void resize(int rows, int columns);
+
+	/**
+	 * Gets a screen items.
+	 *
+	 * @return a screen items
+	 */
 	ScreenItem[][] getItems();
+
+	/**
+	 * Clip a screen with a given bounds.
+	 *
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param width the width
+	 * @param height the height
+	 * @return new clipped screen
+	 */
 	Screen clip(int x, int y, int width, int height);
 
 	/**

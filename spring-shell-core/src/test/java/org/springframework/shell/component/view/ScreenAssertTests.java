@@ -138,14 +138,14 @@ class ScreenAssertTests {
 	@Test
 	void hasHorizontalText() {
 		Screen screen = new DefaultScreen(5, 10);
-		screen.print("test", 0, 0, 4);
+		screen.writerBuilder().build().text("test", 0, 0);
 		assertThat(forScreen(screen)).hasHorizontalText("test", 0, 0, 4);
 	}
 
 	@Test
 	void hasNoHorizontalText() {
 		Screen screen = new DefaultScreen(5, 10);
-		screen.print("xxxx", 0, 0, 4);
+		screen.writerBuilder().build().text("xxxx", 0, 0);
 		assertThat(forScreen(screen)).hasNoHorizontalText("test", 0, 0, 4);
 	}
 

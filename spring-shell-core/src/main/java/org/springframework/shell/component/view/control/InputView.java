@@ -59,7 +59,7 @@ public class InputView extends BoxView {
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		String s = text.toString();
-		screen.print(s, rect.x(), rect.y(), s.length());
+		screen.writerBuilder().build().text(s, rect.x(), rect.y());
 		screen.setShowCursor(hasFocus());
 		screen.setCursorPosition(new Position(rect.x() + cursorPosition, rect.y()));
 		super.drawInternal(screen);

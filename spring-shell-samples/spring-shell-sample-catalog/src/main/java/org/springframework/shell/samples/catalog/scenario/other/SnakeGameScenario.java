@@ -25,6 +25,7 @@ import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
@@ -110,12 +111,13 @@ public class SnakeGameScenario extends AbstractScenario {
 		void draw(Screen screen) {
 			Cell[][] cells = board.cells;
 
+			Writer writer = screen.writerBuilder().build();
 			// draw game area border
-			screen.writerBuilder().build().border(2, 2, board.cols + 2, board.rows + 2);
+			writer.border(2, 2, board.cols + 2, board.rows + 2);
 
 			// draw info
 			String info = game.gameOver ? "Game Over" : String.format("Points %s", game.points);
-			screen.print(info, 2, 1, info.length());
+			writer.text(info, 2, 1);
 
 			// draw snake and food
 			for (int i = 0; i < cells.length; i++) {
@@ -128,7 +130,7 @@ public class SnakeGameScenario extends AbstractScenario {
 					else if (cell.type == -1) {
 						c = "o";
 					}
-					screen.print(c, j + 3, i + 3, 1);
+					writer.text(c, j + 3, i + 3);
 				}
 			}
 		}

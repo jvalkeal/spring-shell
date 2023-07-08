@@ -51,7 +51,7 @@ class ScreenTests extends AbstractViewTests {
 
 	@Test
 	void printsText() {
-		screen24x80.print("text", 0, 0, 4);
+		screen24x80.writerBuilder().build().text("text", 0, 0);
 		assertThat(forScreen(screen24x80)).hasHorizontalText("text", 0, 0, 4);
 	}
 

@@ -89,11 +89,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public void print(String text, int x, int y, int width) {
-		writerBuilder().build().text(text, x, y);
-	}
-
-	@Override
 	public ScreenItem[][] getItems() {
 		return getScreenItems();
 	}
