@@ -8,38 +8,25 @@ This is a technical introduction to _UI Framework_.
 _UI Framework_ is a toolkit to build rich console apps.
 
 === Control
-tbd
+_Control_ draws something into a screen with a given bounds.
 
 === View
-tbd
+_View_ extends _Control_ providing integration into event loop.
 
 === EventLoop
-tbd
-
-=== KeyHandler
-tbd
-
-=== MouseHandler
-tbd
+_EventLoop_ is a central system handling eventing in a framework.
 
 === Screen
-tbd
-
-=== Event Loop
-tbd
+_Screen_ is an abstraction providing higher level concept to draw something
+into a terminal.
 
 === Key Handling
-tbd
+Handles incoming key events.
 
 === Mouse Handling
-tbd
+Handles incoming mouse events.
 
-=== Writing to Screen
-tbd
-
-=== Build-in Views
-tbd
-
+[#appendix-tech-intro-tui-catalogapp]
 === Catalog App
 Catalog application is showing various ways how Terminal UI Framework can be used.
 In this section we discuss how this application works. It can be considered to be

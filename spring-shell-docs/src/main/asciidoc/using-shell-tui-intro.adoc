@@ -2,4 +2,12 @@
 === Introduction
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
-tbd
+Catalog sample is a good place to study a real application
+<<appendix-tech-intro-tui-catalogapp>>.
+
+====
+[source, java, indent=0]
+----
+include::{snippets}/TerminalUiSnippets.java[tag=snippet1]
+----
+====
