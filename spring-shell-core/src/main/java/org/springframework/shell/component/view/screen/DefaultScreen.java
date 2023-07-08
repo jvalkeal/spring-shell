@@ -94,11 +94,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign) {
-		writerBuilder().build().text(text, rect, hAlign, vAlign);
-	}
-
-	@Override
 	public ScreenItem[][] getItems() {
 		return getScreenItems();
 	}

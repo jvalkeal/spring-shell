@@ -66,7 +66,6 @@ public interface Screen {
 	WriterBuilder writerBuilder();
 
 	void print(String text, int x, int y, int width);
-	void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
 	void resize(int rows, int columns);
 	ScreenItem[][] getItems();
 	Screen clip(int x, int y, int width, int height);

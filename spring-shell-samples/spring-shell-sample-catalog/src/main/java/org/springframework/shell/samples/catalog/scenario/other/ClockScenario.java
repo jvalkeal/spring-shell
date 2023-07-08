@@ -136,7 +136,7 @@ public class ClockScenario extends AbstractScenario {
 			// Rectangle r = new View.Rectangle(rect.x() + 1, rect.y() + 1, rect.width() - 2, rect.height() - 2);
 			String s = ref.get();
 			if (s != null) {
-				screen.print(s, r, hAlign.get(), vAlign.get());
+				screen.writerBuilder().build().text(s, r, hAlign.get(), vAlign.get());
 			}
 			return rect;
 		});
