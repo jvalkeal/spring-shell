@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component.view.screen;
 
+import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Position;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -97,9 +98,23 @@ public interface Screen {
 		 */
 		void border(int x, int y, int width, int height);
 
+		/**
+		 * Fill background with a given color.
+		 *
+		 * @param rect the rectange to fill
+		 * @param color the color to use
+		 */
 		void background(Rectangle rect, int color);
 
-		void text(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign);
+		/**
+		 * Write aligned text within a bounds.
+		 *
+		 * @param text the text to write
+		 * @param rect the rectangle bounds
+		 * @param hAlign the horizontal aligment
+		 * @param vAlign the vertical aligment
+		 */
+		void text(String text, Rectangle rect, @Nullable HorizontalAlign hAlign, @Nullable VerticalAlign vAlign);
 	}
 
 	/**
