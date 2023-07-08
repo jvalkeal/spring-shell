@@ -35,11 +35,10 @@ import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
 import org.springframework.shell.component.view.message.StaticShellMessageHeaderAccessor;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;
-
-@ScenarioComponent(name = "Clock", description = "Showing time ticks", category = { CATEGORY_OTHER })
+@ScenarioComponent(name = "Clock", description = "Showing time ticks", category = { Scenario.CATEGORY_OTHER })
 public class ClockScenario extends AbstractScenario {
 
 	@Override

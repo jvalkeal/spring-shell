@@ -20,11 +20,10 @@ import org.springframework.shell.component.view.control.GridView;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_LAYOUT;
-
-@ScenarioComponent(name = "Simple gridview", description = "GridView sample", category = { CATEGORY_LAYOUT })
+@ScenarioComponent(name = "Simple gridview", description = "GridView sample", category = { Scenario.CATEGORY_LAYOUT })
 public class SimpleGridViewScenario extends AbstractScenario {
 
 	@Override

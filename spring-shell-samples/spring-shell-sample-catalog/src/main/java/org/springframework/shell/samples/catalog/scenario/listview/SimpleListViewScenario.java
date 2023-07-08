@@ -20,11 +20,10 @@ import java.util.Arrays;
 import org.springframework.shell.component.view.control.ListView;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_LISTVIEW;
-
-@ScenarioComponent(name = "Basic", description = "Basic list", category = { CATEGORY_LISTVIEW })
+@ScenarioComponent(name = "Basic", description = "Basic list", category = { Scenario.CATEGORY_LISTVIEW })
 public class SimpleListViewScenario extends AbstractScenario {
 
 	@Override

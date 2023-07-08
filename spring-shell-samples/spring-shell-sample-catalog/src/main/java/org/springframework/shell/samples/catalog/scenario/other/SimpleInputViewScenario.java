@@ -18,11 +18,10 @@ package org.springframework.shell.samples.catalog.scenario.other;
 import org.springframework.shell.component.view.control.InputView;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
-import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
+import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;;
-
-@ScenarioComponent(name = "Simple inputview", description = "InputView sample", category = { CATEGORY_OTHER })
+@ScenarioComponent(name = "Simple inputview", description = "InputView sample", category = { Scenario.CATEGORY_OTHER })
 public class SimpleInputViewScenario extends AbstractScenario {
 
 	@Override

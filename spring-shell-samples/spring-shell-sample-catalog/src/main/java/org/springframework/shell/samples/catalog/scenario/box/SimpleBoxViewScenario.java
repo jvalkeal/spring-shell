@@ -21,11 +21,11 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
 
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_BOXVIEW;
-
-@ScenarioComponent(name = "Simple boxview", description = "BoxView with color and style", category = { CATEGORY_BOXVIEW })
+@ScenarioComponent(name = "Simple boxview", description = "BoxView with color and style", category = {
+		Scenario.CATEGORY_BOXVIEW })
 public class SimpleBoxViewScenario extends AbstractScenario {
 
 	@Override
