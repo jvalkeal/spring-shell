@@ -99,11 +99,6 @@ public class DefaultScreen implements Screen, DisplayLines {
 	}
 
 	@Override
-	public void print(String text, Rectangle rect, HorizontalAlign hAlign, VerticalAlign vAlign, int color, int style) {
-		writerBuilder().color(color).style(style).build().text(text, rect, hAlign, vAlign);
-	}
-
-	@Override
 	public void printBorder(int x, int y, int width, int height) {
 		writerBuilder().build().border(x, y, width, height);
 	}
