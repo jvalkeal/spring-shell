@@ -27,9 +27,8 @@ import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.samples.catalog.scenario.AbstractScenario;
+import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
-
-import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGORY_OTHER;
 
 /**
  * Scenario implementing a classic snake game.
@@ -46,7 +45,7 @@ import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGO
  *
  * @author Janne Valkealahti
  */
-@ScenarioComponent(name = "Snake", description = "Classic snake game", category = { CATEGORY_OTHER })
+@ScenarioComponent(name = "Snake", description = "Classic snake game", category = { Scenario.CATEGORY_OTHER })
 public class SnakeGameScenario extends AbstractScenario {
 
 	@Override
