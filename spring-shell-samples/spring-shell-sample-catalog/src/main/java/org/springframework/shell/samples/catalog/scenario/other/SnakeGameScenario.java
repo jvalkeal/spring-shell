@@ -33,6 +33,9 @@ import static org.springframework.shell.samples.catalog.scenario.Scenario.CATEGO
 /**
  * Scenario implementing a classic snake game.
  *
+ * Demonstrates how we can just use box view to draw something
+ * manually with its draw function.
+ *
  * Game logic.
  * 1. Snake starts in a center, initial direction needs arrow key
  * 2. Arrows control snake direction
@@ -47,7 +50,7 @@ public class SnakeGameScenario extends AbstractScenario {
 
 	@Override
 	public View build() {
-		SnakeGame snakeGame = new SnakeGame(10, 10);
+		SnakeGame snakeGame = new SnakeGame(10, 15);
 		BoxView view = new BoxView();
 		view.setTitle("Snake");
 		view.setShowBorder(true);
@@ -91,6 +94,7 @@ public class SnakeGameScenario extends AbstractScenario {
 		SnakeGame(int rows, int cols) {
 			// snake starts from a center
 			Cell initial = new Cell(rows / 2, cols / 2, 1);
+
 			Snake snake = new Snake(initial);
 			board = new Board(rows, cols, initial);
 			game = new Game(snake, board);
@@ -105,6 +109,15 @@ public class SnakeGameScenario extends AbstractScenario {
 
 		void draw(Screen screen) {
 			Cell[][] cells = board.cells;
+
+			// draw game area border
+			screen.printBorder(2, 2, board.cols + 2, board.rows + 2);
+
+			// draw info
+			String info = game.gameOver ? "Game Over" : String.format("Points %s", game.points);
+			screen.print(info, 2, 1, info.length());
+
+			// draw snake and food
 			for (int i = 0; i < cells.length; i++) {
 				for (int j = 0; j < cells[i].length; j++) {
 					Cell cell = cells[i][j];
@@ -115,7 +128,7 @@ public class SnakeGameScenario extends AbstractScenario {
 					else if (cell.type == -1) {
 						c = "o";
 					}
-					screen.print(c, j + 1, i + 1, 1);
+					screen.print(c, j + 3, i + 3, 1);
 				}
 			}
 		}
@@ -184,7 +197,6 @@ public class SnakeGameScenario extends AbstractScenario {
 
 		boolean checkCrash(Cell next) {
 			for (Cell cell : cells) {
-				// log.info("Check cell {} {}", cell, next);
 				if (cell == next) {
 					return true;
 				}
@@ -197,6 +209,8 @@ public class SnakeGameScenario extends AbstractScenario {
 		Snake snake;
 		Board board;
 		int direction;
+		int points;
+		boolean gameOver;
 
 		Game(Snake snake, Board board) {
 			this.snake = snake;
@@ -211,13 +225,14 @@ public class SnakeGameScenario extends AbstractScenario {
 			Cell next = next(snake.head);
 			if (next == null || snake.checkCrash(next)) {
 				direction = 0;
+				gameOver = true;
 			}
 			else {
 				boolean foundFood = next.type == -1;
 				snake.move(next, foundFood);
-				// log.info("Next cell type {}", next.type);
 				if (foundFood) {
 					board.food();
+					points++;
 				}
 			}
 		}
