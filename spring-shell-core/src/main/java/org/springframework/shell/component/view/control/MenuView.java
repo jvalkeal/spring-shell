@@ -178,6 +178,9 @@ public class MenuView extends BoxView {
 	private void keySelect() {
 		MenuItem item = items.get(activeItemIndex);
 		dispatch(ShellMessageBuilder.ofView(this, MenuViewOpenSelectedItemEvent.of(this, item)));
+		if (item.getAction() != null) {
+			dispatchRunnable(item.getAction());
+		}
 	}
 
 	private void move(int count) {
@@ -206,6 +209,7 @@ public class MenuView extends BoxView {
 		int x = event.getX();
 		int y = event.getY();
 		setSelected(indexAtPosition(x, y));
+		keySelect();
 	}
 
 	private int indexAtPosition(int x, int y) {
@@ -255,6 +259,7 @@ public class MenuView extends BoxView {
 		private final MenuItemCheckStyle checkStyle;// = MenuItemCheckStyle.NOCHECK;
 		private final List<MenuItem> items;
 		private boolean checked;
+		private Runnable action;
 
 		/**
 		 * Construct menu item with a title.
@@ -272,10 +277,22 @@ public class MenuView extends BoxView {
 		 * @param checkStyle the check style
 		 */
 		public MenuItem(String title, MenuItemCheckStyle checkStyle) {
+			this(title, checkStyle, null);
+		}
+
+		/**
+		 * Construct menu item with a title and a check style.
+		 *
+		 * @param title the title
+		 * @param checkStyle the check style
+		 * @param action the action to run when item is chosen
+		 */
+		public MenuItem(String title, MenuItemCheckStyle checkStyle, Runnable action) {
 			Assert.state(StringUtils.hasText(title), "title must have text");
 			Assert.notNull(checkStyle, "check style cannot be null");
 			this.title = title;
 			this.checkStyle = checkStyle;
+			this.action = action;
 			this.items = null;
 		}
 
@@ -311,6 +328,18 @@ public class MenuView extends BoxView {
 		 */
 		public static MenuItem of(String title, MenuItemCheckStyle checkStyle) {
 			return new MenuItem(title, checkStyle);
+		}
+
+		public static MenuItem of(String title, MenuItemCheckStyle checkStyle, Runnable action) {
+			return new MenuItem(title, checkStyle, action);
+		}
+
+		public Runnable getAction() {
+			return action;
+		}
+
+		public void setAction(Runnable action) {
+			this.action = action;
 		}
 
 		/**

@@ -70,6 +70,18 @@ class MenuViewTests extends AbstractViewTests {
 			});
 			assertThat(view.getItems()).hasSize(2);
 		}
+
+		@Test
+		void constructUsingRunnable() {
+			MenuView view;
+
+			view = new MenuView(new MenuItem[] {
+				MenuItem.of("sub1", MenuItemCheckStyle.RADIO, () -> {}),
+				MenuItem.of("sub2", MenuItemCheckStyle.RADIO, () -> {})
+			});
+			assertThat(view.getItems()).hasSize(2);
+		}
+
 	}
 
 	@Nested

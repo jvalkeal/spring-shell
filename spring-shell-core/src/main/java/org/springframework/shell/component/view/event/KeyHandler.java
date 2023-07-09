@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.control.View;
+import org.springframework.util.Assert;
 
 /**
  * Handles Key events in a form of {@link KeyHandlerArgs} and returns
@@ -37,14 +38,20 @@ public interface KeyHandler {
 	 */
 	KeyHandlerResult handle(KeyHandlerArgs args);
 
+	/**
+	 * Returns a composed handler that first handles the {@code other} and then
+	 * checks predicate against its return value if this handler should get handled.
+	 *
+	 * @param other the other handler
+	 * @param predicate the predicate against results from other
+	 * @return composed handler
+	 */
     default KeyHandler from(KeyHandler other, Predicate<KeyHandlerResult> predicate) {
+		Assert.notNull(other, "other handler cannot be null");
 		return args -> {
-			// TODO: should we assert null or silently skip?
-			if (other != null) {
-				KeyHandlerResult result = other.handle(args);
-				if (predicate.test(result)) {
-					return result;
-				}
+			KeyHandlerResult result = other.handle(args);
+			if (predicate.test(result)) {
+				return result;
 			}
 			return handle(args);
 		};

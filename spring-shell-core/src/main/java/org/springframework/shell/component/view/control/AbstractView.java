@@ -373,6 +373,18 @@ public abstract class AbstractView implements View {
 	// 	return false;
 	// }
 
+	protected boolean dispatchRunnable(Runnable runnable) {
+		if (eventLoop == null) {
+			return false;
+		}
+		Message<Runnable> message = ShellMessageBuilder
+			.withPayload(runnable)
+			.setEventType(EventLoop.Type.TASK)
+			.build();
+		dispatch(message);
+		return true;
+	}
+
 	protected boolean dispatchRunCommand(KeyEvent event, KeyBindingValue command) {
 		if (eventLoop == null) {
 			return false;

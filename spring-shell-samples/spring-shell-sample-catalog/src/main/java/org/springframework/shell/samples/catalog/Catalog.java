@@ -72,6 +72,7 @@ public class Catalog {
 	private View currentScenarioView = null;
 	private TerminalUI ui;
 	private ListView<String> categories;
+	private EventLoop eventLoop;
 
 	public Catalog(Terminal terminal, List<Scenario> scenarios) {
 		this.terminal = terminal;
@@ -97,12 +98,20 @@ public class Catalog {
 		});
 	}
 
+	private void requestQuit() {
+		Message<String> msg = ShellMessageBuilder.withPayload("int")
+			.setEventType(EventLoop.Type.SYSTEM)
+			.setPriority(0)
+			.build();
+		eventLoop.dispatch(msg);
+	}
+
 	/**
 	 * Main run loop. Builds the ui and exits when user requests exit.
 	 */
 	public void run() {
 		ui = new TerminalUI(terminal);
-		EventLoop eventLoop = ui.getEventLoop();
+		eventLoop = ui.getEventLoop();
 		AppView app = buildScenarioBrowser(eventLoop, ui);
 
 		// handle logic to switch between main scenario browser
@@ -115,11 +124,7 @@ public class Catalog {
 						ui.setRoot(app, true);
 					}
 					else {
-						Message<String> msg = ShellMessageBuilder.withPayload("int")
-							.setEventType(EventLoop.Type.SYSTEM)
-							.setPriority(0)
-							.build();
-						eventLoop.dispatch(msg);
+						requestQuit();
 					}
 				}
 			})
@@ -216,9 +221,10 @@ public class Catalog {
 	}
 
 	private MenuBarView buildMenuBar(EventLoop eventLoop) {
+		Runnable quitAction = () -> requestQuit();
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
-				MenuItem.of("Quit")),
+				MenuItem.of("Quit", MenuItemCheckStyle.NOCHECK, quitAction)),
 			MenuBarItem.of("Theme",
 				MenuItem.of("Dump", MenuItemCheckStyle.RADIO),
 				MenuItem.of("Funky", MenuItemCheckStyle.RADIO)

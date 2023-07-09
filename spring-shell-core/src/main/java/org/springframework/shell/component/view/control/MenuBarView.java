@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
-import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.geom.Dimension;
@@ -39,6 +38,8 @@ import org.springframework.shell.component.view.screen.ScreenItem;
 /**
  * {@link MenuBarView} shows {@link MenuBarItem items} horizontally and is
  * typically used in layouts which builds complete terminal UI's.
+ *
+ * Internally {@link MenuView} is used to show the menus.
  *
  * @author Janne Valkealahti
  */
@@ -58,8 +59,64 @@ public class MenuBarView extends BoxView {
 		setItems(Arrays.asList(items));
 	}
 
+	/**
+	 * Construct menubar view with menubar items.
+	 *
+	 * @param items the menubar items
+	 */
 	public static MenuBarView of(MenuBarItem... items) {
 		return new MenuBarView(items);
+	}
+
+	@Override
+	protected void drawInternal(Screen screen) {
+		Rectangle rect = getInnerRect();
+		log.debug("Drawing menu bar to {}", rect);
+		Writer writer1 = screen.writerBuilder().build();
+		Writer writer2 = screen.writerBuilder().style(ScreenItem.STYLE_BOLD).build();
+		int x = rect.x();
+		ListIterator<MenuBarItem> iter = items.listIterator();
+		while (iter.hasNext()) {
+			MenuBarItem item = iter.next();
+			int index = iter.previousIndex();
+			Writer writer = activeItemIndex == index ? writer2 : writer1;
+			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " " : "");
+			writer.text(text, x, rect.y());
+			x += text.length();
+		}
+		if (currentMenuView != null) {
+			currentMenuView.draw(screen);
+		}
+		super.drawInternal(screen);
+	}
+
+	@Override
+	protected void initInternal() {
+		registerKeyBinding(Key.CursorLeft, () -> left());
+		registerKeyBinding(Key.CursorRight, () -> right());
+
+		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
+		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
+	}
+
+	@Override
+	public KeyHandler getKeyHandler() {
+		// as menubar owns existing menuview's we first need to consult
+		// active menuview if it eats an event and then see if
+		// menubar itself can handle it.
+		// TODO: this is a bit stupid, looking at you super twice!
+		return super.getKeyHandler()
+				.fromIfConsumed(currentMenuView != null ? currentMenuView.getKeyHandler() : super.getKeyHandler());
+	}
+
+	/**
+	 * Gets a menubar items.
+	 *
+	 * @return menubar items
+	 */
+	public List<MenuBarItem> getItems() {
+		return items;
 	}
 
 	/**
@@ -77,35 +134,18 @@ public class MenuBarView extends BoxView {
 		}
 	}
 
-	@Override
-	protected void initInternal() {
-		registerKeyBinding(Key.CursorUp, () -> up());
-		registerKeyBinding(Key.CursorDown, () -> down());
-		registerKeyBinding(Key.CursorLeft, () -> left());
-		registerKeyBinding(Key.CursorRight, () -> right());
-
-		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
-
-		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
-	}
-
-	private void up() {
+	private void left() {
 		if (activeItemIndex > 0) {
 			setSelected(activeItemIndex - 1);
+			checkMenuView();
 		}
-	}
-
-	private void down() {
-		if (activeItemIndex + 1 < items.size()) {
-			setSelected(activeItemIndex + 1);
-		}
-	}
-
-	private void left() {
 	}
 
 	private void right() {
+		if (activeItemIndex + 1 < items.size()) {
+			setSelected(activeItemIndex + 1);
+			checkMenuView();
+		}
 	}
 
 	private int indexAtPosition(int x, int y) {
@@ -186,47 +226,6 @@ public class MenuBarView extends BoxView {
 			}));
 
 		return menuView;
-	}
-
-	@Override
-	protected void drawInternal(Screen screen) {
-		Rectangle rect = getInnerRect();
-		log.debug("Drawing menu bar to {}", rect);
-		Writer writer1 = screen.writerBuilder().build();
-		Writer writer2 = screen.writerBuilder().style(ScreenItem.STYLE_BOLD).build();
-		int x = rect.x();
-		ListIterator<MenuBarItem> iter = items.listIterator();
-		while (iter.hasNext()) {
-			MenuBarItem item = iter.next();
-			int index = iter.previousIndex();
-			Writer writer = activeItemIndex == index ? writer2 : writer1;
-			String text = String.format(" %s%s", item.getTitle(), iter.hasNext() ? " " : "");
-			writer.text(text, x, rect.y());
-			x += text.length();
-		}
-		if (currentMenuView != null) {
-			currentMenuView.draw(screen);
-		}
-		super.drawInternal(screen);
-	}
-
-	@Override
-	public KeyHandler getKeyHandler() {
-		KeyHandler handler = args -> {
-			KeyEvent event = args.event();
-			KeyHandler h = null;
-			if (currentMenuView != null) {
-				h = currentMenuView.getKeyHandler();
-			}
-			if (h == null) {
-				h = super.getKeyHandler();
-			}
-			if (h != null) {
-				return h.handle(args);
-			}
-			return KeyHandler.resultOf(event, false, null);
-		};
-		return handler;
 	}
 
 	/**
