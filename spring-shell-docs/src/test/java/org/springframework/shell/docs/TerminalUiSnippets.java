@@ -15,16 +15,24 @@
  */
 package org.springframework.shell.docs;
 
+import org.jline.terminal.Terminal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.component.view.control.BoxView;
-import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 
 class TerminalUiSnippets {
 
-	// tag::snippet1[]
-	class Xxx {
-		public View build() {
+	class Sample {
+
+		// tag::snippet1[]
+		@Autowired
+		Terminal terminal;
+
+		void build() {
+			TerminalUI ui = new TerminalUI(terminal);
 			BoxView view = new BoxView();
 			view.setDrawFunction((screen, rect) -> {
 				screen.writerBuilder()
@@ -32,9 +40,10 @@ class TerminalUiSnippets {
 					.text("Hello World", rect, HorizontalAlign.CENTER, VerticalAlign.CENTER);
 				return rect;
 			});
-			return view;
+			ui.setRoot(view, true);
+			ui.run();
 		}
+		// end::snippet1[]
 	}
-	// end::snippet1[]
 
 }
