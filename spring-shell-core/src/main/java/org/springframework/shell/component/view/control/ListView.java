@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -102,21 +103,24 @@ public class ListView<T> extends BoxView {
 		registerKeyBinding(Key.CursorDown, () -> down());
 		registerKeyBinding(Key.Enter, () -> enter());
 
-		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
-		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
-		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
+		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp, () -> up());
+		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown, () -> down());
+		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, () -> {});
+		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
+		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 
-		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
-			up();
-		});
-		registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> {
-			down();
-		});
-		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> {
-		});
+		// registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
+		// 	up();
+		// });
+		// registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> {
+		// 	down();
+		// });
+		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> {
+		// });
 	}
 
 	private void up() {

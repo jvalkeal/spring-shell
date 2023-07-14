@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.component.view.event;
 
-import org.jline.terminal.MouseEvent;
 import org.reactivestreams.Publisher;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -60,7 +59,7 @@ public interface EventLoop {
 	 *
 	 * @return the mouse events from an event loop
 	 */
-	Flux<MouseEvent> mouseEvents();
+	Flux<MouseEventx> mouseEvents();
 
 	/**
 	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.

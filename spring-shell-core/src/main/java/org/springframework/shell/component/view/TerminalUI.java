@@ -22,7 +22,6 @@ import java.util.List;
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
 import org.jline.terminal.Attributes;
-import org.jline.terminal.MouseEvent;
 import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
@@ -41,6 +40,7 @@ import org.springframework.shell.component.view.event.EventLoop;
 import org.springframework.shell.component.view.event.KeyBinder;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
@@ -240,7 +240,7 @@ public class TerminalUI {
 		}
 	}
 
-	private void handleMouseEvent(MouseEvent event) {
+	private void handleMouseEvent(MouseEventx event) {
 		log.trace("handleMouseEvent {}", event);
 		if (rootView != null) {
 			MouseHandler handler = rootView.getMouseHandler();
@@ -354,13 +354,14 @@ public class TerminalUI {
 		eventLoop.dispatch(message);
 	}
 
-	private void dispatchMouse(MouseEvent event) {
+	private void dispatchMouse(MouseEventx event) {
 		log.debug("Dispatch mouse event: {}", event);
 		eventLoop.dispatch(ShellMessageBuilder.ofMouseEvent(event));
 	}
 
     private void mouseEvent() {
-        MouseEvent event = terminal.readMouseEvent();
+        // MouseEvent event = terminal.readMouseEvent();
+		MouseEventx event = MouseEventx.of(terminal.readMouseEvent());
 		dispatchMouse(event);
     }
 }

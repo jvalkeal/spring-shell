@@ -15,5 +15,9 @@
  */
 package org.springframework.shell.component.view.event;
 
-public record MouseBindingConsumerArgs(MouseBindingConsumerx consumer, MouseEventx event) {
+import java.util.function.Consumer;
+
+@FunctionalInterface
+public interface MouseBindingConsumerx extends Consumer<MouseEventx> {
+
 }

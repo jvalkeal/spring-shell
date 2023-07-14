@@ -15,13 +15,13 @@
  */
 package org.springframework.shell.component.view.control;
 
-import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.control.MenuBarView.MenuBarItem;
 import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -77,7 +77,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			configure(view);
 			view.setRect(0, 0, 10, 10);
 
-			MouseEvent click1 = mouseClick(0, 0);
+			MouseEventx click1 = mouseClick(0, 0);
 			MouseHandlerResult result1 = view.getMouseHandler().handle(MouseHandler.argsOf(click1));
 			assertThat(result1).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click1);
@@ -92,7 +92,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			MenuView menuView1 = (MenuView) ReflectionTestUtils.getField(view, MENUVIEW_FIELD);
 			assertThat(menuView1).isNotNull();
 
-			MouseEvent click2 = mouseClick(0, 0);
+			MouseEventx click2 = mouseClick(0, 0);
 			MouseHandlerResult result2 = view.getMouseHandler().handle(MouseHandler.argsOf(click2));
 			assertThat(result2).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click2);
@@ -115,7 +115,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			configure(view);
 			view.setRect(0, 0, 10, 10);
 
-			MouseEvent click1 = mouseClick(0, 0);
+			MouseEventx click1 = mouseClick(0, 0);
 			MouseHandlerResult result1 = view.getMouseHandler().handle(MouseHandler.argsOf(click1));
 			assertThat(result1).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click1);
@@ -131,7 +131,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			assertThat(menuView1).isNotNull();
 			assertThat(menuView1.getItems().get(0).getTitle()).isEqualTo("sub1");
 
-			MouseEvent click2 = mouseClick(7, 0);
+			MouseEventx click2 = mouseClick(7, 0);
 			MouseHandlerResult result2 = view.getMouseHandler().handle(MouseHandler.argsOf(click2));
 			assertThat(result2).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click2);
@@ -156,7 +156,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			view.setRect(0, 0, 10, 10);
 
 			// Can't yet active menu with a key, so start with a click
-			MouseEvent click1 = mouseClick(0, 0);
+			MouseEventx click1 = mouseClick(0, 0);
 			MouseHandlerResult result1 = view.getMouseHandler().handle(MouseHandler.argsOf(click1));
 			assertThat(result1).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click1);
@@ -192,7 +192,7 @@ class MenuBarViewTests extends AbstractViewTests {
 			configure(view);
 			view.setRect(0, 0, 20, 1);
 
-			MouseEvent click = mouseClick(7, 0);
+			MouseEventx click = mouseClick(7, 0);
 			MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(click));
 			assertThat(result).isNotNull().satisfies(r -> {
 				assertThat(r.event()).isEqualTo(click);

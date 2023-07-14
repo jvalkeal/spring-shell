@@ -29,6 +29,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -95,9 +96,11 @@ public class MenuBarView extends BoxView {
 		registerKeyBinding(Key.CursorLeft, () -> left());
 		registerKeyBinding(Key.CursorRight, () -> right());
 
-		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
-		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
+		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, event -> select(event));
+
+		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
+		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 	}
 
 	@Override
@@ -178,9 +181,9 @@ public class MenuBarView extends BoxView {
 		return x;
 	}
 
-	private void select(MouseEvent event) {
-		int x = event.getX();
-		int y = event.getY();
+	private void select(MouseEventx event) {
+		int x = event.x();
+		int y = event.y();
 		int i = indexAtPosition(x, y);
 		if (i > -1) {
 			if (i == activeItemIndex) {

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -162,17 +163,21 @@ public class MenuView extends BoxView {
 		registerKeyBinding(Key.CursorDown, () -> move(1));
 		registerKeyBinding(Key.Enter, () -> keySelect());
 
-		registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
+		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, event -> mouseSelect(event));
+		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown, () -> move(1));
+		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp, () -> move(-1));
 
-		registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
+		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
 
-		registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> move(1));
-		registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> move(-1));
-		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
-		registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-				EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
+		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
+
+		// registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> move(1));
+		// registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> move(-1));
+		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
+		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
 	}
 
 	private void keySelect() {
@@ -204,10 +209,10 @@ public class MenuView extends BoxView {
 		}
 	}
 
-	private void mouseSelect(MouseEvent event) {
+	private void mouseSelect(MouseEventx event) {
 		log.trace("select({})", event);
-		int x = event.getX();
-		int y = event.getY();
+		int x = event.x();
+		int y = event.y();
 		setSelected(indexAtPosition(x, y));
 		keySelect();
 	}

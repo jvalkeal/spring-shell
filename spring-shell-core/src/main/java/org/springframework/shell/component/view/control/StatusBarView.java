@@ -60,14 +60,14 @@ public class StatusBarView extends BoxView {
 		log.trace("getMouseHandler()");
 		return args -> {
 			View view = null;
-			MouseEvent event = args.event();
-			if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-					&& event.getButton() == MouseEvent.Button.Button1) {
-				int x = event.getX();
-				int y = event.getY();
-				StatusItem itemAt = itemAt(x, y);
-				log.info("XXX itemAt {} {} {}", x, y, itemAt);
-			}
+			// MouseEvent event = args.event();
+			// if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
+			// 		&& event.getButton() == MouseEvent.Button.Button1) {
+			// 	int x = event.getX();
+			// 	int y = event.getY();
+			// 	StatusItem itemAt = itemAt(x, y);
+			// 	log.info("XXX itemAt {} {} {}", x, y, itemAt);
+			// }
 			// status bar don't request focus
 			return MouseHandler.resultOf(args.event(), true, view, null);
 		};

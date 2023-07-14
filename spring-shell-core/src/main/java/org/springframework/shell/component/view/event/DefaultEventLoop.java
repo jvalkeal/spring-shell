@@ -23,7 +23,6 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
-import org.jline.terminal.MouseEvent;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,11 +143,11 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
-	public Flux<MouseEvent> mouseEvents() {
+	public Flux<MouseEventx> mouseEvents() {
 		return events()
 			.filter(m -> EventLoop.Type.MOUSE.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.map(m -> m.getPayload())
-			.ofType(MouseEvent.class);
+			.ofType(MouseEventx.class);
 	}
 
 	@Override

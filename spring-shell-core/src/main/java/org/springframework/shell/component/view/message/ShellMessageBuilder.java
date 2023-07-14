@@ -15,13 +15,12 @@
  */
 package org.springframework.shell.component.view.message;
 
-import org.jline.terminal.MouseEvent;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.util.Assert;
 
 /**
@@ -78,7 +77,7 @@ public final class ShellMessageBuilder<T> {
 	 * @param event the event type
 	 * @return a message with {@link MouseEvent} as a payload
 	 */
-	public static Message<MouseEvent> ofMouseEvent(MouseEvent event) {
+	public static Message<MouseEventx> ofMouseEvent(MouseEventx event) {
 		return new ShellMessageBuilder<>(event, null)
 			.setEventType(EventLoop.Type.MOUSE)
 			.build();

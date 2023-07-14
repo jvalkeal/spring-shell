@@ -17,8 +17,6 @@ package org.springframework.shell.component.view.event;
 
 import java.util.function.Predicate;
 
-import org.jline.terminal.MouseEvent;
-
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.control.View;
 
@@ -74,7 +72,7 @@ public interface MouseHandler {
 	 * @param event the mouse event
 	 * @return a mouse handler args
 	 */
-	static MouseHandlerArgs argsOf(MouseEvent event) {
+	static MouseHandlerArgs argsOf(MouseEventx event) {
 		return new MouseHandlerArgs(event);
 	}
 
@@ -83,7 +81,7 @@ public interface MouseHandler {
 	 *
 	 * @param event the mouse event
 	 */
-	record MouseHandlerArgs(MouseEvent event) {
+	record MouseHandlerArgs(MouseEventx event) {
 	}
 
 	/**
@@ -96,7 +94,7 @@ public interface MouseHandler {
 	 * @param capture the view which captured an event
 	 * @return a mouse handler result
 	 */
-	static MouseHandlerResult resultOf(MouseEvent event, boolean consumed, View focus, View capture) {
+	static MouseHandlerResult resultOf(MouseEventx event, boolean consumed, View focus, View capture) {
 		return new MouseHandlerResult(event, consumed, focus, capture);
 	}
 
@@ -108,7 +106,7 @@ public interface MouseHandler {
 	 * @param focus the view which is requesting focus
 	 * @param capture the view which captured an event
 	 */
-	record MouseHandlerResult(@Nullable MouseEvent event, boolean consumed, @Nullable View focus,
+	record MouseHandlerResult(@Nullable MouseEventx event, boolean consumed, @Nullable View focus,
 			@Nullable View capture) {
 	}
 }

@@ -17,20 +17,20 @@ package org.springframework.shell.component.view.control;
 
 import java.util.Arrays;
 
-import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent;
+import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
+import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
-import org.springframework.shell.component.view.event.KeyEvent.Key;
-import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,8 +78,8 @@ class ListViewTests extends AbstractViewTests {
 		view.setItems(Arrays.asList("item1", "item2"));
 		assertThat(selected(view)).isEqualTo(-1);
 
-		MouseEvent eventDown = mouseWheelDown(0, 0);
-		MouseEvent eventUp = mouseWheelUp(0, 0);
+		MouseEventx eventDown = mouseWheelDown(0, 0);
+		MouseEventx eventUp = mouseWheelUp(0, 0);
 		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(eventDown));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(eventDown);

@@ -15,10 +15,7 @@
  */
 package org.springframework.shell.component.view.control;
 
-import java.util.EnumSet;
-
 import org.assertj.core.api.AssertProvider;
-import org.jline.terminal.MouseEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -27,6 +24,7 @@ import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.screen.DefaultScreen;
@@ -94,37 +92,40 @@ public class AbstractViewTests {
 		return view.getKeyHandler().handle(KeyHandler.argsOf(key));
 	}
 
-	protected MouseEvent mouseClick(int x, int y) {
-		return new MouseEvent(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	protected MouseEventx mouseClick(int x, int y) {
+		// return new MouseEvent(MouseEvent.Type.Released, MouseEvent.Button.Button1,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+		return MouseEventx.of(x, y, MouseEventx.Type.Released | MouseEventx.Button.Button1);
 	}
 
 	protected MouseHandlerResult handleMouseClick(View view, int x, int y) {
-		MouseEvent click = mouseClick(0, 2);
+		MouseEventx click = mouseClick(0, 2);
 		return handleMouseClick(view, click);
 	}
 
-	protected MouseHandlerResult handleMouseClick(View view, MouseEvent click) {
+	protected MouseHandlerResult handleMouseClick(View view, MouseEventx click) {
 		return view.getMouseHandler().handle(MouseHandler.argsOf(click));
 	}
 
 	protected MouseHandlerResult handleMouseWheelDown(View view, int x, int y) {
-		MouseEvent wheel = mouseWheelDown(x, y);
+		MouseEventx wheel = mouseWheelDown(x, y);
 		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
 	}
 
 	protected MouseHandlerResult handleMouseWheelUp(View view, int x, int y) {
-		MouseEvent wheel = mouseWheelUp(x, y);
+		MouseEventx wheel = mouseWheelUp(x, y);
 		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
 	}
 
-	protected MouseEvent mouseWheelUp(int x, int y) {
-		return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	protected MouseEventx mouseWheelUp(int x, int y) {
+		// return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp);
 	}
 
-	protected MouseEvent mouseWheelDown(int x, int y) {
-		return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-				EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+	protected MouseEventx mouseWheelDown(int x, int y) {
+		// return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
+		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
+		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown);
 	}
 }
