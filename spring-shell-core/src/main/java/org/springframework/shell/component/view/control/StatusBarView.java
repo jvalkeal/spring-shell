@@ -22,6 +22,7 @@ import java.util.ListIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -59,14 +60,13 @@ public class StatusBarView extends BoxView {
 		log.trace("getMouseHandler()");
 		return args -> {
 			View view = null;
-			// MouseEvent event = args.event();
-			// if (event.getModifiers().isEmpty() && event.getType() == MouseEvent.Type.Released
-			// 		&& event.getButton() == MouseEvent.Button.Button1) {
-			// 	int x = event.getX();
-			// 	int y = event.getY();
-			// 	StatusItem itemAt = itemAt(x, y);
-			// 	log.info("XXX itemAt {} {} {}", x, y, itemAt);
-			// }
+			MouseEvent event = args.event();
+			if (!event.hasModifier() && event.has(MouseEvent.Type.Released) && event.has(MouseEvent.Button.Button1)) {
+				int x = event.x();
+				int y = event.x();
+				StatusItem itemAt = itemAt(x, y);
+				log.info("XXX itemAt {} {} {}", x, y, itemAt);
+			}
 			// status bar don't request focus
 			return MouseHandler.resultOf(args.event(), true, view, null);
 		};

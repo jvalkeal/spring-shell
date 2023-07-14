@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.view.event;
 
+import org.springframework.shell.component.view.event.KeyEvent.KeyMask;
+
 /**
  *
  *                           unused                        modifier       button           type
@@ -60,6 +62,22 @@ public record MouseEvent(int x, int y, int mouse) {
 			}
 		}
 		return of(event.getX(), event.getY(), type | button | modifier);
+	}
+
+	public boolean hasType() {
+		return (mouse & MouseMask.TypeMask) != 0;
+	}
+
+	public boolean hasButton() {
+		return (mouse & MouseMask.ButtonMask) != 0;
+	}
+
+	public boolean hasModifier() {
+		return (mouse & MouseMask.ModifierMask) != 0;
+	}
+
+	public boolean has(int mask) {
+		return (mouse & mask) == mask;
 	}
 
 	public static class Type {
