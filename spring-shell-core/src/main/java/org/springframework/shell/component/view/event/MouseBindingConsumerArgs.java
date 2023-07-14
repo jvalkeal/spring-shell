@@ -15,5 +15,5 @@
  */
 package org.springframework.shell.component.view.event;
 
-public record MouseBindingConsumerArgs(MouseBindingConsumer consumer, MouseEventx event) {
+public record MouseBindingConsumerArgs(MouseBindingConsumer consumer, MouseEvent event) {
 }

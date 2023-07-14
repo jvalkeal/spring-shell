@@ -17,7 +17,7 @@ package org.springframework.shell.component.view.control;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 
@@ -74,7 +74,7 @@ class BoxViewTests extends AbstractViewTests {
 		BoxView view = new BoxView();
 		configure(view);
 		view.setRect(0, 0, 80, 24);
-		MouseEventx event = mouseClick(0, 0);
+		MouseEvent event = mouseClick(0, 0);
 		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(event));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(event);
@@ -88,7 +88,7 @@ class BoxViewTests extends AbstractViewTests {
 	void mouseClickOutOfBounds() {
 		BoxView view = new BoxView();
 		view.setRect(0, 0, 80, 24);
-		MouseEventx event = mouseClick(100, 100);
+		MouseEvent event = mouseClick(100, 100);
 		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(event));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(event);

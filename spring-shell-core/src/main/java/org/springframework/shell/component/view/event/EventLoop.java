@@ -59,7 +59,7 @@ public interface EventLoop {
 	 *
 	 * @return the mouse events from an event loop
 	 */
-	Flux<MouseEventx> mouseEvents();
+	Flux<MouseEvent> mouseEvents();
 
 	/**
 	 * Specialisation of {@link #events()} which returns type safe {@link ViewEvent}s.

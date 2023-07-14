@@ -143,11 +143,11 @@ public class DefaultEventLoop implements EventLoop {
 	}
 
 	@Override
-	public Flux<MouseEventx> mouseEvents() {
+	public Flux<MouseEvent> mouseEvents() {
 		return events()
 			.filter(m -> EventLoop.Type.MOUSE.equals(StaticShellMessageHeaderAccessor.getEventType(m)))
 			.map(m -> m.getPayload())
-			.ofType(MouseEventx.class);
+			.ofType(MouseEvent.class);
 	}
 
 	@Override

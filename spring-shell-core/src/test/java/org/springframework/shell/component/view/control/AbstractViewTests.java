@@ -24,7 +24,7 @@ import org.springframework.shell.component.view.event.DefaultEventLoop;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.screen.DefaultScreen;
@@ -92,34 +92,34 @@ public class AbstractViewTests {
 		return view.getKeyHandler().handle(KeyHandler.argsOf(key));
 	}
 
-	protected MouseEventx mouseClick(int x, int y) {
-		return MouseEventx.of(x, y, MouseEventx.Type.Released | MouseEventx.Button.Button1);
+	protected MouseEvent mouseClick(int x, int y) {
+		return MouseEvent.of(x, y, MouseEvent.Type.Released | MouseEvent.Button.Button1);
 	}
 
 	protected MouseHandlerResult handleMouseClick(View view, int x, int y) {
-		MouseEventx click = mouseClick(0, 2);
+		MouseEvent click = mouseClick(0, 2);
 		return handleMouseClick(view, click);
 	}
 
-	protected MouseHandlerResult handleMouseClick(View view, MouseEventx click) {
+	protected MouseHandlerResult handleMouseClick(View view, MouseEvent click) {
 		return view.getMouseHandler().handle(MouseHandler.argsOf(click));
 	}
 
 	protected MouseHandlerResult handleMouseWheelDown(View view, int x, int y) {
-		MouseEventx wheel = mouseWheelDown(x, y);
+		MouseEvent wheel = mouseWheelDown(x, y);
 		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
 	}
 
 	protected MouseHandlerResult handleMouseWheelUp(View view, int x, int y) {
-		MouseEventx wheel = mouseWheelUp(x, y);
+		MouseEvent wheel = mouseWheelUp(x, y);
 		return view.getMouseHandler().handle(MouseHandler.argsOf(wheel));
 	}
 
-	protected MouseEventx mouseWheelUp(int x, int y) {
-		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp);
+	protected MouseEvent mouseWheelUp(int x, int y) {
+		return MouseEvent.of(x, y, MouseEvent.Type.Wheel | MouseEvent.Button.WheelUp);
 	}
 
-	protected MouseEventx mouseWheelDown(int x, int y) {
-		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown);
+	protected MouseEvent mouseWheelDown(int x, int y) {
+		return MouseEvent.of(x, y, MouseEvent.Type.Wheel | MouseEvent.Button.WheelDown);
 	}
 }

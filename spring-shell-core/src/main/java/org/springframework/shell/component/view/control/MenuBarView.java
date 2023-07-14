@@ -27,7 +27,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuItem;
 import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -94,7 +94,7 @@ public class MenuBarView extends BoxView {
 		registerKeyBinding(Key.CursorLeft, () -> left());
 		registerKeyBinding(Key.CursorRight, () -> right());
 
-		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, event -> select(event));
+		registerMouseBinding(MouseEvent.Type.Released | MouseEvent.Button.Button1, event -> select(event));
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class MenuBarView extends BoxView {
 		return x;
 	}
 
-	private void select(MouseEventx event) {
+	private void select(MouseEvent event) {
 		int x = event.x();
 		int y = event.y();
 		int i = indexAtPosition(x, y);

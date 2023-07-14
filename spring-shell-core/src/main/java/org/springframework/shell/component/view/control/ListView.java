@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
@@ -101,9 +101,9 @@ public class ListView<T> extends BoxView {
 		registerKeyBinding(Key.CursorDown, () -> down());
 		registerKeyBinding(Key.Enter, () -> enter());
 
-		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp, () -> up());
-		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown, () -> down());
-		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, () -> {});
+		registerMouseBinding(MouseEvent.Type.Wheel | MouseEvent.Button.WheelUp, () -> up());
+		registerMouseBinding(MouseEvent.Type.Wheel | MouseEvent.Button.WheelDown, () -> down());
+		registerMouseBinding(MouseEvent.Type.Released | MouseEvent.Button.Button1, () -> {});
 	}
 
 	private void up() {

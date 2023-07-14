@@ -29,7 +29,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuItemCheckSt
 import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSelectedItemEvent;
 import org.springframework.shell.component.view.control.MenuView.MenuViewSelectedItemChangedEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -274,7 +274,7 @@ class MenuViewTests extends AbstractViewTests {
 
 		@Test
 		void handlesMouseClickInItem() {
-			MouseEventx click = mouseClick(0, 2);
+			MouseEvent click = mouseClick(0, 2);
 
 			Flux<MenuViewSelectedItemChangedEvent> actions = eventLoop
 					.viewEvents(MenuViewSelectedItemChangedEvent.class);

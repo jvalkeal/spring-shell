@@ -23,13 +23,13 @@ package org.springframework.shell.component.view.event;
  *
  *
  */
-public record MouseEventx(int x, int y, int mouse) {
+public record MouseEvent(int x, int y, int mouse) {
 
-	public static MouseEventx of(int x, int y, int mouse) {
-		return new MouseEventx(x, y, mouse);
+	public static MouseEvent of(int x, int y, int mouse) {
+		return new MouseEvent(x, y, mouse);
 	}
 
-	public static MouseEventx of(org.jline.terminal.MouseEvent event) {
+	public static MouseEvent of(org.jline.terminal.MouseEvent event) {
 		int type = switch (event.getType()) {
 			case Released -> Type.Released;
 			case Pressed -> Type.Pressed;
@@ -86,11 +86,11 @@ public record MouseEventx(int x, int y, int mouse) {
 	}
 
 	public static class MouseMask {
-		// bits 0, 1, 2, 3, 4
+		// bits 0-4
 		public static final int TypeMask = 0x0000001f;
-		// bits 5, 6, 7, 8, 9, 10
+		// bits 5-10
 		public static final int ButtonMask = 0x000007e0;
-		// bits 11, 12, 13
+		// bits 11-13
 		public static final int ModifierMask = 0x00003800;
 	}
 

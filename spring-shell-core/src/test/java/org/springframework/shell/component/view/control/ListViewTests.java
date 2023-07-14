@@ -25,7 +25,7 @@ import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResult;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -78,8 +78,8 @@ class ListViewTests extends AbstractViewTests {
 		view.setItems(Arrays.asList("item1", "item2"));
 		assertThat(selected(view)).isEqualTo(-1);
 
-		MouseEventx eventDown = mouseWheelDown(0, 0);
-		MouseEventx eventUp = mouseWheelUp(0, 0);
+		MouseEvent eventDown = mouseWheelDown(0, 0);
+		MouseEvent eventUp = mouseWheelUp(0, 0);
 		MouseHandlerResult result = view.getMouseHandler().handle(MouseHandler.argsOf(eventDown));
 		assertThat(result).isNotNull().satisfies(r -> {
 			assertThat(r.event()).isEqualTo(eventDown);

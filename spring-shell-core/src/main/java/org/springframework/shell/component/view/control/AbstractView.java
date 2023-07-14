@@ -34,7 +34,7 @@ import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseBindingConsumer;
-import org.springframework.shell.component.view.event.MouseEventx;
+import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
@@ -59,6 +59,7 @@ public abstract class AbstractView implements View {
 	private int layer;
 	private EventLoop eventLoop;
 	private Map<Integer, KeyBindingValue> keyBindings = new HashMap<>();
+	private Map<Integer, MouseBindingValue> mouseBindings = new HashMap<>();
 
 	public AbstractView() {
 		init();
@@ -153,47 +154,19 @@ public abstract class AbstractView implements View {
 	 * Handles mouse events by dispatching registered consumers into an event loop.
 	 * Override to change default behaviour.
 	 */
-	// @Override
-	// public MouseHandler getMouseHandler() {
-	// 	log.trace("getMouseHandler() {}", this);
-	// 	MouseHandler handler = args -> {
-	// 		MouseEvent event = args.event();
-	// 		MouseBinding binding = MouseBinding.of(event);
-	// 		View view = null;
-	// 		MouseBindingValue mouseBindingValue = getMouseBindings().get(binding);
-	// 		if (mouseBindingValue != null) {
-	// 			if (mouseBindingValue.mousePredicate().test(event)) {
-	// 				view = this;
-	// 				String command = mouseBindingValue.mouseCommand();
-	// 				if (command != null) {
-	// 					// view = this;
-	// 					dispatchConsumerCommand(command, event);
-	// 				}
-	// 			}
-	// 		}
-	// 		return MouseHandler.resultOf(args.event(), view != null, view, this);
-	// 	};
-	// 	return handler;
-	// }
 	@Override
 	public MouseHandler getMouseHandler() {
 		log.trace("getMouseHandler() {}", this);
 		MouseHandler handler = args -> {
-			MouseEventx event = args.event();
-			// MouseBinding binding = MouseBinding.of(event);
+			MouseEvent event = args.event();
 			int mouse = event.mouse();
 			View view = null;
 			boolean consumed = false;
-			MouseBindingValuex mouseBindingValue = getMouseBindingsx().get(mouse);
+			MouseBindingValue mouseBindingValue = getMouseBindings().get(mouse);
 			if (mouseBindingValue != null) {
 				if (mouseBindingValue.mousePredicate().test(event)) {
 					view = this;
 					consumed = dispatchMouseRunCommand(event, mouseBindingValue);
-			// 		String command = mouseBindingValue.mouseCommand();
-			// 		if (command != null) {
-			// 			// view = this;
-			// 			dispatchConsumerCommand(command, event);
-			// 		}
 				}
 			}
 			return MouseHandler.resultOf(args.event(), consumed, view, this);
@@ -301,107 +274,51 @@ public abstract class AbstractView implements View {
 		return keyBindings;
 	}
 
-	// XXX
-
-	private Map<Integer, MouseBindingValuex> mouseBindingsx = new HashMap<>();
-
-	record MouseBindingValuex(String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable,
-			Predicate<MouseEventx> mousePredicate) {
-		static MouseBindingValuex of(MouseBindingValuex old, String mouseCommand, MouseBindingConsumer mouseConsumer,
-				Runnable mouseRunnable, Predicate<MouseEventx> mousePredicate) {
+	record MouseBindingValue(String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable,
+			Predicate<MouseEvent> mousePredicate) {
+		static MouseBindingValue of(MouseBindingValue old, String mouseCommand, MouseBindingConsumer mouseConsumer,
+				Runnable mouseRunnable, Predicate<MouseEvent> mousePredicate) {
 			if (old == null) {
-				return new MouseBindingValuex(mouseCommand, mouseConsumer, mouseRunnable, mousePredicate);
+				return new MouseBindingValue(mouseCommand, mouseConsumer, mouseRunnable, mousePredicate);
 			}
-			return new MouseBindingValuex(mouseCommand != null ? mouseCommand : old.mouseCommand(),
+			return new MouseBindingValue(mouseCommand != null ? mouseCommand : old.mouseCommand(),
 					mouseConsumer != null ? mouseConsumer : old.mouseConsumer(),
 					mouseRunnable != null ? mouseRunnable : old.mouseRunnable(),
 					mousePredicate != null ? mousePredicate : old.mousePredicate());
 		}
 	}
 
-	protected Map<Integer, MouseBindingValuex> getMouseBindingsx() {
-		return mouseBindingsx;
+	/**
+	 * Get mouse bindings.
+	 *
+	 * @return mouse bindings
+	 */
+	protected Map<Integer, MouseBindingValue> getMouseBindings() {
+		return mouseBindings;
 	}
 
-	protected void registerMouseBindingx(Integer keyType, String mouseCommand) {
-		registerMouseBindingx(keyType, mouseCommand, null, null);
+	protected void registerMouseBinding(Integer keyType, String mouseCommand) {
+		registerMouseBinding(keyType, mouseCommand, null, null);
 	}
 
-	protected void registerMouseBindingx(Integer keyType, MouseBindingConsumer mouseConsumer) {
-		registerMouseBindingx(keyType, null, mouseConsumer, null);
+	protected void registerMouseBinding(Integer keyType, MouseBindingConsumer mouseConsumer) {
+		registerMouseBinding(keyType, null, mouseConsumer, null);
 	}
 
-	protected void registerMouseBindingx(Integer keyType, Runnable mouseRunnable) {
-		registerMouseBindingx(keyType, null, null, mouseRunnable);
+	protected void registerMouseBinding(Integer keyType, Runnable mouseRunnable) {
+		registerMouseBinding(keyType, null, null, mouseRunnable);
 	}
 
-	private void registerMouseBindingx(Integer mouseType, String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable) {
-		Predicate<MouseEventx> mousePredicate = event -> {
+	private void registerMouseBinding(Integer mouseType, String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable) {
+		Predicate<MouseEvent> mousePredicate = event -> {
 			int x = event.x();
 			int y = event.y();
 			return getRect().contains(x, y);
 		};
-		mouseBindingsx.compute(mouseType, (key, old) -> {
-			return MouseBindingValuex.of(old, mouseCommand, mouseConsumer, mouseRunnable, mousePredicate);
+		mouseBindings.compute(mouseType, (key, old) -> {
+			return MouseBindingValue.of(old, mouseCommand, mouseConsumer, mouseRunnable, mousePredicate);
 		});
 	}
-
-	// XXX
-
-	// /**
-	//  * Register mouse binding with a {@code mouse command}.
-	//  *
-	//  * @param type the mouse event type
-	//  * @param button the mouse event button
-	//  * @param modifiers the mouse event modifiers
-	//  * @param mouseCommand the mouse command
-	//  * @param mousePredicate the mouse event predicate
-	//  */
-	// protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button,
-	// 		EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand, Predicate<MouseEvent> mousePredicate) {
-	// 	mouseBindings.put(new MouseBinding(type, button, modifiers), new MouseBindingValue(mouseCommand, mousePredicate));
-	// }
-
-	// /**
-	//  * Register mouse binding with a {@code mouse command}.
-	//  *
-	//  * @param type the mouse event type
-	//  * @param button the mouse event button
-	//  * @param modifiers the mouse event modifiers
-	//  * @param mouseCommand the mouse command
-	//  */
-	// protected void registerMouseBinding(MouseEvent.Type type, MouseEvent.Button button,
-	// 		EnumSet<MouseEvent.Modifier> modifiers, String mouseCommand) {
-	// 	Predicate<MouseEvent> predicate = event -> {
-	// 		int x = event.getX();
-	// 		int y = event.getY();
-	// 		return getRect().contains(x, y);
-	// 	};
-	// 	registerMouseBinding(type, button, modifiers, mouseCommand, predicate);
-	// }
-
-	// record MouseBindingValue(String mouseCommand, Predicate<MouseEvent> mousePredicate) {
-	// }
-
-
-	// /**
-	//  * Register a {code mouse command} with a {@link MouseBindingConsumer}.
-	//  *
-	//  * @param mouseCommand the mouse command
-	//  * @param consumer the mouse binding consumer
-	//  */
-	// protected void registerMouseBindingConsumerCommand(String mouseCommand, MouseBindingConsumer consumer) {
-	// 	mouseCommands.put(mouseCommand, consumer);
-	// }
-
-	// /**
-	//  * Get mouse bindings.
-	//  *
-	//  * @return mouse bindings
-	//  */
-	// protected Map<MouseBinding, MouseBindingValue> getMouseBindings() {
-	// 	return mouseBindings;
-	// }
 
 	/**
 	 * Dispatch a {@link Message} into an event loop.
@@ -416,30 +333,6 @@ public abstract class AbstractView implements View {
 			log.warn("Can't dispatch message {} as eventloop is not set", message);
 		}
 	}
-
-	/**
-	 * Takes a {@code view command} and matches it against registered {@link Runnable} and
-	 * then schedules that to get executed in an event loop. Returns {@code true}
-	 * if a message was dispatched.
-	 *
-	 * @param command the view command
-	 * @return true if command was handled with matching registration
-	 */
-	// protected boolean dispatchRunCommand(String command) {
-	// 	if (eventLoop == null) {
-	// 		return false;
-	// 	}
-	// 	Runnable runnable = keyCommands.get(command);
-	// 	if (runnable != null) {
-	// 		Message<Runnable> message = ShellMessageBuilder
-	// 			.withPayload(runnable)
-	// 			.setEventType(EventLoop.Type.TASK)
-	// 			.build();
-	// 		dispatch(message);
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
 
 	protected boolean dispatchRunnable(Runnable runnable) {
 		if (eventLoop == null) {
@@ -478,7 +371,7 @@ public abstract class AbstractView implements View {
 		return false;
 	}
 
-	protected boolean dispatchMouseRunCommand(MouseEventx event, MouseBindingValuex command) {
+	protected boolean dispatchMouseRunCommand(MouseEvent event, MouseBindingValue command) {
 		if (eventLoop == null) {
 			return false;
 		}
@@ -502,30 +395,4 @@ public abstract class AbstractView implements View {
 		}
 		return false;
 	}
-
-	// /**
-	//  * Takes a {@code view command} and {@link MouseEvent} then matches it against
-	//  * registered {@link MouseBindingConsumer} and then schedules that to get
-	//  * executed in an event loop. Returns {@code true} if a message was dispatched.
-	//  *
-	//  * @param command the view command
-	//  * @param event the mouse event
-	//  * @return true if command was handled with matching registration
-	//  */
-	// protected boolean dispatchConsumerCommand(String command, MouseEvent event) {
-	// 	if (eventLoop == null) {
-	// 		return false;
-	// 	}
-	// 	MouseBindingConsumer consumer = mouseCommands.get(command);
-	// 	if (consumer != null) {
-	// 		Message<MouseBindingConsumerArgs> message = ShellMessageBuilder
-	// 			.withPayload(new MouseBindingConsumerArgs(consumer, event))
-	// 			.setEventType(EventLoop.Type.TASK)
-	// 			.build();
-	// 		dispatch(message);
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
-
 }
