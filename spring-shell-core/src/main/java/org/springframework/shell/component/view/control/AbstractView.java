@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.component.view.control;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -33,8 +32,6 @@ import org.springframework.shell.component.view.event.KeyBindingConsumer;
 import org.springframework.shell.component.view.event.KeyBindingConsumerArgs;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseBinding;
-import org.springframework.shell.component.view.event.MouseBindingConsumer;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseBindingConsumerx;
 import org.springframework.shell.component.view.event.MouseEventx;
@@ -62,8 +59,6 @@ public abstract class AbstractView implements View {
 	private int layer;
 	private EventLoop eventLoop;
 	private Map<Integer, KeyBindingValue> keyBindings = new HashMap<>();
-	// private Map<MouseBinding, MouseBindingValue> mouseBindings = new HashMap<>();
-	private Map<String, MouseBindingConsumer> mouseCommands = new HashMap<>();
 
 	public AbstractView() {
 		init();

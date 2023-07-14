@@ -93,8 +93,6 @@ public class AbstractViewTests {
 	}
 
 	protected MouseEventx mouseClick(int x, int y) {
-		// return new MouseEvent(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
 		return MouseEventx.of(x, y, MouseEventx.Type.Released | MouseEventx.Button.Button1);
 	}
 
@@ -118,14 +116,10 @@ public class AbstractViewTests {
 	}
 
 	protected MouseEventx mouseWheelUp(int x, int y) {
-		// return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
 		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp);
 	}
 
 	protected MouseEventx mouseWheelDown(int x, int y) {
-		// return new MouseEvent(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), x, y);
 		return MouseEventx.of(x, y, MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown);
 	}
 }

@@ -16,17 +16,15 @@
 package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.view.control.cell.ListCell;
-import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.KeyEvent.Key;
+import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
@@ -106,21 +104,6 @@ public class ListView<T> extends BoxView {
 		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp, () -> up());
 		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown, () -> down());
 		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, () -> {});
-		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
-		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
-		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
-
-		// registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> {
-		// 	up();
-		// });
-		// registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> {
-		// 	down();
-		// });
-		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> {
-		// });
 	}
 
 	private void up() {

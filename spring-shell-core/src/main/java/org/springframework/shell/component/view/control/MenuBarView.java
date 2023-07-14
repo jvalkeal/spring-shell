@@ -17,11 +17,9 @@ package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,10 +95,6 @@ public class MenuBarView extends BoxView {
 		registerKeyBinding(Key.CursorRight, () -> right());
 
 		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, event -> select(event));
-
-		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> select(event));
-		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
 	}
 
 	@Override

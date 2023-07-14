@@ -18,10 +18,8 @@ package org.springframework.shell.component.view.control;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 
-import org.jline.terminal.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,18 +164,6 @@ public class MenuView extends BoxView {
 		registerMouseBindingx(MouseEventx.Type.Released | MouseEventx.Button.Button1, event -> mouseSelect(event));
 		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelDown, () -> move(1));
 		registerMouseBindingx(MouseEventx.Type.Wheel | MouseEventx.Button.WheelUp, () -> move(-1));
-
-		// registerMouseBindingConsumerCommand(ViewCommand.SELECT, event -> mouseSelect(event));
-
-		// registerMouseBinding(MouseEvent.Type.Released, MouseEvent.Button.Button1,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.SELECT);
-
-		// registerMouseBindingConsumerCommand(ViewCommand.LINE_DOWN, event -> move(1));
-		// registerMouseBindingConsumerCommand(ViewCommand.LINE_UP, event -> move(-1));
-		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelDown,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_DOWN);
-		// registerMouseBinding(MouseEvent.Type.Wheel, MouseEvent.Button.WheelUp,
-		// 		EnumSet.noneOf(MouseEvent.Modifier.class), ViewCommand.LINE_UP);
 	}
 
 	private void keySelect() {
