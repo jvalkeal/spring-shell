@@ -33,7 +33,7 @@ import org.springframework.shell.component.view.event.KeyBindingConsumerArgs;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
-import org.springframework.shell.component.view.event.MouseBindingConsumerx;
+import org.springframework.shell.component.view.event.MouseBindingConsumer;
 import org.springframework.shell.component.view.event.MouseEventx;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
@@ -305,9 +305,9 @@ public abstract class AbstractView implements View {
 
 	private Map<Integer, MouseBindingValuex> mouseBindingsx = new HashMap<>();
 
-	record MouseBindingValuex(String mouseCommand, MouseBindingConsumerx mouseConsumer, Runnable mouseRunnable,
+	record MouseBindingValuex(String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable,
 			Predicate<MouseEventx> mousePredicate) {
-		static MouseBindingValuex of(MouseBindingValuex old, String mouseCommand, MouseBindingConsumerx mouseConsumer,
+		static MouseBindingValuex of(MouseBindingValuex old, String mouseCommand, MouseBindingConsumer mouseConsumer,
 				Runnable mouseRunnable, Predicate<MouseEventx> mousePredicate) {
 			if (old == null) {
 				return new MouseBindingValuex(mouseCommand, mouseConsumer, mouseRunnable, mousePredicate);
@@ -327,7 +327,7 @@ public abstract class AbstractView implements View {
 		registerMouseBindingx(keyType, mouseCommand, null, null);
 	}
 
-	protected void registerMouseBindingx(Integer keyType, MouseBindingConsumerx mouseConsumer) {
+	protected void registerMouseBindingx(Integer keyType, MouseBindingConsumer mouseConsumer) {
 		registerMouseBindingx(keyType, null, mouseConsumer, null);
 	}
 
@@ -335,7 +335,7 @@ public abstract class AbstractView implements View {
 		registerMouseBindingx(keyType, null, null, mouseRunnable);
 	}
 
-	private void registerMouseBindingx(Integer mouseType, String mouseCommand, MouseBindingConsumerx mouseConsumer, Runnable mouseRunnable) {
+	private void registerMouseBindingx(Integer mouseType, String mouseCommand, MouseBindingConsumer mouseConsumer, Runnable mouseRunnable) {
 		Predicate<MouseEventx> mousePredicate = event -> {
 			int x = event.x();
 			int y = event.y();
@@ -491,7 +491,7 @@ public abstract class AbstractView implements View {
 			dispatch(message);
 			return true;
 		}
-		MouseBindingConsumerx mouseConsumer = command.mouseConsumer();
+		MouseBindingConsumer mouseConsumer = command.mouseConsumer();
 		if (mouseConsumer != null) {
 			Message<MouseBindingConsumerArgs> message = ShellMessageBuilder
 				.withPayload(new MouseBindingConsumerArgs(mouseConsumer, event))
