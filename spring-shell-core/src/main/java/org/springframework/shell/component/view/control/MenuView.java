@@ -247,7 +247,7 @@ public class MenuView extends BoxView {
 	public static class MenuItem  {
 
 		private final String title;
-		private final MenuItemCheckStyle checkStyle;// = MenuItemCheckStyle.NOCHECK;
+		private final MenuItemCheckStyle checkStyle;
 		private final List<MenuItem> items;
 		private boolean checked;
 		private Runnable action;

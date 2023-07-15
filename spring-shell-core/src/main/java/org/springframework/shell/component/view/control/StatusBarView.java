@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view.control;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
+import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 
@@ -38,6 +40,18 @@ public class StatusBarView extends BoxView {
 
 	private final Logger log = LoggerFactory.getLogger(StatusBarView.class);
 	private final List<StatusItem> items = new ArrayList<>();
+
+	public StatusBarView() {
+		this(new StatusItem[0]);
+	}
+
+	public StatusBarView(StatusItem[] items) {
+		this(Arrays.asList(items));
+	}
+
+	public StatusBarView(List<StatusItem> items) {
+		setItems(items);
+	}
 
 	@Override
 	protected void drawInternal(Screen screen) {
@@ -59,16 +73,22 @@ public class StatusBarView extends BoxView {
 	public MouseHandler getMouseHandler() {
 		log.trace("getMouseHandler()");
 		return args -> {
-			View view = null;
 			MouseEvent event = args.event();
+			boolean consumed = false;
 			if (!event.hasModifier() && event.has(MouseEvent.Type.Released) && event.has(MouseEvent.Button.Button1)) {
 				int x = event.x();
-				int y = event.x();
-				StatusItem itemAt = itemAt(x, y);
-				log.info("XXX itemAt {} {} {}", x, y, itemAt);
+				int y = event.y();
+				StatusItem item = itemAt(x, y);
+				if (item != null) {
+					dispatch(ShellMessageBuilder.ofView(this, StatusBarViewOpenSelectedItemEvent.of(this, item)));
+					if (item.getAction() != null) {
+						dispatchRunnable(item.getAction());
+					}
+				}
+				consumed = true;
 			}
 			// status bar don't request focus
-			return MouseHandler.resultOf(args.event(), true, view, null);
+			return MouseHandler.resultOf(args.event(), consumed, null, null);
 		};
 	}
 
@@ -98,19 +118,68 @@ public class StatusBarView extends BoxView {
 	}
 
 	/**
+	 * Gets a status items.
+	 *
+	 * @return the status items
+	 */
+	public List<StatusItem> getItems() {
+		return items;
+	}
+
+	/**
 	 * {@link StatusItem} represents an item in a {@link StatusBarView}.
 	 */
 	public static class StatusItem {
 
 		private String title;
+		private Runnable action;
 
 		public StatusItem(String title) {
+			this(title, null);
+		}
+
+		public StatusItem(String title, Runnable action) {
 			this.title = title;
+			this.action = action;
 		}
 
 		public String getTitle() {
 			return title;
 		}
 
+		public Runnable getAction() {
+			return action;
+		}
+
+		public void setAction(Runnable action) {
+			this.action = action;
+		}
+
 	}
+
+	/**
+	 * {@link ViewEventArgs} for {@link StatusBarViewOpenSelectedItemEvent}.
+	 *
+	 * @param item the status bar view item
+	 */
+	public record StatusBarViewItemEventArgs(StatusItem item) implements ViewEventArgs {
+
+		public static StatusBarViewItemEventArgs of(StatusItem item) {
+			return new StatusBarViewItemEventArgs(item);
+		}
+	}
+
+	/**
+	 * {@link ViewEvent} indicating that selected item has been requested to open.
+	 *
+	 * @param view the view sending an event
+	 * @param args the event args
+	 */
+	public record StatusBarViewOpenSelectedItemEvent(View view, StatusBarViewItemEventArgs args) implements ViewEvent {
+
+		public static StatusBarViewOpenSelectedItemEvent of(View view, StatusItem item) {
+			return new StatusBarViewOpenSelectedItemEvent(view, StatusBarViewItemEventArgs.of(item));
+		}
+	}
+
 }

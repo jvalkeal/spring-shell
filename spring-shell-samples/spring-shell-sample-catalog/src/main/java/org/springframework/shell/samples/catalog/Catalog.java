@@ -238,9 +238,10 @@ public class Catalog {
 	}
 
 	private StatusBarView buildStatusBar(EventLoop eventLoop) {
+		Runnable quitAction = () -> requestQuit();
 		StatusBarView statusBar = new StatusBarView();
 		statusBar.setEventLoop(eventLoop);
-		StatusItem item1 = new StatusBarView.StatusItem("CTRL-Q Quit");
+		StatusItem item1 = new StatusBarView.StatusItem("CTRL-Q Quit", quitAction);
 		StatusItem item2 = new StatusBarView.StatusItem("F10 Status Bar");
 		statusBar.setItems(Arrays.asList(item1, item2));
 		return statusBar;
