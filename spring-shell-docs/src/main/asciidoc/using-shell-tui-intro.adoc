@@ -2,9 +2,6 @@
 === Introduction
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
-Catalog sample is a good place to study a real application
-<<appendix-tech-intro-tui-catalogapp>>.
-
 Lets start with a simple app which prints "hello world" in a view.
 ====
 [source, java, indent=0]
