@@ -100,19 +100,16 @@ public class MenuBarView extends BoxView {
 
 	@Override
 	public KeyHandler getKeyHandler() {
-		// as menubar owns existing menuview's we first need to consult
-		// active menuview if it eats an event and then see if
-		// menubar itself can handle it.
-		// TODO: this is a bit stupid, looking at you super twice!
-		// return super.getKeyHandler()
-		// 		.fromIfConsumed(currentMenuView != null ? currentMenuView.getKeyHandler() : super.getKeyHandler());
+		// check if possible menuview handles an event
 		KeyHandler handler = currentMenuView != null ? currentMenuView.getKeyHandler() : KeyHandler.neverConsume();
 		return handler.thenIfNotConsumed(super.getKeyHandler());
 	}
 
 	@Override
 	public MouseHandler getMouseHandler() {
-		MouseHandler handler = currentMenuView != null ? currentMenuView.getMouseHandler() : MouseHandler.neverConsume();
+		// check if possible menuview handles an event
+		MouseHandler handler = currentMenuView != null ? currentMenuView.getMouseHandler()
+				: MouseHandler.neverConsume();
 		return handler.thenIfNotConsumed(super.getMouseHandler());
 	}
 
