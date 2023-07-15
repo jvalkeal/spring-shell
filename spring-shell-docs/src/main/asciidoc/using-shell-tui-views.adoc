@@ -4,4 +4,6 @@ ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
 Framework provides a build-in views which are documented below.
 
+TIP: To learn more about views, see <<appendix-tui-view>>.
+
 include::using-shell-tui-views-box.adoc[]
