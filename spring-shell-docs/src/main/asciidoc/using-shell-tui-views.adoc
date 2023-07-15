@@ -1,0 +1,7 @@
+[[using-shell-tui-views]]
+=== Views
+ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
+
+Framework provides a build-in views which are documented below.
+
+include::using-shell-tui-views-box.adoc[]
