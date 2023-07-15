@@ -19,7 +19,6 @@ import java.util.function.Predicate;
 
 import org.springframework.lang.Nullable;
 import org.springframework.shell.component.view.control.View;
-import org.springframework.util.Assert;
 
 /**
  * Handles Key events in a form of {@link KeyHandlerArgs} and returns
@@ -39,31 +38,54 @@ public interface KeyHandler {
 	KeyHandlerResult handle(KeyHandlerArgs args);
 
 	/**
-	 * Returns a composed handler that first handles the {@code other} and then
-	 * checks predicate against its return value if this handler should get handled.
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} handler if {@code predicate} against result from
+	 * {@code this} matches.
 	 *
-	 * @param other the other handler
-	 * @param predicate the predicate against results from other
-	 * @return composed handler
+	 * @param other     the handler to handle after this handler
+	 * @param predicate the predicate test against results from this
+	 * @return a composed handler
 	 */
-    default KeyHandler from(KeyHandler other, Predicate<KeyHandlerResult> predicate) {
-		Assert.notNull(other, "other handler cannot be null");
+	default KeyHandler thenConditionally(KeyHandler other, Predicate<KeyHandlerResult> predicate) {
 		return args -> {
-			KeyHandlerResult result = other.handle(args);
+			KeyHandlerResult result = handle(args);
 			if (predicate.test(result)) {
-				return result;
+				return other.handle(args);
 			}
-			return handle(args);
+			return result;
 		};
     }
 
-    default KeyHandler fromIfConsumed(KeyHandler other) {
-		return from(other, result -> result.consumed());
+	/**
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} if {@code this} consumed an event.
+	 *
+	 * @param other the handler to handle after this handler
+	 * @return a composed handler
+	 */
+    default KeyHandler thenIfConsumed(KeyHandler other) {
+		return thenConditionally(other, result -> result.consumed());
     }
 
-    default KeyHandler fromIfNotConsumed(KeyHandler other) {
-		return from(other, result -> !result.consumed());
+	/**
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} if {@code this} did not consume an event.
+	 *
+	 * @param other the handler to handle after this handler
+	 * @return a composed handler
+	 */
+    default KeyHandler thenIfNotConsumed(KeyHandler other) {
+		return thenConditionally(other, result -> !result.consumed());
     }
+
+	/**
+     * Returns a handler that always returns a non-consumed result.
+	 *
+	 * @return a handler that always returns a non-consumed result
+	 */
+	static KeyHandler neverConsume() {
+		return args -> resultOf(args.event(), false, null);
+	}
 
 	/**
 	 * Construct {@link KeyHandlerArgs} from a {@link KeyEvent}.

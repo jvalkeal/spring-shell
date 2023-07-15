@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.component.view.event;
 
-import org.springframework.shell.component.view.event.KeyEvent.KeyMask;
-
 /**
  *
  *                           unused                        modifier       button           type

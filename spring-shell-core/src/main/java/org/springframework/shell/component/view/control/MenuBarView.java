@@ -28,6 +28,7 @@ import org.springframework.shell.component.view.control.MenuView.MenuViewOpenSel
 import org.springframework.shell.component.view.event.KeyEvent.Key;
 import org.springframework.shell.component.view.event.KeyHandler;
 import org.springframework.shell.component.view.event.MouseEvent;
+import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.screen.Screen;
@@ -103,8 +104,16 @@ public class MenuBarView extends BoxView {
 		// active menuview if it eats an event and then see if
 		// menubar itself can handle it.
 		// TODO: this is a bit stupid, looking at you super twice!
-		return super.getKeyHandler()
-				.fromIfConsumed(currentMenuView != null ? currentMenuView.getKeyHandler() : super.getKeyHandler());
+		// return super.getKeyHandler()
+		// 		.fromIfConsumed(currentMenuView != null ? currentMenuView.getKeyHandler() : super.getKeyHandler());
+		KeyHandler handler = currentMenuView != null ? currentMenuView.getKeyHandler() : KeyHandler.neverConsume();
+		return handler.thenIfNotConsumed(super.getKeyHandler());
+	}
+
+	@Override
+	public MouseHandler getMouseHandler() {
+		MouseHandler handler = currentMenuView != null ? currentMenuView.getMouseHandler() : MouseHandler.neverConsume();
+		return handler.thenIfNotConsumed(super.getMouseHandler());
 	}
 
 	/**

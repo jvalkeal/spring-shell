@@ -17,21 +17,20 @@ package org.springframework.shell.component.view.event;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.shell.component.view.event.KeyEvent.Key;
-import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerArgs;
+import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerArgs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KeyHandlerTests {
+class MouseHandlerTests {
 
-	private static final KeyEvent EVENT = KeyEvent.of(Key.x);
-	private static final KeyHandlerArgs ARGS = KeyHandler.argsOf(EVENT);
+	private static final MouseEvent EVENT = MouseEvent.of(0, 0, 0);
+	private static final MouseHandlerArgs ARGS = MouseHandler.argsOf(EVENT);
 
 	@Test
 	void handlesOtherIfThisConsumes() {
-		TestKeyHandler h1 = new TestKeyHandler(true);
-		TestKeyHandler h2 = new TestKeyHandler(false);
-		KeyHandler composed = h1.thenIfConsumed(h2);
+		TestMouseHandler h1 = new TestMouseHandler(true);
+		TestMouseHandler h2 = new TestMouseHandler(false);
+		MouseHandler composed = h1.thenIfConsumed(h2);
 		composed.handle(ARGS);
 		assertThat(h1.calls).isEqualTo(1);
 		assertThat(h2.calls).isEqualTo(1);
@@ -39,9 +38,9 @@ class KeyHandlerTests {
 
 	@Test
 	void doesNotHandlesOtherIfThisDoesNotConsume() {
-		TestKeyHandler h1 = new TestKeyHandler(true);
-		TestKeyHandler h2 = new TestKeyHandler(false);
-		KeyHandler composed = h2.thenIfConsumed(h1);
+		TestMouseHandler h1 = new TestMouseHandler(true);
+		TestMouseHandler h2 = new TestMouseHandler(false);
+		MouseHandler composed = h2.thenIfConsumed(h1);
 		composed.handle(ARGS);
 		assertThat(h1.calls).isEqualTo(0);
 		assertThat(h2.calls).isEqualTo(1);
@@ -49,28 +48,29 @@ class KeyHandlerTests {
 
 	@Test
 	void handlesOtherIfThisDoesNotConsume() {
-		TestKeyHandler h1 = new TestKeyHandler(true);
-		TestKeyHandler h2 = new TestKeyHandler(false);
-		KeyHandler composed = h2.thenIfNotConsumed(h1);
+		TestMouseHandler h1 = new TestMouseHandler(true);
+		TestMouseHandler h2 = new TestMouseHandler(false);
+		MouseHandler composed = h2.thenIfNotConsumed(h1);
 		composed.handle(ARGS);
 		assertThat(h1.calls).isEqualTo(1);
 		assertThat(h2.calls).isEqualTo(1);
 	}
 
-	private static class TestKeyHandler implements KeyHandler {
+	private static class TestMouseHandler implements MouseHandler {
 
 		boolean willConsume;
 		int calls;
 
-		TestKeyHandler(boolean willConsume) {
+		TestMouseHandler(boolean willConsume) {
 			this.willConsume = willConsume;
 		}
 
 		@Override
-		public KeyHandlerResult handle(KeyHandlerArgs args) {
+		public MouseHandlerResult handle(MouseHandlerArgs args) {
 			calls++;
-			return KeyHandler.resultOf(args.event(), willConsume, null);
+			return MouseHandler.resultOf(args.event(), willConsume, null, null);
 		}
 
 	}
+
 }

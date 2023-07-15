@@ -40,31 +40,54 @@ public interface MouseHandler {
 	MouseHandlerResult handle(MouseHandlerArgs args);
 
 	/**
-	 * Returns a composed handler that first handles the {@code other} and
-	 * then handles this handler if {@code predicate} against result from
-	 * {@code other} matches.
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} handler if {@code predicate} against result from
+	 * {@code this} matches.
 	 *
-	 * @param other the handler to handle before this handler
-	 * @param predicate the predicate test against results from other
+	 * @param other     the handler to handle after this handler
+	 * @param predicate the predicate test against results from this
 	 * @return a composed handler
 	 */
-	default MouseHandler from(MouseHandler other, Predicate<MouseHandlerResult> predicate) {
+	default MouseHandler thenConditionally(MouseHandler other, Predicate<MouseHandlerResult> predicate) {
 		return args -> {
-			MouseHandlerResult result = other.handle(args);
+			MouseHandlerResult result = handle(args);
 			if (predicate.test(result)) {
-				return result;
+				return other.handle(args);
 			}
-			return handle(args);
+			return result;
 		};
     }
 
-    default MouseHandler fromIfConsumed(MouseHandler other) {
-		return from(other, result -> result.consumed());
+	/**
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} if {@code this} consumed an event.
+	 *
+	 * @param other the handler to handle after this handler
+	 * @return a composed handler
+	 */
+    default MouseHandler thenIfConsumed(MouseHandler other) {
+		return thenConditionally(other, result -> result.consumed());
     }
 
-    default MouseHandler fromIfNotConsumed(MouseHandler other) {
-		return from(other, result -> !result.consumed());
+	/**
+	 * Returns a composed handler that first handles {@code this} handler and then
+	 * handles {@code other} if {@code this} did not consume an event.
+	 *
+	 * @param other the handler to handle after this handler
+	 * @return a composed handler
+	 */
+    default MouseHandler thenIfNotConsumed(MouseHandler other) {
+		return thenConditionally(other, result -> !result.consumed());
     }
+
+	/**
+     * Returns a handler that always returns a non-consumed result.
+	 *
+	 * @return a handler that always returns a non-consumed result
+	 */
+	static MouseHandler neverConsume() {
+		return args -> resultOf(args.event(), false, null, null);
+	}
 
 	/**
 	 * Construct {@link MouseHandlerArgs} from a {@link MouseEvent}.

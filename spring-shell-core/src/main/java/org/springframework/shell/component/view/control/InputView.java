@@ -52,7 +52,7 @@ public class InputView extends BoxView {
 			}
 			return KeyHandler.resultOf(event, consumed, null);
 		};
-		return handler.fromIfConsumed(super.getKeyHandler());
+		return handler.thenIfNotConsumed(super.getKeyHandler());
 	}
 
 	@Override
