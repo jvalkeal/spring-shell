@@ -231,7 +231,7 @@ public class HelpTests {
 			registry.register(Theme.of("default", ThemeSettings.defaults()));
 			ThemeResolver resolver = new ThemeResolver(registry, "default");
 			TemplateExecutor executor = new TemplateExecutor(resolver);
-			Help help = new Help(executor);
+			Help help = new Help(executor, null);
 			help.setCommandTemplate("classpath:template/help-command-default.stg");
 			help.setCommandsTemplate("classpath:template/help-commands-default.stg");
 			return help;

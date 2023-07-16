@@ -28,6 +28,9 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupString;
 import org.stringtemplate.v4.misc.STMessage;
 
+import org.springframework.shell.message.TemplateMessage;
+import org.springframework.shell.message.TemplateMessageModelAdaptor;
+
 /**
  * Template executor which knows to use styling.
  *
@@ -59,6 +62,7 @@ public class TemplateExecutor {
 		group.setListener(ERROR_LISTENER);
 		group.registerRenderer(String.class, renderer1);
 		group.registerRenderer(PartsText.class, renderer2);
+		group.registerModelAdaptor(TemplateMessage.class, new TemplateMessageModelAdaptor());
 
 		ST st = new ST(group, template);
 		if (attributes != null) {
@@ -81,6 +85,7 @@ public class TemplateExecutor {
 		group.setListener(ERROR_LISTENER);
 		group.registerRenderer(String.class, renderer1);
 		group.registerRenderer(PartsText.class, renderer2);
+		group.registerModelAdaptor(TemplateMessage.class, new TemplateMessageModelAdaptor());
 
 		// define styled figures as dictionary
 		Map<String, Object> figureDict = Stream.of(FigureSettings.tags())

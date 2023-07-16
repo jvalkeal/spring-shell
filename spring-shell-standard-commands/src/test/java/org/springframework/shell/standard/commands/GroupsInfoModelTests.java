@@ -80,7 +80,7 @@ public class GroupsInfoModelTests {
 	}
 
 	private GroupsInfoModel buildGIM(boolean showGroups) {
-		return GroupsInfoModel.of(showGroups, this.commandCatalog.getRegistrations());
+		return GroupsInfoModel.of(showGroups, this.commandCatalog.getRegistrations(), null);
 	}
 
 	private GroupsInfoModel buildGIM() {

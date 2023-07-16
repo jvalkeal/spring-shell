@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.message.TemplateMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,13 +39,15 @@ class GroupsInfoModel {
 	private final List<GroupCommandInfoModel> groups;
 	private final List<CommandInfoModel> commands;
 	private boolean hasUnavailableCommands = false;
+	private TemplateMessage templateMessage;
 
 	GroupsInfoModel(boolean showGroups, List<GroupCommandInfoModel> groups, List<CommandInfoModel> commands,
-			boolean hasUnavailableCommands) {
+			boolean hasUnavailableCommands, TemplateMessage templateMessage) {
 		this.showGroups = showGroups;
 		this.groups = groups;
 		this.commands = commands;
 		this.hasUnavailableCommands = hasUnavailableCommands;
+		this.templateMessage = templateMessage;
 	}
 
 	/**
@@ -54,7 +57,8 @@ class GroupsInfoModel {
 	 * @param registrations the command registrations
 	 * @return a groups info model
 	 */
-	static GroupsInfoModel of(boolean showGroups, Map<String, CommandRegistration> registrations) {
+	static GroupsInfoModel of(boolean showGroups, Map<String, CommandRegistration> registrations,
+			TemplateMessage templateMessage) {
 		// throw away registrations aliases as those are then handled in a model
 		// collect commands into groups with sorting
 		HashSet<CommandRegistration> regsWithoutAliases = new HashSet<>(registrations.values());
@@ -89,7 +93,7 @@ class GroupsInfoModel {
 			.filter(a -> !a)
 			.findFirst()
 			.isPresent();
-		return new GroupsInfoModel(showGroups, gcims, commands, hasUnavailableCommands);
+		return new GroupsInfoModel(showGroups, gcims, commands, hasUnavailableCommands, templateMessage);
 	}
 
 	public boolean getShowGroups() {
@@ -106,5 +110,9 @@ class GroupsInfoModel {
 
 	public boolean getHasUnavailableCommands() {
 		return hasUnavailableCommands;
+	}
+
+	public TemplateMessage getTemplateMessage() {
+		return templateMessage;
 	}
 }

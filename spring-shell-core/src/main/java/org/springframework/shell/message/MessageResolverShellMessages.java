@@ -1,0 +1,39 @@
+/*
+ * Copyright 2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.shell.message;
+
+import java.util.List;
+import java.util.Optional;
+
+public class MessageResolverShellMessages implements ShellMessages {
+
+	private List<MessageResolver> resolvers;
+
+	public MessageResolverShellMessages(List<MessageResolver> resolvers) {
+		this.resolvers = resolvers;
+	}
+
+	@Override
+	public String resolve(MessageContext context, String code, Object[] inserts, String defaultMessage) {
+		for (MessageResolver resolver : resolvers) {
+			Optional<String> resolve = resolver.resolve(context, code, inserts, defaultMessage);
+			if (resolve.isPresent()) {
+				return resolve.get();
+			}
+		}
+		return null;
+	}
+}

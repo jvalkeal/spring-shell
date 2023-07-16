@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +31,10 @@ import org.jline.utils.AttributedString;
 import org.springframework.core.io.Resource;
 import org.springframework.shell.Utils;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.message.MessageContext;
+import org.springframework.shell.message.MessageResolver;
+import org.springframework.shell.message.ShellMessages;
+import org.springframework.shell.message.TemplateMessage;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.CommandValueProvider;
 import org.springframework.shell.standard.ShellComponent;
@@ -67,12 +72,14 @@ public class Help extends AbstractShellComponent {
 
 	private boolean showGroups = true;
 	private TemplateExecutor templateExecutor;
+	private ShellMessages shellMessages;
 	private String commandTemplate;
 	private String commandsTemplate;
 
 
-	public Help(TemplateExecutor templateExecutor) {
+	public Help(TemplateExecutor templateExecutor, ShellMessages shellMessages) {
 		this.templateExecutor = templateExecutor;
+		this.shellMessages = shellMessages;
 	}
 
 	@ShellMethod(value = "Display help about available commands")
@@ -125,8 +132,14 @@ public class Help extends AbstractShellComponent {
 
 		boolean isStg = this.commandTemplate.endsWith(".stg");
 
+		TemplateMessage templateMessage = null;
+		if (shellMessages != null) {
+			MessageContext messageContext = new MessageContext(Locale.getDefault());
+			templateMessage = new TemplateMessage(shellMessages, messageContext);
+		}
+
 		Map<String, Object> model = new HashMap<>();
-		model.put("model", GroupsInfoModel.of(this.showGroups, registrations));
+		model.put("model", GroupsInfoModel.of(this.showGroups, registrations, templateMessage));
 
 		String templateResource = resourceAsString(getResourceLoader().getResource(this.commandsTemplate));
 		return isStg ? this.templateExecutor.renderGroup(templateResource, model)

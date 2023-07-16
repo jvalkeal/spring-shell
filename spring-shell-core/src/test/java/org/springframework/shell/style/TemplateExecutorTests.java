@@ -16,6 +16,7 @@
 package org.springframework.shell.style;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jline.utils.AttributedString;
@@ -23,6 +24,12 @@ import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.message.MessageContext;
+import org.springframework.shell.message.MessageResolver;
+import org.springframework.shell.message.ShellMessages;
+import org.springframework.shell.message.TemplateMessage;
+import org.springframework.shell.message.TemplateMessageModelAdaptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,6 +71,29 @@ public class TemplateExecutorTests {
 		attributes.put("foo", "bar");
 		AttributedString result = executor.render(template, attributes);
 		AttributedString equalTo = new AttributedStringBuilder().append("bar").toAttributedString();
+		assertThat(result).isEqualTo(equalTo);
+	}
+
+
+	@Test
+	public void testXxx() {
+		TemplateExecutor executor = new TemplateExecutor(themeResolver);
+		String template = "<bundle.foo>";
+		Map<String, Object> attributes = new HashMap<>();
+
+		ShellMessages shellMessages = new ShellMessages() {
+
+			@Override
+			public String resolve(MessageContext context, String code, Object[] inserts, String defaultMessage) {
+				return "hi";
+			}
+		};
+		MessageContext messageContext = new MessageContext(Locale.ENGLISH);
+		TemplateMessage templateMessage = new TemplateMessage(shellMessages, messageContext);
+		attributes.put("bundle", templateMessage);
+
+		AttributedString result = executor.render(template, attributes);
+		AttributedString equalTo = new AttributedStringBuilder().append("hi").toAttributedString();
 		assertThat(result).isEqualTo(equalTo);
 	}
 

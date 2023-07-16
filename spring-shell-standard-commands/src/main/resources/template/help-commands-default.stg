@@ -1,5 +1,6 @@
-name() ::= <<
-<("AVAILABLE COMMANDS"); format="style-highlight">
+// <("AVAILABLE COMMANDS"); format="style-highlight">
+name(messages) ::= <<
+<messages.helpAvailableCommands; format="style-highlight">
 
 >>
 
@@ -40,7 +41,7 @@ flat(commands) ::= <<
 >>
 
 main(model) ::= <<
-<name()>
+<name(model.templateMessage)>
 <if(model.showGroups)>
 <groups(model.groups)>
 <else>

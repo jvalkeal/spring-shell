@@ -28,9 +28,13 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.shell.boot.SpringShellProperties.HelpCommand.GroupingMode;
 import org.springframework.shell.boot.SpringShellProperties.VersionCommand;
 import org.springframework.shell.boot.condition.OnCompletionCommandCondition;
+import org.springframework.shell.message.MessageResolver;
+import org.springframework.shell.message.MessageSourceMessageResolver;
+import org.springframework.shell.message.ShellMessages;
 import org.springframework.shell.result.ThrowableResultHandler;
 import org.springframework.shell.standard.commands.Clear;
 import org.springframework.shell.standard.commands.Completion;
@@ -53,10 +57,19 @@ import org.springframework.shell.style.TemplateExecutor;
 public class StandardCommandsAutoConfiguration {
 
 	@Bean
+	public MessageResolver standardMessageResolver() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setDefaultEncoding("UTF-8");
+		messageSource.setBasenames("org/springframework/shell/standard/commands/messages");
+		return new MessageSourceMessageResolver(messageSource);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(Help.Command.class)
 	@ConditionalOnProperty(prefix = "spring.shell.command.help", value = "enabled", havingValue = "true", matchIfMissing = true)
-	public Help help(SpringShellProperties properties, ObjectProvider<TemplateExecutor> templateExecutor) {
-		Help help = new Help(templateExecutor.getIfAvailable());
+	public Help help(SpringShellProperties properties, ObjectProvider<TemplateExecutor> templateExecutor,
+			ObjectProvider<ShellMessages> shellMessages) {
+		Help help = new Help(templateExecutor.getIfAvailable(), shellMessages.getIfAvailable());
 		if (properties.getCommand().getHelp().getGroupingMode() == GroupingMode.FLAT) {
 			help.setShowGroups(false);
 		}
