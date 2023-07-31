@@ -218,6 +218,7 @@ public class MenuBarView extends BoxView {
 	private MenuView buildMenuView(MenuBarItem item) {
 		MenuView menuView = new MenuView(item.getItems());
 		menuView.setEventLoop(getEventLoop());
+		menuView.setTheme(getTheme());
 		menuView.setShowBorder(true);
 		menuView.setBackgroundColor(null);
 		menuView.setLayer(1);

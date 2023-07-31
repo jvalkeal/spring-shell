@@ -53,6 +53,8 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
+import org.springframework.shell.style.Theme;
+import org.springframework.shell.style.ThemeRegistry;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -78,9 +80,13 @@ public class Catalog {
 	private TerminalUI ui;
 	private ListView<String> categories;
 	private EventLoop eventLoop;
+	private ThemeRegistry themeRegistry;
+	private Theme activeTheme = null;
 
-	public Catalog(Terminal terminal, List<Scenario> scenarios) {
+	public Catalog(Terminal terminal, List<Scenario> scenarios, ThemeRegistry themeRegistry) {
 		this.terminal = terminal;
+		this.themeRegistry = themeRegistry;
+		this.activeTheme = themeRegistry.get("default");
 		mapScenarios(scenarios);
 	}
 
@@ -242,20 +248,30 @@ public class Catalog {
 		return scenarios;
 	}
 
+	private void setStyle(String style) {
+		Theme theme = themeRegistry.get(style);
+		log.debug("Setting style {} to theme {}", style, theme);
+	}
+
+	private Runnable styleAction(String style) {
+		return () -> setStyle(style);
+	}
+
 	private MenuBarView buildMenuBar(EventLoop eventLoop) {
 		Runnable quitAction = () -> requestQuit();
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
 				MenuItem.of("Quit", MenuItemCheckStyle.NOCHECK, quitAction)),
 			MenuBarItem.of("Theme",
-				MenuItem.of("Dump", MenuItemCheckStyle.RADIO),
-				MenuItem.of("Funky", MenuItemCheckStyle.RADIO)
+				MenuItem.of("Dump", MenuItemCheckStyle.RADIO, styleAction("dump")),
+				MenuItem.of("Default", MenuItemCheckStyle.RADIO, styleAction("default"))
 			),
 			MenuBarItem.of("Help",
 				MenuItem.of("About"))
 		);
 
 		menuBar.setEventLoop(eventLoop);
+		menuBar.setTheme(activeTheme);
 		return menuBar;
 	}
 

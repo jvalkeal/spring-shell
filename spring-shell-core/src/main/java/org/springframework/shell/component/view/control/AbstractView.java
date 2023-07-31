@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import org.jline.style.MemoryStyleSource;
+import org.jline.style.StyleResolver;
+import org.jline.utils.AttributedStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
@@ -39,6 +42,7 @@ import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.style.Theme;
 
 /**
  * Base implementation of a {@link View} and its parent interface
@@ -63,6 +67,39 @@ public abstract class AbstractView implements View {
 
 	public AbstractView() {
 		init();
+	}
+
+    static final long F_FOREGROUND_IND = 0x00000100;
+    static final long F_FOREGROUND_RGB = 0x00000200;
+    static final long F_FOREGROUND = F_FOREGROUND_IND | F_FOREGROUND_RGB;
+    static final long F_BACKGROUND_IND = 0x00000400;
+    static final long F_BACKGROUND_RGB = 0x00000800;
+    static final long F_BACKGROUND = F_BACKGROUND_IND | F_BACKGROUND_RGB;
+
+    static final int FG_COLOR_EXP = 15;
+    static final int BG_COLOR_EXP = 39;
+    static final long FG_COLOR = 0xFFFFFFL << FG_COLOR_EXP;
+    static final long BG_COLOR = 0xFFFFFFL << BG_COLOR_EXP;
+
+	private Theme theme;
+	public void setTheme(Theme theme) {
+		this.theme = theme;
+	}
+	public Theme getTheme() {
+		return theme;
+	}
+	protected int themeStyle(String tag, int defaultStyle) {
+		if (theme == null) {
+			return defaultStyle;
+		}
+		String styleExp = theme.getSettings().styles().resolveTag(tag);
+		MemoryStyleSource source = new MemoryStyleSource();
+		StyleResolver styleResolver = new StyleResolver(source, "test");
+		AttributedStyle attributedStyle = styleResolver.resolve(styleExp);
+		long style = attributedStyle.getStyle();
+		long s = style & ~(F_FOREGROUND | F_BACKGROUND);
+		s = (s & 0x00007FFF);
+		return (int)s;
 	}
 
 	/**

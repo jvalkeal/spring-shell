@@ -22,6 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jline.style.MemoryStyleSource;
+import org.jline.style.StyleResolver;
+import org.jline.utils.AttributedStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,9 @@ import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
+import org.springframework.shell.style.StyleSettings;
+import org.springframework.shell.style.Theme;
+import org.springframework.shell.style.ThemeSettings;
 import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -130,12 +136,16 @@ public class MenuView extends BoxView {
 		return new Dimension(width, height);
 	}
 
+	Theme theme = Theme.of("default", ThemeSettings.defaults());
+
 	@Override
 	protected void drawInternal(Screen screen) {
 		Rectangle rect = getInnerRect();
 		int y = rect.y();
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
-		Writer writer2 = screen.writerBuilder().layer(getLayer()).style(ScreenItem.STYLE_BOLD).build();
+		int themeStyle = themeStyle(StyleSettings.TAG_HIGHLIGHT, ScreenItem.STYLE_BOLD);
+		Writer writer2 = screen.writerBuilder().layer(getLayer()).style(themeStyle).build();
+		// Writer writer2 = screen.writerBuilder().layer(getLayer()).style(ScreenItem.STYLE_BOLD).build();
 		int i = 0;
 		boolean hasCheck = false;
 		for (MenuItem item : items) {
