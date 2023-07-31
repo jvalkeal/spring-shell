@@ -271,7 +271,7 @@ public class Catalog {
 		);
 
 		menuBar.setEventLoop(eventLoop);
-		menuBar.setTheme(activeTheme);
+		// menuBar.setTheme(activeTheme);
 		return menuBar;
 	}
 

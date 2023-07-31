@@ -143,9 +143,9 @@ public class MenuView extends BoxView {
 		Rectangle rect = getInnerRect();
 		int y = rect.y();
 		Writer writer = screen.writerBuilder().layer(getLayer()).build();
-		int themeStyle = themeStyle(StyleSettings.TAG_HIGHLIGHT, ScreenItem.STYLE_BOLD);
-		Writer writer2 = screen.writerBuilder().layer(getLayer()).style(themeStyle).build();
-		// Writer writer2 = screen.writerBuilder().layer(getLayer()).style(ScreenItem.STYLE_BOLD).build();
+		// int themeStyle = themeStyle(StyleSettings.TAG_HIGHLIGHT, ScreenItem.STYLE_BOLD);
+		// Writer writer2 = screen.writerBuilder().layer(getLayer()).style(themeStyle).build();
+		Writer writer2 = screen.writerBuilder().layer(getLayer()).style(ScreenItem.STYLE_BOLD).build();
 		int i = 0;
 		boolean hasCheck = false;
 		for (MenuItem item : items) {
