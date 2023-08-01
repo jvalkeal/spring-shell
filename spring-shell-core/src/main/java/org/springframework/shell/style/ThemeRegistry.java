@@ -17,6 +17,7 @@ package org.springframework.shell.style;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.Assert;
 
@@ -47,5 +48,9 @@ public class ThemeRegistry {
 	public void register(Theme theme) {
 		Assert.notNull(theme, "theme cannot be null");
 		themes.put(theme.getName(), theme);
+	}
+
+	public Set<String> getThemeNames() {
+		return themes.keySet();
 	}
 }

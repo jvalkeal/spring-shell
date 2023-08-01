@@ -53,8 +53,7 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
-import org.springframework.shell.style.Theme;
-import org.springframework.shell.style.ThemeRegistry;
+import org.springframework.shell.style.ThemeResolver;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -79,14 +78,14 @@ public class Catalog {
 	private View currentScenarioView = null;
 	private TerminalUI ui;
 	private ListView<String> categories;
+	private ListView<ScenarioData> scenarios;
 	private EventLoop eventLoop;
-	private ThemeRegistry themeRegistry;
-	private Theme activeTheme = null;
+	private ThemeResolver themeResolver;
+	private String activeThemeName = "default";
 
-	public Catalog(Terminal terminal, List<Scenario> scenarios, ThemeRegistry themeRegistry) {
+	public Catalog(Terminal terminal, List<Scenario> scenarios, ThemeResolver themeResolver) {
 		this.terminal = terminal;
-		this.themeRegistry = themeRegistry;
-		this.activeTheme = themeRegistry.get("default");
+		this.themeResolver = themeResolver;
 		mapScenarios(scenarios);
 	}
 
@@ -157,7 +156,7 @@ public class Catalog {
 		grid.setColumnSize(30, 0);
 
 		categories = buildCategorySelector(eventLoop);
-		ListView<ScenarioData> scenarios = buildScenarioSelector(eventLoop);
+		scenarios = buildScenarioSelector(eventLoop);
 
 		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
 		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
@@ -240,6 +239,8 @@ public class Catalog {
 
 	private ListView<ScenarioData> buildScenarioSelector(EventLoop eventLoop) {
 		ListView<ScenarioData> scenarios = new ListView<>();
+		scenarios.setThemeResolver(themeResolver);
+		scenarios.setThemeName(activeThemeName);
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setFocusedTitleStyle(ScreenItem.STYLE_BOLD);
@@ -248,9 +249,11 @@ public class Catalog {
 		return scenarios;
 	}
 
-	private void setStyle(String style) {
-		Theme theme = themeRegistry.get(style);
-		log.debug("Setting style {} to theme {}", style, theme);
+	private void setStyle(String name) {
+		log.debug("Setting active theme name {}", name);
+		activeThemeName = name;
+		scenarios.setThemeName(activeThemeName);
+		categories.setThemeName(activeThemeName);
 	}
 
 	private Runnable styleAction(String style) {
@@ -259,19 +262,25 @@ public class Catalog {
 
 	private MenuBarView buildMenuBar(EventLoop eventLoop) {
 		Runnable quitAction = () -> requestQuit();
+		MenuItem[] styleItems = themeResolver.themeNames().stream()
+			.map(tn -> {
+				return MenuItem.of(tn, MenuItemCheckStyle.RADIO, styleAction(tn));
+			})
+			.toArray(MenuItem[]::new);
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
 				MenuItem.of("Quit", MenuItemCheckStyle.NOCHECK, quitAction)),
-			MenuBarItem.of("Theme",
-				MenuItem.of("Dump", MenuItemCheckStyle.RADIO, styleAction("dump")),
-				MenuItem.of("Default", MenuItemCheckStyle.RADIO, styleAction("default"))
+			MenuBarItem.of("Theme", styleItems
+				// MenuItem.of("Dump", MenuItemCheckStyle.RADIO, styleAction("dump")),
+				// MenuItem.of("Default", MenuItemCheckStyle.RADIO, styleAction("default"))
 			),
 			MenuBarItem.of("Help",
 				MenuItem.of("About"))
 		);
 
 		menuBar.setEventLoop(eventLoop);
-		// menuBar.setTheme(activeTheme);
+		menuBar.setThemeResolver(themeResolver);
+		menuBar.setThemeName(activeThemeName);
 		return menuBar;
 	}
 

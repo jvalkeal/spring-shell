@@ -109,12 +109,19 @@ public abstract class AbstractView implements View {
 	public void setThemeResolver(ThemeResolver themeResolver) {
 		this.themeResolver = themeResolver;
 	}
+	protected ThemeResolver getThemeResolver() {
+		return themeResolver;
+	}
 	public void setThemeName(String themeName) {
 		this.themeName = themeName;
 	}
+	protected String getThemeName() {
+		return themeName;
+	}
 	protected int resolveThemeStyle(String tag, int defaultStyle) {
 		if (themeResolver != null) {
-			AttributedStyle attributedStyle = themeResolver.resolveStyle(tag);
+			String styleTag = themeResolver.resolveStyleTag(tag, themeName);
+			AttributedStyle attributedStyle = themeResolver.resolveStyle(styleTag);
 			ResolvedValues resolvedValues = themeResolver.resolveValues(attributedStyle);
 			return resolvedValues.style();
 		}

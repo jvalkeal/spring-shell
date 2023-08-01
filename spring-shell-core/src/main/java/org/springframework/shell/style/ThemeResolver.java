@@ -15,12 +15,17 @@
  */
 package org.springframework.shell.style;
 
+import java.util.List;
+import java.util.Set;
+
 import org.jline.style.MemoryStyleSource;
 import org.jline.style.StyleExpression;
 import org.jline.style.StyleResolver;
 import org.jline.style.StyleSource;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Service which helps to do various things with styles.
@@ -32,9 +37,11 @@ public class ThemeResolver {
 	private StyleSource styleSource = new MemoryStyleSource();
 	private StyleResolver styleResolver = new StyleResolver(styleSource, "default");
 	private StyleExpression styleExpression = new StyleExpression(styleResolver);
+	private ThemeRegistry themeRegistry;
 	private final Theme theme;
 
 	public ThemeResolver(ThemeRegistry themeRegistry, String themeName) {
+		this.themeRegistry = themeRegistry;
 		this.theme = themeRegistry.get(themeName);
 	}
 
@@ -58,6 +65,15 @@ public class ThemeResolver {
 		long fg = (style & FG_COLOR) >> 15;
 		long bg = (style & BG_COLOR) >> 39;
 		return new ResolvedValues((int)s, (int)fg, (int)bg);
+	}
+
+	public String resolveStyleTag(String tag, String themeName) {
+		Theme t = StringUtils.hasText(themeName) ? themeRegistry.get(themeName) : theme;
+		return t.getSettings().styles().resolveTag(tag);
+	}
+
+	public Set<String> themeNames() {
+		return themeRegistry.getThemeNames();
 	}
 
 	/**
