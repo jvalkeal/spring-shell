@@ -56,6 +56,7 @@ class CatalogConfiguration {
 		public String highlight() {
 			return "bold,italic,fg:bright-cyan";
 		}
+
 	}
 
 }

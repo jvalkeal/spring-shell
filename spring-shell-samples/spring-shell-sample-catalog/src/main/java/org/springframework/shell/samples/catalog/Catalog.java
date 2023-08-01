@@ -264,7 +264,7 @@ public class Catalog {
 		Runnable quitAction = () -> requestQuit();
 		MenuItem[] themeItems = themeResolver.themeNames().stream()
 			.map(tn -> {
-				return MenuItem.of(tn, MenuItemCheckStyle.RADIO, styleAction(tn));
+				return MenuItem.of(tn, MenuItemCheckStyle.RADIO, styleAction(tn), "default".equals(tn));
 			})
 			.toArray(MenuItem[]::new);
 		MenuBarView menuBar = MenuBarView.of(

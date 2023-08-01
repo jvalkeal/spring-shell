@@ -100,6 +100,14 @@ public class MenuView extends BoxView {
 			if (!items.isEmpty()) {
 				activeItemIndex = 0;
 			}
+			items.forEach(i -> {
+				if (i.initialCheckState && i.getCheckStyle() == MenuItemCheckStyle.CHECKED) {
+					checkedActive.add(i);
+				}
+				else if (i.initialCheckState && i.getCheckStyle() == MenuItemCheckStyle.RADIO) {
+					radioActive = i;
+				}
+			});
 		}
 	}
 
@@ -331,6 +339,7 @@ public class MenuView extends BoxView {
 		private final MenuItemCheckStyle checkStyle;
 		private final List<MenuItem> items;
 		private Runnable action;
+		private boolean initialCheckState = false;
 
 		/**
 		 * Construct menu item with a title.
@@ -365,6 +374,16 @@ public class MenuView extends BoxView {
 			this.checkStyle = checkStyle;
 			this.action = action;
 			this.items = null;
+		}
+
+		public MenuItem(String title, MenuItemCheckStyle checkStyle, Runnable action, boolean initialCheckState) {
+			Assert.state(StringUtils.hasText(title), "title must have text");
+			Assert.notNull(checkStyle, "check style cannot be null");
+			this.title = title;
+			this.checkStyle = checkStyle;
+			this.action = action;
+			this.items = null;
+			this.initialCheckState = initialCheckState;
 		}
 
 		protected MenuItem(String title, MenuItem[] items) {
@@ -403,6 +422,10 @@ public class MenuView extends BoxView {
 
 		public static MenuItem of(String title, MenuItemCheckStyle checkStyle, Runnable action) {
 			return new MenuItem(title, checkStyle, action);
+		}
+
+		public static MenuItem of(String title, MenuItemCheckStyle checkStyle, Runnable action, boolean initialCheckState) {
+			return new MenuItem(title, checkStyle, action, initialCheckState);
 		}
 
 		public Runnable getAction() {
