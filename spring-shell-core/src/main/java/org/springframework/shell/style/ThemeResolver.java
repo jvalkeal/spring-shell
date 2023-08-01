@@ -45,6 +45,7 @@ public class ThemeResolver {
 		this.theme = themeRegistry.get(themeName);
 	}
 
+	// copied from jline as no public access
     private static final long F_FOREGROUND_IND = 0x00000100;
     private static final long F_FOREGROUND_RGB = 0x00000200;
     private static final long F_FOREGROUND = F_FOREGROUND_IND | F_FOREGROUND_RGB;

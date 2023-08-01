@@ -262,7 +262,7 @@ public class Catalog {
 
 	private MenuBarView buildMenuBar(EventLoop eventLoop) {
 		Runnable quitAction = () -> requestQuit();
-		MenuItem[] styleItems = themeResolver.themeNames().stream()
+		MenuItem[] themeItems = themeResolver.themeNames().stream()
 			.map(tn -> {
 				return MenuItem.of(tn, MenuItemCheckStyle.RADIO, styleAction(tn));
 			})
@@ -270,10 +270,8 @@ public class Catalog {
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
 				MenuItem.of("Quit", MenuItemCheckStyle.NOCHECK, quitAction)),
-			MenuBarItem.of("Theme", styleItems
-				// MenuItem.of("Dump", MenuItemCheckStyle.RADIO, styleAction("dump")),
-				// MenuItem.of("Default", MenuItemCheckStyle.RADIO, styleAction("default"))
-			),
+			MenuBarItem.of("Theme",
+				themeItems),
 			MenuBarItem.of("Help",
 				MenuItem.of("About"))
 		);
