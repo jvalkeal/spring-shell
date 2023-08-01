@@ -15,12 +15,17 @@
  */
 package org.springframework.shell.style;
 
+import java.util.List;
+import java.util.Set;
+
 import org.jline.style.MemoryStyleSource;
 import org.jline.style.StyleExpression;
 import org.jline.style.StyleResolver;
 import org.jline.style.StyleSource;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Service which helps to do various things with styles.
@@ -32,10 +37,43 @@ public class ThemeResolver {
 	private StyleSource styleSource = new MemoryStyleSource();
 	private StyleResolver styleResolver = new StyleResolver(styleSource, "default");
 	private StyleExpression styleExpression = new StyleExpression(styleResolver);
+	private ThemeRegistry themeRegistry;
 	private final Theme theme;
 
 	public ThemeResolver(ThemeRegistry themeRegistry, String themeName) {
+		this.themeRegistry = themeRegistry;
 		this.theme = themeRegistry.get(themeName);
+	}
+
+    private static final long F_FOREGROUND_IND = 0x00000100;
+    private static final long F_FOREGROUND_RGB = 0x00000200;
+    private static final long F_FOREGROUND = F_FOREGROUND_IND | F_FOREGROUND_RGB;
+    private static final long F_BACKGROUND_IND = 0x00000400;
+    private static final long F_BACKGROUND_RGB = 0x00000800;
+    private static final long F_BACKGROUND = F_BACKGROUND_IND | F_BACKGROUND_RGB;
+    private static final int FG_COLOR_EXP = 15;
+    private static final int BG_COLOR_EXP = 39;
+    private static final long FG_COLOR = 0xFFFFFFL << FG_COLOR_EXP;
+    private static final long BG_COLOR = 0xFFFFFFL << BG_COLOR_EXP;
+
+	public record ResolvedValues(int style, int foreground, int background){}
+
+	public ResolvedValues resolveValues(AttributedStyle attributedStyle) {
+		long style = attributedStyle.getStyle();
+		long s = style & ~(F_FOREGROUND | F_BACKGROUND);
+		s = (s & 0x00007FFF);
+		long fg = (style & FG_COLOR) >> 15;
+		long bg = (style & BG_COLOR) >> 39;
+		return new ResolvedValues((int)s, (int)fg, (int)bg);
+	}
+
+	public String resolveStyleTag(String tag, String themeName) {
+		Theme t = StringUtils.hasText(themeName) ? themeRegistry.get(themeName) : theme;
+		return t.getSettings().styles().resolveTag(tag);
+	}
+
+	public Set<String> themeNames() {
+		return themeRegistry.getThemeNames();
 	}
 
 	/**
