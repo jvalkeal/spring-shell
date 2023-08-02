@@ -23,6 +23,7 @@ import org.jline.style.StyleResolver;
 import org.jline.style.StyleSource;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+import org.jline.utils.Colors;
 
 import org.springframework.util.StringUtils;
 
@@ -72,9 +73,18 @@ public class ThemeResolver {
 		long style = attributedStyle.getStyle();
 		long s = style & ~(F_FOREGROUND | F_BACKGROUND);
 		s = (s & 0x00007FFF);
-		long fg = (style & FG_COLOR) >> 15;
-		long bg = (style & BG_COLOR) >> 39;
-		return new ResolvedValues((int)s, (int)fg, (int)bg);
+		int fg = (int) ((style & FG_COLOR) >> 15);
+		int bg = (int) ((style & BG_COLOR) >> 39);
+		if ((style & F_FOREGROUND_IND) != 0) {
+			int i = (int) ((style >> FG_COLOR_EXP) & 0xFF);
+			fg = Colors.DEFAULT_COLORS_256[i];
+		}
+		if ((style & F_BACKGROUND_IND) != 0) {
+			int i = (int) ((style >> BG_COLOR_EXP) & 0xFF);
+			bg = Colors.DEFAULT_COLORS_256[i];
+		}
+
+		return new ResolvedValues((int)s, fg, bg);
 	}
 
 	/**
