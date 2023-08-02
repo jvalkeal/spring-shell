@@ -17,9 +17,11 @@ package org.springframework.shell.component.view.control;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import org.jline.utils.AttributedStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
@@ -32,13 +34,15 @@ import org.springframework.shell.component.view.event.KeyBindingConsumer;
 import org.springframework.shell.component.view.event.KeyBindingConsumerArgs;
 import org.springframework.shell.component.view.event.KeyEvent;
 import org.springframework.shell.component.view.event.KeyHandler;
-import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseBindingConsumer;
+import org.springframework.shell.component.view.event.MouseBindingConsumerArgs;
 import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.style.ThemeResolver;
+import org.springframework.shell.style.ThemeResolver.ResolvedValues;
 
 /**
  * Base implementation of a {@link View} and its parent interface
@@ -60,9 +64,94 @@ public abstract class AbstractView implements View {
 	private EventLoop eventLoop;
 	private Map<Integer, KeyBindingValue> keyBindings = new HashMap<>();
 	private Map<Integer, MouseBindingValue> mouseBindings = new HashMap<>();
+	private ThemeResolver themeResolver;
+	private String themeName;
 
 	public AbstractView() {
 		init();
+	}
+
+	/**
+	 * Sets a {@link ThemeResolver}.
+	 *
+	 * @param themeResolver the theme resolver
+	 */
+	public void setThemeResolver(@Nullable ThemeResolver themeResolver) {
+		this.themeResolver = themeResolver;
+	}
+
+	/**
+	 * Gets a {@link ThemeResolver}.
+	 *
+	 * @return a theme resolver
+	 */
+	@Nullable
+	protected ThemeResolver getThemeResolver() {
+		return themeResolver;
+	}
+
+	/**
+	 * Sets a theme name to use.
+	 *
+	 * @param themeName the theme name
+	 */
+	public void setThemeName(@Nullable String themeName) {
+		this.themeName = themeName;
+	}
+
+	/**
+	 * Gets a theme name.
+	 *
+	 * @return a theme name
+	 */
+	@Nullable
+	protected String getThemeName() {
+		return themeName;
+	}
+
+	private Optional<ResolvedValues> getThemeResolvedValues(String tag) {
+		if (themeResolver != null) {
+			String styleTag = themeResolver.resolveStyleTag(tag, themeName);
+			AttributedStyle attributedStyle = themeResolver.resolveStyle(styleTag);
+			return Optional.of(themeResolver.resolveValues(attributedStyle));
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Resolve style using existing {@link ThemeResolver} and {@code theme name}.
+	 * Use {@code defaultStyle} if resolving cannot happen.
+	 *
+	 * @param tag the style tag to use
+	 * @param defaultStyle the default style to use
+	 * @return resolved style
+	 */
+	protected int resolveThemeStyle(String tag, int defaultStyle) {
+		return getThemeResolvedValues(tag).map(ResolvedValues::style).orElse(defaultStyle);
+	}
+
+	/**
+	 * Resolve foreground color using existing {@link ThemeResolver} and {@code theme name}.
+	 * Use {@code defaultColor} if resolving cannot happen.
+	 *
+	 * @param tag the style tag to use
+	 * @param defaultColor the default foreground color to use
+	 * @return resolved foreground color
+	 */
+	protected int resolveThemeForeground(String tag, int defaultColor) {
+		return getThemeResolvedValues(tag).map(ResolvedValues::foreground).orElse(defaultColor);
+	}
+
+	/**
+	 * Resolve background color using existing {@link ThemeResolver} and {@code theme name}.
+	 * Use {@code defaultColor} if resolving cannot happen.
+	 *
+	 * @param tag the style tag to use
+	 * @param defaultColor the default background color to use
+	 * @return resolved background color
+	 */
+	protected int resolveThemeBackground(String tag, int defaultColor) {
+		return getThemeResolvedValues(tag).map(ResolvedValues::background).orElse(defaultColor);
 	}
 
 	/**

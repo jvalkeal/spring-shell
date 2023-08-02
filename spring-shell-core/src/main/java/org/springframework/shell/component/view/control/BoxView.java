@@ -23,6 +23,8 @@ import org.springframework.shell.component.view.geom.HorizontalAlign;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.geom.VerticalAlign;
 import org.springframework.shell.component.view.screen.Screen;
+import org.springframework.shell.component.view.screen.ScreenItem;
+import org.springframework.shell.style.StyleSettings;
 import org.springframework.util.StringUtils;
 
 /**
@@ -173,12 +175,14 @@ public class BoxView extends AbstractView {
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
-		if (backgroundColor == null) {
-			screen.writerBuilder().layer(getLayer()).build().background(rect, -1);
-		}
-		else if (backgroundColor > -1) {
-			screen.writerBuilder().layer(getLayer()).build().background(rect, backgroundColor);
-		}
+		int themeBackgroundColor = resolveThemeBackground(StyleSettings.TAG_BACKGROUND, -1);
+		screen.writerBuilder().layer(getLayer()).build().background(rect, themeBackgroundColor);
+		// if (backgroundColor == null) {
+		// 	screen.writerBuilder().layer(getLayer()).build().background(rect, -1);
+		// }
+		// else if (backgroundColor > -1) {
+		// 	screen.writerBuilder().layer(getLayer()).build().background(rect, backgroundColor);
+		// }
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 			screen.writerBuilder().layer(getLayer()).build().border(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {

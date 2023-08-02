@@ -143,6 +143,11 @@ public abstract class StyleSettings {
 		return "bold";
 	}
 
+	public final static String TAG_BACKGROUND = "style-background";
+	public String background() {
+		return "default";
+	}
+
 	/**
 	 * Resolve a theme setting from a given tag.
 	 *
@@ -177,6 +182,8 @@ public abstract class StyleSettings {
 				return itemSelector();
 			case TAG_HIGHLIGHT:
 				return highlight();
+			case TAG_BACKGROUND:
+				return background();
 		}
 		throw new IllegalArgumentException(String.format("Unknown tag '%s'", tag));
 	}
