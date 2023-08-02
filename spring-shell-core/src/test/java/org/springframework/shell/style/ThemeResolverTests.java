@@ -17,14 +17,20 @@ package org.springframework.shell.style;
 
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.shell.component.view.screen.Color;
+import org.springframework.shell.style.ThemeResolver.ResolvedValues;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ThemeResolverTests {
 
-	@Test
-	public void test() {
+	private ThemeResolver themeResolver;
+
+	@BeforeEach
+	public void setup() {
 		ThemeRegistry themeRegistry = new ThemeRegistry();
 		themeRegistry.register(new Theme() {
 			@Override
@@ -37,10 +43,46 @@ public class ThemeResolverTests {
 				return ThemeSettings.defaults();
 			}
 		});
-		ThemeResolver themeResolver = new ThemeResolver(themeRegistry, "default");
+		themeResolver = new ThemeResolver(themeRegistry, "default");
+	}
+
+	@Test
+	public void test() {
 		assertThat(themeResolver.resolveStyleTag(StyleSettings.TAG_TITLE)).isEqualTo("bold");
 		assertThat(themeResolver.resolveStyle("bold")).isEqualTo(AttributedStyle.BOLD);
 		assertThat(themeResolver.evaluateExpression("@{bold foo}"))
 				.isEqualTo(new AttributedString("foo", AttributedStyle.BOLD));
 	}
+
+	@Test
+	public void resolveValues1() {
+		// AttributedStyle s1 = AttributedStyle.DEFAULT.background(AttributedStyle.BLUE);
+		// AttributedStyle s2 = AttributedStyle.DEFAULT.backgroundRgb(Color.BLUE);
+		// AttributedStyle s3 = AttributedStyle.DEFAULT.background(AttributedStyle.BLUE).backgroundRgb(Color.BLUE);
+		AttributedStyle s = AttributedStyle.DEFAULT.background(AttributedStyle.BLUE);
+		ResolvedValues resolvedValues = themeResolver.resolveValues(s);
+		assertThat(resolvedValues.background()).isEqualTo(AttributedStyle.BLUE);
+	}
+
+	@Test
+	public void resolveValues2() {
+		AttributedStyle s = AttributedStyle.DEFAULT.backgroundRgb(Color.BLUE);
+		ResolvedValues resolvedValues = themeResolver.resolveValues(s);
+		assertThat(resolvedValues.background()).isEqualTo(Color.BLUE);
+	}
+
+	@Test
+	public void resolvexxx1() {
+		AttributedStyle s = themeResolver.resolveStyle("bg-rgb:#0000FF");
+		ResolvedValues resolvedValues = themeResolver.resolveValues(s);
+		assertThat(resolvedValues.background()).isEqualTo(Color.BLUE);
+	}
+
+	@Test
+	public void resolvexxx2() {
+		AttributedStyle s = themeResolver.resolveStyle("bg:blue");
+		ResolvedValues resolvedValues = themeResolver.resolveValues(s);
+		assertThat(resolvedValues.background()).isEqualTo(AttributedStyle.BLUE);
+	}
+
 }
