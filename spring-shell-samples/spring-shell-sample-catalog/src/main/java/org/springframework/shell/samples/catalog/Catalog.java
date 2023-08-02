@@ -53,6 +53,7 @@ import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.component.view.screen.ScreenItem;
 import org.springframework.shell.samples.catalog.scenario.Scenario;
 import org.springframework.shell.samples.catalog.scenario.ScenarioComponent;
+import org.springframework.shell.style.ThemeResolver;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -77,10 +78,14 @@ public class Catalog {
 	private View currentScenarioView = null;
 	private TerminalUI ui;
 	private ListView<String> categories;
+	private ListView<ScenarioData> scenarios;
 	private EventLoop eventLoop;
+	private ThemeResolver themeResolver;
+	private String activeThemeName = "default";
 
-	public Catalog(Terminal terminal, List<Scenario> scenarios) {
+	public Catalog(Terminal terminal, List<Scenario> scenarios, ThemeResolver themeResolver) {
 		this.terminal = terminal;
+		this.themeResolver = themeResolver;
 		mapScenarios(scenarios);
 	}
 
@@ -151,7 +156,7 @@ public class Catalog {
 		grid.setColumnSize(30, 0);
 
 		categories = buildCategorySelector(eventLoop);
-		ListView<ScenarioData> scenarios = buildScenarioSelector(eventLoop);
+		scenarios = buildScenarioSelector(eventLoop);
 
 		grid.addItem(categories, 0, 0, 1, 1, 0, 0);
 		grid.addItem(scenarios, 0, 1, 1, 1, 0, 0);
@@ -234,6 +239,8 @@ public class Catalog {
 
 	private ListView<ScenarioData> buildScenarioSelector(EventLoop eventLoop) {
 		ListView<ScenarioData> scenarios = new ListView<>();
+		scenarios.setThemeResolver(themeResolver);
+		scenarios.setThemeName(activeThemeName);
 		scenarios.setEventLoop(eventLoop);
 		scenarios.setTitle("Scenarios");
 		scenarios.setFocusedTitleStyle(ScreenItem.STYLE_BOLD);
@@ -242,20 +249,36 @@ public class Catalog {
 		return scenarios;
 	}
 
+	private void setStyle(String name) {
+		log.debug("Setting active theme name {}", name);
+		activeThemeName = name;
+		scenarios.setThemeName(activeThemeName);
+		categories.setThemeName(activeThemeName);
+	}
+
+	private Runnable styleAction(String style) {
+		return () -> setStyle(style);
+	}
+
 	private MenuBarView buildMenuBar(EventLoop eventLoop) {
 		Runnable quitAction = () -> requestQuit();
+		MenuItem[] themeItems = themeResolver.themeNames().stream()
+			.map(tn -> {
+				return MenuItem.of(tn, MenuItemCheckStyle.RADIO, styleAction(tn), "default".equals(tn));
+			})
+			.toArray(MenuItem[]::new);
 		MenuBarView menuBar = MenuBarView.of(
 			MenuBarItem.of("File",
 				MenuItem.of("Quit", MenuItemCheckStyle.NOCHECK, quitAction)),
 			MenuBarItem.of("Theme",
-				MenuItem.of("Dump", MenuItemCheckStyle.RADIO),
-				MenuItem.of("Funky", MenuItemCheckStyle.RADIO)
-			),
+				themeItems),
 			MenuBarItem.of("Help",
 				MenuItem.of("About"))
 		);
 
 		menuBar.setEventLoop(eventLoop);
+		menuBar.setThemeResolver(themeResolver);
+		menuBar.setThemeName(activeThemeName);
 		return menuBar;
 	}
 
