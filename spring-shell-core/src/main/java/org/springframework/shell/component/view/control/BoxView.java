@@ -192,18 +192,14 @@ public class BoxView extends AbstractView {
 		if (rect.width() <= 0 || rect.height() <= 0) {
 			return;
 		}
-		int themeBackgroundColor = resolveThemeBackground(StyleSettings.TAG_BACKGROUND, backgroundColor);
-		if (!isTransparent()) {
-			if (themeBackgroundColor > -1) {
-				screen.writerBuilder().layer(getLayer()).build().background(rect, themeBackgroundColor);
-			}
-			else {
-				screen.writerBuilder().layer(getLayer()).build().background(rect, -1);
-			}
+		int bgColor;
+		if (isTransparent()) {
+			bgColor = backgroundColor > -1 ? backgroundColor : -1;
 		}
-		else if (themeBackgroundColor > -1) {
-			screen.writerBuilder().layer(getLayer()).build().background(rect, themeBackgroundColor);
+		else {
+			bgColor = resolveThemeBackground(StyleSettings.TAG_BACKGROUND, backgroundColor, -1);
 		}
+		screen.writerBuilder().layer(getLayer()).build().background(rect, bgColor);
 		if (showBorder && rect.width() >= 2 && rect.height() >= 2) {
 			screen.writerBuilder().layer(getLayer()).build().border(rect.x(), rect.y(), rect.width(), rect.height());
 			if (StringUtils.hasText(title)) {

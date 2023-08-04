@@ -114,26 +114,36 @@ public abstract class AbstractControl implements Control {
 
 	/**
 	 * Resolve foreground color using existing {@link ThemeResolver} and {@code theme name}.
-	 * Use {@code defaultColor} if resolving cannot happen.
+	 * {@code defaultColor} is used if it's value is not negative. {@code fallbackColor} is
+	 * used if theme resolver cannot be used.
 	 *
 	 * @param tag the style tag to use
 	 * @param defaultColor the default foreground color to use
+	 * @param fallbackColor the fallback foreground color to use
 	 * @return resolved foreground color
 	 */
-	protected int resolveThemeForeground(String tag, int defaultColor) {
-		return getThemeResolvedValues(tag).map(ResolvedValues::foreground).orElse(defaultColor);
+	protected int resolveThemeForeground(String tag, int defaultColor, int fallbackColor) {
+		if (defaultColor > -1) {
+			return defaultColor;
+		}
+		return getThemeResolvedValues(tag).map(ResolvedValues::foreground).orElse(fallbackColor);
 	}
 
 	/**
 	 * Resolve background color using existing {@link ThemeResolver} and {@code theme name}.
-	 * Use {@code defaultColor} if resolving cannot happen.
+	 * {@code defaultColor} is used if it's value is not negative. {@code fallbackColor} is
+	 * used if theme resolver cannot be used.
 	 *
 	 * @param tag the style tag to use
 	 * @param defaultColor the default background color to use
+	 * @param fallbackColor the fallback background color to use
 	 * @return resolved background color
 	 */
-	protected int resolveThemeBackground(String tag, int defaultColor) {
-		return getThemeResolvedValues(tag).map(ResolvedValues::background).orElse(defaultColor);
+	protected int resolveThemeBackground(String tag, int defaultColor, int fallbackColor) {
+		if (defaultColor > -1) {
+			return defaultColor;
+		}
+		return getThemeResolvedValues(tag).map(ResolvedValues::background).orElse(fallbackColor);
 	}
 
 }

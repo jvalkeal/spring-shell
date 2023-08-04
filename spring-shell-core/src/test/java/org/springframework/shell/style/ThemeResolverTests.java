@@ -87,4 +87,12 @@ public class ThemeResolverTests {
 		assertThat(resolvedValues.foreground()).isEqualTo(Colors.DEFAULT_COLORS_256[AttributedStyle.RED]);
 	}
 
+	@Test
+	public void resolveValuesNotDefinedExp() {
+		AttributedStyle s = themeResolver.resolveStyle("");
+		ResolvedValues resolvedValues = themeResolver.resolveValues(s);
+		assertThat(resolvedValues.background()).isEqualTo(-1);
+		assertThat(resolvedValues.foreground()).isEqualTo(-1);
+	}
+
 }

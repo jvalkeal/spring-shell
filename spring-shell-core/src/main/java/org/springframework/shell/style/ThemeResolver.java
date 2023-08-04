@@ -77,14 +77,16 @@ public class ThemeResolver {
 		int bg = (int) ((style & BG_COLOR) >> BG_COLOR_EXP);
 		// if jline "ind" bit is set, resort to using
 		// same logic as jline.
+		boolean hasFb = (style & F_FOREGROUND_IND) != 0 || (style & F_FOREGROUND_RGB) != 0;
 		if ((style & F_FOREGROUND_IND) != 0) {
 			fg = Colors.DEFAULT_COLORS_256[fg & 0xFF];
 		}
+		boolean hasBg = (style & F_BACKGROUND_IND) != 0 || (style & F_BACKGROUND_RGB) != 0;
 		if ((style & F_BACKGROUND_IND) != 0) {
 			bg = Colors.DEFAULT_COLORS_256[bg & 0xFF];
 		}
 
-		return new ResolvedValues((int)s, fg, bg);
+		return new ResolvedValues((int)s, hasFb ? fg : -1, hasBg ? bg : -1);
 	}
 
 	/**
