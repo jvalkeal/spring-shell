@@ -53,4 +53,43 @@ class KeyEventTests {
 
 	}
 
+	// @Test
+	// void xxx1() {
+	// 	String u1 = "\u1F602";
+	// 	String u2 = "😂";
+	// 	System.out.println(u1);
+	// 	System.out.println(u2);
+	// 	assertThat(u1).isNotNull();
+
+	// 	String h1 = "H";
+	// 	String h2 = "\u0048";
+	// 	System.out.println(h1);
+	// 	System.out.println(h2);
+
+	// 	// System.out.println( "\\u" + Integer.toHexString('÷' | 0x10000).substring(1) );
+	// }
+
+	// @Test
+	// void xxx2() {
+	// 	String u1 = "\uD83D\uDE00";
+	// 	String u2 = "😀";
+	// 	// String xxx = "\u1F600";
+	// 	System.out.println(u1);
+	// 	System.out.println(u2);
+	// 	assertThat(u2).hasSize(2);
+	// 	// 60 -40 0 -34
+	// }
+
+	// @Test
+	// void xxx3() throws UnsupportedEncodingException {
+	// 	String u1 = "\uD83D\uDE00";
+	// 	String u2 = "😀";
+	// 	byte[] b1 = u1.getBytes();
+	// 	byte[] bb = u2.getBytes(StandardCharsets.UTF_16LE);
+	// 	byte[] b3 = new byte[]{60, -40, 0, -34};
+	// 	int emoji = Character.codePointAt(u2, 0);
+	// 	// 128512
+	// 	assertThat(b3).isNotNull();
+	// }
+
 }

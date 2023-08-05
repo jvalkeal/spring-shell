@@ -16,6 +16,7 @@
 package org.springframework.shell.component.view;
 
 import java.io.IOError;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -333,7 +334,7 @@ public class TerminalUI {
 		else if (operation == KeyEvent.Key.Unicode) {
 			String lastBinding = bindingReader.getLastBinding();
 			if (StringUtils.hasLength(lastBinding)) {
-				dispatchKeyEvent(KeyEvent.of(lastBinding.charAt(0)));
+				dispatchKeyEvent(KeyEvent.of(lastBinding));
 			}
 		}
 		else if (operation == KeyEvent.Key.Mouse) {
