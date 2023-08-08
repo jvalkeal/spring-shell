@@ -25,6 +25,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -338,5 +340,21 @@ public class ComponentFlowTests extends AbstractShellTests {
 		assertThat(inputWizardResult).isNotNull();
 		String single1 = inputWizardResult.getContext().get("single1");
 		assertThat(single1).isEqualTo("value2");
+	}
+
+	void testCustomComponent() {
+		Test1Component test1 = new Test1Component(null);
+		// Supplier<Test1Component> xxx = () -> {
+		// 	return test1;
+		// };
+		// Consumer<Test1Component.Test1ComponentSpec> ddd = spec -> {};
+		ComponentFlow wizard = ComponentFlow.builder()
+				.terminal(getTerminal())
+				.resourceLoader(getResourceLoader())
+				.templateExecutor(getTemplateExecutor())
+				.withComponent("test")
+					.and()
+				.build();
+
 	}
 }

@@ -94,6 +94,8 @@ public interface ComponentFlow {
 	 */
 	interface Builder {
 
+		<T extends BaseInputSpec<T>> T withComponent(String id);
+
 		/**
 		 * Gets a builder for string input.
 		 *
@@ -201,6 +203,15 @@ public interface ComponentFlow {
 			return new DefaultComponentFlow(terminal, resourceLoader, templateExecutor, stringInputs, pathInputs,
 					confirmationInputs, singleItemSelectors, multiItemSelectors);
 		}
+
+		@Override
+		public <T extends BaseInputSpec<T>> T withComponent(String id) {
+			return null;
+		}
+
+		// public <T extends BaseInputSpec<T>> T withComponentx(String id, Class<T> type) {
+		// 	return null;
+		// }
 
 		@Override
 		public StringInputSpec withStringInput(String id) {

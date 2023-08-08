@@ -36,4 +36,6 @@ public interface BaseInputSpec<T extends BaseInputSpec<T>> {
 	 * @return a builder
 	 */
 	T getThis();
+
+	ComponentFlow.Builder and();
 }
