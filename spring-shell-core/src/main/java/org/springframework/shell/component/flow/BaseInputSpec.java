@@ -15,6 +15,8 @@
  */
 package org.springframework.shell.component.flow;
 
+import org.springframework.shell.component.flow.ComponentFlow.BaseBuilder;
+
 /**
  * Base spec for other specs.
  *
@@ -37,5 +39,6 @@ public interface BaseInputSpec<T extends BaseInputSpec<T>> {
 	 */
 	T getThis();
 
+	void setBaseBuilder(BaseBuilder builder);
 	ComponentFlow.Builder and();
 }

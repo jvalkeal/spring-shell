@@ -49,6 +49,11 @@ public abstract class BaseInput<T extends BaseInputSpec<T>> implements Ordered, 
 		return getThis();
 	}
 
+	// XXX 1
+	@Override
+	public void setBaseBuilder(BaseBuilder builder) {
+	}
+
 	public BaseBuilder getBuilder() {
 		return builder;
 	}

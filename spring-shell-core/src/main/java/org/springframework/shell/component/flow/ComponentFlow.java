@@ -94,7 +94,7 @@ public interface ComponentFlow {
 	 */
 	interface Builder {
 
-		<T extends BaseInputSpec<T>> T withComponent(String id);
+		<T extends BaseInputSpec<T>> T withComponent(String id, T spec);
 
 		/**
 		 * Gets a builder for string input.
@@ -204,10 +204,17 @@ public interface ComponentFlow {
 					confirmationInputs, singleItemSelectors, multiItemSelectors);
 		}
 
+		// XXX 1
 		@Override
-		public <T extends BaseInputSpec<T>> T withComponent(String id) {
-			return null;
+		public <T extends BaseInputSpec<T>> T withComponent(String id, T spec) {
+			spec.setBaseBuilder(this);
+			return spec;
 		}
+
+		// public <T extends BaseInputSpec<T>> T withComponentx1(String id, T spec) {
+		// 	spec.setBaseBuilder(this);
+		// 	return spec;
+		// }
 
 		// public <T extends BaseInputSpec<T>> T withComponentx(String id, Class<T> type) {
 		// 	return null;
@@ -271,6 +278,11 @@ public interface ComponentFlow {
 			order.set(0);
 			uniqueIds.clear();
 			return this;
+		}
+
+		// XXX 1
+		<T extends BaseInputSpec<T>> void addComponent(T spec) {
+			// BaseInput<T extends BaseInputSpec<T>>
 		}
 
 		void addStringInput(BaseStringInput input) {

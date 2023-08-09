@@ -54,8 +54,7 @@ public class Test1Component extends AbstractComponent<Test1Component.Test1Compon
 	protected void bindKeyMap(KeyMap<String> keyMap) {
 	}
 
-	public interface Test1ComponentSpec extends BaseInputSpec<Test1ComponentSpec> {
-	}
+	// XXX 1
 
 	public interface Test1ComponentContext extends ComponentContext<Test1ComponentContext> {
 	}
@@ -64,9 +63,19 @@ public class Test1Component extends AbstractComponent<Test1Component.Test1Compon
 			implements Test1ComponentContext {
 	}
 
+	// XXX 1
+
+	public interface Test1ComponentSpec extends BaseInputSpec<Test1ComponentSpec> {
+
+		Test1ComponentSpec foo(String bar);
+	}
+
 	public static class DefaultTest1ComponentSpec extends BaseInput<Test1ComponentSpec> implements Test1ComponentSpec {
 
-		DefaultTest1ComponentSpec(BaseBuilder builder, String id) {
+		public DefaultTest1ComponentSpec() {
+			this(null, null);
+		}
+ 		DefaultTest1ComponentSpec(BaseBuilder builder, String id) {
 			super(builder, id);
 		}
 
@@ -76,8 +85,15 @@ public class Test1Component extends AbstractComponent<Test1Component.Test1Compon
 		}
 
 		@Override
+		public Test1ComponentSpec foo(String bar) {
+			return this;
+		}
+
+		@Override
 		public Builder and() {
-			return getBuilder();
+			BaseBuilder builder = getBuilder();
+			builder.addComponent(this);
+			return builder;
 		}
 
 	}

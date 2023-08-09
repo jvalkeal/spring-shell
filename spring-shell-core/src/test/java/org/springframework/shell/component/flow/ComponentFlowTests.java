@@ -343,16 +343,20 @@ public class ComponentFlowTests extends AbstractShellTests {
 	}
 
 	void testCustomComponent() {
-		Test1Component test1 = new Test1Component(null);
 		// Supplier<Test1Component> xxx = () -> {
 		// 	return test1;
 		// };
 		// Consumer<Test1Component.Test1ComponentSpec> ddd = spec -> {};
+		Test1Component test1 = new Test1Component(null);
+		Test1Component.Test1ComponentSpec test1Spec = new Test1Component.DefaultTest1ComponentSpec();
 		ComponentFlow wizard = ComponentFlow.builder()
 				.terminal(getTerminal())
 				.resourceLoader(getResourceLoader())
 				.templateExecutor(getTemplateExecutor())
-				.withComponent("test")
+				.withSingleItemSelector("single1")
+					.and()
+				.withComponent("test", test1Spec)
+					.foo("bar")
 					.and()
 				.build();
 
