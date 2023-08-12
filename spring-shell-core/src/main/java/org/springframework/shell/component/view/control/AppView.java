@@ -37,6 +37,7 @@ public class AppView extends BoxView {
 	private View main;
 	private View menu;
 	private View status;
+	private View modal;
 	private boolean menuVisible = true;
 	private boolean statusVisible = true;
 
@@ -99,6 +100,9 @@ public class AppView extends BoxView {
 		if (grid != null) {
 			grid.setRect(rect.x(), rect.y(), rect.width(), rect.height());
 			grid.draw(screen);
+		}
+		if (modal != null) {
+			modal.draw(screen);
 		}
 		super.drawInternal(screen);
 	}
@@ -178,6 +182,10 @@ public class AppView extends BoxView {
 	 */
 	public void toggleStatusBarVisibility() {
 		setStatusBarVisible(!statusVisible);
+	}
+
+	public void setModal(View modal) {
+		this.modal = modal;
 	}
 
 	/**

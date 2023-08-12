@@ -238,6 +238,10 @@ public abstract class AbstractView extends AbstractControl implements View {
 		return eventLoop;
 	}
 
+	protected ViewService getViewService() {
+		return null;
+	}
+
 	protected void registerKeyBinding(Integer keyType, String keyCommand) {
 		registerKeyBinding(keyType, keyCommand, null, null);
 	}
