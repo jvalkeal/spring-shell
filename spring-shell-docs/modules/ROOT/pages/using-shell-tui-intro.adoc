@@ -2,7 +2,7 @@
 = Introduction
 :page-section-summary-toc: 1
 
-ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
+ifndef::snippets[:snippets: ../../../src/test/java/org/springframework/shell/docs]
 
 Lets start with a simple app which prints "hello world" in a view.
 [source, java, indent=0]

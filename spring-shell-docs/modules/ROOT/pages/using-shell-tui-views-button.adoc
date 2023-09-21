@@ -1,0 +1,7 @@
+[[using-shell-tui-views-button]]
+= ButtonView
+:page-section-summary-toc: 1
+
+ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
+
+_ButtonView_

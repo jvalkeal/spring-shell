@@ -5,3 +5,16 @@
 ifndef::snippets[:snippets: ../../test/java/org/springframework/shell/docs]
 
 _ListView_ is a base implementation providing functionality to draw list of items.
+
+[[listview-events]]
+.ListView Events
+|===
+|Key |Description
+
+|`ListViewOpenSelectedItemEvent`
+|xxx.
+
+|`ListViewSelectedItemChangedEvent`
+|xxx.
+
+|===
