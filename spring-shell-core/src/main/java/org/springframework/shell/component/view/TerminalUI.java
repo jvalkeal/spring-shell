@@ -16,8 +16,10 @@
 package org.springframework.shell.component.view;
 
 import java.io.IOError;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
@@ -30,6 +32,7 @@ import org.jline.utils.Display;
 import org.jline.utils.InfoCmp.Capability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -45,6 +48,7 @@ import org.springframework.shell.component.view.event.KeyHandler.KeyHandlerResul
 import org.springframework.shell.component.view.event.MouseEvent;
 import org.springframework.shell.component.view.event.MouseHandler;
 import org.springframework.shell.component.view.event.MouseHandler.MouseHandlerResult;
+import org.springframework.shell.component.view.geom.Dimension;
 import org.springframework.shell.component.view.geom.Rectangle;
 import org.springframework.shell.component.view.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.message.ShellMessageHeaderAccessor;
@@ -160,21 +164,46 @@ public class TerminalUI implements ViewService {
 		}
 	}
 
+	private BiFunction<Terminal, View, Rectangle> fullScreenViewRect = (terminal, view) -> {
+		Size s = terminal.getSize();
+		Rectangle rect = new Rectangle(0, 0, s.getColumns(), s.getRows());
+		return rect;
+	};
+
+	private BiFunction<Terminal, View, Rectangle> screenViewRect = (terminal, view) -> {
+		Size s = terminal.getSize();
+		// Rectangle rect = new Rectangle(0, 0, s.getColumns(), s.getRows() - 1);
+		Rectangle rect = new Rectangle(0, 0, s.getColumns(), 5);
+		return rect;
+	};
+
 	private void display() {
-		log.trace("display()");
+		log.trace("display() start");
 		size.copy(terminal.getSize());
 		if (fullScreen) {
 			display.clear();
 			display.resize(size.getRows(), size.getColumns());
 			display.reset();
-			rootView.setRect(0, 0, size.getColumns(), size.getRows());
+			Rectangle rect = fullScreenViewRect.apply(terminal, rootView);
+
+			rootView.setRect(rect.x(), rect.y(), rect.width(), rect.height());
+			// rootView.setRect(0, 0, size.getColumns(), size.getRows());
+
 			virtualDisplay.resize(size.getRows(), size.getColumns());
 			virtualDisplay.setShowCursor(false);
 			render(size.getRows(), size.getColumns());
 		}
 		else {
-			display.resize(size.getRows(), size.getColumns());
-			Rectangle rect = rootView.getRect();
+			// display.resize(size.getRows(), size.getColumns());
+			// Rectangle rect = rootView.getRect();
+			// virtualDisplay.resize(rect.height(), rect.width());
+			// virtualDisplay.setShowCursor(false);
+			// render(rect.height(), rect.width());
+
+			// display.resize(size.getRows(), size.getColumns());
+			Rectangle rect = screenViewRect.apply(terminal, rootView);
+			display.reset();
+			display.resize(rect.height(), rect.width());
 			virtualDisplay.resize(rect.height(), rect.width());
 			virtualDisplay.setShowCursor(false);
 			render(rect.height(), rect.width());
@@ -192,6 +221,7 @@ public class TerminalUI implements ViewService {
 			terminal.puts(Capability.cursor_invisible);
 		}
 		display.update(newLines, targetCursorPos);
+		log.trace("display() end");
 	}
 
 	private void dispatchWinch() {
@@ -207,6 +237,11 @@ public class TerminalUI implements ViewService {
 			.filter(m -> {
 				return ObjectUtils.nullSafeEquals(m.getHeaders().get(ShellMessageHeaderAccessor.EVENT_TYPE), EventLoop.Type.SIGNAL);
 			})
+			// .sample(Duration.ofSeconds(1))
+			// .sampleTimeout(u -> Mono.empty().delaySubscription(Duration.ofSeconds(1)))
+			.sampleTimeout(u -> Mono.empty().delaySubscription(Duration.ofMillis(100)))
+			// .sampleFirst(u -> Mono.empty().delaySubscription(Duration.ofSeconds(1)))
+			// .sampleFirst(Duration.ofSeconds(1))
 			.doOnNext(m -> {
 				display();
 			})
