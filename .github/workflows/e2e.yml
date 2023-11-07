@@ -85,12 +85,13 @@ jobs:
           distribution: adopt
           java-version: 17
           cache: gradle
+      - name: Use Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - if: runner.os == 'macOS'
-        run: |
-          python3 -m pip install packaging
       - name: compile e2e module
         working-directory: e2e/spring-shell-e2e
         run: |
