@@ -158,13 +158,31 @@ class CommandAnnotationUtils {
 			.map(command -> command.strip())
 			.collect(Collectors.toList());
 
-		return Stream.of(right.getStringArray(field))
+		// String[] xxx1 = right.getStringArray(field);
+
+		String[][] deduced = Stream.of(right.getStringArray(field))
 			.flatMap(command -> Stream.of(command.split(" ")))
 			.filter(command -> StringUtils.hasText(command))
 			.map(command -> command.strip())
 			.map(command -> Stream.concat(prefix.stream(), Stream.of(command)).collect(Collectors.toList()))
 			.map(arr -> arr.toArray(String[]::new))
 			.toArray(String[][]::new);
+		if (deduced.length > 0) {
+			return deduced;
+		}
+		else {
+			return prefix.stream()
+				.map(command -> new String[] { command })
+				.toArray(String[][]::new);
+		}
+
+		// return Stream.of(right.getStringArray(field))
+		// 	.flatMap(command -> Stream.of(command.split(" ")))
+		// 	.filter(command -> StringUtils.hasText(command))
+		// 	.map(command -> command.strip())
+		// 	.map(command -> Stream.concat(prefix.stream(), Stream.of(command)).collect(Collectors.toList()))
+		// 	.map(arr -> arr.toArray(String[]::new))
+		// 	.toArray(String[][]::new);
 	}
 
 	private static String[] deduceStringArray(String field, MergedAnnotation<?> left, MergedAnnotation<?> right) {

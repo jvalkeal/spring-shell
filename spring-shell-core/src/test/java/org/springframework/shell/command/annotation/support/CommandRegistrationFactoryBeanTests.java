@@ -103,6 +103,29 @@ class CommandRegistrationFactoryBeanTests {
 	}
 
 	@Test
+	void shouldGetDefaults() {
+		configCommon(OnClassAndMethodEmpty.class, new OnClassAndMethodEmpty(), "command1", new Class[] { })
+				.run((context) -> {
+					CommandRegistrationFactoryBean fb = context.getBean(FACTORYBEANREF,
+							CommandRegistrationFactoryBean.class);
+					assertThat(fb).isNotNull();
+					CommandRegistration registration = fb.getObject();
+					assertThat(registration).isNotNull();
+					assertThat(registration.getCommand()).isEqualTo("one");
+					assertThat(registration.getAliases()).hasSize(1);
+					assertThat(registration.getAliases().get(0).getCommand()).isEqualTo("three");
+				});
+	}
+
+	@Command(command = "one", alias = "three", group = "group1")
+	private static class OnClassAndMethodEmpty {
+
+		@Command()
+		void command1(){
+		}
+	}
+
+	@Test
 	void setsRequiredOption() {
 		configCommon(RequiredOption.class, new RequiredOption(), "command1", new Class[] { String.class })
 				.run((context) -> {
