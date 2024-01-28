@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.component;
 
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 
 import org.springframework.shell.component.message.ShellMessageBuilder;
@@ -22,6 +23,7 @@ import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.component.view.control.View;
 import org.springframework.shell.component.view.control.ViewDoneEvent;
 import org.springframework.shell.component.view.event.EventLoop;
+import org.springframework.shell.geom.Rectangle;
 import org.springframework.util.Assert;
 
 /**
@@ -34,28 +36,38 @@ public class ViewComponent {
 	private final Terminal terminal;
 	private final View view;
 	private EventLoop eventLoop;
+	private TerminalUI ui;
 
 	public ViewComponent(Terminal terminal, View view) {
 		Assert.notNull(terminal, "terminal must be set");
 		Assert.notNull(view, "view must be set");
 		this.terminal = terminal;
 		this.view = view;
+		this.ui = new TerminalUI(terminal);
+		this.eventLoop = ui.getEventLoop();
 	}
 
 	/**
 	 * Run a view execution loop.
 	 */
 	public void run() {
-		TerminalUI ui = new TerminalUI(terminal);
-		eventLoop = ui.getEventLoop();
+		// TerminalUI ui = new TerminalUI(terminal);
+		// eventLoop = ui.getEventLoop();
 		eventLoop.onDestroy(eventLoop.viewEvents(ViewDoneEvent.class, view)
 			.subscribe(event -> {
 					exit();
 				}
 			));
 		view.setEventLoop(eventLoop);
+		Size terminalSize = terminal.getSize();
+		Rectangle rect = view.getRect();
+		view.setRect(rect.x(), rect.y(), terminalSize.getColumns() - rect.x(), rect.height());
 		ui.setRoot(view, false);
 		ui.run();
+	}
+
+	public EventLoop getEventLoop() {
+		return eventLoop;
 	}
 
 	/**

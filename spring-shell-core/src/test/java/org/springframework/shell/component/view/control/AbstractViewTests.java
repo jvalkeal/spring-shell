@@ -36,6 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AbstractViewTests {
 
 	protected Screen screen24x80;
+	protected Screen screen1x80;
 	protected Screen screen7x10;
 	protected Screen screen10x10;
 	protected Screen screen0x0;
@@ -44,6 +45,7 @@ public class AbstractViewTests {
 	@BeforeEach
 	void setup() {
 		screen24x80 = new DefaultScreen(24, 80);
+		screen1x80 = new DefaultScreen(1, 80);
 		screen7x10 = new DefaultScreen(7, 10);
 		screen0x0 = new DefaultScreen();
 		screen10x10 = new DefaultScreen(10, 10);
