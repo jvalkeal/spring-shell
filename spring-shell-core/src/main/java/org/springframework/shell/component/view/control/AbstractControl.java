@@ -145,4 +145,19 @@ public abstract class AbstractControl implements Control {
 		return getThemeResolvedValues(tag).map(ResolvedValues::background).orElse(fallbackColor);
 	}
 
+	protected Spinner resolveThemeSpinner(String tag, Spinner defaultSpinner, Spinner fallbackSpinner) {
+		if (defaultSpinner != null) {
+			return defaultSpinner;
+		}
+		Spinner spinner = null;
+		ThemeResolver themeResolver = getThemeResolver();
+		if (themeResolver != null) {
+			spinner = getThemeResolver().resolveSpinnerTag(tag);
+		}
+		if (spinner == null) {
+			spinner = fallbackSpinner;
+		}
+		return spinner;
+	}
+
 }
