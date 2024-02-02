@@ -15,9 +15,13 @@
  */
 package org.springframework.shell.component.view.control;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.component.message.ShellMessageBuilder;
 import org.springframework.shell.component.view.control.cell.TextCell;
@@ -36,12 +40,14 @@ import org.springframework.util.Assert;
  */
 public class ProgressView extends BoxView {
 
+	private final static Logger log = LoggerFactory.getLogger(ProgressView.class);
 	private final int tickStart;
 	private final int tickEnd;
 	private int tickValue;
 	private boolean running = false;
 	private String description;
-	private Spinner spinner = Spinner.of(Spinner.LINE1, 130);
+	// private Spinner spinner = Spinner.of(Spinner.LINE1, 130);
+	private Spinner spinner = Spinner.of(Spinner.LINE1, 80);
 	private int spinnerFrame;
 	private List<ProgressViewItem> items;
 	private GridView grid;
@@ -66,9 +72,35 @@ public class ProgressView extends BoxView {
 	private final static Function<Context, TextCell<Context>> DEFAULT_SPINNER_FACTORY =
 			item -> {
 				TextCell<Context> cell = TextCell.of(item, ctx -> {
+
+					// long current = System.currentTimeMillis();
+					// if (needLastMillisInit) {
+					// 	needLastMillisInit = false;
+					// 	lastMillis = current;
+					// }
+
+					// long elapsedFromLast = current - lastMillis;
+					// if (elapsedFromLast > spinner.getInterval()) {
+					// 	spinnerFrame = (spinnerFrame + 1) % spinner.getFrames().length;
+					// 	lastMillis = current;
+					// }
+
+					// we know start time and current update time,
+					// calculate elapsed time "frame" to pick rolling
+					// spinner frame
 					Spinner spin = ctx.spinner();
-					int spinState = ctx.getState().sprinnerFrame();
-					return String.format("%s", spin.getFrames()[spinState]);
+					int interval = spin.getInterval();
+					long startTime = ctx.getState().startTime();
+					long updateTime = ctx.getState().updateTime();
+					long elapsedTime = updateTime - startTime;
+					long elapsedFrame = elapsedTime / interval;
+					int frame = (int) elapsedFrame % spin.getFrames().length;
+					log.debug("Drawing frame {} {}", frame, elapsedFrame);
+
+					// Spinner spin = ctx.spinner();
+					// int spinState = ctx.getState().sprinnerFrame();
+					// return String.format("%s", spin.getFrames()[spinState]);
+					return String.format("%s", spin.getFrames()[frame]);
 				});
 				return cell;
 			};
@@ -173,11 +205,15 @@ public class ProgressView extends BoxView {
 		this.description = description;
 	}
 
+	private long startTime;
+	private long updateTime;
+
 	public void start() {
 		if (running) {
 			return;
 		}
 		running = true;
+		startTime = System.currentTimeMillis();
 		ProgressState state = getState();
 		dispatch(ShellMessageBuilder.ofView(this, ProgressViewStartEvent.of(this, state)));
 	}
@@ -205,6 +241,8 @@ public class ProgressView extends BoxView {
 		}
 	}
 
+	private List<TextCell<Context>> cells = new ArrayList<>();
+
 	private void initLayout() {
 		grid = new GridView();
 		int[] columnSizes = new int[items.size()];
@@ -212,6 +250,7 @@ public class ProgressView extends BoxView {
 		for (ProgressViewItem item : items) {
 			columnSizes[index] = item.size;
 			TextCell<Context> cell = item.factory.apply(buildContext());
+			cells.add(cell);
 			cell.setHorizontalAlign(item.align);
 			grid.addItem(new BoxWrapper(cell), 0, index, 1, 1, 0, 0);
 			index++;
@@ -227,20 +266,28 @@ public class ProgressView extends BoxView {
 	@Override
 	protected void drawInternal(Screen screen) {
 		long current = System.currentTimeMillis();
-		if (needLastMillisInit) {
-			needLastMillisInit = false;
-			lastMillis = current;
-		}
+		// if (needLastMillisInit) {
+		// 	needLastMillisInit = false;
+		// 	lastMillis = current;
+		// }
 
-		long elapsedFromLast = current - lastMillis;
-		if (elapsedFromLast > spinner.getInterval()) {
-			spinnerFrame = (spinnerFrame + 1) % spinner.getFrames().length;
-			lastMillis = current;
+		// long elapsedFromLast = current - lastMillis;
+		// if (elapsedFromLast > spinner.getInterval()) {
+		// 	spinnerFrame = (spinnerFrame + 1) % spinner.getFrames().length;
+		// 	lastMillis = current;
+		// }
+
+		// XXX
+		updateTime = current;
+		Context context = buildContext();
+		for (TextCell<Context> cell : cells) {
+			cell.setItem(context);
 		}
+		// XXX
 
 		Rectangle rect = getRect();
-		int width = rect.width();
-		width = width / 3;
+		// int width = rect.width();
+		// width = width / 3;
 
 		grid.setRect(rect.x(), rect.y(), rect.width(), rect.height());
 		grid.draw(screen);
@@ -291,7 +338,7 @@ public class ProgressView extends BoxView {
 	 * @return a view progress state
 	 */
 	public ProgressState getState() {
-		return ProgressState.of(tickStart, tickEnd, tickValue, running, spinnerFrame);
+		return ProgressState.of(tickStart, tickEnd, tickValue, running, spinnerFrame, startTime, updateTime);
 	}
 
 	private Context buildContext() {
@@ -378,10 +425,12 @@ public class ProgressView extends BoxView {
 	 * @param running the running state
 	 * @param spinnerFrame the current spinner frame index
 	 */
-	public record ProgressState(int tickStart, int tickEnd, int tickValue, boolean running, int sprinnerFrame) {
+	public record ProgressState(int tickStart, int tickEnd, int tickValue, boolean running, int sprinnerFrame,
+			long startTime, long updateTime) {
 
-		public static ProgressState of(int tickStart, int tickEnd, int tickValue, boolean running, int spinnerFrame) {
-			return new ProgressState(tickStart, tickEnd, tickValue, running, spinnerFrame);
+		public static ProgressState of(int tickStart, int tickEnd, int tickValue, boolean running, int spinnerFrame,
+				long startTime, long updateTime) {
+			return new ProgressState(tickStart, tickEnd, tickValue, running, spinnerFrame, startTime, updateTime);
 		}
 	}
 
