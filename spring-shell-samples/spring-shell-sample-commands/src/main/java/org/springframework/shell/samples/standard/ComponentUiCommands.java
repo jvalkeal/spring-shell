@@ -100,7 +100,7 @@ public class ComponentUiCommands extends AbstractShellComponent {
 		ProgressView view = new ProgressView();
 		view.setDescription("name");
 		view.setRect(0, 0, 20, 1);
-		// view.start();
+		view.start();
 
 		ViewComponent component = new ViewComponent(getTerminal(), view);
 		EventLoop eventLoop = component.getEventLoop();

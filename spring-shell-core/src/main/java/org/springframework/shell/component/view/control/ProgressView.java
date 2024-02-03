@@ -85,17 +85,23 @@ public class ProgressView extends BoxView {
 					// 	lastMillis = current;
 					// }
 
-					// we know start time and current update time,
-					// calculate elapsed time "frame" to pick rolling
-					// spinner frame
+					int frame = 0;
+
 					Spinner spin = ctx.spinner();
-					int interval = spin.getInterval();
-					long startTime = ctx.getState().startTime();
-					long updateTime = ctx.getState().updateTime();
-					long elapsedTime = updateTime - startTime;
-					long elapsedFrame = elapsedTime / interval;
-					int frame = (int) elapsedFrame % spin.getFrames().length;
-					log.debug("Drawing frame {} {}", frame, elapsedFrame);
+					if (ctx.getState().running()) {
+						// we know start time and current update time,
+						// calculate elapsed time "frame" to pick rolling
+						// spinner frame
+						int interval = spin.getInterval();
+						long startTime = ctx.getState().startTime();
+						long updateTime = ctx.getState().updateTime();
+						long elapsedTime = updateTime - startTime;
+						long elapsedFrame = elapsedTime / interval;
+						frame = (int) elapsedFrame % spin.getFrames().length;
+						log.debug("Drawing frame1 {}", elapsedFrame);
+					}
+					log.debug("Drawing frame2 {}", frame);
+
 
 					// Spinner spin = ctx.spinner();
 					// int spinState = ctx.getState().sprinnerFrame();
