@@ -13,15 +13,15 @@ jobs:
         include:
           - nickname: win
             os: windows-2022
-            graal: 22.3.0
+            graal: latest
             musl: false
           - nickname: macos
             os: macos-12
-            graal: 22.3.0
+            graal: latest
             musl: false
           - nickname: linux
             os: ubuntu-22.04
-            graal: 22.3.0
+            graal: latest
             musl: true
     name: Compile ${{ matrix.nickname }}
     steps:
