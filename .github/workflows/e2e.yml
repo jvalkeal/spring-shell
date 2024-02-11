@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Download jdk
         run: |
-          wget -O $RUNNER_TEMP/${{ matrix.jdkfile }} ${{ matrix.jdkurl }}
+          curl ${{ matrix.jdkurl }} -o $RUNNER_TEMP/${{ matrix.jdkfile }}
       - uses: actions/setup-java@v4
         with:
           distribution: jdkfile
