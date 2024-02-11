@@ -35,7 +35,7 @@ jobs:
       - name: Download jdk
         run: |
           wget -O $RUNNER_TEMP/${{ matrix.jdkfile }} ${{ matrix.jdkurl }}
-      - uses: graalvm/setup-graalvm@v1
+      - uses: actions/setup-java@v4
         with:
           distribution: jdkfile
           jdkFile: ${{ runner.temp }}/${{ matrix.jdkfile }}
