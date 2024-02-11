@@ -28,7 +28,7 @@ jobs:
             graal: latest
             jdkfile: jdk.tar.gz
             jdkurl: https://download.bell-sw.com/vm/23.0.3/bellsoft-liberica-vm-full-openjdk17.0.10+13-23.0.3+1-linux-amd64.tar.gz
-            musl: true
+            musl: false
     name: Compile ${{ matrix.nickname }}
     steps:
       - uses: actions/checkout@v3
