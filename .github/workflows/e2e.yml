@@ -15,24 +15,39 @@ jobs:
             os: windows-2022
             graal: latest
             musl: false
+            jdkfile: jdk.zip
+            jdkurl: https://download.bell-sw.com/vm/23.0.3/bellsoft-liberica-vm-full-openjdk17.0.10+13-23.0.3+1-windows-amd64.zip
           - nickname: macos
             os: macos-12
             graal: latest
             musl: false
+            jdkfile: jdk.tar.gz
+            jdkurl: https://download.bell-sw.com/vm/23.0.3/bellsoft-liberica-vm-full-openjdk17.0.10+13-23.0.3+1-macos-amd64.tar.gz
           - nickname: linux
             os: ubuntu-22.04
             graal: latest
+            jdkfile: jdk.tar.gz
+            jdkurl: https://download.bell-sw.com/vm/23.0.3/bellsoft-liberica-vm-full-openjdk17.0.10+13-23.0.3+1-linux-amd64.tar.gz
             musl: true
     name: Compile ${{ matrix.nickname }}
     steps:
       - uses: actions/checkout@v3
+      - name: Download jdk
+        run: |
+          wget -O $RUNNER_TEMP/${{ matrix.jdkfile }} ${{ matrix.jdkurl }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: ${{ matrix.graal }}
-          java-version: 21
-          components: native-image
-          native-image-musl: ${{ matrix.musl }}
+          distribution: jdkfile
+          jdkFile: ${{ runner.temp }}/${{ matrix.jdkfile }}
+          java-version: 17
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: graalvm/setup-graalvm@v1
+      #   with:
+      #     version: ${{ matrix.graal }}
+      #     java-version: 21
+      #     components: native-image
+      #     native-image-musl: ${{ matrix.musl }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -83,7 +98,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: adopt
-          java-version: 21
+          java-version: 17
           cache: gradle
       - name: Use Python 3.11
         uses: actions/setup-python@v4
