@@ -120,6 +120,15 @@ class DefaultEventLoopTests {
 		verifier1.verify(Duration.ofSeconds(1));
 	}
 
+
+	@Test
+	void dispatchNoSubscribersDoesNotError() {
+		initDefault();
+		Message<String> message = MessageBuilder.withPayload("TEST").build();
+
+		loop.dispatch(message);
+	}
+
 	@Test
 	void subsribtionCompletesWhenLoopDestroyed() {
 		initDefault();

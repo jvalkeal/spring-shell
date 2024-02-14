@@ -202,8 +202,11 @@ public class DefaultEventLoop implements EventLoop {
 	// }
 
 	private boolean doSend(Message<?> message, long timeout) {
-		Assert.state(this.active && this.many.currentSubscriberCount() > 0,
-				() -> "The [" + this + "] doesn't have subscribers to accept messages");
+		if (!this.active || this.many.currentSubscriberCount() == 0) {
+			return false;
+		}
+		// Assert.state(this.active && this.many.currentSubscriberCount() > 0,
+		// 		() -> "The [" + this + "] doesn't have subscribers to accept messages");
 		long remainingTime = 0;
 		if (timeout > 0) {
 			remainingTime = timeout;
