@@ -532,11 +532,11 @@ public class GridView extends BoxView {
 		}
 		int last = rowPos.length - 1;
 		if (rowPos[last] + rowHeight[last] + border - offsetY < height) {
-			offsetY = rowPos[last] - height + rowHeight[last] + border;
+			// offsetY = rowPos[last] - height + rowHeight[last] + border;
 		}
 		last = columnPos.length - 1;
 		if (columnPos[last] + columnWidth[last] + border - offsetX < width) {
-			offsetX = columnPos[last] - width + columnWidth[last] + border;
+			// offsetX = columnPos[last] - width + columnWidth[last] + border;
 		}
 
 		// The focused item must be within the visible area.
@@ -604,6 +604,8 @@ public class GridView extends BoxView {
 
 			item.x -= offsetX;
 			item.y -= offsetY;
+			// item.x += offsetX;
+			// item.y += offsetY;
 			if (item.x >= width || item.x + item.w <= 0 || item.y >= height || item.y + item.h <= 0) {
 				item.visible = false;
 				continue;

@@ -266,6 +266,87 @@ class GridViewTests extends AbstractViewTests {
 			verify(sbox7, never()).setRect(0, 0, 0, 0);
 		}
 
+		@Test
+		void twoColumnsWithZeroSizes() {
+			BoxView box1 = new BoxView();
+			BoxView box2 = new BoxView();
+			BoxView sbox1 = spy(box1);
+			BoxView sbox2 = spy(box2);
+			GridView grid = new GridView();
+
+			grid.setShowBorders(false);
+			grid.setRowSize(0);
+			grid.setColumnSize(0, 0);
+			grid.setShowBorder(false);
+			grid.addItem(sbox1, 0, 0, 1, 1, 0, 0);
+			grid.addItem(sbox2, 0, 1, 1, 1, 0, 0);
+
+			grid.setRect(0, 0, 80, 1);
+			grid.draw(screen1x80);
+
+			verify(sbox1).setRect(0, 0, 40, 1);
+			verify(sbox2).setRect(40, 0, 40, 1);
+		}
+
+		@Test
+		void twoColumnsWithFixedSizes() {
+			BoxView box1 = new BoxView();
+			BoxView box2 = new BoxView();
+			BoxView sbox1 = spy(box1);
+			BoxView sbox2 = spy(box2);
+			GridView grid = new GridView();
+
+			grid.setShowBorders(false);
+			grid.setRowSize(0);
+			grid.setColumnSize(5, 5);
+			grid.setShowBorder(false);
+			grid.addItem(sbox1, 0, 0, 1, 1, 0, 0);
+			grid.addItem(sbox2, 0, 1, 1, 1, 0, 0);
+
+			grid.setRect(0, 0, 80, 1);
+			grid.draw(screen1x80);
+
+			verify(sbox1).setRect(0, 0, 5, 1);
+			verify(sbox2).setRect(5, 0, 5, 1);
+		}
+
+
+		@Test
+		void oneColumnAndRowWithFixedSize() {
+			BoxView box1 = new BoxView();
+			BoxView sbox1 = spy(box1);
+			GridView grid = new GridView();
+
+			grid.setShowBorders(false);
+			grid.setRowSize(0);
+			grid.setColumnSize(0);
+			grid.setShowBorder(false);
+			grid.addItem(sbox1, 0, 0, 1, 1, 0, 0);
+
+			grid.setRect(0, 0, 10, 10);
+			grid.draw(screen10x10);
+
+			verify(sbox1).setRect(0, 0, 10, 10);
+		}
+
+		@Test
+		void positionsWithXxx4() {
+			BoxView box1 = new BoxView();
+			BoxView sbox1 = spy(box1);
+			GridView grid = new GridView();
+
+			grid.setShowBorders(false);
+			grid.setRowSize(1);
+			grid.setColumnSize(1);
+			grid.setShowBorder(false);
+			grid.addItem(sbox1, 0, 0, 1, 1, 0, 0);
+
+			grid.setRect(0, 0, 10, 10);
+			grid.draw(screen10x10);
+
+			verify(sbox1).setRect(0, 0, 1, 1);
+		}
+
 	}
 
 	@Nested
