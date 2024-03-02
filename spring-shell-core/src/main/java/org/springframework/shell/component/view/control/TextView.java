@@ -22,6 +22,11 @@ import org.springframework.shell.component.view.screen.Screen;
 import org.springframework.shell.component.view.screen.Screen.Writer;
 import org.springframework.shell.geom.Rectangle;
 
+/**
+ * {@code TextView} is used to draw a text.
+ *
+ * @author Janne Valkealahti
+ */
 public class TextView extends BoxView {
 
 	private final List<String> content = new ArrayList<>();
