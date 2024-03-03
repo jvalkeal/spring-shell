@@ -48,10 +48,6 @@ public class SyntaxHighlightCommands extends AbstractShellComponent {
 			}
 			""";
 
-	private static final String JAVA2 = """
-			package com.example.demo;
-			""";
-
 	@Command(command = "syntaxhighlight java1")
 	public String java1() {
 		StringBuilder builder = new StringBuilder();
@@ -59,24 +55,11 @@ public class SyntaxHighlightCommands extends AbstractShellComponent {
 		final IGrammar grammar = registry.addGrammar(fromResource(TMException.class, "/syntax/java/java.tmLanguage.json"));
 		String[] lines = JAVA1.split(System.lineSeparator());
 		IStateStack ruleStack = null;
-		int i = 0;
 		for (final String line : lines) {
-			// final var lineTokens = grammar.tokenizeLine(line, ruleStack, null);
 			ITokenizeLineResult<IToken[]> lineTokens = grammar.tokenizeLine(line, ruleStack, null);
-
 			String convert = convert(line, lineTokens);
 			builder.append(convert);
 			builder.append(System.lineSeparator());
-
-			// ruleStack = lineTokens.getRuleStack();
-			// for (i = 0; i < lineTokens.getTokens().length; i++) {
-			// 	final IToken token = lineTokens.getTokens()[i];
-			// 	final String s = "Token from " + token.getStartIndex() + " to " + token.getEndIndex() + " with scopes "
-			// 			+ token.getScopes();
-			// 	builder.append(s);
-			// 	builder.append(System.lineSeparator());
-			// }
-
 		}
 
 		return builder.toString();
