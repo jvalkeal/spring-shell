@@ -15,6 +15,9 @@
  */
 package org.springframework.shell.samples.standard;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.tm4e.core.TMException;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.IStateStack;
@@ -33,6 +36,10 @@ import static org.eclipse.tm4e.core.registry.IGrammarSource.fromResource;
 public class SyntaxHighlightCommands extends AbstractShellComponent {
 
 	private static final String JAVA1 = """
+			/*
+			 * Copyright 2023 the original author or authors.
+			 *
+			 */
 			package com.example.demo;
 
 			import org.springframework.boot.SpringApplication;
@@ -54,15 +61,42 @@ public class SyntaxHighlightCommands extends AbstractShellComponent {
 		Registry registry = new Registry();
 		final IGrammar grammar = registry.addGrammar(fromResource(TMException.class, "/syntax/java/java.tmLanguage.json"));
 		String[] lines = JAVA1.split(System.lineSeparator());
+		// int i = 0;
 		IStateStack ruleStack = null;
 		for (final String line : lines) {
 			ITokenizeLineResult<IToken[]> lineTokens = grammar.tokenizeLine(line, ruleStack, null);
 			String convert = convert(line, lineTokens);
 			builder.append(convert);
 			builder.append(System.lineSeparator());
+			// for (int i = 0; i < lineTokens.getTokens().length; i++) {
+			// 	final IToken token = lineTokens.getTokens()[i];
+			// 	final String s = "Token from " + token.getStartIndex() + " to " + token.getEndIndex() + " with scopes " + token.getScopes();
+			// 	builder.append(s);
+			// 	builder.append(System.lineSeparator());
+			// }
 		}
 
 		return builder.toString();
+	}
+
+	private final static Map<String, Integer> styleMap = new HashMap<>();
+
+	static {
+		styleMap.put("keyword.other.package.java", AttributedStyle.BLUE);
+		styleMap.put("storage.modifier.package.java", AttributedStyle.GREEN);
+		styleMap.put("keyword.other.import.java", AttributedStyle.BLUE);
+		styleMap.put("storage.modifier.import.java", AttributedStyle.GREEN);
+		styleMap.put("storage.type.annotation.java", AttributedStyle.GREEN);
+		styleMap.put("storage.modifier.java", AttributedStyle.BLUE);
+		styleMap.put("entity.name.type.class.java", AttributedStyle.GREEN);
+		styleMap.put("variable.other.object.property.java", AttributedStyle.GREEN);
+		styleMap.put("storage.type.primitive.java", AttributedStyle.GREEN);
+		styleMap.put("punctuation.definition.parameters.begin.bracket.round.java", AttributedStyle.RED);
+		styleMap.put("punctuation.definition.parameters.end.bracket.round.java", AttributedStyle.RED);
+		styleMap.put("punctuation.bracket.square.java", AttributedStyle.BLUE);
+		styleMap.put("storage.type.object.array.java", AttributedStyle.GREEN);
+		styleMap.put("entity.name.function.java", AttributedStyle.YELLOW);
+		styleMap.put("variable.other.object.java", AttributedStyle.GREEN);
 	}
 
 	private String convert(String line, ITokenizeLineResult<IToken[]> lineTokens) {
@@ -71,45 +105,17 @@ public class SyntaxHighlightCommands extends AbstractShellComponent {
 		for (i = 0; i < lineTokens.getTokens().length; i++) {
 			final IToken token = lineTokens.getTokens()[i];
 			CharSequence sub = line.subSequence(token.getStartIndex(), Math.min(token.getEndIndex(), line.length()));
-			if (token.getScopes().contains("keyword.other.package.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.BLUE));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
+			Integer style = null;
+			for (String scope : token.getScopes()) {
+				Integer s = styleMap.get(scope);
+				if (s != null) {
+					style = s;
+					break;
+				}
 			}
-			else if (token.getScopes().contains("keyword.other.import.java")) {
+			if (style != null) {
 				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.BLUE));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
-			}
-			else if (token.getScopes().contains("punctuation.definition.annotation.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.BLUE));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
-			}
-			else if (token.getScopes().contains("storage.type.annotation.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.BLUE));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
-			}
-			else if (token.getScopes().contains("storage.modifier.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.GREEN));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
-			}
-			else if (token.getScopes().contains("storage.modifier.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.GREEN));
-				sb.append(sub);
-				builder.append(sb.toAnsi());
-			}
-			else if (token.getScopes().contains("variable.other.object.property.java")) {
-				AttributedStringBuilder sb = new AttributedStringBuilder();
-				sb.style(sb.style().foreground(AttributedStyle.GREEN));
+				sb.style(sb.style().foreground(style));
 				sb.append(sub);
 				builder.append(sb.toAnsi());
 			}
