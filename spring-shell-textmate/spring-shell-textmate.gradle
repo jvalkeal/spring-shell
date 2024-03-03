@@ -9,7 +9,6 @@ dependencies {
 	api('org.springframework:spring-core')
 	api('org.jruby.joni:joni')
 	api('com.google.code.gson:gson')
-	// api('org.w3c.css:sac')
 	api('org.snakeyaml:snakeyaml-engine')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
