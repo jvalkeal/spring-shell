@@ -7,6 +7,7 @@ description = 'Spring Shell Core'
 dependencies {
 	management platform(project(":spring-shell-management"))
 	implementation project(':spring-shell-table')
+	testImplementation project(':spring-shell-textmate')
 	api('org.springframework:spring-core')
 	api('org.springframework.boot:spring-boot-starter-validation')
 	api('org.springframework:spring-messaging')
