@@ -34,6 +34,14 @@
         },
         {
             "type": "java",
+            "name": "syntaxhighlight java1",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.SpringShellSample",
+            "projectName": "spring-shell-sample-commands",
+            "args": "syntaxhighlight java1"
+        },
+        {
+            "type": "java",
             "name": "e2e interactive",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
