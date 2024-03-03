@@ -46,6 +46,7 @@ include 'spring-shell-docs'
 include 'spring-shell-standard'
 include 'spring-shell-standard-commands'
 include 'spring-shell-table'
+include 'spring-shell-textmate'
 include 'spring-shell-test'
 include 'spring-shell-test-autoconfigure'
 
