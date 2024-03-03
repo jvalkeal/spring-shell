@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 public final class MoreCollections {
 

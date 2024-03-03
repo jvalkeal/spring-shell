@@ -11,8 +11,9 @@
  */
 package org.eclipse.tm4e.core.internal.theme.css.util;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.css.sac.AttributeCondition;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

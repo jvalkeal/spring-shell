@@ -18,8 +18,9 @@ package org.eclipse.tm4e.core.internal.grammar.raw;
 
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.rule.RuleId;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

@@ -16,7 +16,7 @@
  */
 package org.eclipse.tm4e.core.internal.oniguruma;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href="https://github.com/atom/node-oniguruma/blob/0c6b95fc7d79ab7e60a7ed63df6d05677ace2642/src/onig-scanner.cc#L110">

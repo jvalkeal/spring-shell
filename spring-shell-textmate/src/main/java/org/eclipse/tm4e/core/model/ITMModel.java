@@ -17,8 +17,9 @@ package org.eclipse.tm4e.core.model;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IGrammar;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Provides tokenization related functionality of the text model.

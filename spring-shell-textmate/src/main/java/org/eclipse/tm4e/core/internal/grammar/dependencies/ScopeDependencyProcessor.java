@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.TMException;
 import org.eclipse.tm4e.core.internal.grammar.dependencies.AbsoluteRuleReference.TopLevelRepositoryRuleReference;
 import org.eclipse.tm4e.core.internal.grammar.dependencies.AbsoluteRuleReference.TopLevelRuleReference;
@@ -34,6 +33,8 @@ import org.eclipse.tm4e.core.internal.grammar.raw.IRawGrammar;
 import org.eclipse.tm4e.core.internal.grammar.raw.IRawRepository;
 import org.eclipse.tm4e.core.internal.grammar.raw.IRawRule;
 import org.eclipse.tm4e.core.internal.registry.IGrammarRepository;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -227,7 +228,6 @@ public final class ScopeDependencyProcessor {
 					break;
 				case TopLevelReference:
 				case TopLevelRepositoryReference:
-					@Nullable
 					final IRawGrammar selfGrammar = reference.scopeName.equals(context.selfGrammar.getScopeName())
 							? context.selfGrammar
 							: reference.scopeName.equals(context.baseGrammar.getScopeName())

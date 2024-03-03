@@ -16,8 +16,9 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.raw;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.parser.PropertySettable;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

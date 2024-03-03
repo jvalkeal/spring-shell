@@ -20,8 +20,9 @@ import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNul
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -31,8 +32,8 @@ import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 public final class BeginWhileRule extends Rule {
 
 	private final RegExpSource begin;
-	public final List<@Nullable CaptureRule> beginCaptures;
-	public final List<@Nullable CaptureRule> whileCaptures;
+	public final List<CaptureRule> beginCaptures;
+	public final List<CaptureRule> whileCaptures;
 	private final RegExpSource _while;
 	public final boolean whileHasBackReferences;
 	final boolean hasMissingPatterns;
@@ -45,8 +46,8 @@ public final class BeginWhileRule extends Rule {
 	private RegExpSourceList cachedCompiledWhilePatterns;
 
 	BeginWhileRule(final RuleId id, @Nullable final String name, @Nullable final String contentName,
-			final String begin, final List<@Nullable CaptureRule> beginCaptures,
-			final String _while, final List<@Nullable CaptureRule> whileCaptures,
+			final String begin, final List<CaptureRule> beginCaptures,
+			final String _while, final List<CaptureRule> whileCaptures,
 			final CompilePatternsResult patterns) {
 		super(/* $location, */id, name, contentName);
 		this.begin = new RegExpSource(begin, this.id);

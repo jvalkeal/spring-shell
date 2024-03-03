@@ -19,7 +19,7 @@ package org.eclipse.tm4e.core.internal.matcher;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

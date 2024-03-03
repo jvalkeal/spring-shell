@@ -11,12 +11,13 @@
  *******************************************************************************/
 package org.eclipse.tm4e.core.internal.theme.css.util;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.Counter;
 import org.w3c.dom.css.RGBColor;
 import org.w3c.dom.css.Rect;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

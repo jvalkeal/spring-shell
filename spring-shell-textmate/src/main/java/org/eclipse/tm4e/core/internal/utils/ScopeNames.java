@@ -12,7 +12,7 @@
  */
 package org.eclipse.tm4e.core.internal.utils;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * Utility class to deal with plugin scoped TextMate Scope Names, e.g. "source.batchfile@com.example.myplugin"

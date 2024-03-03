@@ -26,11 +26,12 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IToken;
 import org.eclipse.tm4e.core.internal.grammar.tokenattrs.EncodedTokenAttributes;
 import org.eclipse.tm4e.core.internal.grammar.tokenattrs.OptionalStandardTokenType;
 import org.eclipse.tm4e.core.internal.theme.FontStyle;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

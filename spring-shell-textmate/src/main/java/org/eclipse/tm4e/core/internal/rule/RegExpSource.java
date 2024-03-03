@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 import org.eclipse.tm4e.core.internal.utils.RegexSource;
 
@@ -39,7 +38,7 @@ final class RegExpSource {
 	final RuleId ruleId;
 	final boolean hasBackReferences;
 
-	private String @Nullable [][] anchorCache;
+	private String[][] anchorCache;
 
 	RegExpSource(final String regExpSource, final RuleId ruleId) {
 		this(regExpSource, ruleId, true);

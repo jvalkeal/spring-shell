@@ -11,8 +11,9 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.tokenattrs;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.theme.FontStyle;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

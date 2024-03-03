@@ -22,19 +22,16 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
 public final class ObjectCloner {
 
 	private static final WeakHashMap<Class<?>, Optional<Method>> CLONE_METHODS_CACHE = new WeakHashMap<>();
 
-	public static <@NonNull T> T deepClone(final T obj) {
+	public static <T> T deepClone(final T obj) {
 		return deepClone(obj, new IdentityHashMap<>());
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <@NonNull T> T deepClone(final T obj, final Map<Object, @Nullable Object> clones) {
+	private static <T> T deepClone(final T obj, final Map<Object, Object> clones) {
 		final Object clone = clones.get(obj);
 
 		if (clone != null)
@@ -54,7 +51,7 @@ public final class ObjectCloner {
 		}
 
 		if (obj instanceof final Set<?> set) {
-			final var setClone = (Set<@Nullable Object>) shallowClone(set, HashSet::new);
+			final var setClone = (Set<Object>) shallowClone(set, HashSet::new);
 			clones.put(set, setClone);
 			setClone.clear();
 			for (final var e : set) {
@@ -108,7 +105,7 @@ public final class ObjectCloner {
 	// }
 
 	@SuppressWarnings("unchecked")
-	private static <@NonNull T> T shallowClone(final T obj, final Supplier<T> fallback) {
+	private static <T> T shallowClone(final T obj, final Supplier<T> fallback) {
 		if (obj instanceof Cloneable) {
 			try {
 				final var cloneMethod = CLONE_METHODS_CACHE.computeIfAbsent(obj.getClass(), cls -> {

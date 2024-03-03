@@ -15,8 +15,9 @@ package org.eclipse.tm4e.core.internal.theme.css;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.theme.RGB;
+
+import org.springframework.lang.Nullable;
 
 public class CSSColors {
 	private static final Map<String, RGB> NAMED_COLORS = new HashMap<>();

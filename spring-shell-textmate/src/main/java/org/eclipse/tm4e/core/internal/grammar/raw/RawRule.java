@@ -14,11 +14,12 @@ package org.eclipse.tm4e.core.internal.grammar.raw;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.parser.PropertySettable;
 import org.eclipse.tm4e.core.internal.rule.RuleId;
 
-public class RawRule extends PropertySettable.HashMap<@Nullable Object> implements IRawRule {
+import org.springframework.lang.Nullable;
+
+public class RawRule extends PropertySettable.HashMap<Object> implements IRawRule {
 
 	private static final String APPLY_END_PATTERN_LAST = "applyEndPatternLast";
 	private static final String BEGIN = "begin";

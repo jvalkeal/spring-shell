@@ -16,10 +16,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.parser.PropertySettable;
 
-public final class RawTheme extends PropertySettable.HashMap<@Nullable Object>
+import org.springframework.lang.Nullable;
+
+public final class RawTheme extends PropertySettable.HashMap<Object>
 		implements IRawTheme, IRawThemeSetting, IThemeSetting {
 
 	private static final long serialVersionUID = 1L;

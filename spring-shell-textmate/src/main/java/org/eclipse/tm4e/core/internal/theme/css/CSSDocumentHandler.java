@@ -15,8 +15,6 @@ package org.eclipse.tm4e.core.internal.theme.css;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.theme.css.util.AbstractDocumentHandler;
 import org.eclipse.tm4e.core.theme.IStyle;
 import org.eclipse.tm4e.core.theme.RGB;
@@ -25,7 +23,8 @@ import org.w3c.css.sac.LexicalUnit;
 import org.w3c.css.sac.SelectorList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 
-@NonNullByDefault({})
+import org.springframework.lang.Nullable;
+
 public final class CSSDocumentHandler extends AbstractDocumentHandler {
 
 	private static RGB createRGB(final LexicalUnit value) {

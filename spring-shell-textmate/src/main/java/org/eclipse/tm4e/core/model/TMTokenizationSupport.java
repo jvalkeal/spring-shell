@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.IStateStack;
 import org.eclipse.tm4e.core.internal.grammar.StateStack;
 import org.eclipse.tm4e.core.internal.utils.MoreCollections;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
+
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -171,7 +171,6 @@ public class TMTokenizationSupport implements ITokenizationSupport {
 		return decodeMap.getToken(prevScopeTokensMaps);
 	}
 
-	@NonNullByDefault({})
 	private record TMTokenDecodeData(
 			@NonNull List<String> scopes,
 			@NonNull Map<Integer /* level */, Map<Integer, Boolean>> scopeTokensMaps) {
@@ -180,7 +179,6 @@ public class TMTokenizationSupport implements ITokenizationSupport {
 	/**
 	 * https://github.com/microsoft/vscode/blob/70d250824ef66ef09f04c4084b804d5f353fb704/src/vs/editor/node/textMate/TMSyntax.ts#L129
 	 */
-	@NonNullByDefault({})
 	private static final class DecodeMap {
 
 		private int lastAssignedTokenId = 0;

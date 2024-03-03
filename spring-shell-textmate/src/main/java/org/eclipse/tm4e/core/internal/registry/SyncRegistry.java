@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.internal.grammar.BalancedBracketSelectors;
 import org.eclipse.tm4e.core.internal.grammar.Grammar;
@@ -31,6 +30,8 @@ import org.eclipse.tm4e.core.internal.theme.StyleAttributes;
 import org.eclipse.tm4e.core.internal.theme.Theme;
 import org.eclipse.tm4e.core.internal.utils.ScopeNames;
 
+import org.springframework.lang.Nullable;
+
 /**
  * @see <a href=
  *      "https://github.com/microsoft/vscode-textmate/blob/09effd8b7429b71010e0fa34ea2e16e622692946/src/registry.ts#L11">
@@ -39,7 +40,7 @@ import org.eclipse.tm4e.core.internal.utils.ScopeNames;
 public class SyncRegistry implements IGrammarRepository, IThemeProvider {
 
 	private final Map<String, Grammar> _grammars = new HashMap<>();
-	private final Map<String, @Nullable IRawGrammar> _rawGrammars = new HashMap<>();
+	private final Map<String, IRawGrammar> _rawGrammars = new HashMap<>();
 	private final Map<String, Collection<String>> _injectionGrammars = new HashMap<>();
 	private Theme _theme;
 

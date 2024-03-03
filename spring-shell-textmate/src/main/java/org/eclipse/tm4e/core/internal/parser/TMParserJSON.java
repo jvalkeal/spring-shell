@@ -16,9 +16,9 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import com.google.gson.Gson;
+
+import org.springframework.lang.Nullable;
 
 public class TMParserJSON implements TMParser {
 
@@ -57,7 +57,7 @@ public class TMParserJSON implements TMParser {
 		path.add(propertyId);
 		if (rawChild instanceof final Map<?, ?> map) {
 			final var transformedChild = handler.createChild(path, Map.class);
-			for (final Map.Entry<@NonNull ?, @NonNull ?> e : map.entrySet()) {
+			for (final Map.Entry<?, ?> e : map.entrySet()) {
 				addChild(handler, path, transformedChild, e.getKey(), e.getValue());
 			}
 			setProperty(parent, propertyId, transformedChild);

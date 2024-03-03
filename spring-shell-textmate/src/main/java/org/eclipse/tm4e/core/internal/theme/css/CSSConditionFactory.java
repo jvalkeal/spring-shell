@@ -11,7 +11,6 @@
  */
 package org.eclipse.tm4e.core.internal.theme.css;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tm4e.core.internal.theme.css.util.AbstractConditionFactory;
 import org.w3c.css.sac.AttributeCondition;
 import org.w3c.css.sac.CSSException;
@@ -19,7 +18,6 @@ import org.w3c.css.sac.CombinatorCondition;
 import org.w3c.css.sac.Condition;
 import org.w3c.css.sac.ConditionFactory;
 
-@NonNullByDefault({})
 public final class CSSConditionFactory extends AbstractConditionFactory {
 
 	public static final ConditionFactory INSTANCE = new CSSConditionFactory();

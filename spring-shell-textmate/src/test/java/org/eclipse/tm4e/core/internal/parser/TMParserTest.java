@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tm4e.core.Data;
 import org.eclipse.tm4e.core.internal.grammar.raw.RawGrammar;
 import org.eclipse.tm4e.core.internal.grammar.raw.RawGrammarReader;
@@ -199,7 +198,6 @@ class TMParserTest {
 	}
 
 	@Test
-	@NonNullByDefault({})
 	void testLanguagePackGrammars() throws IOException {
 		final var count = new AtomicInteger();
 		Files.walkFileTree(Paths.get("org.eclipse.tm4e.language_pack"), new SimpleFileVisitor<Path>() {

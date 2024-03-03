@@ -18,10 +18,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.parser.PropertySettable;
 
-public final class RawGrammar extends PropertySettable.HashMap<@Nullable Object> implements IRawGrammar {
+import org.springframework.lang.Nullable;
+
+public final class RawGrammar extends PropertySettable.HashMap<Object> implements IRawGrammar {
 
 	private static final String FILE_TYPES = "fileTypes";
 	private static final String FIRST_LINE_MATCH = "firstLineMatch";
@@ -123,7 +124,7 @@ public final class RawGrammar extends PropertySettable.HashMap<@Nullable Object>
 
 	@Override
 	@SuppressWarnings("unlikely-arg-type")
-	public void putAll(@Nullable final Map<? extends String, ? extends @Nullable Object> m) {
+	public void putAll(@Nullable final Map<? extends String, ? extends Object> m) {
 		if (m != null && m.containsKey(FILE_TYPES))
 			fileTypes = null;
 		super.putAll(m);

@@ -16,8 +16,9 @@
  */
 package org.eclipse.tm4e.core.model;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Line ranges represented through line numbers (1-based) and NOT line indexes (0-based)

@@ -11,8 +11,9 @@
  */
 package org.eclipse.tm4e.core.internal.theme.css;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.theme.css.util.AbstractAttributeCondition;
+
+import org.springframework.lang.Nullable;
 
 final class CSSClassCondition extends AbstractAttributeCondition implements ExtendedCondition {
 

@@ -6,7 +6,7 @@ description = 'Spring Shell Textmate'
 
 dependencies {
 	management platform(project(":spring-shell-management"))
-	api('org.eclipse.jdt:org.eclipse.jdt.annotation')
+	api('org.springframework:spring-core')
 	api('org.jruby.joni:joni')
 	api('com.google.code.gson:gson')
 	api('org.w3c.css:sac')

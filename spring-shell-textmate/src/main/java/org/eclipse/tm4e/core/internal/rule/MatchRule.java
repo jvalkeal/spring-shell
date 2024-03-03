@@ -18,7 +18,7 @@ package org.eclipse.tm4e.core.internal.rule;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -28,12 +28,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public final class MatchRule extends Rule {
 
 	private final RegExpSource match;
-	public final List<@Nullable CaptureRule> captures;
+	public final List<CaptureRule> captures;
 
 	@Nullable
 	private RegExpSourceList cachedCompiledPatterns;
 
-	MatchRule(final RuleId id, @Nullable final String name, final String match, final List<@Nullable CaptureRule> captures) {
+	MatchRule(final RuleId id, @Nullable final String name, final String match, final List<CaptureRule> captures) {
 		super(id, name, null);
 		this.match = new RegExpSource(match, this.id);
 		this.captures = captures;

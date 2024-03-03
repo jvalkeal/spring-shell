@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.css.sac.Parser;
 
 /**
@@ -27,7 +26,7 @@ import org.w3c.css.sac.Parser;
  */
 public final class SACParserFactory extends AbstractSACParserFactory {
 
-	private static Map<String, @Nullable String> parsers = new HashMap<>();
+	private static Map<String, String> parsers = new HashMap<>();
 
 	static {
 		// Register Flute SAC Parser

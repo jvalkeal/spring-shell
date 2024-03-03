@@ -27,9 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigScannerMatch;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigString;
@@ -40,6 +37,9 @@ import org.eclipse.tm4e.core.internal.rule.CompiledRule;
 import org.eclipse.tm4e.core.internal.rule.MatchRule;
 import org.eclipse.tm4e.core.internal.rule.Rule;
 import org.eclipse.tm4e.core.internal.rule.RuleId;
+
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -72,7 +72,6 @@ final class LineTokenizer {
 		}
 	}
 
-	@NonNullByDefault({})
 	private record WhileCheckResult(
 			@NonNull StateStack stack,
 			int linePos,
@@ -418,7 +417,7 @@ final class LineTokenizer {
 	}
 
 	private void handleCaptures(final Grammar grammar, final OnigString lineText, final boolean isFirstLine, final StateStack stack,
-			final LineTokens lineTokens, final List<@Nullable CaptureRule> captures, final OnigCaptureIndex[] captureIndices) {
+			final LineTokens lineTokens, final List<CaptureRule> captures, final OnigCaptureIndex[] captureIndices) {
 		if (captures.isEmpty()) {
 			return;
 		}

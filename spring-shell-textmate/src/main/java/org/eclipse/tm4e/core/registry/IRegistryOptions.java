@@ -19,8 +19,9 @@ package org.eclipse.tm4e.core.registry;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.theme.raw.IRawTheme;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

@@ -14,13 +14,14 @@ package org.eclipse.tm4e.core.grammar;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.Data;
 import org.eclipse.tm4e.core.registry.IGrammarSource;
 import org.eclipse.tm4e.core.registry.IRegistryOptions;
 import org.eclipse.tm4e.core.registry.Registry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Test for grammar tokenizer.

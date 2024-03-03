@@ -11,9 +11,10 @@
  */
 package org.eclipse.tm4e.core.internal.theme;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.theme.IStyle;
 import org.eclipse.tm4e.core.theme.RGB;
+
+import org.springframework.lang.Nullable;
 
 public class Style implements IStyle {
 

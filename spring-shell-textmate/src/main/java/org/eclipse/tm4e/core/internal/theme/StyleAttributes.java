@@ -16,7 +16,7 @@
  */
 package org.eclipse.tm4e.core.internal.theme;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

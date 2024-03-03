@@ -19,7 +19,7 @@ package org.eclipse.tm4e.core.grammar;
 import java.time.Duration;
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * TextMate grammar API.

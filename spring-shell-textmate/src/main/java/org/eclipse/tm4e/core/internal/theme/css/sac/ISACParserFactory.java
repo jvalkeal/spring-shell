@@ -10,8 +10,9 @@
  *******************************************************************************/
 package org.eclipse.tm4e.core.internal.theme.css.sac;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.css.sac.Parser;
+
+import org.springframework.lang.Nullable;
 
 /**
  * SAC parser factory interface to get instance of SAC {@link Parser}.

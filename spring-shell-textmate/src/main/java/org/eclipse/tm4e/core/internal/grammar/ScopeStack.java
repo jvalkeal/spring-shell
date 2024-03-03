@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -64,7 +64,6 @@ public final class ScopeStack {
 	}
 
 	public List<String> getSegments() {
-		@Nullable
 		ScopeStack item = this;
 		final var result = new ArrayList<String>();
 		while (item != null) {
@@ -94,7 +93,6 @@ public final class ScopeStack {
 
 	List<String> getExtensionIfDefined(@Nullable final ScopeStack base) {
 		final var result = new ArrayList<String>();
-		@Nullable
 		ScopeStack item = this;
 		while (item != null && item != base) {
 			result.add(item.scopeName);

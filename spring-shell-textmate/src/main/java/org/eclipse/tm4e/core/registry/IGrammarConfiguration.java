@@ -20,7 +20,7 @@ package org.eclipse.tm4e.core.registry;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

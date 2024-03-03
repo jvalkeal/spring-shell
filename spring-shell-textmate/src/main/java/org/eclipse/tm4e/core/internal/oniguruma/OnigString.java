@@ -21,8 +21,9 @@ package org.eclipse.tm4e.core.internal.oniguruma;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.jcodings.specific.UTF8Encoding;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Oniguruma string.
@@ -43,7 +44,7 @@ public abstract class OnigString {
 		 * E.g. in case of <code>byteToCharOffsets[100] == 60 && byteToCharOffsets[101] == 60</code>,
 		 * the bytes at indexes 100 and 101 both belong to the same multi-byte character at index 60.
 		 */
-		private int @Nullable [] byteToCharOffsets;
+		private int [] byteToCharOffsets;
 		private final int lastCharIndex;
 
 		private MultiByteString(final String str, final byte[] bytesUTF8) {

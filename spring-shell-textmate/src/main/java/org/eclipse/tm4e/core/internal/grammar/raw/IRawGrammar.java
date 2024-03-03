@@ -19,7 +19,7 @@ package org.eclipse.tm4e.core.internal.grammar.raw;
 import java.util.Collection;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

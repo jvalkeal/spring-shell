@@ -18,8 +18,9 @@ package org.eclipse.tm4e.core.model;
 
 import java.time.Duration;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IStateStack;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href="https://github.com/microsoft/vscode/blob/ba2cf46e20df3edf77bdd905acde3e175d985f70/src/vs/editor/common/languages.ts#L87">

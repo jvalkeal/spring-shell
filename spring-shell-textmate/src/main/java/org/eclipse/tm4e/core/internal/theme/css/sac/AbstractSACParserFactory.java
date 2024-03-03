@@ -14,9 +14,10 @@ import static java.lang.System.Logger.Level.ERROR;
 
 import java.lang.System.Logger;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.css.sac.Parser;
 import org.w3c.css.sac.helpers.ParserFactory;
+
+import org.springframework.lang.Nullable;
 
 /**
  * SAC Parser Factory.

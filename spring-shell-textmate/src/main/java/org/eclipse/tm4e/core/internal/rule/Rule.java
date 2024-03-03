@@ -16,10 +16,11 @@
  */
 package org.eclipse.tm4e.core.internal.rule;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 import org.eclipse.tm4e.core.internal.utils.RegexSource;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -47,7 +48,7 @@ public abstract class Rule {
 	}
 
 	@Nullable
-	public String getName(@Nullable final CharSequence lineText, final OnigCaptureIndex @Nullable [] captureIndices) {
+	public String getName(@Nullable final CharSequence lineText, final OnigCaptureIndex[] captureIndices) {
 		final var name = this.name;
 		if (!nameIsCapturing || name == null || lineText == null || captureIndices == null) {
 			return name;

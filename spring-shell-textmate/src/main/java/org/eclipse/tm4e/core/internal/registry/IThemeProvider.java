@@ -11,9 +11,10 @@
  */
 package org.eclipse.tm4e.core.internal.registry;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.grammar.ScopeStack;
 import org.eclipse.tm4e.core.internal.theme.StyleAttributes;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

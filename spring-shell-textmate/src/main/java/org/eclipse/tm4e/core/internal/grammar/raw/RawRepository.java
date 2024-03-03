@@ -13,8 +13,9 @@ package org.eclipse.tm4e.core.internal.grammar.raw;
 
 import java.util.NoSuchElementException;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.parser.PropertySettable;
+
+import org.springframework.lang.Nullable;
 
 public final class RawRepository extends PropertySettable.HashMap<IRawRule> implements IRawRepository {
 

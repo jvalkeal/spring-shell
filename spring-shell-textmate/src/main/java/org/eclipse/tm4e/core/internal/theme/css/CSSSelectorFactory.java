@@ -12,7 +12,6 @@
  */
 package org.eclipse.tm4e.core.internal.theme.css;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tm4e.core.internal.theme.css.util.AbstractSelectorFactory;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.Condition;
@@ -21,7 +20,6 @@ import org.w3c.css.sac.ElementSelector;
 import org.w3c.css.sac.SelectorFactory;
 import org.w3c.css.sac.SimpleSelector;
 
-@NonNullByDefault({})
 public final class CSSSelectorFactory extends AbstractSelectorFactory {
 
 	public static final SelectorFactory INSTANCE = new CSSSelectorFactory();

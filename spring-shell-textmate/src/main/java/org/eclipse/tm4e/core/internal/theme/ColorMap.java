@@ -17,8 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.TMException;
+
+import org.springframework.lang.Nullable;
 
 /**
  * Based on <a href="https://github.com/microsoft/vscode-textmate/blob/09effd8b7429b71010e0fa34ea2e16e622692946/src/theme.ts#L385">
@@ -34,7 +35,7 @@ public final class ColorMap {
 	private int _lastColorId = 0;
 	private final List<String> _id2color = new ArrayList<>();
 	private final List<String> _id2colorUnmodifiable = Collections.unmodifiableList(_id2color);
-	private final Map<String /*color*/, @Nullable Integer /*ID color*/> _color2id = new HashMap<>();
+	private final Map<String /*color*/, Integer /*ID color*/> _color2id = new HashMap<>();
 
 	public ColorMap() {
 		this(null);

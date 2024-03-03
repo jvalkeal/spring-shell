@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.IStateStack;
 import org.eclipse.tm4e.core.grammar.IToken;
@@ -50,6 +49,8 @@ import org.eclipse.tm4e.core.internal.rule.RuleId;
 import org.eclipse.tm4e.core.internal.utils.ObjectCloner;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
+import org.springframework.lang.Nullable;
+
 /**
  * TextMate grammar implementation.
  *
@@ -66,7 +67,7 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
 	@Nullable
 	private RuleId _rootId;
 	private int _lastRuleId = 0;
-	private final Map<RuleId, @Nullable Rule> _ruleId2desc = new HashMap<>();
+	private final Map<RuleId, Rule> _ruleId2desc = new HashMap<>();
 	private final Map<String /*scopeName*/, IRawGrammar> includedGrammars = new HashMap<>();
 	private final IGrammarRepository _grammarRepository;
 	private final IRawGrammar _grammar;
@@ -204,7 +205,7 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
 	@Override
 	public <T extends Rule> T registerRule(final Function<RuleId, T> factory) {
 		final var id = RuleId.of(++this._lastRuleId);
-		final @Nullable T result = factory.apply(id);
+		final T result = factory.apply(id);
 		this._ruleId2desc.put(id, result);
 		return result;
 	}

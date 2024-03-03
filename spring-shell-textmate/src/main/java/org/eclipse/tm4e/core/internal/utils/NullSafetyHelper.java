@@ -14,8 +14,8 @@ package org.eclipse.tm4e.core.internal.utils;
 
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 public final class NullSafetyHelper {
 

@@ -20,8 +20,9 @@ import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNul
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -31,10 +32,10 @@ import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 public final class BeginEndRule extends Rule {
 
 	private final RegExpSource begin;
-	public final List<@Nullable CaptureRule> beginCaptures;
+	public final List<CaptureRule> beginCaptures;
 
 	private final RegExpSource end;
-	public final List<@Nullable CaptureRule> endCaptures;
+	public final List<CaptureRule> endCaptures;
 	public final boolean endHasBackReferences;
 	private final boolean applyEndPatternLast;
 
@@ -45,8 +46,8 @@ public final class BeginEndRule extends Rule {
 	private RegExpSourceList cachedCompiledPatterns;
 
 	BeginEndRule(final RuleId id, @Nullable final String name, @Nullable final String contentName, final String begin,
-			final List<@Nullable CaptureRule> beginCaptures, @Nullable final String end,
-			final List<@Nullable CaptureRule> endCaptures, final boolean applyEndPatternLast,
+			final List<CaptureRule> beginCaptures, @Nullable final String end,
+			final List<CaptureRule> endCaptures, final boolean applyEndPatternLast,
 			final CompilePatternsResult patterns) {
 		super(id, name, contentName);
 		this.begin = new RegExpSource(begin, this.id);

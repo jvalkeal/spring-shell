@@ -22,7 +22,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.TMException;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 import org.jcodings.specific.UTF8Encoding;
@@ -33,6 +32,8 @@ import org.joni.Region;
 import org.joni.Syntax;
 import org.joni.WarnCallback;
 import org.joni.exception.SyntaxException;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href="https://github.com/atom/node-oniguruma/blob/master/src/onig-reg-exp.cc">

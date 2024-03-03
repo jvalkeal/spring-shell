@@ -19,8 +19,9 @@ package org.eclipse.tm4e.core.internal.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=

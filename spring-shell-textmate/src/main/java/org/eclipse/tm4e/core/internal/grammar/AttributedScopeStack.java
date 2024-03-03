@@ -18,12 +18,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.grammar.tokenattrs.EncodedTokenAttributes;
 import org.eclipse.tm4e.core.internal.theme.FontStyle;
 import org.eclipse.tm4e.core.internal.theme.StyleAttributes;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -32,7 +32,6 @@ import org.eclipse.tm4e.core.internal.utils.StringUtils;
  */
 final class AttributedScopeStack {
 
-	@NonNullByDefault({}) // https://github.com/eclipse-jdt/eclipse.jdt.core/issues/233
 	record Frame(int encodedTokenAttributes, List<String> scopeNames) {
 	}
 
@@ -40,7 +39,6 @@ final class AttributedScopeStack {
 	static AttributedScopeStack fromExtension(final @Nullable AttributedScopeStack namesScopeList,
 			final List<AttributedScopeStack.Frame> contentNameScopesList) {
 		var current = namesScopeList;
-		@Nullable
 		ScopeStack scopeNames = namesScopeList != null ? namesScopeList.scopePath : null;
 		for (final var frame : contentNameScopesList) {
 			scopeNames = ScopeStack.push(scopeNames, frame.scopeNames);

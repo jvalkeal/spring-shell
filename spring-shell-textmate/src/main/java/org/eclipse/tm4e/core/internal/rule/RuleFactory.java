@@ -25,12 +25,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.grammar.dependencies.IncludeReference;
 import org.eclipse.tm4e.core.internal.grammar.raw.IRawCaptures;
 import org.eclipse.tm4e.core.internal.grammar.raw.IRawRepository;
 import org.eclipse.tm4e.core.internal.grammar.raw.IRawRule;
 import org.eclipse.tm4e.core.internal.grammar.raw.RawRule;
+
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href=
@@ -102,7 +103,7 @@ public final class RuleFactory {
 		return castNonNull(desc.getId());
 	}
 
-	private static List<@Nullable CaptureRule> _compileCaptures(@Nullable final IRawCaptures captures, final IRuleFactoryHelper helper,
+	private static List<CaptureRule> _compileCaptures(@Nullable final IRawCaptures captures, final IRuleFactoryHelper helper,
 			final IRawRepository repository) {
 		if (captures == null) {
 			return Collections.emptyList();
@@ -118,7 +119,7 @@ public final class RuleFactory {
 		}
 
 		// Initialize result
-		final var r = new ArrayList<@Nullable CaptureRule>(maximumCaptureId);
+		final var r = new ArrayList<CaptureRule>(maximumCaptureId);
 		for (int i = 0; i <= maximumCaptureId; i++) {
 			r.add(null);
 		}
@@ -183,7 +184,6 @@ public final class RuleFactory {
 
 						if (externalGrammar != null) {
 							final var externalGrammarRepo = externalGrammar.getRepository();
-							@Nullable
 							final String externalGrammarInclude = reference.kind == IncludeReference.Kind.TopLevelRepositoryReference
 									? reference.ruleName
 									: null;

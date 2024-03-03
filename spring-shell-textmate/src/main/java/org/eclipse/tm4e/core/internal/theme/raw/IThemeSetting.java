@@ -11,7 +11,7 @@
  */
 package org.eclipse.tm4e.core.internal.theme.raw;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 public interface IThemeSetting {
 

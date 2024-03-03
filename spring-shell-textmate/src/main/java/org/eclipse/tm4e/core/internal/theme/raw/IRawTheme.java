@@ -14,7 +14,7 @@ package org.eclipse.tm4e.core.internal.theme.raw;
 import java.util.Collection;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 /**
  * @see <a href="https://github.com/microsoft/vscode-textmate/blob/09effd8b7429b71010e0fa34ea2e16e622692946/src/theme.ts#L91">

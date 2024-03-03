@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tm4e.core.internal.theme.css.CSSConditionFactory;
 import org.eclipse.tm4e.core.internal.theme.css.CSSDocumentHandler;
 import org.eclipse.tm4e.core.internal.theme.css.CSSSelectorFactory;
@@ -28,6 +27,8 @@ import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.InputSource;
 import org.w3c.css.sac.Parser;
 import org.w3c.css.sac.SelectorList;
+
+import org.springframework.lang.Nullable;
 
 /**
  * CSS Parser to parse style for TextMate syntax coloring.

@@ -20,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tm4e.core.internal.theme.Theme;
 import org.eclipse.tm4e.core.registry.IThemeSource;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.Test;
 class RawThemeReaderTest {
 
 	@Test
-	@NonNullByDefault({})
 	void testLoadingThemes() throws IOException {
 		final var count = new AtomicInteger();
 		Files.list(Paths.get("org.eclipse.tm4e.core.tests/src/main/resources/test-cases/themes")).forEach(file -> {
