@@ -12,11 +12,12 @@
  */
 package org.eclipse.tm4e.core.internal.utils;
 
-import static java.lang.System.Logger.Level.*;
-
 import java.lang.System.Logger;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.WARNING;
 
 /**
  * Thread-safe utility class to manage listener registrations and event dispatching.

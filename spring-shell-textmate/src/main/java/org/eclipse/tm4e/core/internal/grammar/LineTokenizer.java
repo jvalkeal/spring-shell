@@ -16,9 +16,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import static java.lang.System.Logger.Level.*;
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.time.Duration;
@@ -40,6 +37,10 @@ import org.eclipse.tm4e.core.internal.rule.RuleId;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.INFO;
+import static java.lang.System.Logger.Level.TRACE;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 /**
  * @see <a href=

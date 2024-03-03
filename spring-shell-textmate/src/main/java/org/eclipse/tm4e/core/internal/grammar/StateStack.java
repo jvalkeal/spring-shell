@@ -16,8 +16,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +27,8 @@ import org.eclipse.tm4e.core.internal.rule.Rule;
 import org.eclipse.tm4e.core.internal.rule.RuleId;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 /**
  * Represents a "pushed" state on the stack (as a linked list element).

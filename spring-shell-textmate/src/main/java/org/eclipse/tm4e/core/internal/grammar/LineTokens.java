@@ -16,9 +16,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import static java.lang.System.Logger.Level.TRACE;
-import static org.eclipse.tm4e.core.internal.utils.MoreCollections.*;
-
 import java.lang.System.Logger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -32,6 +29,11 @@ import org.eclipse.tm4e.core.internal.grammar.tokenattrs.OptionalStandardTokenTy
 import org.eclipse.tm4e.core.internal.theme.FontStyle;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.TRACE;
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.getElementAt;
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.getLastElement;
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.removeLastElement;
 
 /**
  * @see <a href=

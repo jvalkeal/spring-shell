@@ -17,8 +17,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.dependencies;
 
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -35,6 +33,8 @@ import org.eclipse.tm4e.core.internal.grammar.raw.IRawRule;
 import org.eclipse.tm4e.core.internal.registry.IGrammarRepository;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 /**
  * @see <a href=

@@ -14,9 +14,6 @@
  */
 package org.eclipse.tm4e.core.model;
 
-import static java.lang.System.Logger.Level.*;
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.*;
-
 import java.lang.System.Logger;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,6 +30,11 @@ import org.eclipse.tm4e.core.internal.utils.MoreCollections;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNullable;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.lazyNonNull;
 
 /**
  * The {@link TMModel} runs a background thread tokenizing out-of-date lines of the text model.

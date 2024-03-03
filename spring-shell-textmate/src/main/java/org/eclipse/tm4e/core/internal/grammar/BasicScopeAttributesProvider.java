@@ -15,8 +15,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNull;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +25,8 @@ import org.eclipse.tm4e.core.internal.grammar.tokenattrs.OptionalStandardTokenTy
 import org.eclipse.tm4e.core.internal.utils.RegexSource;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNull;
 
 /**
  * @see <a href=

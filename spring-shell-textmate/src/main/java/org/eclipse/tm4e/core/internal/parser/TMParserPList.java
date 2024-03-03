@@ -14,9 +14,6 @@
  */
 package org.eclipse.tm4e.core.internal.parser;
 
-import static java.lang.System.Logger.Level.ERROR;
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.Reader;
 import java.lang.System.Logger;
@@ -35,6 +32,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.ERROR;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 public final class TMParserPList implements TMParser {
 

@@ -16,10 +16,6 @@
  */
 package org.eclipse.tm4e.core.registry;
 
-import static java.lang.System.Logger.Level.WARNING;
-import static org.eclipse.tm4e.core.internal.utils.MoreCollections.nullToEmpty;
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.lang.System.Logger;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +33,10 @@ import org.eclipse.tm4e.core.internal.theme.raw.RawThemeReader;
 import org.eclipse.tm4e.core.internal.utils.ScopeNames;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.WARNING;
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.nullToEmpty;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 /**
  * The registry that will hold all grammars.

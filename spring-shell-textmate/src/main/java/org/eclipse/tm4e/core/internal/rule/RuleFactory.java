@@ -16,9 +16,6 @@
  */
 package org.eclipse.tm4e.core.internal.rule;
 
-import static java.lang.System.Logger.Level.WARNING;
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.*;
-
 import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +29,10 @@ import org.eclipse.tm4e.core.internal.grammar.raw.IRawRule;
 import org.eclipse.tm4e.core.internal.grammar.raw.RawRule;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.WARNING;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNull;
 
 /**
  * @see <a href=

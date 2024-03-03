@@ -23,8 +23,6 @@ import java.util.Arrays;
 
 import org.jcodings.specific.UTF8Encoding;
 
-import org.springframework.lang.Nullable;
-
 /**
  * Oniguruma string.
  *

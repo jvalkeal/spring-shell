@@ -16,14 +16,14 @@
  */
 package org.eclipse.tm4e.core.internal.matcher;
 
-import static java.lang.System.Logger.Level.WARNING;
-
 import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.lang.Nullable;
+
+import static java.lang.System.Logger.Level.WARNING;
 
 /**
  * @see <a href=

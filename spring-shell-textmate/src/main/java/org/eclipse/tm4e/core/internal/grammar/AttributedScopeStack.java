@@ -11,8 +11,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +22,8 @@ import org.eclipse.tm4e.core.internal.theme.StyleAttributes;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.castNonNull;
 
 /**
  * @see <a href=

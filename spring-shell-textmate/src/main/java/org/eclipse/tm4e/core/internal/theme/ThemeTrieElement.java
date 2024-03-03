@@ -11,15 +11,15 @@
  */
 package org.eclipse.tm4e.core.internal.theme;
 
-import static org.eclipse.tm4e.core.internal.utils.MoreCollections.asArrayList;
-import static org.eclipse.tm4e.core.internal.utils.StringUtils.strArrCmp;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.asArrayList;
+import static org.eclipse.tm4e.core.internal.utils.StringUtils.strArrCmp;
 
 /**
  * Based on <a href="https://github.com/microsoft/vscode-textmate/blob/09effd8b7429b71010e0fa34ea2e16e622692946/src/theme.ts#L481">

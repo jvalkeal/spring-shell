@@ -16,13 +16,13 @@
  */
 package org.eclipse.tm4e.core.internal.rule;
 
-import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNull;
-
 import java.util.List;
 
 import org.eclipse.tm4e.core.internal.oniguruma.OnigCaptureIndex;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.NullSafetyHelper.defaultIfNull;
 
 /**
  * @see <a href=

@@ -11,9 +11,6 @@
  */
 package org.eclipse.tm4e.core.internal.theme;
 
-import static org.eclipse.tm4e.core.internal.utils.MoreCollections.*;
-import static org.eclipse.tm4e.core.internal.utils.StringUtils.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +24,12 @@ import org.eclipse.tm4e.core.internal.theme.raw.IRawThemeSetting;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
 import org.springframework.lang.Nullable;
+
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.findFirstMatching;
+import static org.eclipse.tm4e.core.internal.utils.MoreCollections.getLastElement;
+import static org.eclipse.tm4e.core.internal.utils.StringUtils.isValidHexColor;
+import static org.eclipse.tm4e.core.internal.utils.StringUtils.strArrCmp;
+import static org.eclipse.tm4e.core.internal.utils.StringUtils.strcmp;
 
 /**
  * TextMate theme.

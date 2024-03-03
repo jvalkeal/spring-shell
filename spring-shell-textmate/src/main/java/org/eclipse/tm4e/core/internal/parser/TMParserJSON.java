@@ -18,8 +18,6 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import org.springframework.lang.Nullable;
-
 public class TMParserJSON implements TMParser {
 
 	public static final TMParserJSON INSTANCE = new TMParserJSON();
