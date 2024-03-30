@@ -362,20 +362,31 @@ public interface CommandRegistration {
 		 */
 		Consumer<CommandContext> getConsumer();
 
+		/**
+		 * Get a function for external command.
+		 *
+		 * @return the function for external command
+		 */
+		Function<CommandContext, String[]> getExternalFunction();
+
 		static TargetInfo of(Object bean, Method method) {
-			return new DefaultTargetInfo(TargetType.METHOD, bean, method, null, null);
+			return new DefaultTargetInfo(TargetType.METHOD, bean, method, null, null, null);
 		}
 
 		static TargetInfo of(Function<CommandContext, ?> function) {
-			return new DefaultTargetInfo(TargetType.FUNCTION, null, null, function, null);
+			return new DefaultTargetInfo(TargetType.FUNCTION, null, null, function, null, null);
 		}
 
 		static TargetInfo of(Consumer<CommandContext> consumer) {
-			return new DefaultTargetInfo(TargetType.CONSUMER, null, null, null, consumer);
+			return new DefaultTargetInfo(TargetType.CONSUMER, null, null, null, consumer, null);
+		}
+
+		static TargetInfo ofExternal(Function<CommandContext, String[]> function) {
+			return new DefaultTargetInfo(TargetType.EXTERNAL, null, null, null, null, function);
 		}
 
 		enum TargetType {
-			METHOD, FUNCTION, CONSUMER;
+			METHOD, FUNCTION, CONSUMER, EXTERNAL;
 		}
 
 		static class DefaultTargetInfo implements TargetInfo {
@@ -385,14 +396,17 @@ public interface CommandRegistration {
 			private final Method method;
 			private final Function<CommandContext, ?> function;
 			private final Consumer<CommandContext> consumer;
+			private final Function<CommandContext, String[]> externalFunction;
 
 			public DefaultTargetInfo(TargetType targetType, Object bean, Method method,
-					Function<CommandContext, ?> function, Consumer<CommandContext> consumer) {
+					Function<CommandContext, ?> function, Consumer<CommandContext> consumer,
+					Function<CommandContext, String[]> externalFunction) {
 				this.targetType = targetType;
 				this.bean = bean;
 				this.method = method;
 				this.function = function;
 				this.consumer = consumer;
+				this.externalFunction = externalFunction;
 			}
 
 			@Override
@@ -418,6 +432,11 @@ public interface CommandRegistration {
 			@Override
 			public Consumer<CommandContext> getConsumer() {
 				return consumer;
+			}
+
+			@Override
+			public Function<CommandContext, String[]> getExternalFunction() {
+				return externalFunction;
 			}
 		}
 	}
@@ -461,6 +480,14 @@ public interface CommandRegistration {
 		 * @return a target spec for chaining
 		 */
 		TargetSpec consumer(Consumer<CommandContext> consumer);
+
+		/**
+		 * Register a function resolving external command.
+		 *
+		 * @param function the external function
+		 * @return a target spec for chaining
+		 */
+		TargetSpec external(Function<CommandContext, String[]> function);
 
 		/**
 		 * Return a builder for chaining.
@@ -996,6 +1023,7 @@ public interface CommandRegistration {
 		private Method method;
 		private Function<CommandContext, ?> function;
 		private Consumer<CommandContext> consumer;
+		private Function<CommandContext, String[]> externalFunction;
 
 		DefaultTargetSpec(BaseBuilder builder) {
 			this.builder = builder;
@@ -1025,6 +1053,12 @@ public interface CommandRegistration {
 		@Override
 		public TargetSpec consumer(Consumer<CommandContext> consumer) {
 			this.consumer = consumer;
+			return this;
+		}
+
+		@Override
+		public TargetSpec external(Function<CommandContext, String[]> function) {
+			this.externalFunction = function;
 			return this;
 		}
 
@@ -1275,6 +1309,9 @@ public interface CommandRegistration {
 			}
 			if (targetSpec.consumer != null) {
 				return TargetInfo.of(targetSpec.consumer);
+			}
+			if (targetSpec.externalFunction != null) {
+				return TargetInfo.ofExternal(targetSpec.externalFunction);
 			}
 			throw new IllegalArgumentException("No bean, function or consumer defined");
 		}

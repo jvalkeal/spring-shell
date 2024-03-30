@@ -1,0 +1,18 @@
+plugins {
+	id 'org.springframework.shell.module'
+	id 'org.springframework.shell.shade'
+}
+
+description = 'Spring Shell Pty'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
+	api('org.springframework:spring-core')
+	api('org.springframework:spring-context')
+	api('org.jetbrains.pty4j:pty4j')
+	// shadow('org.jetbrains.pty4j:purejavacomm')
+	shade('org.jetbrains.pty4j:purejavacomm')
+	compileOnly 'com.google.code.findbugs:jsr305'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

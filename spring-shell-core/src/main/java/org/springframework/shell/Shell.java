@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +47,7 @@ import org.springframework.shell.command.CommandExecution.CommandExecutionHandle
 import org.springframework.shell.command.CommandHandlingResult;
 import org.springframework.shell.command.CommandOption;
 import org.springframework.shell.command.CommandRegistration;
+import org.springframework.shell.command.ExternalProcessRunner;
 import org.springframework.shell.completion.CompletionResolver;
 import org.springframework.shell.context.InteractionMode;
 import org.springframework.shell.context.ShellContext;
@@ -79,6 +81,11 @@ public class Shell {
 	private final ExitCodeMappings exitCodeMappings;
 	private Exception handlingResultNonInt = null;
 	private CommandHandlingResult processExceptionNonInt = null;
+	private Supplier<ExternalProcessRunner> externalProcessRunnerSupplier;
+
+	public void setExternalProcessRunnerSupplier(Supplier<ExternalProcessRunner> externalProcessRunnerSupplier) {
+		this.externalProcessRunnerSupplier = externalProcessRunnerSupplier;
+	}
 
 	/**
 	 * Marker object to distinguish unresolved arguments from {@code null}, which is a valid
@@ -238,7 +245,7 @@ public class Shell {
 
 		CommandExecution execution = CommandExecution.of(
 				argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal,
-				shellContext, conversionService, commandRegistry);
+				shellContext, conversionService, commandRegistry, externalProcessRunnerSupplier);
 
 		List<CommandExceptionResolver> commandExceptionResolvers = commandRegistration.get().getExceptionResolvers();
 

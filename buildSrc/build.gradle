@@ -28,6 +28,7 @@ dependencies {
 	implementation("org.springframework:spring-core")
 	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.2'
 	implementation 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
+	implementation 'com.github.johnrengelman:shadow:8.1.1'
 	implementation "org.graalvm.buildtools:native-gradle-plugin:${nativeBuildToolsVersion}"
 }
 
@@ -56,6 +57,10 @@ gradlePlugin {
 		samplePlugin {
 			id = "org.springframework.shell.sample"
 			implementationClass = "org.springframework.shell.gradle.SamplePlugin"
+		}
+		shadePlugin {
+			id = "org.springframework.shell.shade"
+			implementationClass = "org.springframework.shell.gradle.ShadePlugin"
 		}
 	}
 }

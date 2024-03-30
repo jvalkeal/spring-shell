@@ -23,5 +23,7 @@ dependencies {
 		api "commons-io:commons-io:$commonsIoVersion"
 		api "com.google.jimfs:jimfs:$jimfsVersion"
 		api "com.google.code.findbugs:jsr305:$findbugsVersion"
+		api "org.jetbrains.pty4j:pty4j:$pty4jVersion"
+		api "org.jetbrains.pty4j:purejavacomm:$pty4jPurejavacommVersion"
 	}
 }

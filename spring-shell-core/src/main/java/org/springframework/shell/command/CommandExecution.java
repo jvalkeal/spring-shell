@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import jakarta.validation.Validator;
 import org.jline.terminal.Terminal;
@@ -66,7 +67,7 @@ public interface CommandExecution {
 	 * @return default command execution
 	 */
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers) {
-		return new DefaultCommandExecution(resolvers, null, null, null, null, null);
+		return new DefaultCommandExecution(resolvers, null, null, null, null, null, null);
 	}
 
 	/**
@@ -80,7 +81,7 @@ public interface CommandExecution {
 	 */
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
 			Terminal terminal, ShellContext shellContext, ConversionService conversionService) {
-		return new DefaultCommandExecution(resolvers, validator, terminal, shellContext, conversionService, null);
+		return new DefaultCommandExecution(resolvers, validator, terminal, shellContext, conversionService, null, null);
 	}
 
 	/**
@@ -94,7 +95,13 @@ public interface CommandExecution {
 	 */
 	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
 			Terminal terminal, ShellContext shellContext, ConversionService conversionService, CommandCatalog commandCatalog) {
-		return new DefaultCommandExecution(resolvers, validator, terminal, shellContext, conversionService, commandCatalog);
+		return new DefaultCommandExecution(resolvers, validator, terminal, shellContext, conversionService, commandCatalog, null);
+	}
+
+	public static CommandExecution of(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
+			Terminal terminal, ShellContext shellContext, ConversionService conversionService, CommandCatalog commandCatalog,
+			Supplier<ExternalProcessRunner> externalProcessRunnerSupplier) {
+		return new DefaultCommandExecution(resolvers, validator, terminal, shellContext, conversionService, commandCatalog, externalProcessRunnerSupplier);
 	}
 
 	/**
@@ -108,15 +115,18 @@ public interface CommandExecution {
 		private ShellContext shellContext;
 		private ConversionService conversionService;
 		private CommandCatalog commandCatalog;
+		private Supplier<ExternalProcessRunner> externalProcessRunnerSupplier;
 
 		public DefaultCommandExecution(List<? extends HandlerMethodArgumentResolver> resolvers, Validator validator,
-				Terminal terminal, ShellContext shellContext, ConversionService conversionService, CommandCatalog commandCatalog) {
+				Terminal terminal, ShellContext shellContext, ConversionService conversionService, CommandCatalog commandCatalog,
+				Supplier<ExternalProcessRunner> externalProcessRunnerSupplier) {
 			this.resolvers = resolvers;
 			this.validator = validator;
 			this.terminal = terminal;
 			this.shellContext = shellContext;
 			this.conversionService = conversionService;
 			this.commandCatalog = commandCatalog;
+			this.externalProcessRunnerSupplier = externalProcessRunnerSupplier;
 		}
 
 		public Object evaluate(String[] args) {
@@ -232,6 +242,17 @@ public interface CommandExecution {
 				} catch (Exception e) {
 					throw new CommandExecutionException(e);
 				}
+			}
+			else if (targetInfo.getTargetType() == TargetType.EXTERNAL) {
+				ExternalProcessRunner ext;
+				if (externalProcessRunnerSupplier != null) {
+					ext = externalProcessRunnerSupplier.get();
+				}
+				else {
+					ext = new ExternalProcessRunner.DefaultExternalProcessRunner();
+				}
+				String[] cmd = targetInfo.getExternalFunction().apply(ctx);
+				ext.run(cmd);
 			}
 
 			return res;

@@ -16,6 +16,7 @@
 
 package org.springframework.shell.boot;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.jline.terminal.Terminal;
@@ -31,6 +32,7 @@ import org.springframework.shell.ResultHandler;
 import org.springframework.shell.ResultHandlerService;
 import org.springframework.shell.Shell;
 import org.springframework.shell.command.CommandCatalog;
+import org.springframework.shell.command.ExternalProcessRunnerSupplier;
 import org.springframework.shell.config.ShellConversionServiceSupplier;
 import org.springframework.shell.context.ShellContext;
 import org.springframework.shell.exit.ExitCodeMappings;
@@ -66,9 +68,12 @@ public class SpringShellAutoConfiguration {
 	@Bean
 	public Shell shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
 			ShellConversionServiceSupplier shellConversionServiceSupplier, ShellContext shellContext,
-			ExitCodeMappings exitCodeMappings) {
+			ExitCodeMappings exitCodeMappings, Optional<ExternalProcessRunnerSupplier> externalProcessRunnerSupplier) {
 		Shell shell = new Shell(resultHandlerService, commandRegistry, terminal, shellContext, exitCodeMappings);
 		shell.setConversionService(shellConversionServiceSupplier.get());
+		if (externalProcessRunnerSupplier.isPresent()) {
+			shell.setExternalProcessRunnerSupplier(externalProcessRunnerSupplier.get());
+		}
 		return shell;
 	}
 }

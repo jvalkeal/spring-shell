@@ -10,6 +10,7 @@ dependencies {
 	implementation project(':spring-shell-core')
 	implementation project(':spring-shell-standard')
 	implementation project(':spring-shell-standard-commands')
+	optional project(':spring-shell-pty')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
