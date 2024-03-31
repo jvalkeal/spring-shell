@@ -252,7 +252,10 @@ public interface CommandExecution {
 					ext = new ExternalProcessRunner.DefaultExternalProcessRunner();
 				}
 				String[] cmd = targetInfo.getExternalFunction().apply(ctx);
-				ext.run(cmd);
+				int code = ext.run(terminal, cmd);
+				if (code != 0) {
+					throw ExternalProcessRunner.exceptionOfCode(code);
+				}
 			}
 
 			return res;

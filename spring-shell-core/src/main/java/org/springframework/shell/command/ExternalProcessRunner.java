@@ -21,9 +21,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.function.Consumer;
 
+import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,7 +40,26 @@ public interface ExternalProcessRunner {
 	 *
 	 * @param cmd the command array
 	 */
-	void run(String[] cmd);
+	int run(Terminal terminal, String[] cmd);
+
+	static RuntimeException exceptionOfCode(int code) {
+		return new ShellExternalProcessExitCodeException(code);
+	}
+
+	static class ShellExternalProcessExitCodeException extends RuntimeException implements ExitCodeGenerator {
+
+		private int code;
+
+		ShellExternalProcessExitCodeException(int code) {
+			super();
+			this.code = code;
+		}
+
+		@Override
+		public int getExitCode() {
+			return code;
+		}
+	}
 
 	/**
 	 * Default implementation of a {@link ExternalProcessRunner} simply using plain
@@ -53,7 +74,7 @@ public interface ExternalProcessRunner {
 		private final static Logger log = LoggerFactory.getLogger(DefaultExternalProcessRunner.class);
 
 		@Override
-		public void run(String[] cmd) {
+		public int run(Terminal terminal, String[] cmd) {
 			log.debug("Running command {}", StringUtils.arrayToCommaDelimitedString(cmd));
 			ProcessBuilder builder = new ProcessBuilder();
 			builder.command(cmd);
@@ -71,9 +92,11 @@ public interface ExternalProcessRunner {
 
 				thread.run();
 				int exitCode = process.waitFor();
-			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+				return exitCode;
+			} catch (Exception e) {
+				log.error("External command execution error", e);
 			}
+			return 1;
 		}
 
 		private static class StreamGobbler implements Runnable {

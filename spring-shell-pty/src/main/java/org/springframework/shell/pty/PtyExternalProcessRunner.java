@@ -24,6 +24,8 @@ import java.util.Map;
 
 import com.pty4j.PtyProcess;
 import com.pty4j.PtyProcessBuilder;
+import org.jline.terminal.Size;
+import org.jline.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,17 +43,16 @@ public class PtyExternalProcessRunner implements ExternalProcessRunner {
 	private final static Logger log = LoggerFactory.getLogger(PtyExternalProcessRunner.class);
 
 	@Override
-	public void run(String[] cmd) {
+	public int run(Terminal terminal, String[] cmd) {
 		log.debug("Running command {}", StringUtils.arrayToCommaDelimitedString(cmd));
 		Map<String, String> env = new HashMap<>(System.getenv());
-		// env.put("TERM", "xterm-256color");
+		Size size = terminal.getSize();
 		try {
 			PtyProcess process = new PtyProcessBuilder()
 				.setCommand(cmd)
 				.setEnvironment(env)
-				.setInitialColumns(120)
-				// .setWindowsAnsiColorEnabled(true)
-				.setConsole(true)
+				.setInitialColumns(size.getColumns())
+				.setInitialRows(size.getRows())
 				.start();
 			OutputStream os = process.getOutputStream();
 			InputStream is = process.getInputStream();
@@ -69,12 +70,11 @@ public class PtyExternalProcessRunner implements ExternalProcessRunner {
 
 			int result = process.waitFor();
 			log.debug("Result from external command {}", result);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			return result;
+		} catch (Exception e) {
+			log.error("External command execution error", e);
 		}
+		return 1;
 	}
 
 }
