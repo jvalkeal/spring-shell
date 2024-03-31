@@ -25,10 +25,13 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin;
 import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin;
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
 
 public class ShadePlugin implements Plugin<Project> {
+
+	public static final String SHADE_CONFIGURATION_NAME = "shade";
 
 	@Override
 	public void apply(Project project) {
@@ -36,13 +39,13 @@ public class ShadePlugin implements Plugin<Project> {
 		pluginManager.apply(ShadowPlugin.class);
 
 		ConfigurationContainer configurations = project.getConfigurations();
-		configurations.create("shade", (shade) -> {
+		configurations.create(SHADE_CONFIGURATION_NAME, (shade) -> {
 			Configuration management = configurations.getByName(ManagementConfigurationPlugin.MANAGEMENT_CONFIGURATION_NAME);
 			shade.extendsFrom(management);
 
 			PluginContainer plugins = project.getPlugins();
 			plugins.withType(ShadowPlugin.class, (shadowPlugin) -> {
-				Task task = project.getTasks().findByName("shadowJar");
+				Task task = project.getTasks().findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME);
 				ShadowJar shadowJarTask = (ShadowJar) task;
 				shadowJarTask.setConfigurations(Arrays.asList(shade));
 			});

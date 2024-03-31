@@ -44,9 +44,15 @@ public class PtyExternalProcessRunner implements ExternalProcessRunner {
 	public void run(String[] cmd) {
 		log.debug("Running command {}", StringUtils.arrayToCommaDelimitedString(cmd));
 		Map<String, String> env = new HashMap<>(System.getenv());
-		env.put("TERM", "xterm");
+		// env.put("TERM", "xterm-256color");
 		try {
-			PtyProcess process = new PtyProcessBuilder().setCommand(cmd).setEnvironment(env).start();
+			PtyProcess process = new PtyProcessBuilder()
+				.setCommand(cmd)
+				.setEnvironment(env)
+				.setInitialColumns(120)
+				// .setWindowsAnsiColorEnabled(true)
+				.setConsole(true)
+				.start();
 			OutputStream os = process.getOutputStream();
 			InputStream is = process.getInputStream();
 
@@ -69,28 +75,6 @@ public class PtyExternalProcessRunner implements ExternalProcessRunner {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	void xxx() throws IOException, InterruptedException {
-		String[] cmd = { "java", "-jar", "spring-shell-sample-commands-3.2.2-SNAPSHOT.jar", "help" };
-		Map<String, String> env = new HashMap<>(System.getenv());
-		env.put("TERM", "xterm");
-		PtyProcess process = new PtyProcessBuilder().setCommand(cmd).setEnvironment(env).start();
-		OutputStream os = process.getOutputStream();
-		InputStream is = process.getInputStream();
-
-		Thread thread = new Thread(() -> {
-			try {
-				String data = StreamUtils.copyToString(is, Charset.defaultCharset());
-				System.out.println("DATA: " + data);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-
-		thread.run();
-
-		int result = process.waitFor();
 	}
 
 }
