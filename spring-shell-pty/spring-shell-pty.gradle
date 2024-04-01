@@ -10,10 +10,7 @@ dependencies {
 	implementation project(':spring-shell-core')
 	api('org.springframework:spring-core')
 	api('org.springframework:spring-context')
-	api('org.jetbrains.pty4j:pty4j')
-	// optional('org.jetbrains.pty4j:pty4j')
 	shade('org.jetbrains.pty4j:pty4j')
-	shade('org.jetbrains.pty4j:purejavacomm')
 	compileOnly 'com.google.code.findbugs:jsr305'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

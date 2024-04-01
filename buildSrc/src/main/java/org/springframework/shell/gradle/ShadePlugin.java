@@ -15,19 +15,28 @@
  */
 package org.springframework.shell.gradle;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.artifacts.ResolvedDependency;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginManager;
+import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.Jar;
 
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin;
 import com.github.jengelman.gradle.plugins.shadow.ShadowPlugin;
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar;
+import com.google.common.base.Suppliers;
 
 public class ShadePlugin implements Plugin<Project> {
 
@@ -38,19 +47,95 @@ public class ShadePlugin implements Plugin<Project> {
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(ShadowPlugin.class);
 
-		ConfigurationContainer configurations = project.getConfigurations();
-		configurations.create(SHADE_CONFIGURATION_NAME, (shade) -> {
-			Configuration management = configurations.getByName(ManagementConfigurationPlugin.MANAGEMENT_CONFIGURATION_NAME);
-			shade.extendsFrom(management);
+		TaskProvider<ShadowJar> shadowJarProvider = project.getTasks().withType(ShadowJar.class)
+				.named(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME);
 
-			PluginContainer plugins = project.getPlugins();
-			plugins.withType(ShadowPlugin.class, (shadowPlugin) -> {
-				Task task = project.getTasks().findByName(ShadowJavaPlugin.SHADOW_JAR_TASK_NAME);
-				ShadowJar shadowJarTask = (ShadowJar) task;
-				shadowJarTask.setConfigurations(Arrays.asList(shade));
-			});
+		setupShadowJarToShadeTheCorrectDependencies(project, shadowJarProvider);
+		ensureShadowJarHasDefaultClassifierThatDoesNotClashWithTheRegularJarTask(project, shadowJarProvider);
+		ensureShadowJarIsOnlyArtifactOnJavaConfigurations(project, shadowJarProvider);
+		dependOnJarTaskInOrderToTriggerTasksAddingManifestAttributes(project, shadowJarProvider);
+	}
+
+	private void setupShadowJarToShadeTheCorrectDependencies(Project project,
+			TaskProvider<ShadowJar> shadowJarProvider) {
+
+		ConfigurationContainer configurations = project.getConfigurations();
+		Configuration management = configurations.getByName(ManagementConfigurationPlugin.MANAGEMENT_CONFIGURATION_NAME);
+		Configuration shade = configurations.create(SHADE_CONFIGURATION_NAME, conf -> {
+			conf.setCanBeConsumed(false);
+			conf.setVisible(false);
+			conf.extendsFrom(management);
 		});
 
+		project.getExtensions().getByType(SourceSetContainer.class).configureEach(sourceSet -> Stream.of(
+						sourceSet.getCompileClasspathConfigurationName(),
+						sourceSet.getRuntimeClasspathConfigurationName())
+				.map(project.getConfigurations()::getByName)
+				.forEach(conf -> conf.extendsFrom(shade)));
+
+				Supplier<ShadowingCalculation> shadowingCalculation = Suppliers.memoize(() -> {
+					Set<ResolvedDependency> shadedModules = shade
+							.getResolvedConfiguration()
+							.getLenientConfiguration()
+							.getAllModuleDependencies();
+
+					Set<ResolvedDependency> acceptedModules = new HashSet<>(shadedModules);
+					Set<ResolvedDependency> highestLevelRejectedModulesThatArentDirectlyListed = Collections.emptySet();
+					return new ShadowingCalculation(acceptedModules, highestLevelRejectedModulesThatArentDirectlyListed);
+				});
+
+
+        // TaskProvider<ShadowJarConfigurationTask> shadowJarConfigurationTask = project.getTasks()
+        //         .register("relocateShadowJar", ShadowJarConfigurationTask.class, relocateTask -> {
+        //             relocateTask.getShadowJar().set(shadowJarProvider.get());
+
+        //             relocateTask.getPrefix().set(project.provider(() -> String.join(
+        //                             ".", "shadow", project.getGroup().toString(), project.getName())
+        //                     .replace('-', '_')
+        //                     .toLowerCase(Locale.US)));
+
+        //             relocateTask.getAcceptedDependencies().set(project.provider(() -> shadowingCalculation
+        //                     .get()
+        //                     .acceptedShadedModules()));
+        //         });
+
+
+		shadowJarProvider.configure(shadowJar -> {
+			// shadowJar.dependsOn(shadowJarConfigurationTask);
+			shadowJar.setConfigurations(Collections.singletonList(shade));
+		});
+
+	}
+
+    private static void ensureShadowJarHasDefaultClassifierThatDoesNotClashWithTheRegularJarTask(
+            Project project, TaskProvider<ShadowJar> shadowJarProvider) {
+
+        project.getTasks().withType(Jar.class).named("jar").configure(jar -> jar.getArchiveClassifier()
+                .set("thin"));
+
+        shadowJarProvider.configure(
+                shadowJar -> shadowJar.getArchiveClassifier().set((String) null));
+    }
+
+    private static void ensureShadowJarIsOnlyArtifactOnJavaConfigurations(
+            Project project, TaskProvider<ShadowJar> shadowJarProvider) {
+
+        Stream.of(JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME, JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME)
+                .map(project.getConfigurations()::named)
+                .forEach(provider -> provider.configure(conf -> {
+                    conf.getOutgoing().getArtifacts().clear();
+                    conf.getOutgoing().artifact(shadowJarProvider);
+                }));
+    }
+
+    private static void dependOnJarTaskInOrderToTriggerTasksAddingManifestAttributes(
+            Project project, TaskProvider<ShadowJar> shadowJarProvider) {
+        shadowJarProvider.configure(shadowJar ->
+                shadowJar.dependsOn(project.getTasks().withType(Jar.class).named("jar")));
+    }
+
+
+	private record ShadowingCalculation(Set<ResolvedDependency> acceptedShadedModules, Set<ResolvedDependency> rejectedShadedModules) {
 	}
 
 }

@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
 	implementation 'com.github.johnrengelman:shadow:8.1.1'
 	implementation "org.graalvm.buildtools:native-gradle-plugin:${nativeBuildToolsVersion}"
+	implementation 'com.google.guava:guava:33.1.0-jre'
 }
 
 gradlePlugin {
