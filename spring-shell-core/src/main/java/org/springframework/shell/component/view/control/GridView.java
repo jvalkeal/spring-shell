@@ -298,6 +298,7 @@ public class GridView extends BoxView {
 	protected void drawInternal(Screen screen) {
 		super.drawInternal(screen);
 		Rectangle rect = getInnerRect();
+		log.debug("Drawing grid to {}", rect);
 		int x = rect.x();
 		int y = rect.y();
 		int width = rect.width();
