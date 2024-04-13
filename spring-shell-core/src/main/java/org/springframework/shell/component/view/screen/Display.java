@@ -311,14 +311,12 @@ public class Display {
                 }
             } else if (atRight) {
                 if (this.wrapAtEol) {
-					if (lineIndex < numLines) {
+					if (fullScreen && lineIndex < numLines) {
 						terminal.writer().write(" \b");
+						cursorPos++;
 					}
-                    cursorPos++;
                 } else {
-					if (lineIndex < numLines) {
-						terminal.puts(Capability.carriage_return); // CR / not newline.
-					}
+					terminal.puts(Capability.carriage_return); // CR / not newline.
                     cursorPos = curCol;
                 }
                 currentPos = cursorPos;
