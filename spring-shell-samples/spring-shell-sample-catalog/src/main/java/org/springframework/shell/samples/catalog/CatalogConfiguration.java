@@ -15,6 +15,17 @@
  */
 package org.springframework.shell.samples.catalog;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import com.sun.jna.Pointer;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.impl.jna.win.JnaWinSysTerminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.shell.command.annotation.CommandScan;
@@ -22,10 +33,41 @@ import org.springframework.shell.style.FigureSettings;
 import org.springframework.shell.style.StyleSettings;
 import org.springframework.shell.style.Theme;
 import org.springframework.shell.style.ThemeSettings;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 
 @Configuration
 @CommandScan
 class CatalogConfiguration {
+
+	private final static Logger log = LoggerFactory.getLogger(CatalogConfiguration.class);
+
+	@Bean
+	public TerminalPostProcessor terminalPostProcessor() {
+		return new TerminalPostProcessor();
+	}
+
+
+	static class TerminalPostProcessor implements BeanPostProcessor {
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (beanName.equals("terminal")) {
+				if (bean instanceof JnaWinSysTerminal t) {
+					log.info("XXX {}", t);
+					Field field = ReflectionUtils.findField(JnaWinSysTerminal.class, "consoleIn");
+					ReflectionUtils.makeAccessible(field);
+					Pointer consoleIn = (Pointer) ReflectionUtils.getField(field, t);
+
+					Method setConsoleMode = ReflectionUtils.findMethod(JnaWinSysTerminal.class, "setConsoleMode", Pointer.class, int.class);
+					ReflectionUtils.makeAccessible(setConsoleMode);
+
+					ReflectionUtils.invokeMethod(setConsoleMode, t, consoleIn, 128);
+				}
+			}
+			return bean;
+		}
+	}
 
 	@Bean
 	public Theme customTheme() {
