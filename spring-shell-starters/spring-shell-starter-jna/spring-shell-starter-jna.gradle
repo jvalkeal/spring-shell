@@ -7,5 +7,5 @@ description = 'Spring Shell Starter Jna'
 dependencies {
 	management platform(project(':spring-shell-management'))
 	api(project(':spring-shell-starters:spring-shell-starter'))
-	implementation 'org.jline:jline-terminal-jna'
+	api 'org.jline:jline-terminal-jna'
 }
