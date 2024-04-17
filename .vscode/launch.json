@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestCtlC",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.TestCtlC",
+            "projectName": "spring-shell-core"
+        },
+        {
+            "type": "java",
             "name": "commands interactive",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.SpringShellSample",
