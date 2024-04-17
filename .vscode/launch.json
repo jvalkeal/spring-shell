@@ -5,8 +5,8 @@
             "type": "java",
             "name": "TestCtlC",
             "request": "launch",
-            "mainClass": "org.springframework.shell.TestCtlC",
-            "projectName": "spring-shell-core"
+            "mainClass": "org.springframework.shell.samples.TestCtlC",
+            "projectName": "spring-shell-sample-commands"
         },
         {
             "type": "java",

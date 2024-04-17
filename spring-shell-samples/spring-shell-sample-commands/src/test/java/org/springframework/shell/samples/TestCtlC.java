@@ -1,4 +1,4 @@
-package org.springframework.shell;
+package org.springframework.shell.samples;
 
 import java.io.IOException;
 import org.jline.reader.EndOfFileException;
