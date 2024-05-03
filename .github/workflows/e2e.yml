@@ -11,18 +11,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - nickname: win
-            os: windows-2022
-            graal: latest
-            musl: false
+          # - nickname: win
+          #   os: windows-2022
+          #   graal: latest
+          #   musl: false
           - nickname: macos
             os: macos-12
             graal: latest
             musl: false
-          - nickname: linux
-            os: ubuntu-22.04
-            graal: latest
-            musl: true
+          # - nickname: linux
+          #   os: ubuntu-22.04
+          #   graal: latest
+          #   musl: true
     name: Compile ${{ matrix.nickname }}
     steps:
       - uses: actions/checkout@v3
@@ -65,18 +65,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2022
-            nickname: win
+          # - os: windows-2022
+          #   nickname: win
           # - os: windows-2019
           #   nickname: win
           - os: macos-12
             nickname: macos
           - os: macos-11
             nickname: macos
-          - os: ubuntu-22.04
-            nickname: linux
-          - os: ubuntu-20.04
-            nickname: linux
+          # - os: ubuntu-22.04
+          #   nickname: linux
+          # - os: ubuntu-20.04
+          #   nickname: linux
     name: E2E ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -101,6 +101,11 @@ jobs:
         with:
           name: spring-shell-samples-${{ matrix.nickname }}
           path: spring-shell-samples
+      - name: macos info
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          sysctl machdep.cpu
       - name: fix artifacts
         if: runner.os != 'Windows'
         shell: bash
