@@ -17,6 +17,7 @@ package org.springframework.shell.gradle;
 
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
+import org.graalvm.buildtools.gradle.dsl.NativeImageOptions;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -74,10 +75,12 @@ class SamplePlugin implements Plugin<Project> {
 
 	private void configureGraalVmExtension(Project project) {
 		GraalVMExtension extension = project.getExtensions().getByType(GraalVMExtension.class);
+		NativeImageOptions options = extension.getBinaries().getByName(NativeImagePlugin.NATIVE_MAIN_EXTENSION);
 		if (isEnabled(project, MUSL)) {
-			extension.getBinaries().getByName(NativeImagePlugin.NATIVE_MAIN_EXTENSION).buildArgs("--static",
-					"--libc=musl");
+			options.buildArgs("--static","--libc=musl");
 		}
+		// force compatibility as detection i.e. in macos runners is flaky
+		options.buildArgs("-march=compatibility");
 	}
 
 	private boolean isEnabled(Project project, String property) {
