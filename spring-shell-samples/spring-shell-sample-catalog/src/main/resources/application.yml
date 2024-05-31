@@ -4,6 +4,8 @@ spring:
   shell:
     noninteractive:
       primary-command: catalog
+    # fallback:
+    #   command: catalog
 ## disable console logging
 logging:
   pattern:

@@ -42,6 +42,9 @@ public class SpringShellPropertiesTests {
 					assertThat(properties.getInteractive().isEnabled()).isFalse();
 					assertThat(properties.getNoninteractive().isEnabled()).isTrue();
 					assertThat(properties.getNoninteractive().getPrimaryCommand()).isNull();
+					assertThat(properties.getFallback().isEnabled()).isTrue();
+					assertThat(properties.getFallback().isAppend()).isFalse();
+					assertThat(properties.getFallback().getCommand()).isEqualTo("help");
 					assertThat(properties.getTheme().getName()).isNull();
 					assertThat(properties.getCommand().getClear().isEnabled()).isTrue();
 					assertThat(properties.getCommand().getHelp().isEnabled()).isTrue();
@@ -85,6 +88,9 @@ public class SpringShellPropertiesTests {
 				.withPropertyValues("spring.shell.interactive.enabled=true")
 				.withPropertyValues("spring.shell.noninteractive.enabled=false")
 				.withPropertyValues("spring.shell.noninteractive.primary-command=fakecommand")
+				.withPropertyValues("spring.shell.fallback.enabled=false")
+				.withPropertyValues("spring.shell.fallback.append=true")
+				.withPropertyValues("spring.shell.fallback.command=fakecommand")
 				.withPropertyValues("spring.shell.theme.name=fake")
 				.withPropertyValues("spring.shell.command.clear.enabled=false")
 				.withPropertyValues("spring.shell.command.help.enabled=false")
@@ -125,6 +131,9 @@ public class SpringShellPropertiesTests {
 					assertThat(properties.getInteractive().isEnabled()).isTrue();
 					assertThat(properties.getNoninteractive().isEnabled()).isFalse();
 					assertThat(properties.getNoninteractive().getPrimaryCommand()).isEqualTo("fakecommand");
+					assertThat(properties.getFallback().isEnabled()).isFalse();
+					assertThat(properties.getFallback().isAppend()).isTrue();
+					assertThat(properties.getFallback().getCommand()).isEqualTo("fakecommand");
 					assertThat(properties.getTheme().getName()).isEqualTo("fake");
 					assertThat(properties.getCommand().getClear().isEnabled()).isFalse();
 					assertThat(properties.getCommand().getHelp().isEnabled()).isFalse();

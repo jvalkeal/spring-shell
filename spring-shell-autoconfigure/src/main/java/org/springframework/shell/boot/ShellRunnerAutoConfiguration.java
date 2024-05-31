@@ -29,6 +29,7 @@ import org.springframework.shell.Shell;
 import org.springframework.shell.boot.condition.OnNotPrimaryCommandCondition;
 import org.springframework.shell.boot.condition.OnPrimaryCommandCondition;
 import org.springframework.shell.context.ShellContext;
+import org.springframework.shell.jline.FallbackShellRunner;
 import org.springframework.shell.jline.InteractiveShellRunner;
 import org.springframework.shell.jline.NonInteractiveShellRunner;
 import org.springframework.shell.jline.PromptProvider;
@@ -36,6 +37,19 @@ import org.springframework.shell.jline.ScriptShellRunner;
 
 @AutoConfiguration
 public class ShellRunnerAutoConfiguration {
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(SpringShellProperties.class)
+	public static class FallbackConfiguration {
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.shell.fallback", value = "enabled", havingValue = "true", matchIfMissing = true)
+		public FallbackShellRunner fallbackShellRunner(Shell shell, ShellContext shellContext,
+				SpringShellProperties properties) {
+			return new FallbackShellRunner(shell, shellContext, properties.getFallback().getCommand());
+		}
+
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(SpringShellProperties.class)

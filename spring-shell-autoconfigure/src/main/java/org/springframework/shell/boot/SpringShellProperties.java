@@ -30,6 +30,7 @@ public class SpringShellProperties {
 	private Script script = new Script();
 	private Interactive interactive = new Interactive();
 	private Noninteractive noninteractive = new Noninteractive();
+	private Fallback fallback = new Fallback();
 	private Theme theme = new Theme();
 	private Command command = new Command();
 	private Help help = new Help();
@@ -50,6 +51,14 @@ public class SpringShellProperties {
 
 	public void setHistory(History history) {
 		this.history = history;
+	}
+
+	public Fallback getFallback() {
+		return fallback;
+	}
+
+	public void setFallback(Fallback fallback) {
+		this.fallback = fallback;
 	}
 
 	public Script getScript() {
@@ -205,6 +214,37 @@ public class SpringShellProperties {
 
 		public void setPrimaryCommand(String primaryCommand) {
 			this.primaryCommand = primaryCommand;
+		}
+	}
+
+	public static class Fallback {
+
+		private boolean enabled = true;
+		private boolean append = false;
+		private String command = "help";
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isAppend() {
+			return append;
+		}
+
+		public void setAppend(boolean append) {
+			this.append = append;
+		}
+
+		public String getCommand() {
+			return command;
+		}
+
+		public void setCommand(String command) {
+			this.command = command;
 		}
 	}
 
