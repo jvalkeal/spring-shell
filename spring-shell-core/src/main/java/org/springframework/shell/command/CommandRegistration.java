@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.shell.Availability;
 import org.springframework.shell.completion.CompletionResolver;
@@ -78,6 +79,8 @@ public interface CommandRegistration {
 	 * @return the description
 	 */
 	String getDescription();
+
+	TypeDescriptor getMachineType();
 
 	/**
 	 * Get {@link Availability} for a command
@@ -742,6 +745,8 @@ public interface CommandRegistration {
 		 */
 		Builder defaultOptionNameModifier(Function<String, String> modifier);
 
+		Builder machineType(TypeDescriptor type);
+
 		/**
 		 * Define an option what this command should user for. Can be used multiple
 		 * times.
@@ -1188,11 +1193,13 @@ public interface CommandRegistration {
 		private DefaultExitCodeSpec exitCodeSpec;
 		private DefaultErrorHandlingSpec errorHandlingSpec;
 		private DefaultHelpOptionsSpec helpOptionsSpec;
+		private TypeDescriptor machineTypeDescriptor;
 
 		public DefaultCommandRegistration(String[] commands, InteractionMode interactionMode, String group,
 				boolean hidden,	String description, Supplier<Availability> availability,
 				List<DefaultOptionSpec> optionSpecs, DefaultTargetSpec targetSpec, List<DefaultAliasSpec> aliasSpecs,
-				DefaultExitCodeSpec exitCodeSpec, DefaultErrorHandlingSpec errorHandlingSpec, DefaultHelpOptionsSpec helpOptionsSpec) {
+				DefaultExitCodeSpec exitCodeSpec, DefaultErrorHandlingSpec errorHandlingSpec, DefaultHelpOptionsSpec helpOptionsSpec,
+				TypeDescriptor machineTypeDescriptor) {
 			this.command = commandArrayToName(commands);
 			this.interactionMode = interactionMode;
 			this.group = group;
@@ -1205,6 +1212,7 @@ public interface CommandRegistration {
 			this.exitCodeSpec = exitCodeSpec;
 			this.errorHandlingSpec = errorHandlingSpec;
 			this.helpOptionsSpec = helpOptionsSpec;
+			this.machineTypeDescriptor = machineTypeDescriptor;
 		}
 
 		@Override
@@ -1230,6 +1238,11 @@ public interface CommandRegistration {
 		@Override
 		public String getDescription() {
 			return description;
+		}
+
+		@Override
+		public TypeDescriptor getMachineType() {
+			return machineTypeDescriptor;
 		}
 
 		@Override
@@ -1346,6 +1359,7 @@ public interface CommandRegistration {
 		private DefaultErrorHandlingSpec errorHandlingSpec;
 		private DefaultHelpOptionsSpec helpOptionsSpec;
 		private Function<String, String> defaultOptionNameModifier;
+		private TypeDescriptor machineTypeDescriptor;
 
 		@Override
 		public Builder command(String... commands) {
@@ -1401,6 +1415,12 @@ public interface CommandRegistration {
 		}
 
 		@Override
+		public Builder machineType(TypeDescriptor type) {
+			this.machineTypeDescriptor = type;
+			return this;
+		}
+
+		@Override
 		public OptionSpec withOption() {
 			DefaultOptionSpec spec = new DefaultOptionSpec(this);
 			optionSpecs.add(spec);
@@ -1449,7 +1469,8 @@ public interface CommandRegistration {
 			Assert.notNull(targetSpec, "target cannot be empty");
 			Assert.state(!(targetSpec.bean != null && targetSpec.function != null), "only one target can exist");
 			return new DefaultCommandRegistration(commands, interactionMode, group, hidden, description, availability,
-					optionSpecs, targetSpec, aliasSpecs, exitCodeSpec, errorHandlingSpec, helpOptionsSpec);
+					optionSpecs, targetSpec, aliasSpecs, exitCodeSpec, errorHandlingSpec, helpOptionsSpec,
+					machineTypeDescriptor);
 		}
 	}
 }

@@ -16,6 +16,7 @@
 
 package org.springframework.shell.boot;
 
+import java.util.List;
 import java.util.Set;
 
 import org.jline.terminal.Terminal;
@@ -34,6 +35,10 @@ import org.springframework.shell.command.CommandCatalog;
 import org.springframework.shell.config.ShellConversionServiceSupplier;
 import org.springframework.shell.context.ShellContext;
 import org.springframework.shell.exit.ExitCodeMappings;
+import org.springframework.shell.render.CommandRenderService;
+import org.springframework.shell.render.CommandRenderer;
+import org.springframework.shell.render.DefaultCommandRenderService;
+import org.springframework.shell.render.MachineCommandRenderer;
 import org.springframework.shell.result.GenericResultHandlerService;
 import org.springframework.shell.result.ResultHandlerConfig;
 
@@ -54,20 +59,47 @@ public class SpringShellAutoConfiguration {
 		return () -> service;
 	}
 
+	// @Bean
+	// public ResultHandlerService resultHandlerService(Set<ResultHandler<?>> resultHandlers) {
+	// 	GenericResultHandlerService service = new GenericResultHandlerService();
+	// 	for (ResultHandler<?> resultHandler : resultHandlers) {
+	// 		service.addResultHandler(resultHandler);
+	// 	}
+	// 	return service;
+	// }
+
+	// @Bean
+	// public CommandRenderService commandRenderService(ResultHandlerService resultHandlerService) {
+	// 	return new DefaultCommandRenderService(resultHandlerService);
+	// }
+
 	@Bean
-	public ResultHandlerService resultHandlerService(Set<ResultHandler<?>> resultHandlers) {
+	public MachineCommandRenderer machineCommandRenderer(ShellConversionServiceSupplier shellConversionServiceSupplier) {
+		return new MachineCommandRenderer();
+	}
+
+	@Bean
+	public CommandRenderService commandRenderService(Set<ResultHandler<?>> resultHandlers, List<CommandRenderer> renderers) {
 		GenericResultHandlerService service = new GenericResultHandlerService();
 		for (ResultHandler<?> resultHandler : resultHandlers) {
 			service.addResultHandler(resultHandler);
 		}
-		return service;
+		return new DefaultCommandRenderService(service, renderers);
 	}
 
+	// @Bean
+	// public Shell shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
+	// 		ShellConversionServiceSupplier shellConversionServiceSupplier, ShellContext shellContext,
+	// 		ExitCodeMappings exitCodeMappings) {
+	// 	Shell shell = new Shell(resultHandlerService, commandRegistry, terminal, shellContext, exitCodeMappings);
+	// 	shell.setConversionService(shellConversionServiceSupplier.get());
+	// 	return shell;
+	// }
 	@Bean
-	public Shell shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
+	public Shell shell(CommandRenderService commandRenderService, CommandCatalog commandRegistry, Terminal terminal,
 			ShellConversionServiceSupplier shellConversionServiceSupplier, ShellContext shellContext,
 			ExitCodeMappings exitCodeMappings) {
-		Shell shell = new Shell(resultHandlerService, commandRegistry, terminal, shellContext, exitCodeMappings);
+		Shell shell = new Shell(commandRenderService, commandRegistry, terminal, shellContext, exitCodeMappings);
 		shell.setConversionService(shellConversionServiceSupplier.get());
 		return shell;
 	}

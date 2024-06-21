@@ -51,6 +51,8 @@ import org.springframework.shell.context.InteractionMode;
 import org.springframework.shell.context.ShellContext;
 import org.springframework.shell.exit.ExitCodeExceptionProvider;
 import org.springframework.shell.exit.ExitCodeMappings;
+import org.springframework.shell.render.CommandRenderContext;
+import org.springframework.shell.render.CommandRenderService;
 import org.springframework.util.StringUtils;
 
 /**
@@ -62,7 +64,8 @@ import org.springframework.util.StringUtils;
 public class Shell {
 
 	private final static Logger log = LoggerFactory.getLogger(Shell.class);
-	private final ResultHandlerService resultHandlerService;
+	// private final ResultHandlerService resultHandlerService;
+	private final CommandRenderService commandRenderService;
 
 	/**
 	 * Marker object returned to signify that there was no input to turn into a command
@@ -89,9 +92,18 @@ public class Shell {
 	private Validator validator = Utils.defaultValidator();
 	private List<CommandExceptionResolver> exceptionResolvers = new ArrayList<>();
 
-	public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
+	// public Shell(ResultHandlerService resultHandlerService, CommandCatalog commandRegistry, Terminal terminal,
+	// 		ShellContext shellContext, ExitCodeMappings exitCodeMappings) {
+	// 	this.resultHandlerService = resultHandlerService;
+	// 	this.commandRegistry = commandRegistry;
+	// 	this.terminal = terminal;
+	// 	this.shellContext = shellContext;
+	// 	this.exitCodeMappings = exitCodeMappings;
+	// }
+
+	public Shell(CommandRenderService commandRenderService, CommandCatalog commandRegistry, Terminal terminal,
 			ShellContext shellContext, ExitCodeMappings exitCodeMappings) {
-		this.resultHandlerService = resultHandlerService;
+		this.commandRenderService = commandRenderService;
 		this.commandRegistry = commandRegistry;
 		this.terminal = terminal;
 		this.shellContext = shellContext;
@@ -130,6 +142,9 @@ public class Shell {
 		this.exitCodeExceptionProvider = exitCodeExceptionProvider;
 	}
 
+	protected record EvaluateData(Object evaluateResult, CommandRegistration commandRegistration) {
+	}
+
 	/**
 	 * The main program loop: acquire input, try to match it to a command and evaluate. Repeat
 	 * until a {@link ResultHandler} causes the process to exit or there is no input.
@@ -149,16 +164,19 @@ public class Shell {
 				if (e instanceof ExitRequest) { // Handles ExitRequest thrown from hitting CTRL-C
 					break;
 				}
-				resultHandlerService.handle(e);
+				// resultHandlerService.handle(e);
+				commandRenderService.render(CommandRenderContext.of(e, null, shellContext.hasPty(), terminal));
 				continue;
 			}
 			if (input == null) {
 				break;
 			}
 
-			result = evaluate(input);
+			EvaluateData data = evaluatex(input);
+			result = data.evaluateResult();
 			if (result != NO_INPUT && !(result instanceof ExitRequest)) {
-				resultHandlerService.handle(result);
+				// resultHandlerService.handle(result);
+				commandRenderService.render(CommandRenderContext.of(result, data.commandRegistration.getMachineType(), shellContext.hasPty(), terminal));
 			}
 
 			// throw if not in interactive mode so that boot's exit code feature
@@ -191,9 +209,9 @@ public class Shell {
 	 * result
 	 * </p>
 	 */
-	protected Object evaluate(Input input) {
+	protected EvaluateData evaluatex(Input input) {
 		if (noInput(input)) {
-			return NO_INPUT;
+			return new EvaluateData(NO_INPUT, null);
 		}
 
 		// List<String> words = input.words();
@@ -204,7 +222,8 @@ public class Shell {
 
 		Map<String, CommandRegistration> registrations = commandRegistry.getRegistrations();
 		if (command == null) {
-			return new CommandNotFound(words, new HashMap<>(registrations), input.rawText());
+			// return new CommandNotFound(words, new HashMap<>(registrations), input.rawText());
+			return new EvaluateData(new CommandNotFound(words, new HashMap<>(registrations), input.rawText()), null);
 		}
 
 		log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
@@ -224,7 +243,7 @@ public class Shell {
 			.findFirst();
 
 		if (commandRegistration.isEmpty()) {
-			return new CommandNotFound(words, new HashMap<>(registrations), input.rawText());
+			return new EvaluateData(new CommandNotFound(words, new HashMap<>(registrations), input.rawText()), null);
 		}
 
 		if (this.exitCodeMappings != null) {
@@ -251,14 +270,14 @@ public class Shell {
 			if (ute.getCause() instanceof InterruptedException || ute.getCause() instanceof ClosedByInterruptException) {
 				Thread.interrupted(); // to reset interrupted flag
 			}
-			return ute.getCause();
+			return new EvaluateData(ute.getCause(), commandRegistration.get());
 		}
 		catch (CommandExecutionException e1) {
 			if (e1.getCause() instanceof Exception e11) {
 				e = e11;
 			}
 			else {
-				return e1.getCause();
+				return new EvaluateData(e1.getCause(), commandRegistration.get());
 			}
 		}
 		catch (Exception e2) {
@@ -288,8 +307,171 @@ public class Shell {
 		if (e != null) {
 			evaluate = e;
 		}
-		return evaluate;
+		return new EvaluateData(evaluate, commandRegistration.get());
 	}
+
+	// /**
+	//  * The main program loop: acquire input, try to match it to a command and evaluate. Repeat
+	//  * until a {@link ResultHandler} causes the process to exit or there is no input.
+	//  * <p>
+	//  * This method has public visibility so that it can be invoked by actual commands
+	//  * (<em>e.g.</em> a {@literal script} command).
+	//  * </p>
+	//  */
+	// public void runx(InputProvider inputProvider) throws Exception {
+	// 	Object result = null;
+	// 	while (!(result instanceof ExitRequest)) { // Handles ExitRequest thrown from Quit command
+	// 		Input input;
+	// 		try {
+	// 			input = inputProvider.readInput();
+	// 		}
+	// 		catch (Exception e) {
+	// 			if (e instanceof ExitRequest) { // Handles ExitRequest thrown from hitting CTRL-C
+	// 				break;
+	// 			}
+	// 			// resultHandlerService.handle(e);
+	// 			commandRenderService.render(CommandRenderContext.of(e, null, shellContext.hasPty(), terminal));
+	// 			continue;
+	// 		}
+	// 		if (input == null) {
+	// 			break;
+	// 		}
+
+	// 		result = evaluate(input);
+	// 		if (result != NO_INPUT && !(result instanceof ExitRequest)) {
+	// 			// resultHandlerService.handle(result);
+	// 			commandRenderService.render(CommandRenderContext.of(result, null, shellContext.hasPty(), terminal));
+	// 		}
+
+	// 		// throw if not in interactive mode so that boot's exit code feature
+	// 		// can contribute exit code. we can't throw when in interactive mode as
+	// 		// that would exit a shell
+	// 		if (this.shellContext != null && this.shellContext.getInteractionMode() != InteractionMode.INTERACTIVE) {
+	// 			if (result instanceof CommandExecution.CommandParserExceptionsException) {
+	// 				throw (CommandExecution.CommandParserExceptionsException) result;
+	// 			}
+	// 			else if (result instanceof Exception) {
+	// 				throw (Exception) result;
+	// 			}
+	// 			if (handlingResultNonInt instanceof CommandExecution.CommandParserExceptionsException) {
+	// 				throw (CommandExecution.CommandParserExceptionsException) handlingResultNonInt;
+	// 			}
+	// 			else if (processExceptionNonInt != null && processExceptionNonInt.exitCode() != null
+	// 					&& exitCodeExceptionProvider != null) {
+	// 				throw exitCodeExceptionProvider.apply(null, processExceptionNonInt.exitCode());
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	// /**
+	//  * Evaluate a single "line" of input from the user by trying to map words to a command and
+	//  * arguments.
+	//  *
+	//  * <p>
+	//  * This method does not throw exceptions, it catches them and returns them as a regular
+	//  * result
+	//  * </p>
+	//  */
+	// protected Object evaluate(Input input) {
+	// 	if (noInput(input)) {
+	// 		return NO_INPUT;
+	// 	}
+
+	// 	// List<String> words = input.words();
+	// 	// gh-763
+	// 	List<String> words = input.words().stream().filter(w -> w.length() > 0).collect(Collectors.toList());
+	// 	String line = words.stream().collect(Collectors.joining(" ")).trim();
+	// 	String command = findLongestCommand(line, false);
+
+	// 	Map<String, CommandRegistration> registrations = commandRegistry.getRegistrations();
+	// 	if (command == null) {
+	// 		return new CommandNotFound(words, new HashMap<>(registrations), input.rawText());
+	// 	}
+
+	// 	log.debug("Evaluate input with line=[{}], command=[{}]", line, command);
+
+	// 	Optional<CommandRegistration> commandRegistration = registrations.values().stream()
+	// 		.filter(r -> {
+	// 			if (r.getCommand().equals(command)) {
+	// 				return true;
+	// 			}
+	// 			for (CommandAlias a : r.getAliases()) {
+	// 				if (a.getCommand().equals(command)) {
+	// 					return true;
+	// 				}
+	// 			}
+	// 			return false;
+	// 		})
+	// 		.findFirst();
+
+	// 	if (commandRegistration.isEmpty()) {
+	// 		return new CommandNotFound(words, new HashMap<>(registrations), input.rawText());
+	// 	}
+
+	// 	if (this.exitCodeMappings != null) {
+	// 		List<Function<Throwable, Integer>> mappingFunctions = commandRegistration.get().getExitCode()
+	// 				.getMappingFunctions();
+	// 		this.exitCodeMappings.reset(mappingFunctions);
+	// 	}
+
+	// 	Thread commandThread = Thread.currentThread();
+	// 	Object sh = Signals.register("INT", () -> commandThread.interrupt());
+
+	// 	CommandExecution execution = CommandExecution.of(
+	// 			argumentResolvers != null ? argumentResolvers.getResolvers() : null, validator, terminal,
+	// 			shellContext, conversionService, commandRegistry);
+
+	// 	List<CommandExceptionResolver> commandExceptionResolvers = commandRegistration.get().getExceptionResolvers();
+
+	// 	Object evaluate = null;
+	// 	Exception e = null;
+	// 	try {
+	// 		evaluate = execution.evaluate(words.toArray(new String[0]));
+	// 	}
+	// 	catch (UndeclaredThrowableException ute) {
+	// 		if (ute.getCause() instanceof InterruptedException || ute.getCause() instanceof ClosedByInterruptException) {
+	// 			Thread.interrupted(); // to reset interrupted flag
+	// 		}
+	// 		return ute.getCause();
+	// 	}
+	// 	catch (CommandExecutionException e1) {
+	// 		if (e1.getCause() instanceof Exception e11) {
+	// 			e = e11;
+	// 		}
+	// 		else {
+	// 			return e1.getCause();
+	// 		}
+	// 	}
+	// 	catch (Exception e2) {
+	// 		e = e2;
+	// 	}
+	// 	finally {
+	// 		Signals.unregister("INT", sh);
+	// 	}
+	// 	if (e != null && !(e instanceof ExitRequest)) {
+	// 		try {
+	// 			CommandHandlingResult processException = processException(commandExceptionResolvers, e);
+	// 			processExceptionNonInt = processException;
+	// 			if (processException != null) {
+	// 				if (processException.isPresent()) {
+	// 					handlingResultNonInt = e;
+	// 					if (StringUtils.hasText(processException.message())) {
+	// 						this.terminal.writer().append(processException.message());
+	// 						this.terminal.writer().flush();
+	// 					}
+	// 				}
+	// 				return null;
+	// 			}
+	// 		} catch (Exception e1) {
+	// 			e = e1;
+	// 		}
+	// 	}
+	// 	if (e != null) {
+	// 		evaluate = e;
+	// 	}
+	// 	return evaluate;
+	// }
 
 	private CommandHandlingResult processException(List<CommandExceptionResolver> commandExceptionResolvers, Exception e)
 			throws Exception {

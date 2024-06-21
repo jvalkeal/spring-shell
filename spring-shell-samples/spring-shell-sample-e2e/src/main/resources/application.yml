@@ -29,10 +29,10 @@ logging:
   pattern:
     console:
 ## log debug from a cli
-#  file:
-#    name: shell.log
-#  level:
+  file:
+    name: shelle2e.log
+  level:
 #    root: debug
-#    org:
-#      springframework:
-#        shell: debug
+    org:
+      springframework:
+        shell: debug
