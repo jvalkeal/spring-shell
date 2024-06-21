@@ -76,6 +76,7 @@ public class TerminalUI implements ViewService {
 	private View focus = null;
 	private ThemeResolver themeResolver;
 	private String themeName = "default";
+	private boolean mouseTracking = true;
 
 	/**
 	 * Constructs a handler with a given terminal.
@@ -109,6 +110,16 @@ public class TerminalUI implements ViewService {
 		setFocus(root);
 		this.rootView = root;
 		this.fullScreen = fullScreen;
+	}
+
+	/**
+	 * Sets if mouse tracking should be used when ui loop runs. This method only has
+	 * effect if it's called prior to running ui loop. Defaults to {@code true}.
+	 *
+	 * @param enabled flag controlling state
+	 */
+	public void setMouseTracking(boolean enabled) {
+		this.mouseTracking = enabled;
 	}
 
 	/**
@@ -370,6 +381,9 @@ public class TerminalUI implements ViewService {
 	}
 
 	private void loop() {
+		// local flag for mouse tracking as it cannot be
+		// changed when loop is running
+		boolean mouseTrack = mouseTracking;
 		Attributes attr = terminal.enterRawMode();
 		registerEventHandling();
 
@@ -384,7 +398,9 @@ public class TerminalUI implements ViewService {
 			}
 			terminal.puts(Capability.keypad_xmit);
 			terminal.puts(Capability.cursor_invisible);
-			terminal.trackMouse(Terminal.MouseTracking.Normal);
+			if (mouseTrack) {
+				terminal.trackMouse(Terminal.MouseTracking.Normal);
+			}
 			terminal.writer().flush();
 			size.copy(terminal.getSize());
 			display.clear();
@@ -406,7 +422,9 @@ public class TerminalUI implements ViewService {
 			if (fullScreen) {
 				display.update(Collections.emptyList(), 0);
 			}
-			terminal.trackMouse(Terminal.MouseTracking.Off);
+			if (mouseTrack) {
+				terminal.trackMouse(Terminal.MouseTracking.Off);
+			}
 			if (fullScreen) {
 				terminal.puts(Capability.exit_ca_mode);
 			}
