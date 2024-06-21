@@ -103,7 +103,8 @@ public class ComponentUiCommands extends AbstractShellComponent {
 		@Option(defaultValue = "CENTER") HorizontalAlign percentAlign,
 		@Option(defaultValue = "-1") int logMessagesRate,
 		@Option(defaultValue = "200") long advanceSleep,
-		@Option(defaultValue = "false") boolean logMessagesSleep
+		@Option(defaultValue = "false") boolean logMessagesSleep,
+		@Option(defaultValue = "true") boolean advance
 	) {
 		ArrayList<ProgressViewItem> items = new ArrayList<>();
 		if (textEnabled) {
@@ -120,7 +121,7 @@ public class ComponentUiCommands extends AbstractShellComponent {
 		view.setDescription(description);
 		view.setRect(0, 0, 20, 1);
 
-		ViewComponent component = getViewComponentBuilder().build(view);
+		ViewComponent component = getViewComponentBuilder().mouseTracking(false).build(view);
 		view.start();
 
 		ViewComponentRun run = component.runAsync();
@@ -139,7 +140,9 @@ public class ComponentUiCommands extends AbstractShellComponent {
 				getTerminal().writer().write(msg + System.lineSeparator());
 				getTerminal().writer().flush();
 			}
-			view.tickAdvance(1);
+			if (advance) {
+				view.tickAdvance(1);
+			}
 		}
 
 		if (logMessagesSleep) {
@@ -162,7 +165,9 @@ public class ComponentUiCommands extends AbstractShellComponent {
 				getTerminal().writer().write(msg + System.lineSeparator());
 				getTerminal().writer().flush();
 			}
-			view.tickAdvance(1);
+			if (advance) {
+				view.tickAdvance(1);
+			}
 		}
 
 		view.stop();

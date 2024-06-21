@@ -17,6 +17,8 @@ package org.springframework.shell.component;
 
 import org.jline.terminal.Terminal;
 
+import org.springframework.lang.Nullable;
+import org.springframework.shell.component.view.TerminalUI;
 import org.springframework.shell.component.view.TerminalUIBuilder;
 import org.springframework.shell.component.view.control.View;
 
@@ -30,6 +32,7 @@ public class ViewComponentBuilder {
 	private final TerminalUIBuilder terminalUIBuilder;
 	private final ViewComponentExecutor viewComponentExecutor;
 	private final Terminal terminal;
+	private Boolean mouseTracking;
 
 	public ViewComponentBuilder(TerminalUIBuilder terminalUIBuilder, ViewComponentExecutor viewComponentExecutor,
 			Terminal terminal) {
@@ -39,13 +42,30 @@ public class ViewComponentBuilder {
 	}
 
 	/**
+	 * Sets if mouse tracking support in a build {@link TerminalUI} should be
+	 * enabled. Can be {@code null} which means {@link TerminalUI} is not touched at
+	 * all.
+	 *
+	 * @param mouseTracking flag if mouse tracking should be enabled, can be null
+	 * @return a builder for chaining
+	 */
+	public ViewComponentBuilder mouseTracking(@Nullable Boolean mouseTracking) {
+		this.mouseTracking = mouseTracking;
+		return this;
+	}
+
+	/**
 	 * Build a new {@link ViewComponent} instance and configure it using this builder.
 	 *
 	 * @param view the view to use with view component
 	 * @return a configured {@link ViewComponent} instance.
 	 */
 	public ViewComponent build(View view) {
-		return new ViewComponent(terminalUIBuilder.build(), terminal, viewComponentExecutor, view);
+		TerminalUI terminalUI = terminalUIBuilder.build();
+		if (mouseTracking != null) {
+			terminalUI.setMouseTracking(mouseTracking);
+		}
+		return new ViewComponent(terminalUI, terminal, viewComponentExecutor, view);
 	}
 
 }
