@@ -1,0 +1,12 @@
+= Spring Shell Treesitter
+
+Tree-sitter is a native parsing library used by neovim and github to parse various
+languages providing services like syntax highlighting.
+
+Spring Shell Treesitter modules contains a compiled native libraries for linux,
+macos and windows to be used via JDK's Foreign Function and Memory API and thus
+needs minimum of JDK version 22.
+
+`spring-shell-treesitter-core` is our opinionated `tree-sitter` bindings and all
+other `spring-shell-treesitter-<language>` modules provides support for a
+particular language.

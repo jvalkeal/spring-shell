@@ -1,0 +1,24 @@
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Treesitter Core'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(22)
+	}
+}
+
+// tasks.withType(JavaCompile).configureEach {
+//     javaCompiler = javaToolchains.compilerFor {
+// 		System.out.println("DDD1 ");
+//         languageVersion = JavaLanguageVersion.of(22)
+//     }
+// }
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-core')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
