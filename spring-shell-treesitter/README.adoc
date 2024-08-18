@@ -10,3 +10,7 @@ needs minimum of JDK version 22.
 `spring-shell-treesitter-core` is our opinionated `tree-sitter` bindings and all
 other `spring-shell-treesitter-<language>` modules provides support for a
 particular language.
+
+Not yet full build automation so some things here for reminder:
+
+jextract --header-class-name TreeSitter --output src/main/java -t org.springframework.shell.treesitter.ts src/ts/api.h
