@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.treesitter.json;
+package org.springframework.shell.treesitter;
 
 import java.lang.foreign.Arena;
-import org.springframework.shell.treesitter.TSLanguage;
+import java.lang.foreign.MemorySegment;
 
-public class TSLanguageJson extends TSLanguage {
+public abstract class TreeSitterLanguage {
 
-	private void xxx() {
-		Arena offHeap = Arena.ofConfined();
-	}
+	public abstract MemorySegment getLanguageSegment();
 
 }

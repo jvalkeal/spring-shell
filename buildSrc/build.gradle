@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.asciidoctor:asciidoctor-gradle-jvm:3.3.2'
 	implementation 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
 	implementation "org.graalvm.buildtools:native-gradle-plugin:${nativeBuildToolsVersion}"
+	api 'org.apache.commons:commons-compress:1.26.1'
 }
 
 gradlePlugin {
@@ -56,6 +57,10 @@ gradlePlugin {
 		samplePlugin {
 			id = "org.springframework.shell.sample"
 			implementationClass = "org.springframework.shell.gradle.SamplePlugin"
+		}
+		compressTreePlugin {
+			id = "org.springframework.shell.compress-tree"
+			implementationClass = "org.springframework.shell.gradle.compresstree.CompressTreePlugin"
 		}
 	}
 }

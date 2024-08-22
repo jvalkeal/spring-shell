@@ -15,12 +15,20 @@
  */
 package org.springframework.shell.treesitter;
 
-import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 
-public class TSLanguage {
+import org.junit.jupiter.api.Test;
 
-	private void xxx() {
-		Arena offHeap = Arena.ofConfined();
+import org.springframework.shell.treesitter.ts.TreeSitter;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class TreeSitterNativeLoaderTests {
+
+	@Test
+	void loadMainLib() {
+		TreeSitterNativeLoader.initialize();
+		MemorySegment segment = TreeSitter.ts_parser_new();
+		assertThat(segment).isNotNull();
 	}
-
 }
