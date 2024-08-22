@@ -1,0 +1,13 @@
+plugins {
+	id 'org.springframework.shell.sample'
+}
+
+description = 'Spring Shell Sample Treesitter'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-starters:spring-shell-starter-jna')
+	testImplementation project(':spring-shell-starters:spring-shell-starter-test')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.awaitility:awaitility'
+}
