@@ -15,8 +15,6 @@
  */
 package org.springframework.shell.treesitter;
 
-public interface TreeSitterLanguageProvider {
-
-	boolean supports(String languageName);
+public record TreeSitterPoint(int row, int column) {
 
 }

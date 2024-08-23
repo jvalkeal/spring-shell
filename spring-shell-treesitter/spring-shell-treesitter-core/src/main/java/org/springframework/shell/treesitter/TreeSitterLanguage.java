@@ -18,7 +18,7 @@ package org.springframework.shell.treesitter;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 
-public abstract class TreeSitterLanguage {
+public abstract class TreeSitterLanguage implements TreeSitterLanguageProvider {
 
 	public abstract MemorySegment getLanguageSegment();
 

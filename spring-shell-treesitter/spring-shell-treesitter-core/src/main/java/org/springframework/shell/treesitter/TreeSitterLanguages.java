@@ -15,8 +15,24 @@
  */
 package org.springframework.shell.treesitter;
 
-public interface TreeSitterLanguageProvider {
+import java.util.List;
 
-	boolean supports(String languageName);
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+public class TreeSitterLanguages {
+
+	private TreeSitterServices<TreeSitterLanguageProvider> services;
+
+	public TreeSitterLanguages(ConfigurableListableBeanFactory beanFactory) {
+		this(TreeSitterServices.factoriesAndBeans(beanFactory));
+	}
+
+	TreeSitterLanguages(TreeSitterServices.Loader loader) {
+		services = loader.load(TreeSitterLanguageProvider.class);
+	}
+
+	public List<TreeSitterLanguageProvider> getLanguages() {
+		return services.asList();
+	}
 
 }

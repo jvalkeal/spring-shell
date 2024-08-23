@@ -1,15 +1,18 @@
 spring:
   main:
     banner-mode: off
+  shell:
+    interactive:
+      enabled: true
 ## disable console logging
 logging:
   pattern:
     console:
 ## log debug from a cli
-#  file:
-#    name: shell.log
-#  level:
-#    root: debug
-#    org:
-#      springframework:
-#        shell: debug
+  file:
+    name: shell-treesitter.log
+  level:
+    # root: debug
+    org:
+      springframework:
+        shell: debug

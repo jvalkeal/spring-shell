@@ -23,6 +23,11 @@ import org.springframework.shell.treesitter.json.ts.TreeSitterJson;
 
 public class TreeSitterLanguageJson extends TreeSitterLanguage {
 
+	@Override
+	public boolean supports(String languageName) {
+		return "json".equals(languageName);
+	}
+
 	public final static String QUERY_HIGHLIGHT = """
 			(pair
 			  key: (_) @string.special.key)

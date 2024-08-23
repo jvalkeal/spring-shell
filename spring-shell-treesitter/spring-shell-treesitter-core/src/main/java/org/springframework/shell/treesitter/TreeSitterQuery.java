@@ -38,7 +38,7 @@ public class TreeSitterQuery {
 		this.source = source;
 	}
 
-	public void findMatches(TreeSitterNode node) {
+	public List<TreeSitterQueryMatch> findMatches(TreeSitterNode node) {
 		Arena offHeap = Arena.ofConfined();
 		MemorySegment cursor = TreeSitter.ts_query_cursor_new();
 		MemorySegment languageSegment = language.getLanguageSegment();
@@ -57,10 +57,10 @@ public class TreeSitterQuery {
 		for (int i = 0; i < captureCount; i++) {
 			MemorySegment length = offHeap.allocate(ValueLayout.JAVA_INT);
 			MemorySegment name = TreeSitter.ts_query_capture_name_for_id(querySegment, i, length);
-			// System.out.println(name.getString(0));
 			captureNames.add(name.getString(0));
 		}
 
+		List<TreeSitterQueryMatch> matches = new ArrayList<>();
 
 		while (TreeSitter.ts_query_cursor_next_match(cursor, queryMatch)) {
 			short patternIndex = TSQueryMatch.pattern_index(queryMatch);
@@ -68,48 +68,48 @@ public class TreeSitterQuery {
 			int id = TSQueryMatch.id(queryMatch);
 
 
-			// int stringCount = TreeSitter.ts_query_string_count(querySegment);
-			// for (int i = 0; i < stringCount; i++) {
-			// 	MemorySegment length = offHeap.allocate(ValueLayout.JAVA_INT);
-			// 	MemorySegment name = TreeSitter.ts_query_string_value_for_id(querySegment, i, length);
-			// 	System.out.println(name.getString(0));
-			// }
-
 			MemorySegment captures = TSQueryMatch.captures(queryMatch);
+
+			List<TreeSitterQueryCapture> queryCaptures = new ArrayList<>();
 
 			List<String> names = new ArrayList<>();
 			for (short i = 0; i < count; ++i) {
 				MemorySegment capture = TSQueryCapture.asSlice(captures, i);
 				String name = captureNames.get(TSQueryCapture.index(capture));
-				// MemorySegment name = TSNode.allocate(offHeap).copyFrom(TSQueryCapture.node(capture));
-				// System.out.println(name);
+				MemorySegment captureNode = TSNode.allocate(offHeap).copyFrom(TSQueryCapture.node(capture));
+				TreeSitterNode treeSitterNode = new TreeSitterNode(captureNode);
+				TreeSitterQueryCapture treeSitterQueryCapture = new TreeSitterQueryCapture(treeSitterNode, i);
+				queryCaptures.add(treeSitterQueryCapture);
 				names.add(name);
 			}
 
 
 			int index = TSQueryCapture.index(captures);
-			MemorySegment captureNode = TSQueryCapture.node(captures);
+			// MemorySegment captureNode = TSQueryCapture.node(captures);
 
-			MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(offHeap, captureNode);
-			MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(offHeap, captureNode);
-			int startX = TSPoint.column(nodeStartPoint);
-			int startY = TSPoint.row(nodeStartPoint);
-			int endX = TSPoint.column(nodeEndPoint);
-			int endY = TSPoint.row(nodeEndPoint);
+			// MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(offHeap, captureNode);
+			// MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(offHeap, captureNode);
+			// int startX = TSPoint.column(nodeStartPoint);
+			// int startY = TSPoint.row(nodeStartPoint);
+			// int endX = TSPoint.column(nodeEndPoint);
+			// int endY = TSPoint.row(nodeEndPoint);
 
-			int startByte = TreeSitter.ts_node_start_byte(captureNode);
-			int endByte = TreeSitter.ts_node_end_byte(captureNode);
+			// int startByte = TreeSitter.ts_node_start_byte(captureNode);
+			// int endByte = TreeSitter.ts_node_end_byte(captureNode);
 
-			MemorySegment str = TreeSitter.ts_node_string(captureNode);
+			// MemorySegment str = TreeSitter.ts_node_string(captureNode);
 			// String nodeStr = str.getString(0);
-			String nodeStr = String.format("(%s, %s)", startByte, endByte);
-			String keyStr = names.getLast();
-			String format = String.format("pattern: %s, capture: %s - %s, start: (%s, %s), end: (%s, %s), text: `%s`",
-					patternIndex, index, keyStr, startX, startY, endX, endY, nodeStr);
+			// String nodeStr = String.format("(%s, %s)", startByte, endByte);
+			// String keyStr = names.getLast();
+			// String format = String.format("pattern: %s, capture: %s - %s, start: (%s, %s), end: (%s, %s), text: `%s`",
+			// 		patternIndex, index, keyStr, startY, startX, endY, endX, nodeStr);
 			// pattern:  0, capture: 0 - string.special.key, start: (1, 4), end: (1, 15), text: `"stringkey"`
-			System.out.println(format);
+			// System.out.println(format);
+
+			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount, queryCaptures);
+			matches.add(treeSitterQueryMatch);
 		}
 
-
+		return matches;
 	}
 }

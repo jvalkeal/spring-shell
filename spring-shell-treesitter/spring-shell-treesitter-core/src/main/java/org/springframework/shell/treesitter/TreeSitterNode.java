@@ -15,7 +15,11 @@
  */
 package org.springframework.shell.treesitter;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+
+import org.springframework.shell.treesitter.ts.TSPoint;
+import org.springframework.shell.treesitter.ts.TreeSitter;
 
 public class TreeSitterNode {
 
@@ -28,4 +32,29 @@ public class TreeSitterNode {
 	public MemorySegment getTreeSegment() {
 		return treeSegment;
 	}
+
+    public TreeSitterPoint getStartPoint() {
+		Arena offHeap = Arena.ofConfined();
+		MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(offHeap, treeSegment);
+		int startX = TSPoint.column(nodeStartPoint);
+		int startY = TSPoint.row(nodeStartPoint);
+		return new TreeSitterPoint(startY, startX);
+    }
+
+    public TreeSitterPoint getEndPoint() {
+		Arena offHeap = Arena.ofConfined();
+		MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(offHeap, treeSegment);
+		int endX = TSPoint.column(nodeEndPoint);
+		int endY = TSPoint.row(nodeEndPoint);
+		return new TreeSitterPoint(endY, endX);
+    }
+
+    public int getStartByte() {
+        return TreeSitter.ts_node_start_byte(treeSegment);
+    }
+
+    public int getEndByte() {
+        return TreeSitter.ts_node_end_byte(treeSegment);
+    }
+
 }

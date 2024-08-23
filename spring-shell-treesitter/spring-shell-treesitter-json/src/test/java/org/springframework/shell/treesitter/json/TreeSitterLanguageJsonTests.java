@@ -16,12 +16,14 @@
 package org.springframework.shell.treesitter.json;
 
 import java.lang.foreign.MemorySegment;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.treesitter.TreeSitterNativeLoader;
 import org.springframework.shell.treesitter.TreeSitterParser;
 import org.springframework.shell.treesitter.TreeSitterQuery;
+import org.springframework.shell.treesitter.TreeSitterQueryMatch;
 import org.springframework.shell.treesitter.TreeSitterTree;
 import org.springframework.shell.treesitter.json.ts.TreeSitterJson;
 
@@ -58,6 +60,7 @@ public class TreeSitterLanguageJsonTests {
 		parser.setLanguage(json);
 		// TreeSitterTree tree = parser.parse(CODE1);
 		TreeSitterTree tree = parser.parse(CODE2);
-		query.findMatches(tree.getRootNode());
+		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
+		assertThat(matches).isNotNull();
 	}
 }

@@ -25,4 +25,12 @@ public class TreeSitterQueryCapture {
 		this.index = index;
 	}
 
+	public TreeSitterNode getNode() {
+		return node;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
 }
