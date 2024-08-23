@@ -15,6 +15,7 @@ dependencies {
 	implementation project(':spring-shell-starters:spring-shell-starter-jna')
 	implementation project(':spring-shell-treesitter:spring-shell-treesitter-core')
 	implementation project(':spring-shell-treesitter:spring-shell-treesitter-json')
+	implementation project(':spring-shell-treesitter:spring-shell-treesitter-java')
 	testImplementation project(':spring-shell-starters:spring-shell-starter-test')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.awaitility:awaitility'

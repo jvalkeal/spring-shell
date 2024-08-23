@@ -15,3 +15,6 @@ Not yet full build automation so some things here for reminder:
 
 jextract --header-class-name TreeSitter --output src/main/java -t org.springframework.shell.treesitter.ts src/ts/api.h
 jextract --header-class-name TreeSitterJson --output src/main/java -t org.springframework.shell.treesitter.json.ts src/ts/tree-sitter-json.h
+jextract --header-class-name TreeSitterJava --output src/main/java -t org.springframework.shell.treesitter.java.ts src/ts/tree-sitter-java.h
+
+zig cc -g0 -shared -target x86_64-linux-gnu -I src -o libtree-sitter-java.so src/parser.c
