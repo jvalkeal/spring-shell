@@ -84,6 +84,5 @@ public class TreesitterCommand extends AbstractShellComponent {
 			});
 		}
 		return builder.toString();
-		// return String.format("ext=%s, exists=%s", extension, exists);
 	}
 }
