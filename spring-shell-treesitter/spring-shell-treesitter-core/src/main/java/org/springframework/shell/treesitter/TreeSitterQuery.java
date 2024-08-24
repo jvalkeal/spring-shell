@@ -106,7 +106,7 @@ public class TreeSitterQuery {
 			// pattern:  0, capture: 0 - string.special.key, start: (1, 4), end: (1, 15), text: `"stringkey"`
 			// System.out.println(format);
 
-			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount, queryCaptures);
+			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount, queryCaptures, names);
 			matches.add(treeSitterQueryMatch);
 		}
 

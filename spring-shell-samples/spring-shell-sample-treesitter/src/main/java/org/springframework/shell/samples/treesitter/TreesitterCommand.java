@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.AbstractShellComponent;
+import org.springframework.shell.treesitter.TreeSitterLanguage;
+import org.springframework.shell.treesitter.TreeSitterLanguageProvider;
 import org.springframework.shell.treesitter.TreeSitterLanguages;
 import org.springframework.shell.treesitter.TreeSitterNativeLoader;
 import org.springframework.shell.treesitter.TreeSitterParser;
@@ -34,7 +36,6 @@ import org.springframework.shell.treesitter.TreeSitterPoint;
 import org.springframework.shell.treesitter.TreeSitterQuery;
 import org.springframework.shell.treesitter.TreeSitterQueryMatch;
 import org.springframework.shell.treesitter.TreeSitterTree;
-import org.springframework.shell.treesitter.json.TreeSitterLanguageJson;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -48,26 +49,38 @@ public class TreesitterCommand extends AbstractShellComponent {
 	@Autowired
 	TreeSitterLanguages treeSitterLanguages;
 
-	@Command(command = "info")
+	@Command(command = "info", description = "Info about supported languages")
 	public String info() {
 		return treeSitterLanguages.getLanguages().stream().map(l -> l.getClass().toString())
 				.collect(Collectors.joining(","));
 	}
 
-	@Command(command = "query")
-	public String query(@Option(required = true) File file) throws IOException {
-		boolean exists = file.exists();
-		String extension = FilenameUtils.getExtension(file.getName());
+	@Command(command = "query", description = "Execute default highlight query for given file")
+	public String query(
+			@Option(required = true, defaultValue = "Path to a file, extension is the language id") File file
+		) throws IOException {
 
-		TreeSitterNativeLoader.initialize();
-		TreeSitterNativeLoader.initializeLanguage("json");
-		TreeSitterLanguageJson json = new TreeSitterLanguageJson();
-		TreeSitterQuery query = new TreeSitterQuery(json, TreeSitterLanguageJson.QUERY_HIGHLIGHT);
-		TreeSitterParser parser = new TreeSitterParser();
-		parser.setLanguage(json);
+		if (!file.exists()) {
+			return String.format("File %s doesn't exist", file.getAbsolutePath());
+		}
+
+		String language = FilenameUtils.getExtension(file.getName());
+		if (!treeSitterLanguages.getSupportedLanguages().contains(language)) {
+			return String.format("Language with extension %s not supported", language);
+		}
+
+		// TreeSitterNativeLoader.initialize();
+		// TreeSitterNativeLoader.initializeLanguage(language);
+		// TreeSitterLanguageProvider<?> lp = treeSitterLanguages.getLanguage(language);
+		// TreeSitterLanguage<?> language2 = lp.getLanguage();
+
+		// TreeSitterQuery query = new TreeSitterQuery(language2, language2.highlightQuery());
+		// TreeSitterParser parser = new TreeSitterParser();
+		// parser.setLanguage(language2);
 		byte[] bytes = FileCopyUtils.copyToByteArray(file);
-		TreeSitterTree tree = parser.parse(new String(bytes));
-		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
+		// TreeSitterTree tree = parser.parse(new String(bytes));
+		// List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
+		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
 		StringBuilder builder = new StringBuilder();
 		for (TreeSitterQueryMatch treeSitterQueryMatch : matches) {
 			treeSitterQueryMatch.getCaptures().forEach(c -> {
@@ -77,12 +90,64 @@ public class TreesitterCommand extends AbstractShellComponent {
 				int endByte = c.getNode().getEndByte();
 				byte[] copyOfRange = Arrays.copyOfRange(bytes, startByte, endByte);
 
-				builder.append(String.format("pattern: %s, capture: %s, start: (%s,%s), end: (%s,%s), text: `%s`",
-						treeSitterQueryMatch.getPatternIndex(), treeSitterQueryMatch.getCaptureIndex(), startPoint.row(), startPoint.column(),
-						endPoint.row(), endPoint.column(), new String(copyOfRange)));
+				builder.append(
+						String.format("pattern: %s, capture: %s - [%s], start: (%s,%s), end: (%s,%s), text: `%s`",
+								treeSitterQueryMatch.getPatternIndex(), treeSitterQueryMatch.getCaptureIndex(),
+								treeSitterQueryMatch.getNames().stream().collect(Collectors.joining(", ")),
+								startPoint.row(), startPoint.column(),
+								endPoint.row(), endPoint.column(), new String(copyOfRange)));
 				builder.append(System.lineSeparator());
 			});
 		}
 		return builder.toString();
+	}
+
+	@Command(command = "highlight", description = "Syntax highlight a given file")
+	public String highlight(
+			@Option(required = true, defaultValue = "Path to a file, extension is the language id") File file
+		) throws IOException {
+		if (!file.exists()) {
+			return String.format("File %s doesn't exist", file.getAbsolutePath());
+		}
+
+		String language = FilenameUtils.getExtension(file.getName());
+		if (!treeSitterLanguages.getSupportedLanguages().contains(language)) {
+			return String.format("Language with extension %s not supported", language);
+		}
+
+		byte[] bytes = FileCopyUtils.copyToByteArray(file);
+
+		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
+
+		for (TreeSitterQueryMatch treeSitterQueryMatch : matches) {
+			treeSitterQueryMatch.getCaptures().forEach(c -> {
+				int startByte = c.getNode().getStartByte();
+				int endByte = c.getNode().getEndByte();
+
+				// builder.append(
+				// 		String.format("pattern: %s, capture: %s - [%s], start: (%s,%s), end: (%s,%s), text: `%s`",
+				// 				treeSitterQueryMatch.getPatternIndex(), treeSitterQueryMatch.getCaptureIndex(),
+				// 				treeSitterQueryMatch.getNames().stream().collect(Collectors.joining(", ")),
+				// 				startPoint.row(), startPoint.column(),
+				// 				endPoint.row(), endPoint.column(), new String(copyOfRange)));
+
+			});
+		}
+
+		String out = new String(bytes);
+		return out;
+	}
+
+	private List<TreeSitterQueryMatch> doMatch(String languageId, byte[] bytes) throws IOException {
+		TreeSitterNativeLoader.initialize();
+		TreeSitterNativeLoader.initializeLanguage(languageId);
+		TreeSitterLanguageProvider<?> provider = treeSitterLanguages.getLanguage(languageId);
+		TreeSitterLanguage<?> language = provider.getLanguage();
+		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
+		TreeSitterParser parser = new TreeSitterParser();
+		parser.setLanguage(language);
+		TreeSitterTree tree = parser.parse(new String(bytes));
+		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
+		return matches;
 	}
 }

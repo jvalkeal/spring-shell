@@ -17,6 +17,7 @@ package org.springframework.shell.treesitter;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
 
 import org.springframework.shell.treesitter.ts.TreeSitter;
 
@@ -35,9 +36,21 @@ public class TreeSitterParser {
 		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.getLanguageSegment());
 	}
 
+	// public TreeSitterTree parse(String code) {
+	// 	Arena offHeap = Arena.ofConfined();
+	// 	MemorySegment sourceCode = offHeap.allocateFrom(code);
+	// 	int length = (int) sourceCode.byteSize() - 1;
+	// 	MemorySegment tree = TreeSitter.ts_parser_parse_string(parserSegment, MemorySegment.NULL, sourceCode, length);
+	// 	return new TreeSitterTree(tree);
+	// }
+
 	public TreeSitterTree parse(String code) {
+		return parse(code.getBytes());
+	}
+
+	public TreeSitterTree parse(byte[] code) {
 		Arena offHeap = Arena.ofConfined();
-		MemorySegment sourceCode = offHeap.allocateFrom(code);
+		MemorySegment sourceCode = offHeap.allocateFrom(ValueLayout.JAVA_BYTE, code);
 		int length = (int) sourceCode.byteSize() - 1;
 		MemorySegment tree = TreeSitter.ts_parser_parse_string(parserSegment, MemorySegment.NULL, sourceCode, length);
 		return new TreeSitterTree(tree);

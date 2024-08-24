@@ -15,17 +15,32 @@
  */
 package org.springframework.shell.treesitter.json;
 
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.util.List;
 
 import org.springframework.shell.treesitter.TreeSitterLanguage;
 import org.springframework.shell.treesitter.json.ts.TreeSitterJson;
 
-public class TreeSitterLanguageJson extends TreeSitterLanguage {
+public class TreeSitterLanguageJson extends TreeSitterLanguage<TreeSitterLanguageJson> {
 
 	@Override
 	public boolean supports(String languageName) {
 		return "json".equals(languageName);
+	}
+
+	@Override
+	public List<String> supportedLanguages() {
+		return List.of("json");
+	}
+
+	@Override
+	public TreeSitterLanguageJson getLanguage() {
+		return this;
+	}
+
+	@Override
+	public String highlightQuery() {
+		return QUERY_HIGHLIGHT;
 	}
 
 	public final static String QUERY_HIGHLIGHT = """

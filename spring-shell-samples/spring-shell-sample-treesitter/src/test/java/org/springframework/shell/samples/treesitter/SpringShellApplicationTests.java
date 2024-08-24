@@ -13,14 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.shell.treesitter;
+package org.springframework.shell.samples.treesitter;
 
-import java.lang.foreign.MemorySegment;
-
-public abstract class TreeSitterLanguage<T extends TreeSitterLanguage<T>> implements TreeSitterLanguageProvider<T> {
-
-	public abstract MemorySegment getLanguageSegment();
-
-	public abstract String highlightQuery();
+public class SpringShellApplicationTests {
 
 }

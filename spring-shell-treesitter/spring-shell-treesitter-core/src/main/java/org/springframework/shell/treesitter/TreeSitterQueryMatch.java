@@ -24,13 +24,15 @@ public class TreeSitterQueryMatch {
 	private int captureCount;
 	private int captureIndex;
 	private List<TreeSitterQueryCapture> captures;
+	private List<String> names;
 
-	public TreeSitterQueryMatch(int id, int patternIndex, int captureIndex, int captureCount, List<TreeSitterQueryCapture> captures) {
+	public TreeSitterQueryMatch(int id, int patternIndex, int captureIndex, int captureCount, List<TreeSitterQueryCapture> captures, List<String> names) {
 		this.id = id;
 		this.patternIndex = patternIndex;
 		this.captureIndex = captureIndex;
 		this.captureCount = captureCount;
 		this.captures = captures;
+		this.names = names;
 	}
 
 	public int getPatternIndex() {
@@ -45,5 +47,8 @@ public class TreeSitterQueryMatch {
 		return captures;
 	}
 
+	public List<String> getNames() {
+		return names;
+	}
 
 }

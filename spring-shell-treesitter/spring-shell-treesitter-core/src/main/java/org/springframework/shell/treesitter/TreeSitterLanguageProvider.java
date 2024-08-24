@@ -15,8 +15,14 @@
  */
 package org.springframework.shell.treesitter;
 
-public interface TreeSitterLanguageProvider {
+import java.util.List;
+
+public interface TreeSitterLanguageProvider<T extends TreeSitterLanguage<T>> {
 
 	boolean supports(String languageName);
+
+	List<String> supportedLanguages();
+
+	T getLanguage();
 
 }

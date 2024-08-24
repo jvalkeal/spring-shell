@@ -16,15 +16,31 @@
 package org.springframework.shell.treesitter.java;
 
 import java.lang.foreign.MemorySegment;
+import java.util.List;
 
 import org.springframework.shell.treesitter.TreeSitterLanguage;
 import org.springframework.shell.treesitter.java.ts.TreeSitterJava;
 
-public class TreeSitterLanguageJava extends TreeSitterLanguage {
+public class TreeSitterLanguageJava extends TreeSitterLanguage<TreeSitterLanguageJava> {
 
 	@Override
 	public boolean supports(String languageName) {
 		return "java".equals(languageName);
+	}
+
+	@Override
+	public List<String> supportedLanguages() {
+		return List.of("java");
+	}
+
+	@Override
+	public TreeSitterLanguageJava getLanguage() {
+		return this;
+	}
+
+	@Override
+	public String highlightQuery() {
+		return QUERY_HIGHLIGHT;
 	}
 
 	public final static String QUERY_HIGHLIGHT = """
