@@ -14,6 +14,6 @@ dependencies {
 	management platform(project(":spring-shell-management"))
 	api(project(':spring-shell-starters:spring-shell-starter'))
 	api(project(":spring-shell-treesitter:spring-shell-treesitter-core"))
-	api(project(":spring-shell-treesitter:spring-shell-treesitter-java"))
-	api(project(":spring-shell-treesitter:spring-shell-treesitter-json"))
+	api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-java"))
+	api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-json"))
 }
