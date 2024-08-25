@@ -17,15 +17,26 @@ package org.springframework.shell.samples.treesitter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
+import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.treesitter.TreeSitterLanguage;
 import org.springframework.shell.treesitter.TreeSitterLanguageProvider;
@@ -34,6 +45,7 @@ import org.springframework.shell.treesitter.TreeSitterNativeLoader;
 import org.springframework.shell.treesitter.TreeSitterParser;
 import org.springframework.shell.treesitter.TreeSitterPoint;
 import org.springframework.shell.treesitter.TreeSitterQuery;
+import org.springframework.shell.treesitter.TreeSitterQueryCapture;
 import org.springframework.shell.treesitter.TreeSitterQueryMatch;
 import org.springframework.shell.treesitter.TreeSitterTree;
 import org.springframework.util.FileCopyUtils;
@@ -45,6 +57,8 @@ import org.springframework.util.FileCopyUtils;
  */
 @Command(command = "treesitter")
 public class TreesitterCommand extends AbstractShellComponent {
+
+	private final static Logger log = LoggerFactory.getLogger(TreesitterCommand.class);
 
 	@Autowired
 	TreeSitterLanguages treeSitterLanguages;
@@ -119,10 +133,18 @@ public class TreesitterCommand extends AbstractShellComponent {
 
 		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
 
+		List<TreeSitterQueryCapture> highlights = new ArrayList<>();
+		List<HighlightData> highlightsx = new ArrayList<>();
+		int hIndex = -1;
+
 		for (TreeSitterQueryMatch treeSitterQueryMatch : matches) {
 			treeSitterQueryMatch.getCaptures().forEach(c -> {
 				int startByte = c.getNode().getStartByte();
 				int endByte = c.getNode().getEndByte();
+				if (endByte > hIndex) {
+					highlights.add(c);
+					highlightsx.add(new HighlightData(treeSitterQueryMatch.getNames().getLast(), startByte, endByte));
+				}
 
 				// builder.append(
 				// 		String.format("pattern: %s, capture: %s - [%s], start: (%s,%s), end: (%s,%s), text: `%s`",
@@ -134,7 +156,73 @@ public class TreesitterCommand extends AbstractShellComponent {
 			});
 		}
 
-		String out = new String(bytes);
+		StringBuilder buf = new StringBuilder();
+		int ti = 0;
+
+		// for (int i = highlights.size(); i >= 0; i--) {
+		// for (int i = 0; i < highlights.size(); i++) {
+		// 	TreeSitterQueryCapture m = highlights.get(i);
+		// 	int startByte = m.getNode().getStartByte();
+		// 	int endByte = m.getNode().getEndByte();
+		// 	if (startByte >= ti) {
+		// 		byte[] x1 = new byte[startByte - ti];
+		// 		System.arraycopy(bytes, ti, x1, 0, startByte - ti);
+		// 		buf.append(new String(x1));
+		// 		byte[] x2 = new byte[endByte - startByte];
+		// 		System.arraycopy(bytes, startByte, x2, 0, endByte - startByte);
+
+		// 		AttributedStringBuilder asb = new AttributedStringBuilder();
+		// 		asb.append(new String(x2), new AttributedStyle().foreground(AttributedStyle.RED));
+		// 		buf.append(asb.toAnsi());
+
+		// 		ti = endByte;
+		// 	}
+		// }
+		for (HighlightData data : highlightsx) {
+			int startByte = data.start();
+			int endByte = data.end();
+			String hKey = data.key();
+			if (startByte >= ti) {
+				byte[] x1 = new byte[startByte - ti];
+				System.arraycopy(bytes, ti, x1, 0, startByte - ti);
+				buf.append(new String(x1));
+				byte[] x2 = new byte[endByte - startByte];
+				System.arraycopy(bytes, startByte, x2, 0, endByte - startByte);
+
+				HighlightValue highlightData = findHighlightData(hKey);
+
+				AttributedStringBuilder asb = new AttributedStringBuilder();
+				if (highlightData != null) {
+					AttributedStyle style = new AttributedStyle();
+					if (highlightData.color() > -1) {
+						style = style.foregroundRgb(highlightData.color());
+					}
+					if (highlightData.bold()) {
+						style = style.bold();
+					}
+					if (highlightData.italic()) {
+						style = style.italic();
+					}
+					if (highlightData.underline()) {
+						style = style.underline();
+					}
+					asb.style(style);
+				}
+				asb.append(new String(x2));
+				buf.append(asb.toAnsi());
+
+				ti = endByte;
+			}
+		}
+
+		if (ti < bytes.length) {
+			byte[] x = new byte[bytes.length - ti];
+			System.arraycopy(bytes, ti, x, 0, bytes.length - ti);
+			buf.append(new String(x));
+		}
+
+		// String out = new String(bytes);
+		String out = buf.toString();
 		return out;
 	}
 
@@ -149,5 +237,60 @@ public class TreesitterCommand extends AbstractShellComponent {
 		TreeSitterTree tree = parser.parse(new String(bytes));
 		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
 		return matches;
+	}
+
+	private record HighlightData(String key, int start, int end) {
+	}
+
+	private static Map<String, HighlightValue> highlightValues = new HashMap<>();
+
+	private static HighlightValue findHighlightData(String key) {
+		HighlightValue v = null;
+		int s = 0;
+		for (Entry<String, HighlightValue> e : highlightValues.entrySet()) {
+			if (e.getKey().startsWith(key)) {
+				int size = e.getKey().split("\\.").length;
+				if (size > s) {
+					v = e.getValue();
+					s = size;
+				}
+			}
+		}
+		log.debug(String.format("XXX key %s picking %s", key, v));
+		return v;
+	}
+
+	static {
+		highlightValues.put("attribute", new HighlightValue(0xaf0000, false, true, false));
+		highlightValues.put("comment", new HighlightValue(0x8a8a8a, false, true, false));
+		highlightValues.put("constant.builtin", new HighlightValue(0x875f00, true, false, false));
+		highlightValues.put("constant", new HighlightValue(0x875f00, false, false, false));
+		highlightValues.put("constructor", new HighlightValue(0xaf8700, false, false, false));
+		highlightValues.put("embedded", new HighlightValue(-1, false, false, false));
+		highlightValues.put("function.builtin", new HighlightValue(0x005fd7, true, false, false));
+		highlightValues.put("function", new HighlightValue(0x005fd7, false, false, false));
+		highlightValues.put("keyword", new HighlightValue(0x5f00d7, false, false, false));
+		highlightValues.put("number", new HighlightValue(0x875f00, true, false, false));
+		highlightValues.put("module", new HighlightValue(0xaf8700, false, false, false));
+		highlightValues.put("property", new HighlightValue(0xaf0000, false, false, false));
+		highlightValues.put("operator", new HighlightValue(0x4e4e4e, true, false, false));
+		highlightValues.put("punctuation.bracket", new HighlightValue(0x4e4e4e, false, false, false));
+		highlightValues.put("punctuation.delimiter", new HighlightValue(0x4e4e4e, false, false, false));
+		highlightValues.put("string.special", new HighlightValue(0x008787, false, false, false));
+		highlightValues.put("string", new HighlightValue(0x008700, false, false, false));
+		highlightValues.put("tag", new HighlightValue(0x000087, false, false, false));
+		highlightValues.put("type", new HighlightValue(0x005f5f, false, false, false));
+		highlightValues.put("type.builtin", new HighlightValue(0x005f5f, true, false, false));
+		highlightValues.put("variable.builtin", new HighlightValue(-1, true, false, false));
+		highlightValues.put("variable.parameter", new HighlightValue(-1, false, false, true));
+	}
+
+	private record HighlightValue(int color, boolean bold, boolean italic, boolean underline) {
+
+		@Override
+		public String toString() {
+			return String.format("HighlightValue [color=%s, bold=%s, italic=%s, underline=%s]", color, bold, italic, underline);
+		}
+
 	}
 }
