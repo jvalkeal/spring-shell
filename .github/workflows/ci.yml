@@ -28,7 +28,9 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: adopt
-          java-version: ${{ matrix.java }}
+          java-version: |
+            17
+            22
           cache: gradle
       - name: Build
         run: ./gradlew build -x api -x javadoc
