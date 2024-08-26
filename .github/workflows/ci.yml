@@ -29,8 +29,8 @@ jobs:
         with:
           distribution: adopt
           java-version: |
-            17
             22
+            17
           cache: gradle
       - name: Build
         run: ./gradlew build -x api -x javadoc
