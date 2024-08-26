@@ -18,6 +18,7 @@ package org.springframework.shell.samples.treesitter;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.shell.command.annotation.CommandScan;
 import org.springframework.shell.style.FigureSettings;
 import org.springframework.shell.style.StyleSettings;
@@ -30,8 +31,8 @@ import org.springframework.shell.treesitter.TreeSitterLanguages;
 class TreesitterConfiguration {
 
 	@Bean
-	public TreeSitterLanguages treeSitterLanguages(ConfigurableListableBeanFactory beanFactory) {
-		return new TreeSitterLanguages(beanFactory);
+	public TreeSitterLanguages treeSitterLanguages(ConfigurableListableBeanFactory beanFactory, ResourceLoader resourceLoader) {
+		return new TreeSitterLanguages(beanFactory, resourceLoader);
 	}
 
 	@Bean

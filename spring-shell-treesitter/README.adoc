@@ -7,8 +7,8 @@ Spring Shell Treesitter modules contains a compiled native libraries for linux,
 macos and windows to be used via JDK's Foreign Function and Memory API and thus
 needs minimum of JDK version 22.
 
-`spring-shell-treesitter-core` is our opinionated `tree-sitter` bindings and all
-other `spring-shell-treesitter-<language>` modules provides support for a
+`spring-shell-treesitter` is our opinionated `tree-sitter` bindings and all
+other `spring-shell-treesitter-language-<language>` modules provides support for a
 particular language.
 
 Not yet full build automation so some things here for reminder:

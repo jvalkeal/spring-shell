@@ -14,6 +14,12 @@ dependencies {
 	management platform(project(":spring-shell-management"))
 	api(project(':spring-shell-starters:spring-shell-starter'))
 	api(project(":spring-shell-treesitter"))
-	api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-java"))
-	api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-json"))
+	file("${rootDir}/spring-shell-treesitter-language").eachDirMatch(~/spring-shell-treesitter-language.*/) {
+		// println "spring-shell-treesitter-language-${it.name}"
+		api(project(":spring-shell-treesitter-language:${it.name}"))
+	}
+
+	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-java"))
+	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-json"))
+	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-yaml"))
 }

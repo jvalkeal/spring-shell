@@ -18,13 +18,16 @@ package org.springframework.shell.treesitter;
 import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.io.ResourceLoader;
 
 public class TreeSitterLanguages {
 
 	private TreeSitterServices<TreeSitterLanguageProvider> services;
+	private ResourceLoader resourceLoader;
 
-	public TreeSitterLanguages(ConfigurableListableBeanFactory beanFactory) {
+	public TreeSitterLanguages(ConfigurableListableBeanFactory beanFactory, ResourceLoader resourceLoader) {
 		this(TreeSitterServices.factoriesAndBeans(beanFactory));
+		this.resourceLoader = resourceLoader;
 	}
 
 	TreeSitterLanguages(TreeSitterServices.Loader loader) {
@@ -32,9 +35,11 @@ public class TreeSitterLanguages {
 	}
 
 	public TreeSitterLanguageProvider getLanguage(String language) {
-		return services.asList().stream()
+		TreeSitterLanguageProvider provider = services.asList().stream()
 			.filter(l -> l.supports(language)).findFirst()
 			.orElseThrow(() -> new RuntimeException(String.format("Language %s not supported", language)));
+		provider.setResourceLoader(resourceLoader);
+		return provider;
 	}
 
 	public List<TreeSitterLanguageProvider> getLanguages() {

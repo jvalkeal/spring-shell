@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.shell.module'
 }
 
-description = 'Spring Shell Treesitter'
+description = 'Spring Shell Treesitter Yaml'
 
 java {
 	toolchain {
@@ -12,7 +12,6 @@ java {
 
 dependencies {
 	management platform(project(":spring-shell-management"))
-	api('org.springframework:spring-context')
-	implementation project(':spring-shell-core')
+	implementation project(':spring-shell-treesitter')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

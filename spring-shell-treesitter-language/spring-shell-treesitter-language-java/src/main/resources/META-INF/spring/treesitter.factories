@@ -1,2 +1,2 @@
 org.springframework.shell.treesitter.TreeSitterLanguageProvider=\
-org.springframework.shell.treesitter.java.TreeSitterLanguageJava
+org.springframework.shell.treesitter.language.java.TreeSitterLanguageJava

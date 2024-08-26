@@ -15,12 +15,38 @@
  */
 package org.springframework.shell.treesitter;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.lang.foreign.MemorySegment;
+import java.nio.charset.StandardCharsets;
 
-public abstract class TreeSitterLanguage<T extends TreeSitterLanguage<T>> implements TreeSitterLanguageProvider<T> {
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
+
+public abstract class TreeSitterLanguage<T extends TreeSitterLanguage<T>> implements TreeSitterLanguageProvider<T>, ResourceLoaderAware {
 
 	public abstract MemorySegment getLanguageSegment();
 
 	public abstract String highlightQuery();
+
+	protected ResourceLoader resourceLoader;
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	protected static String resourceAsString(Resource resource) {
+		try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
+			return FileCopyUtils.copyToString(reader);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
 
 }
