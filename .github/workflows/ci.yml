@@ -34,6 +34,14 @@ jobs:
           cache: gradle
       - name: Build
         run: ./gradlew build -x api -x javadoc
+      - name: Upload Build Logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: buildlogs-${{ matrix.nickname }}
+          path: |
+            */build/reports
+            */*/build/reports
   publish:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'spring-projects'
