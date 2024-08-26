@@ -16,9 +16,12 @@ jobs:
           - nickname: linux jdk17
             java: 17
             os: ubuntu-latest
-          - nickname: macos jdk17
+          - nickname: macos intel jdk17
             java: 17
             os: macos-12
+          - nickname: macos arm jdk17
+            java: 17
+            os: macos-latest
           - nickname: windows jdk17
             java: 17
             os: windows-latest
