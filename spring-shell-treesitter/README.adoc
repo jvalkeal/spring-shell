@@ -19,4 +19,5 @@ jextract --header-class-name TreeSitterJava --output src/main/java -t org.spring
 
 zig cc -g0 -shared -target x86_64-linux-gnu -I lib/include -I lib/src -o libtree-sitter.so lib/src/lib.c
 zig cc -g0 -shared -target x86_64-macos -I lib/include -I lib/src -o libtree-sitter.dylib lib/src/lib.c
-zig cc -g0 -shared -target x86_64-windows -I lib/include -I lib/src -o libtree-sitter.dll lib/src/lib.c
+zig cc -g0 -shared -target x86_64-macos -I lib/include -I lib/src -o libtree-sitter.dylib lib/src/lib.c
+zig cc -g0 -shared -target x86_64-windows -I lib/include -I lib/src -o tree-sitter.dll lib/src/lib.c
