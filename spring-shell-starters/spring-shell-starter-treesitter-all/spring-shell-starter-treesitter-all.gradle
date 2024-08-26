@@ -15,11 +15,6 @@ dependencies {
 	api(project(':spring-shell-starters:spring-shell-starter'))
 	api(project(":spring-shell-treesitter"))
 	file("${rootDir}/spring-shell-treesitter-language").eachDirMatch(~/spring-shell-treesitter-language.*/) {
-		// println "spring-shell-treesitter-language-${it.name}"
 		api(project(":spring-shell-treesitter-language:${it.name}"))
 	}
-
-	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-java"))
-	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-json"))
-	// api(project(":spring-shell-treesitter-language:spring-shell-treesitter-language-yaml"))
 }

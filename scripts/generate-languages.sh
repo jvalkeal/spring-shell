@@ -26,19 +26,20 @@ for VALUE in $VALUES;
     TAG=$(echo $VALUE | cut -f3 -d,)
     LANGUAGEID=$(echo $VALUE | cut -f4 -d,)
     LANGUAGENAME="${LANGUAGEID^}"
-    git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $TMPDIR/$GHOWNER/$GHREPO
+    REPOPATH=$TMPDIR/$GHOWNER/$GHREPO
+    TARGETMODULEPATH=spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID
+    git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $REPOPATH
     npx hygen init tslanguage --language $LANGUAGEID
-    mkdir -p spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/ts
-    cp $TMPDIR/$GHOWNER/$GHREPO/bindings/c/tree-sitter-$LANGUAGEID.h spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/ts/
-    mkdir -p spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID
-    cp $TMPDIR/$GHOWNER/$GHREPO/queries/highlights.scm spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID/
-    # spring-shell-treesitter-language/spring-shell-treesitter-language-json/src/main/resources/org/springframework/shell/treesitter/queries/json/highlights.scm
-    jextract --header-class-name TreeSitter$LANGUAGENAME --output spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/main/java -t org.springframework.shell.treesitter.language.$LANGUAGEID.ts spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/ts/tree-sitter-$LANGUAGEID.h
-    mkdir -p spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64
-    ZIGFILES=$TMPDIR/$GHOWNER/$GHREPO/src/parser.c
-    if [ -f $TMPDIR/$GHOWNER/$GHREPO/src/scanner.c ]; then
-      ZIGFILES="$ZIGFILES $TMPDIR/$GHOWNER/$GHREPO/src/scanner.c"
+    mkdir -p $TARGETMODULEPATH/src/ts
+    cp $REPOPATH/bindings/c/tree-sitter-$LANGUAGEID.h $TARGETMODULEPATH/src/ts/
+    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID
+    cp $REPOPATH/queries/highlights.scm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID/
+    jextract --header-class-name TreeSitter$LANGUAGENAME --output $TARGETMODULEPATH/src/main/java -t org.springframework.shell.treesitter.language.$LANGUAGEID.ts $TARGETMODULEPATH/src/ts/tree-sitter-$LANGUAGEID.h
+    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64
+    ZIGFILES=$REPOPATH/src/parser.c
+    if [ -f $REPOPATH/src/scanner.c ]; then
+      ZIGFILES="$ZIGFILES $REPOPATH/src/scanner.c"
     fi
-    zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $TMPDIR/$GHOWNER/$GHREPO/src -o spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64/libtree-sitter-$LANGUAGEID.so $ZIGFILES
+    zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64/libtree-sitter-$LANGUAGEID.so $ZIGFILES
 done;
 
