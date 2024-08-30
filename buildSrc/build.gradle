@@ -28,7 +28,6 @@ dependencies {
 	implementation("org.springframework:spring-core")
 	implementation 'org.jfrog.buildinfo:build-info-extractor-gradle:4.29.0'
 	implementation "org.graalvm.buildtools:native-gradle-plugin:${nativeBuildToolsVersion}"
-	api 'org.apache.commons:commons-compress:1.26.1'
 }
 
 gradlePlugin {

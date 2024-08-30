@@ -13057,6 +13057,65 @@ public class TreeSitter {
         }
     }
 
+    private static class ts_query_end_byte_for_pattern {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            TreeSitter.C_INT,
+            TreeSitter.C_POINTER,
+            TreeSitter.C_INT
+        );
+
+        public static final MemorySegment ADDR = TreeSitter.findOrThrow("ts_query_end_byte_for_pattern");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * uint32_t ts_query_end_byte_for_pattern(const TSQuery *self, uint32_t pattern_index)
+     * }
+     */
+    public static FunctionDescriptor ts_query_end_byte_for_pattern$descriptor() {
+        return ts_query_end_byte_for_pattern.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * uint32_t ts_query_end_byte_for_pattern(const TSQuery *self, uint32_t pattern_index)
+     * }
+     */
+    public static MethodHandle ts_query_end_byte_for_pattern$handle() {
+        return ts_query_end_byte_for_pattern.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * uint32_t ts_query_end_byte_for_pattern(const TSQuery *self, uint32_t pattern_index)
+     * }
+     */
+    public static MemorySegment ts_query_end_byte_for_pattern$address() {
+        return ts_query_end_byte_for_pattern.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * uint32_t ts_query_end_byte_for_pattern(const TSQuery *self, uint32_t pattern_index)
+     * }
+     */
+    public static int ts_query_end_byte_for_pattern(MemorySegment self, int pattern_index) {
+        var mh$ = ts_query_end_byte_for_pattern.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("ts_query_end_byte_for_pattern", self, pattern_index);
+            }
+            return (int)mh$.invokeExact(self, pattern_index);
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class ts_query_predicates_for_pattern {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             TreeSitter.C_POINTER,

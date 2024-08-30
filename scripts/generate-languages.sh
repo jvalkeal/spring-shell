@@ -5,11 +5,8 @@ find_basedir() {
   echo "${basedir}"
 }
 
-TMPDIR=/tmp/ddd/tmlanguages
-
-
+TMPDIR=/tmp/spring-shell-tslanguages
 rm -fr $TMPDIR
-
 
 VALUES='
 tree-sitter,tree-sitter-java,v0.21.0,java

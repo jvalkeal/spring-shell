@@ -30,7 +30,7 @@ public class TSWasmError {
         TreeSitter.C_INT.withName("kind"),
         MemoryLayout.paddingLayout(4),
         TreeSitter.C_POINTER.withName("message")
-    ).withName("$anon$1180:9");
+    ).withName("$anon$1189:9");
 
     /**
      * The layout of this struct

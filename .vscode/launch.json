@@ -115,7 +115,8 @@
             "name": "ffm interactive",
             "request": "launch",
             "mainClass": "org.springframework.shell.samples.ffm.SpringShellApplication",
-            "projectName": "spring-shell-sample-ffm"
+            "projectName": "spring-shell-sample-ffm",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED"
         }
     ]
 }

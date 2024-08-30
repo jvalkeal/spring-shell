@@ -59,7 +59,6 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		System.out.println("XXX1 " + JavaVersion.current());
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
 			List<String> args = compile.getOptions().getCompilerArgs();
