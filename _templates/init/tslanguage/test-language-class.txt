@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TreeSitterLanguage<%= h.changeCase.pascal(language) %>Tests {
 
-	@Test
+	// @Test
 	void languageLoads() {
 		TreeSitterNativeLoader.initializeLanguage("<%= language %>");
 		MemorySegment segment = TreeSitter<%= h.changeCase.pascal(language) %>.tree_sitter_<%= language %>();

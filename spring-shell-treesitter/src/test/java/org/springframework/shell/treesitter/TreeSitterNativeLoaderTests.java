@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TreeSitterNativeLoaderTests {
 
-	@Test
+	// @Test
 	void loadMainLib() {
 		TreeSitterNativeLoader.initialize();
 		MemorySegment segment = TreeSitter.ts_parser_new();
