@@ -1,0 +1,9 @@
+name: Setup Zig
+description: Installs a zig compiler
+runs:
+  using: composite
+  steps:
+    - uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: 0.13.0
+
