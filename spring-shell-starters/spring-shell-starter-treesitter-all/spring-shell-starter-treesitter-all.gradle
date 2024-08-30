@@ -1,14 +1,9 @@
 plugins {
 	id 'org.springframework.shell.starter'
+	id 'org.springframework.shell.toolchain'
 }
 
 description = 'Spring Shell Starter Treesitter All'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(22)
-	}
-}
 
 dependencies {
 	management platform(project(":spring-shell-management"))

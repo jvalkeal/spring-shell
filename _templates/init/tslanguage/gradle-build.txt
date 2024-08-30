@@ -4,15 +4,10 @@ to: spring-shell-treesitter-language/spring-shell-treesitter-language-<%= langua
 ---
 plugins {
 	id 'org.springframework.shell.module'
+	id 'org.springframework.shell.toolchain'
 }
 
 description = 'Spring Shell Treesitter <%= h.changeCase.pascal(language) %>'
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(22)
-	}
-}
 
 dependencies {
 	management platform(project(":spring-shell-management"))
