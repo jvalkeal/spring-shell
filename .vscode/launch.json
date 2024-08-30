@@ -112,10 +112,10 @@
         },
         {
             "type": "java",
-            "name": "treesitter interactive",
+            "name": "ffm interactive",
             "request": "launch",
-            "mainClass": "org.springframework.shell.samples.treesitter.SpringShellApplication",
-            "projectName": "spring-shell-sample-treesitter"
-        },
+            "mainClass": "org.springframework.shell.samples.ffm.SpringShellApplication",
+            "projectName": "spring-shell-sample-ffm"
+        }
     ]
 }

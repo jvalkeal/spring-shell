@@ -28,7 +28,7 @@ import org.springframework.shell.treesitter.TreeSitterLanguages;
 
 @Configuration
 @CommandScan
-class TreesitterConfiguration {
+class FfmConfiguration {
 
 	@Bean
 	public TreeSitterLanguages treeSitterLanguages(ConfigurableListableBeanFactory beanFactory, ResourceLoader resourceLoader) {
