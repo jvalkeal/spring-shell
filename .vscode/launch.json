@@ -109,6 +109,13 @@
             "console": "externalTerminal",
             "mainClass": "org.springframework.shell.samples.catalog.SpringShellApplication",
             "projectName": "spring-shell-sample-catalog"
-        }
+        },
+        {
+            "type": "java",
+            "name": "treesitter interactive",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.treesitter.SpringShellApplication",
+            "projectName": "spring-shell-sample-treesitter"
+        },
     ]
 }

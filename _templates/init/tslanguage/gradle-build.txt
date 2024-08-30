@@ -1,0 +1,21 @@
+---
+force: true
+to: spring-shell-treesitter-language/spring-shell-treesitter-language-<%= language %>/spring-shell-treesitter-language-<%= language %>.gradle
+---
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Treesitter <%= h.changeCase.pascal(language) %>'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(22)
+	}
+}
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-treesitter')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

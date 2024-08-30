@@ -16,7 +16,10 @@ jobs:
           - nickname: linux jdk17
             java: 17
             os: ubuntu-latest
-          - nickname: macos jdk17
+          - nickname: macos intel jdk17
+            java: 17
+            os: macos-12
+          - nickname: macos arm jdk17
             java: 17
             os: macos-latest
           - nickname: windows jdk17
@@ -33,7 +36,15 @@ jobs:
             17
           cache: gradle
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build -x api -x javadoc
+      - name: Upload Build Logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: buildlogs-${{ matrix.nickname }}
+          path: |
+            */build/reports
+            */*/build/reports
   publish:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'spring-projects'

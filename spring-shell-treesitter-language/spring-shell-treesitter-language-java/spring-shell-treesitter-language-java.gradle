@@ -1,0 +1,17 @@
+plugins {
+	id 'org.springframework.shell.module'
+}
+
+description = 'Spring Shell Treesitter Java'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(22)
+	}
+}
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-treesitter')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

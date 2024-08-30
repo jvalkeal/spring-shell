@@ -17,6 +17,9 @@ spring-shell.log
 shell.log
 shell.log.*.gz
 shell.log.*.tmp
+shell-*.log
+shell-*.log.*.gz
+shell-*.log.*.tmp
 
 # Visual Studio Code
 .vscode/*
