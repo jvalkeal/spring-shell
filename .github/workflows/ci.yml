@@ -12,9 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-zig
-      - name: Zig Version
+      - uses: ./.github/actions/setup-jextract
+      - name: Check Versions
         run: |
           zig version
+          jextract --version
 
   # build:
   #   runs-on: ${{ matrix.os }}

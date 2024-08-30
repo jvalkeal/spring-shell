@@ -1,0 +1,9 @@
+name: Setup JExtract
+description: Installs a jextract
+runs:
+  using: composite
+  steps:
+    - uses: oracle-actions/setup-java@v1
+      with:
+        website: jdk.java.net
+        release: jextract
