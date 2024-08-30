@@ -36,7 +36,7 @@ jobs:
             17
           cache: gradle
       - name: Build
-        run: ./gradlew build -x api -x javadoc
+        run: ./gradlew build
       - name: Upload Build Logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
