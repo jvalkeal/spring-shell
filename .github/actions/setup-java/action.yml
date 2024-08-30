@@ -1,0 +1,12 @@
+name: Setup Java
+description: Installs needed jdk version
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v3
+      with:
+        distribution: adopt
+        java-version: |
+          22
+          17
+        cache: gradle
