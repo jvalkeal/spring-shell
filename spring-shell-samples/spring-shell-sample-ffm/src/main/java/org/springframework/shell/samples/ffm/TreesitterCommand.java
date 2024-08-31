@@ -23,11 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 import org.slf4j.Logger;
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
-import org.springframework.shell.component.view.screen.Color;
 import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.treesitter.TreeSitterLanguage;
 import org.springframework.shell.treesitter.TreeSitterLanguageProvider;
@@ -83,17 +80,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 			return String.format("Language with extension %s not supported", language);
 		}
 
-		// TreeSitterNativeLoader.initialize();
-		// TreeSitterNativeLoader.initializeLanguage(language);
-		// TreeSitterLanguageProvider<?> lp = treeSitterLanguages.getLanguage(language);
-		// TreeSitterLanguage<?> language2 = lp.getLanguage();
-
-		// TreeSitterQuery query = new TreeSitterQuery(language2, language2.highlightQuery());
-		// TreeSitterParser parser = new TreeSitterParser();
-		// parser.setLanguage(language2);
 		byte[] bytes = FileCopyUtils.copyToByteArray(file);
-		// TreeSitterTree tree = parser.parse(new String(bytes));
-		// List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
 		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
 		StringBuilder builder = new StringBuilder();
 		for (TreeSitterQueryMatch treeSitterQueryMatch : matches) {
