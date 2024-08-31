@@ -21,6 +21,11 @@ shell-*.log
 shell-*.log.*.gz
 shell-*.log.*.tmp
 
+# Native Libs
+*.so
+*.dll
+*.jnilib
+
 # Visual Studio Code
 .vscode/*
 !.vscode/settings.json
