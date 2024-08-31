@@ -21,6 +21,7 @@ package org.springframework.shell.treesitter.language.<%= language %>;
 
 import java.lang.foreign.MemorySegment;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.treesitter.TreeSitterNativeLoader;
@@ -30,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TreeSitterLanguage<%= h.changeCase.pascal(language) %>Tests {
 
-	// @Test
+	@Test
+	@Tag("treesitter")
 	void languageLoads() {
 		TreeSitterNativeLoader.initializeLanguage("<%= language %>");
 		MemorySegment segment = TreeSitter<%= h.changeCase.pascal(language) %>.tree_sitter_<%= language %>();

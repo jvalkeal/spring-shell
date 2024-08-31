@@ -17,6 +17,7 @@ package org.springframework.shell.treesitter;
 
 import java.lang.foreign.MemorySegment;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.treesitter.ts.TreeSitter;
@@ -25,7 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TreeSitterNativeLoaderTests {
 
-	// @Test
+	@Test
+	@Tag("treesitter")
 	void loadMainLib() {
 		TreeSitterNativeLoader.initialize();
 		MemorySegment segment = TreeSitter.ts_parser_new();
