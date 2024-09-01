@@ -27,10 +27,10 @@ import org.springframework.shell.treesitter.ts.TreeSitter;
  */
 public class TreeSitterParser {
 
-	private AbstractTreeSitterLanguage language;
+	private TreeSitterLanguage language;
 	private MemorySegment parserSegment;
 
-	public TreeSitterParser(AbstractTreeSitterLanguage language) {
+	public TreeSitterParser(TreeSitterLanguage language) {
 		this.language = language;
 		parserSegment = TreeSitter.ts_parser_new();
 		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.init());
