@@ -5,6 +5,22 @@ find_basedir() {
   echo "${basedir}"
 }
 
+dojextract='false'
+dozig='false'
+
+print_usage() {
+  echo "Usage: generate-languages.sh [-j] [-z]"
+}
+
+while getopts 'jz' flag; do
+  case "${flag}" in
+    j) dojextract='true' ;;
+    z) dozig='true' ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
 TMPDIR=/tmp/spring-shell-tslanguages
 rm -fr $TMPDIR
 
@@ -48,25 +64,32 @@ for VALUE in $VALUES;
     REPOPATH=$TMPDIR/$GHOWNER/$GHREPO
     TARGETMODULEPATH=spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID
     git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $REPOPATH
-    npx hygen init tslanguage --language $LANGUAGEID
-    mkdir -p $TARGETMODULEPATH/src/ts
-    cp $REPOPATH/bindings/c/tree-sitter-$LANGUAGEID.h $TARGETMODULEPATH/src/ts/
-    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID
-    cp $REPOPATH/queries/highlights.scm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID/
-    jextract --header-class-name TreeSitter$LANGUAGENAME --output $TARGETMODULEPATH/src/main/java -t org.springframework.shell.treesitter.language.$LANGUAGEID.ts $TARGETMODULEPATH/src/ts/tree-sitter-$LANGUAGEID.h
-    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64
-    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64
-    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64
-    mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64
-    ZIGFILES=$REPOPATH/src/parser.c
-    if [ -f $REPOPATH/src/scanner.c ]; then
-      ZIGFILES="$ZIGFILES $REPOPATH/src/scanner.c"
+
+    if [ "$dojextract" == "true" ]; then
+      npx hygen init tslanguage --language $LANGUAGEID
+      mkdir -p $TARGETMODULEPATH/src/ts
+      cp $REPOPATH/bindings/c/tree-sitter-$LANGUAGEID.h $TARGETMODULEPATH/src/ts/
+      mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID
+      cp $REPOPATH/queries/highlights.scm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID/
+      jextract --header-class-name TreeSitter$LANGUAGENAME --output $TARGETMODULEPATH/src/main/java -t org.springframework.shell.treesitter.language.$LANGUAGEID.ts $TARGETMODULEPATH/src/ts/tree-sitter-$LANGUAGEID.h
     fi
-    zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64/libtree-sitter-$LANGUAGEID.so $ZIGFILES
-    zig cc -g0 -O2 -shared -target x86_64-windows -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/tree-sitter-$LANGUAGEID.dll $ZIGFILES
-    rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.pdb
-    rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.lib
-    zig cc -g0 -O2 -shared -target x86_64-macos -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64/libtree-sitter-$LANGUAGEID.jnilib $ZIGFILES
-    zig cc -g0 -O2 -shared -target aarch64-macos -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64/libtree-sitter-$LANGUAGEID.jnilib $ZIGFILES
+
+    if [ "$dozig" == "true" ]; then
+      mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64
+      mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64
+      mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64
+      mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64
+      ZIGFILES=$REPOPATH/src/parser.c
+      if [ -f $REPOPATH/src/scanner.c ]; then
+        ZIGFILES="$ZIGFILES $REPOPATH/src/scanner.c"
+      fi
+      zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64/libtree-sitter-$LANGUAGEID.so $ZIGFILES
+      zig cc -g0 -O2 -shared -target x86_64-windows -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/tree-sitter-$LANGUAGEID.dll $ZIGFILES
+      rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.pdb
+      rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.lib
+      zig cc -g0 -O2 -shared -target x86_64-macos -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64/libtree-sitter-$LANGUAGEID.jnilib $ZIGFILES
+      zig cc -g0 -O2 -shared -target aarch64-macos -std=c11 -I $REPOPATH/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64/libtree-sitter-$LANGUAGEID.jnilib $ZIGFILES
+    fi
+
 done;
 
