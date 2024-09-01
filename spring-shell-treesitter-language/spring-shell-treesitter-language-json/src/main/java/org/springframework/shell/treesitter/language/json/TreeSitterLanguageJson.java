@@ -18,10 +18,10 @@ package org.springframework.shell.treesitter.language.json;
 import java.lang.foreign.MemorySegment;
 import java.util.List;
 
-import org.springframework.shell.treesitter.TreeSitterLanguage;
+import org.springframework.shell.treesitter.AbstractTreeSitterLanguage;
 import org.springframework.shell.treesitter.language.json.ts.TreeSitterJson;
 
-public class TreeSitterLanguageJson extends TreeSitterLanguage {
+public class TreeSitterLanguageJson extends AbstractTreeSitterLanguage {
 
 	@Override
 	public boolean supports(String languageName) {

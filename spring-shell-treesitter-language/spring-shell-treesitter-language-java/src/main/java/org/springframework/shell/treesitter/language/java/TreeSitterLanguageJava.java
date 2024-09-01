@@ -18,10 +18,10 @@ package org.springframework.shell.treesitter.language.java;
 import java.lang.foreign.MemorySegment;
 import java.util.List;
 
-import org.springframework.shell.treesitter.TreeSitterLanguage;
+import org.springframework.shell.treesitter.AbstractTreeSitterLanguage;
 import org.springframework.shell.treesitter.language.java.ts.TreeSitterJava;
 
-public class TreeSitterLanguageJava extends TreeSitterLanguage {
+public class TreeSitterLanguageJava extends AbstractTreeSitterLanguage {
 
 	@Override
 	public boolean supports(String languageName) {

@@ -15,38 +15,12 @@
  */
 package org.springframework.shell.treesitter;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.lang.foreign.MemorySegment;
-import java.nio.charset.StandardCharsets;
 
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.FileCopyUtils;
+public interface TreeSitterLanguage {
 
-public abstract class TreeSitterLanguage implements TreeSitterLanguageProvider, ResourceLoaderAware {
+	MemorySegment init();
 
-	public abstract MemorySegment init();
-
-	public abstract String highlightQuery();
-
-	protected ResourceLoader resourceLoader;
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
-
-	protected static String resourceAsString(Resource resource) {
-		try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
-			return FileCopyUtils.copyToString(reader);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
+	String highlightQuery();
 
 }

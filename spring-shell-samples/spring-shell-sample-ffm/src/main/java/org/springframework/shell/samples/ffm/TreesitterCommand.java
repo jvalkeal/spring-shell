@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.AbstractShellComponent;
-import org.springframework.shell.treesitter.TreeSitterLanguage;
+import org.springframework.shell.treesitter.AbstractTreeSitterLanguage;
 import org.springframework.shell.treesitter.TreeSitterLanguageProvider;
 import org.springframework.shell.treesitter.TreeSitterLanguages;
 import org.springframework.shell.treesitter.TreeSitterNativeLoader;
@@ -200,7 +200,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 		TreeSitterNativeLoader.initialize();
 		TreeSitterNativeLoader.initializeLanguage(languageId);
 		TreeSitterLanguageProvider provider = treeSitterLanguages.getLanguageProvider(languageId);
-		TreeSitterLanguage language = provider.language();
+		AbstractTreeSitterLanguage language = provider.language();
 		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
 		TreeSitterParser parser = new TreeSitterParser(language);
 		TreeSitterTree tree = parser.parse(new String(bytes));

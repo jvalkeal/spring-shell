@@ -22,10 +22,10 @@ package org.springframework.shell.treesitter.language.<%= language %>;
 import java.lang.foreign.MemorySegment;
 import java.util.List;
 
-import org.springframework.shell.treesitter.TreeSitterLanguage;
+import org.springframework.shell.treesitter.AbstractTreeSitterLanguage;
 import org.springframework.shell.treesitter.language.<%= language %>.ts.TreeSitter<%= h.changeCase.pascal(language) %>;
 
-public class TreeSitterLanguage<%= h.changeCase.pascal(language) %> extends TreeSitterLanguage {
+public class TreeSitterLanguage<%= h.changeCase.pascal(language) %> extends AbstractTreeSitterLanguage {
 
 	@Override
 	public boolean supports(String languageName) {
