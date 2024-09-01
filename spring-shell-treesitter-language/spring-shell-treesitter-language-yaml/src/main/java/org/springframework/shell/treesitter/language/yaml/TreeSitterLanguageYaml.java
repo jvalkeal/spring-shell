@@ -44,7 +44,7 @@ public class TreeSitterLanguageYaml extends AbstractTreeSitterLanguage {
 	}
 
 	@Override
-	public MemorySegment init() {
+	public MemorySegment initInternal() {
 		MemorySegment yaml = TreeSitterYaml.tree_sitter_yaml();
 		return yaml;
 	}

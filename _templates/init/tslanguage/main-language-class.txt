@@ -48,7 +48,7 @@ public class TreeSitterLanguage<%= h.changeCase.pascal(language) %> extends Abst
 	}
 
 	@Override
-	public MemorySegment init() {
+	public MemorySegment initInternal() {
 		MemorySegment <%= language %> = TreeSitter<%= h.changeCase.pascal(language) %>.tree_sitter_<%= language %>();
 		return <%= language %>;
 	}

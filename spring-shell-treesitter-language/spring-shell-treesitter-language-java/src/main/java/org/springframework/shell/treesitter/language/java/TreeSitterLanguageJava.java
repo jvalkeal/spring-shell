@@ -44,7 +44,7 @@ public class TreeSitterLanguageJava extends AbstractTreeSitterLanguage {
 	}
 
 	@Override
-	public MemorySegment init() {
+	public MemorySegment initInternal() {
 		MemorySegment java = TreeSitterJava.tree_sitter_java();
 		return java;
 	}

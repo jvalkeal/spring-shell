@@ -29,14 +29,25 @@ import org.springframework.util.FileCopyUtils;
 
 public abstract class AbstractTreeSitterLanguage implements TreeSitterLanguage, TreeSitterLanguageProvider, ResourceLoaderAware {
 
-	public abstract MemorySegment init();
-
+	private MemorySegment segment;
 	protected ResourceLoader resourceLoader;
 
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
+
+	@Override
+	public final MemorySegment init() {
+		synchronized(this) {
+			if (segment == null) {
+				segment = initInternal();
+			}
+		}
+		return segment;
+	}
+
+	protected abstract MemorySegment initInternal();
 
 	protected static String resourceAsString(Resource resource) {
 		try (Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
