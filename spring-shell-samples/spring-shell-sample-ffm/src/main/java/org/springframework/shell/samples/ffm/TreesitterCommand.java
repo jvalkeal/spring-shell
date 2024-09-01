@@ -133,38 +133,12 @@ public class TreesitterCommand extends AbstractShellComponent {
 					highlightsx.add(new HighlightData(treeSitterQueryMatch.getNames().getLast(), startByte, endByte));
 				}
 
-				// builder.append(
-				// 		String.format("pattern: %s, capture: %s - [%s], start: (%s,%s), end: (%s,%s), text: `%s`",
-				// 				treeSitterQueryMatch.getPatternIndex(), treeSitterQueryMatch.getCaptureIndex(),
-				// 				treeSitterQueryMatch.getNames().stream().collect(Collectors.joining(", ")),
-				// 				startPoint.row(), startPoint.column(),
-				// 				endPoint.row(), endPoint.column(), new String(copyOfRange)));
-
 			});
 		}
 
 		StringBuilder buf = new StringBuilder();
 		int ti = 0;
 
-		// for (int i = highlights.size(); i >= 0; i--) {
-		// for (int i = 0; i < highlights.size(); i++) {
-		// 	TreeSitterQueryCapture m = highlights.get(i);
-		// 	int startByte = m.getNode().getStartByte();
-		// 	int endByte = m.getNode().getEndByte();
-		// 	if (startByte >= ti) {
-		// 		byte[] x1 = new byte[startByte - ti];
-		// 		System.arraycopy(bytes, ti, x1, 0, startByte - ti);
-		// 		buf.append(new String(x1));
-		// 		byte[] x2 = new byte[endByte - startByte];
-		// 		System.arraycopy(bytes, startByte, x2, 0, endByte - startByte);
-
-		// 		AttributedStringBuilder asb = new AttributedStringBuilder();
-		// 		asb.append(new String(x2), new AttributedStyle().foreground(AttributedStyle.RED));
-		// 		buf.append(asb.toAnsi());
-
-		// 		ti = endByte;
-		// 	}
-		// }
 		for (HighlightData data : highlightsx) {
 			int startByte = data.start();
 			int endByte = data.end();
@@ -216,7 +190,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 	private List<TreeSitterQueryMatch> doMatch(String languageId, byte[] bytes) throws IOException {
 		TreeSitterNativeLoader.initialize();
 		TreeSitterNativeLoader.initializeLanguage(languageId);
-		TreeSitterLanguageProvider<?> provider = treeSitterLanguages.getLanguage(languageId);
+		TreeSitterLanguageProvider<?> provider = treeSitterLanguages.getLanguageProvider(languageId);
 		TreeSitterLanguage<?> language = provider.getLanguage();
 		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
 		TreeSitterParser parser = new TreeSitterParser();

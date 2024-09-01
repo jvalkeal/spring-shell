@@ -34,7 +34,7 @@ public class TreeSitterLanguages {
 		services = loader.load(TreeSitterLanguageProvider.class);
 	}
 
-	public TreeSitterLanguageProvider getLanguage(String language) {
+	public TreeSitterLanguageProvider getLanguageProvider(String language) {
 		TreeSitterLanguageProvider provider = services.asList().stream()
 			.filter(l -> l.supports(language)).findFirst()
 			.orElseThrow(() -> new RuntimeException(String.format("Language %s not supported", language)));

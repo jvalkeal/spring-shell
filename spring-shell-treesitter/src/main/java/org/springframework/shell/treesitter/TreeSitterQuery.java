@@ -23,17 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.shell.treesitter.ts.TSNode;
-import org.springframework.shell.treesitter.ts.TSPoint;
 import org.springframework.shell.treesitter.ts.TSQueryCapture;
 import org.springframework.shell.treesitter.ts.TSQueryMatch;
 import org.springframework.shell.treesitter.ts.TreeSitter;
 
 public class TreeSitterQuery {
 
-	private TreeSitterLanguage language;
+	private TreeSitterLanguage<?> language;
 	private String source;
 
-	public TreeSitterQuery(TreeSitterLanguage language, String source) {
+	public TreeSitterQuery(TreeSitterLanguage<?> language, String source) {
 		this.language = language;
 		this.source = source;
 	}
@@ -41,6 +40,9 @@ public class TreeSitterQuery {
 	public List<TreeSitterQueryMatch> findMatches(TreeSitterNode node) {
 		Arena offHeap = Arena.ofConfined();
 		MemorySegment cursor = TreeSitter.ts_query_cursor_new();
+		// cursor.reinterpret(offHeap, segment -> {
+		// 	TreeSitter.ts_query_cursor_delete(segment);
+		// });
 		MemorySegment languageSegment = language.getLanguageSegment();
 		MemorySegment sourceSegment = offHeap.allocateFrom(source);
 		int sourceLen = source.length();
@@ -83,29 +85,7 @@ public class TreeSitterQuery {
 				names.add(name);
 			}
 
-
 			int index = TSQueryCapture.index(captures);
-			// MemorySegment captureNode = TSQueryCapture.node(captures);
-
-			// MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(offHeap, captureNode);
-			// MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(offHeap, captureNode);
-			// int startX = TSPoint.column(nodeStartPoint);
-			// int startY = TSPoint.row(nodeStartPoint);
-			// int endX = TSPoint.column(nodeEndPoint);
-			// int endY = TSPoint.row(nodeEndPoint);
-
-			// int startByte = TreeSitter.ts_node_start_byte(captureNode);
-			// int endByte = TreeSitter.ts_node_end_byte(captureNode);
-
-			// MemorySegment str = TreeSitter.ts_node_string(captureNode);
-			// String nodeStr = str.getString(0);
-			// String nodeStr = String.format("(%s, %s)", startByte, endByte);
-			// String keyStr = names.getLast();
-			// String format = String.format("pattern: %s, capture: %s - %s, start: (%s, %s), end: (%s, %s), text: `%s`",
-			// 		patternIndex, index, keyStr, startY, startX, endY, endX, nodeStr);
-			// pattern:  0, capture: 0 - string.special.key, start: (1, 4), end: (1, 15), text: `"stringkey"`
-			// System.out.println(format);
-
 			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount, queryCaptures, names);
 			matches.add(treeSitterQueryMatch);
 		}
