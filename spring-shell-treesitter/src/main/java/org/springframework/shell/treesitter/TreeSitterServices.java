@@ -35,6 +35,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public final class TreeSitterServices<T> implements Iterable<T> {
 
 	/**

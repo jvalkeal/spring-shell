@@ -41,6 +41,10 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.util.StringUtils;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterNativeLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(TreeSitterNativeLoader.class);

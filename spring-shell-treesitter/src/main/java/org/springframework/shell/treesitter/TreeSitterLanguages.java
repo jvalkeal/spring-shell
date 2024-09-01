@@ -21,6 +21,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterLanguages {
 
 	private TreeSitterServices<TreeSitterLanguageProvider> services;

@@ -21,6 +21,10 @@ import java.lang.foreign.MemorySegment;
 import org.springframework.shell.treesitter.ts.TSPoint;
 import org.springframework.shell.treesitter.ts.TreeSitter;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterNode {
 
 	private MemorySegment treeSegment;

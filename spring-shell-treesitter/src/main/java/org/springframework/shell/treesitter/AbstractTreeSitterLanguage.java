@@ -27,6 +27,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public abstract class AbstractTreeSitterLanguage implements TreeSitterLanguage, TreeSitterLanguageProvider, ResourceLoaderAware {
 
 	private MemorySegment segment;

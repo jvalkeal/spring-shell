@@ -17,10 +17,26 @@ package org.springframework.shell.treesitter;
 
 import java.lang.foreign.MemorySegment;
 
+/**
+ * Low level {@code treesitter} interface initialising its language and having
+ * info about query.
+ *
+ * @author Janne Valkealahti
+ */
 public interface TreeSitterLanguage {
 
+	/**
+	 * Initialise a {@code treesitter} language returning its {@link MemorySegment}.
+	 *
+	 * @return a memory segment for initialised language
+	 */
 	MemorySegment init();
 
+	/**
+	 * Get a {@code treesitter} {@code highlight query}.
+	 *
+	 * @return treesitter highlight query
+	 */
 	String highlightQuery();
 
 }

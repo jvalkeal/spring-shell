@@ -15,6 +15,10 @@
  */
 package org.springframework.shell.treesitter;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public record TreeSitterPoint(int row, int column) {
 
 }

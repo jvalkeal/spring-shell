@@ -21,6 +21,10 @@ import java.lang.foreign.ValueLayout;
 
 import org.springframework.shell.treesitter.ts.TreeSitter;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterParser {
 
 	private AbstractTreeSitterLanguage language;

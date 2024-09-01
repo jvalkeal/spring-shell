@@ -17,6 +17,10 @@ package org.springframework.shell.treesitter;
 
 import java.util.List;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterQueryMatch {
 
 	private int id;

@@ -15,6 +15,10 @@
  */
 package org.springframework.shell.treesitter;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterQueryCapture {
 
 	private TreeSitterNode node;

@@ -27,6 +27,10 @@ import org.springframework.shell.treesitter.ts.TSQueryCapture;
 import org.springframework.shell.treesitter.ts.TSQueryMatch;
 import org.springframework.shell.treesitter.ts.TreeSitter;
 
+/**
+ *
+ * @author Janne Valkealahti
+ */
 public class TreeSitterQuery {
 
 	private AbstractTreeSitterLanguage language;
