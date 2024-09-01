@@ -62,7 +62,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 
 	@Command(command = "info", description = "Info about supported languages")
 	public String info() {
-		return treeSitterLanguages.getLanguages().stream().map(l -> l.getClass().toString())
+		return treeSitterLanguages.getLanguageProviders().stream().map(l -> l.getClass().toString())
 				.collect(Collectors.joining(","));
 	}
 

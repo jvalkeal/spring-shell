@@ -48,7 +48,7 @@ public class TreeSitterLanguage<%= h.changeCase.pascal(language) %> extends Tree
 	}
 
 	@Override
-	public MemorySegment getLanguageSegment() {
+	public MemorySegment init() {
 		MemorySegment <%= language %> = TreeSitter<%= h.changeCase.pascal(language) %>.tree_sitter_<%= language %>();
 		return <%= language %>;
 	}

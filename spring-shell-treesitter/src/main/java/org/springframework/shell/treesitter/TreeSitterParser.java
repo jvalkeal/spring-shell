@@ -33,7 +33,7 @@ public class TreeSitterParser {
 
 	public void setLanguage(TreeSitterLanguage language) {
 		// api_h.ts_parser_set_language(ts_parser_new, language);
-		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.getLanguageSegment());
+		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.init());
 	}
 
 	// public TreeSitterTree parse(String code) {

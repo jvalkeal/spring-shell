@@ -42,12 +42,14 @@ public class TreeSitterLanguages {
 		return provider;
 	}
 
-	public List<TreeSitterLanguageProvider> getLanguages() {
+	public List<TreeSitterLanguageProvider> getLanguageProviders() {
 		return services.asList();
 	}
 
 	public List<String> getSupportedLanguages() {
-		return getLanguages().stream().flatMap(l -> l.supportedLanguages().stream()).toList();
+		return getLanguageProviders().stream()
+			.flatMap(provider -> provider.supportedLanguages().stream())
+			.toList();
 	}
 
 }

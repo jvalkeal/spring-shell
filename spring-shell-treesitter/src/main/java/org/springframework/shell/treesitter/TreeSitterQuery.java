@@ -46,7 +46,7 @@ public class TreeSitterQuery {
 		// cursor.reinterpret(offHeap, segment -> {
 		// 	TreeSitter.ts_query_cursor_delete(segment);
 		// });
-		MemorySegment languageSegment = language.getLanguageSegment();
+		MemorySegment languageSegment = language.init();
 		MemorySegment sourceSegment = offHeap.allocateFrom(source);
 		int sourceLen = source.length();
 		MemorySegment error_offset = offHeap.allocateFrom(OfInt.JAVA_INT, 0);

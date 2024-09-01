@@ -29,7 +29,7 @@ import org.springframework.util.FileCopyUtils;
 
 public abstract class TreeSitterLanguage implements TreeSitterLanguageProvider, ResourceLoaderAware {
 
-	public abstract MemorySegment getLanguageSegment();
+	public abstract MemorySegment init();
 
 	public abstract String highlightQuery();
 

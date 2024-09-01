@@ -44,7 +44,7 @@ public class TreeSitterLanguageJson extends TreeSitterLanguage {
 	}
 
 	@Override
-	public MemorySegment getLanguageSegment() {
+	public MemorySegment init() {
 		MemorySegment json = TreeSitterJson.tree_sitter_json();
 		return json;
 	}
