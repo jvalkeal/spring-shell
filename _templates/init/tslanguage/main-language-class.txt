@@ -38,7 +38,7 @@ public class TreeSitterLanguage<%= h.changeCase.pascal(language) %> extends Tree
 	}
 
 	@Override
-	public TreeSitterLanguage<%= h.changeCase.pascal(language) %> getLanguage() {
+	public TreeSitterLanguage<%= h.changeCase.pascal(language) %> language() {
 		return this;
 	}
 

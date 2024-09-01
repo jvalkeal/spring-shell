@@ -17,16 +17,36 @@ package org.springframework.shell.treesitter;
 
 import java.util.List;
 
-import org.springframework.core.io.ResourceLoader;
-
+/**
+ * Interface providing {@link TreeSitterLanguage} and what languages it
+ * supports. These are separated so that we don't need to initialise actual
+ * backing {@code tree-sitter} libraries order to know what languages it
+ * supports.
+ *
+ * @author Janne Valkealahti
+ */
 public interface TreeSitterLanguageProvider {
 
+	/**
+	 * Checks if this provider supports a {@code language}.
+	 *
+	 * @param languageName the language name
+	 * @return {@code true} if language is supported
+	 */
 	boolean supports(String languageName);
 
+	/**
+	 * Gets a list of supported languges.
+	 *
+	 * @return a list of supported languages
+	 */
 	List<String> supportedLanguages();
 
-	TreeSitterLanguage getLanguage();
-
-	void setResourceLoader(ResourceLoader resourceLoader);
+	/**
+	 * Get a {@link TreeSitterLanguage} this provider handles.
+	 *
+	 * @return a treesitter language
+	 */
+	TreeSitterLanguage language();
 
 }

@@ -18,6 +18,7 @@ package org.springframework.shell.treesitter;
 import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 
 public class TreeSitterLanguages {
@@ -38,7 +39,9 @@ public class TreeSitterLanguages {
 		TreeSitterLanguageProvider provider = services.asList().stream()
 			.filter(l -> l.supports(language)).findFirst()
 			.orElseThrow(() -> new RuntimeException(String.format("Language %s not supported", language)));
-		provider.setResourceLoader(resourceLoader);
+		if (provider instanceof ResourceLoaderAware rla) {
+			rla.setResourceLoader(resourceLoader);
+		}
 		return provider;
 	}
 

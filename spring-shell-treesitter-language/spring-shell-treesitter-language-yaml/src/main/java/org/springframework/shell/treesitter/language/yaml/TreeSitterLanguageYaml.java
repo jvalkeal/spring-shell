@@ -34,7 +34,7 @@ public class TreeSitterLanguageYaml extends TreeSitterLanguage {
 	}
 
 	@Override
-	public TreeSitterLanguageYaml getLanguage() {
+	public TreeSitterLanguageYaml language() {
 		return this;
 	}
 

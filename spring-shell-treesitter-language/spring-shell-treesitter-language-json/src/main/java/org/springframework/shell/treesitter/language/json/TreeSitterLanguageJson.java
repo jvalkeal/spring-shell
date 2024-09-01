@@ -34,7 +34,7 @@ public class TreeSitterLanguageJson extends TreeSitterLanguage {
 	}
 
 	@Override
-	public TreeSitterLanguageJson getLanguage() {
+	public TreeSitterLanguageJson language() {
 		return this;
 	}
 

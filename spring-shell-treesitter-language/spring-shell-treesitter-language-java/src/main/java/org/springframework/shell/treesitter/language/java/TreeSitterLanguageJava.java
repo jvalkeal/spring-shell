@@ -34,7 +34,7 @@ public class TreeSitterLanguageJava extends TreeSitterLanguage {
 	}
 
 	@Override
-	public TreeSitterLanguageJava getLanguage() {
+	public TreeSitterLanguageJava language() {
 		return this;
 	}
 
