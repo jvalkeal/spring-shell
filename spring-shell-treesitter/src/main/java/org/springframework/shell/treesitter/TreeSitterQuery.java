@@ -26,6 +26,7 @@ import org.springframework.shell.treesitter.ts.TSNode;
 import org.springframework.shell.treesitter.ts.TSQueryCapture;
 import org.springframework.shell.treesitter.ts.TSQueryMatch;
 import org.springframework.shell.treesitter.ts.TreeSitter;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -37,6 +38,8 @@ public class TreeSitterQuery {
 	private String source;
 
 	public TreeSitterQuery(TreeSitterLanguage language, String source) {
+		Assert.notNull(language, "language must be");
+		Assert.notNull(source, "source must be");
 		this.language = language;
 		this.source = source;
 	}

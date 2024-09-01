@@ -20,6 +20,7 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
 import org.springframework.shell.treesitter.ts.TreeSitter;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -31,6 +32,7 @@ public class TreeSitterParser {
 	private MemorySegment parserSegment;
 
 	public TreeSitterParser(TreeSitterLanguage language) {
+		Assert.notNull(language, "language must be");
 		this.language = language;
 		parserSegment = TreeSitter.ts_parser_new();
 		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.init());

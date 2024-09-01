@@ -28,6 +28,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
 
 /**
+ * Base class for {@link TreeSitterLanguage} and
+ * {@link TreeSitterLanguageProvider} typically used in auto-generated classes
+ * supported by {@code treesitter}.
  *
  * @author Janne Valkealahti
  */
