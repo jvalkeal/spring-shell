@@ -199,11 +199,14 @@ public class TreesitterCommand extends AbstractShellComponent {
 	private List<TreeSitterQueryMatch> doMatch(String languageId, byte[] bytes) throws IOException {
 		TreeSitterNativeLoader.initialize();
 		TreeSitterNativeLoader.initializeLanguage(languageId);
+
 		TreeSitterLanguageProvider provider = treeSitterLanguages.getLanguageProvider(languageId);
 		TreeSitterLanguage language = provider.language();
-		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
+
 		TreeSitterParser parser = new TreeSitterParser(language);
 		TreeSitterTree tree = parser.parse(new String(bytes));
+
+		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
 		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
 		return matches;
 	}
