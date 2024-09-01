@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.shell.treesitter.TreeSitterLanguage;
 import org.springframework.shell.treesitter.language.java.ts.TreeSitterJava;
 
-public class TreeSitterLanguageJava extends TreeSitterLanguage<TreeSitterLanguageJava> {
+public class TreeSitterLanguageJava extends TreeSitterLanguage {
 
 	@Override
 	public boolean supports(String languageName) {

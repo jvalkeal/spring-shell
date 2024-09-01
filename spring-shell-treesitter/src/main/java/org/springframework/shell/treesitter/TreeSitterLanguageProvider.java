@@ -19,13 +19,13 @@ import java.util.List;
 
 import org.springframework.core.io.ResourceLoader;
 
-public interface TreeSitterLanguageProvider<T extends TreeSitterLanguage<T>> {
+public interface TreeSitterLanguageProvider {
 
 	boolean supports(String languageName);
 
 	List<String> supportedLanguages();
 
-	T getLanguage();
+	TreeSitterLanguage getLanguage();
 
 	void setResourceLoader(ResourceLoader resourceLoader);
 

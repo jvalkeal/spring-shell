@@ -29,10 +29,10 @@ import org.springframework.shell.treesitter.ts.TreeSitter;
 
 public class TreeSitterQuery {
 
-	private TreeSitterLanguage<?> language;
+	private TreeSitterLanguage language;
 	private String source;
 
-	public TreeSitterQuery(TreeSitterLanguage<?> language, String source) {
+	public TreeSitterQuery(TreeSitterLanguage language, String source) {
 		this.language = language;
 		this.source = source;
 	}

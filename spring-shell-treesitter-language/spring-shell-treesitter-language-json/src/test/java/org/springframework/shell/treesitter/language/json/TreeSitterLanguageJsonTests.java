@@ -17,6 +17,7 @@ package org.springframework.shell.treesitter.language.json;
 
 import java.lang.foreign.MemorySegment;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.shell.treesitter.TreeSitterNativeLoader;
@@ -26,7 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TreeSitterLanguageJsonTests {
 
-	// @Test
+	@Test
+	@Tag("treesitter")
 	void languageLoads() {
 		TreeSitterNativeLoader.initializeLanguage("json");
 		MemorySegment segment = TreeSitterJson.tree_sitter_json();

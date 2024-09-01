@@ -27,7 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
 
-public abstract class TreeSitterLanguage<T extends TreeSitterLanguage<T>> implements TreeSitterLanguageProvider<T>, ResourceLoaderAware {
+public abstract class TreeSitterLanguage implements TreeSitterLanguageProvider, ResourceLoaderAware {
 
 	public abstract MemorySegment getLanguageSegment();
 
