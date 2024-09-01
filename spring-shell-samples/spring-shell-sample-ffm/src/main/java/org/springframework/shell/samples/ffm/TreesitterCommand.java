@@ -187,6 +187,15 @@ public class TreesitterCommand extends AbstractShellComponent {
 		return out;
 	}
 
+	// void ts_parser_delete(TSParser *self);
+	// void ts_tree_delete(TSTree *self);
+	// void ts_tree_cursor_delete(TSTreeCursor *self);
+	// void ts_query_delete(TSQuery *self);
+	// void ts_query_cursor_delete(TSQueryCursor *self);
+	// void ts_language_delete(const TSLanguage *self);
+	// void ts_lookahead_iterator_delete(TSLookaheadIterator *self);
+	// void ts_wasm_store_delete(TSWasmStore *);
+
 	private List<TreeSitterQueryMatch> doMatch(String languageId, byte[] bytes) throws IOException {
 		TreeSitterNativeLoader.initialize();
 		TreeSitterNativeLoader.initializeLanguage(languageId);

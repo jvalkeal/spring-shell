@@ -38,6 +38,9 @@ public class TreeSitterQuery {
 	}
 
 	public List<TreeSitterQueryMatch> findMatches(TreeSitterNode node) {
+		// try (Arena arena = Arena.ofConfined()) {
+		// }
+
 		Arena offHeap = Arena.ofConfined();
 		MemorySegment cursor = TreeSitter.ts_query_cursor_new();
 		// cursor.reinterpret(offHeap, segment -> {
