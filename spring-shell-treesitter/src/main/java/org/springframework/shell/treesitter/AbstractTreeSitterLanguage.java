@@ -31,8 +31,6 @@ public abstract class AbstractTreeSitterLanguage implements TreeSitterLanguage, 
 
 	public abstract MemorySegment init();
 
-	public abstract String highlightQuery();
-
 	protected ResourceLoader resourceLoader;
 
 	@Override
