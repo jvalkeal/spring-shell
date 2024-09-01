@@ -26,23 +26,11 @@ public class TreeSitterParser {
 	private TreeSitterLanguage language;
 	private MemorySegment parserSegment;
 
-	public TreeSitterParser() {
-		// MemorySegment ts_parser_new = api_h.ts_parser_new();
+	public TreeSitterParser(TreeSitterLanguage language) {
+		this.language = language;
 		parserSegment = TreeSitter.ts_parser_new();
-	}
-
-	public void setLanguage(TreeSitterLanguage language) {
-		// api_h.ts_parser_set_language(ts_parser_new, language);
 		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.init());
 	}
-
-	// public TreeSitterTree parse(String code) {
-	// 	Arena offHeap = Arena.ofConfined();
-	// 	MemorySegment sourceCode = offHeap.allocateFrom(code);
-	// 	int length = (int) sourceCode.byteSize() - 1;
-	// 	MemorySegment tree = TreeSitter.ts_parser_parse_string(parserSegment, MemorySegment.NULL, sourceCode, length);
-	// 	return new TreeSitterTree(tree);
-	// }
 
 	public TreeSitterTree parse(String code) {
 		return parse(code.getBytes());

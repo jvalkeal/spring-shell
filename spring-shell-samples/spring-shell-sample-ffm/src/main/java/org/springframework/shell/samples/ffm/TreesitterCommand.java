@@ -202,8 +202,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 		TreeSitterLanguageProvider provider = treeSitterLanguages.getLanguageProvider(languageId);
 		TreeSitterLanguage language = provider.getLanguage();
 		TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
-		TreeSitterParser parser = new TreeSitterParser();
-		parser.setLanguage(language);
+		TreeSitterParser parser = new TreeSitterParser(language);
 		TreeSitterTree tree = parser.parse(new String(bytes));
 		List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
 		return matches;
