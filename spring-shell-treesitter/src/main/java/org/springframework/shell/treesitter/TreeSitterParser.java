@@ -43,6 +43,8 @@ public class TreeSitterParser {
 	}
 
 	public TreeSitterTree parse(byte[] code) {
+		// try (Arena arena = Arena.ofConfined()) {
+		// }
 		Arena offHeap = Arena.ofConfined();
 		MemorySegment sourceCode = offHeap.allocateFrom(ValueLayout.JAVA_BYTE, code);
 		int length = (int) sourceCode.byteSize() - 1;

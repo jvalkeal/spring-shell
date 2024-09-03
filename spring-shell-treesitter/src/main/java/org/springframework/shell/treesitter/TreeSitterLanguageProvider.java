@@ -43,10 +43,10 @@ public interface TreeSitterLanguageProvider {
 	List<String> supportedLanguages();
 
 	/**
-	 * Get a {@link AbstractTreeSitterLanguage} this provider handles.
+	 * Get a {@link TreeSitterLanguage} this provider handles.
 	 *
 	 * @return a treesitter language
 	 */
-	AbstractTreeSitterLanguage language();
+	TreeSitterLanguage language();
 
 }
