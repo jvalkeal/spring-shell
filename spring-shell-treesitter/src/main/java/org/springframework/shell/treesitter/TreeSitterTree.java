@@ -26,16 +26,15 @@ import org.springframework.shell.treesitter.ts.TreeSitter;
  */
 public class TreeSitterTree {
 
-	private MemorySegment treeSegment;
+	private MemorySegment tree;
 
-	public TreeSitterTree(MemorySegment treeSegment) {
-		this.treeSegment = treeSegment;
+	public TreeSitterTree(MemorySegment tree) {
+		this.tree = tree;
 	}
 
 	public TreeSitterNode getRootNode() {
-		Arena offHeap = Arena.ofConfined();
-		MemorySegment node = TreeSitter.ts_tree_root_node(offHeap, treeSegment);
-		// return new TreeSitterNode(node);
+		Arena arena = Arena.ofShared();
+		MemorySegment node = TreeSitter.ts_tree_root_node(arena, tree);
 		return TreeSitterNode.of(node);
 	}
 }
