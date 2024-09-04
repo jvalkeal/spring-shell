@@ -81,7 +81,8 @@ public class TreesitterCommand extends AbstractShellComponent {
 		}
 
 		byte[] bytes = FileCopyUtils.copyToByteArray(file);
-		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
+		// List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
+		List<TreeSitterQueryMatch> matches = treeSitterLanguages.languageMatch(language, bytes);
 		StringBuilder builder = new StringBuilder();
 		for (TreeSitterQueryMatch treeSitterQueryMatch : matches) {
 			treeSitterQueryMatch.getCaptures().forEach(c -> {
@@ -118,9 +119,10 @@ public class TreesitterCommand extends AbstractShellComponent {
 
 		byte[] bytes = FileCopyUtils.copyToByteArray(file);
 
-		List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
+		// List<TreeSitterQueryMatch> matches = doMatch(language, bytes);
+		List<TreeSitterQueryMatch> matches = treeSitterLanguages.languageMatch(language, bytes);
 
-		List<TreeSitterQueryCapture> highlights = new ArrayList<>();
+		// List<TreeSitterQueryCapture> highlights = new ArrayList<>();
 		List<HighlightData> highlightsx = new ArrayList<>();
 		int hIndex = -1;
 
@@ -129,7 +131,7 @@ public class TreesitterCommand extends AbstractShellComponent {
 				int startByte = c.getNode().getStartByte();
 				int endByte = c.getNode().getEndByte();
 				if (endByte > hIndex) {
-					highlights.add(c);
+					// highlights.add(c);
 					highlightsx.add(new HighlightData(treeSitterQueryMatch.getNames().getLast(), startByte, endByte));
 				}
 
@@ -196,29 +198,29 @@ public class TreesitterCommand extends AbstractShellComponent {
 	// void ts_lookahead_iterator_delete(TSLookaheadIterator *self);
 	// void ts_wasm_store_delete(TSWasmStore *);
 
-	private List<TreeSitterQueryMatch> doMatch(String languageId, byte[] bytes) throws IOException {
-		TreeSitterNativeLoader.initialize();
-		TreeSitterNativeLoader.initializeLanguage(languageId);
+	// private List<TreeSitterQueryMatch> doMatchx(String languageId, byte[] bytes) throws IOException {
+	// 	TreeSitterNativeLoader.initialize();
+	// 	TreeSitterNativeLoader.initializeLanguage(languageId);
 
-		TreeSitterLanguageProvider provider = treeSitterLanguages.getLanguageProvider(languageId);
-		TreeSitterLanguage language = provider.language();
+	// 	TreeSitterLanguageProvider provider = treeSitterLanguages.getLanguageProvider(languageId);
+	// 	TreeSitterLanguage language = provider.language();
 
-		// TreeSitterParser parser = new TreeSitterParser(language);
-		// TreeSitterTree tree = parser.parse(new String(bytes));
-		TreeSitterTree tree = null;
-		try (TreeSitterParser parser = new TreeSitterParser(language)) {
-			tree = parser.parse(new String(bytes));
-		}
+	// 	// TreeSitterParser parser = new TreeSitterParser(language);
+	// 	// TreeSitterTree tree = parser.parse(new String(bytes));
+	// 	TreeSitterTree tree = null;
+	// 	try (TreeSitterParser parser = new TreeSitterParser(language)) {
+	// 		tree = parser.parse(new String(bytes));
+	// 	}
 
-		List<TreeSitterQueryMatch> matches = null;
-		try (TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());) {
-			matches = query.findMatches(tree.getRootNode());
-		}
+	// 	List<TreeSitterQueryMatch> matches = null;
+	// 	try (TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());) {
+	// 		matches = query.findMatches(tree.getRootNode());
+	// 	}
 
-		// TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
-		// List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
-		return matches;
-	}
+	// 	// TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());
+	// 	// List<TreeSitterQueryMatch> matches = query.findMatches(tree.getRootNode());
+	// 	return matches;
+	// }
 
 	private record HighlightData(String key, int start, int end) {
 	}

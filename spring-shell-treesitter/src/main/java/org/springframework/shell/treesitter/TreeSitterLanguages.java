@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.treesitter;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -58,5 +59,26 @@ public class TreeSitterLanguages {
 			.flatMap(provider -> provider.supportedLanguages().stream())
 			.toList();
 	}
+
+	public List<TreeSitterQueryMatch> languageMatch(String languageId, byte[] bytes) {
+		TreeSitterNativeLoader.initialize();
+		TreeSitterNativeLoader.initializeLanguage(languageId);
+
+		TreeSitterLanguageProvider provider = getLanguageProvider(languageId);
+		TreeSitterLanguage language = provider.language();
+
+		TreeSitterTree tree = null;
+		try (TreeSitterParser parser = new TreeSitterParser(language)) {
+			tree = parser.parse(new String(bytes));
+		}
+
+		List<TreeSitterQueryMatch> matches = null;
+		try (TreeSitterQuery query = new TreeSitterQuery(language, language.highlightQuery());) {
+			matches = query.findMatches(tree.getRootNode());
+		}
+
+		return matches;
+	}
+
 
 }
