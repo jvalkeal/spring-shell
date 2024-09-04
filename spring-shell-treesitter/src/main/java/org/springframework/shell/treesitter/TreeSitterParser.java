@@ -26,16 +26,22 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class TreeSitterParser {
+public class TreeSitterParser implements AutoCloseable {
 
-	private TreeSitterLanguage language;
-	private MemorySegment parserSegment;
+	private MemorySegment parser;
+	private final Arena arena;
 
 	public TreeSitterParser(TreeSitterLanguage language) {
 		Assert.notNull(language, "language must be");
-		this.language = language;
-		parserSegment = TreeSitter.ts_parser_new();
-		boolean created = TreeSitter.ts_parser_set_language(parserSegment, language.init());
+		arena = Arena.ofShared();
+		parser = TreeSitter.ts_parser_new().reinterpret(arena, TreeSitter::ts_parser_delete);
+		// TODO: should handle boolean returned from setting language
+		TreeSitter.ts_parser_set_language(parser, language.init());
+	}
+
+	@Override
+	public void close() {
+		arena.close();
 	}
 
 	public TreeSitterTree parse(String code) {
@@ -43,12 +49,11 @@ public class TreeSitterParser {
 	}
 
 	public TreeSitterTree parse(byte[] code) {
-		// try (Arena arena = Arena.ofConfined()) {
-		// }
-		Arena offHeap = Arena.ofConfined();
-		MemorySegment sourceCode = offHeap.allocateFrom(ValueLayout.JAVA_BYTE, code);
-		int length = (int) sourceCode.byteSize() - 1;
-		MemorySegment tree = TreeSitter.ts_parser_parse_string(parserSegment, MemorySegment.NULL, sourceCode, length);
-		return new TreeSitterTree(tree);
+		try (Arena a = Arena.ofConfined()) {
+			MemorySegment sourceCode = a.allocateFrom(ValueLayout.JAVA_BYTE, code);
+			int length = (int) sourceCode.byteSize() - 1;
+			MemorySegment tree = TreeSitter.ts_parser_parse_string(parser, MemorySegment.NULL, sourceCode, length);
+			return new TreeSitterTree(tree);
+		}
 	}
 }

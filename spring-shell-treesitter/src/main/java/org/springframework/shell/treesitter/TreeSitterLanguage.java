@@ -27,6 +27,7 @@ public interface TreeSitterLanguage {
 
 	/**
 	 * Initialise a {@code treesitter} language returning its {@link MemorySegment}.
+	 * Memory is expected to get freed by {@code treesitter parser}.
 	 *
 	 * @return a memory segment for initialised language
 	 */

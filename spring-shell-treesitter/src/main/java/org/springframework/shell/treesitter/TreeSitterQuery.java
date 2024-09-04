@@ -32,16 +32,23 @@ import org.springframework.util.Assert;
  *
  * @author Janne Valkealahti
  */
-public class TreeSitterQuery {
+public class TreeSitterQuery implements AutoCloseable {
 
 	private TreeSitterLanguage language;
 	private String source;
+	private final Arena arena;
 
 	public TreeSitterQuery(TreeSitterLanguage language, String source) {
 		Assert.notNull(language, "language must be");
 		Assert.notNull(source, "source must be");
+		arena = Arena.ofShared();
 		this.language = language;
 		this.source = source;
+	}
+
+	@Override
+	public void close() {
+		arena.close();
 	}
 
 	public List<TreeSitterQueryMatch> findMatches(TreeSitterNode node) {
@@ -49,16 +56,17 @@ public class TreeSitterQuery {
 		// }
 
 		Arena offHeap = Arena.ofConfined();
-		MemorySegment cursor = TreeSitter.ts_query_cursor_new();
-		// cursor.reinterpret(offHeap, segment -> {
-		// 	TreeSitter.ts_query_cursor_delete(segment);
-		// });
+		// MemorySegment cursor = TreeSitter.ts_query_cursor_new();
+		MemorySegment cursor = TreeSitter.ts_query_cursor_new().reinterpret(arena, TreeSitter::ts_query_cursor_delete);
 		MemorySegment languageSegment = language.init();
-		MemorySegment sourceSegment = offHeap.allocateFrom(source);
+		MemorySegment sourceSegment = arena.allocateFrom(source);
 		int sourceLen = source.length();
-		MemorySegment error_offset = offHeap.allocateFrom(OfInt.JAVA_INT, 0);
-		MemorySegment error_type = offHeap.allocateFrom(OfInt.JAVA_INT, 0);
-		MemorySegment querySegment = TreeSitter.ts_query_new(languageSegment, sourceSegment, sourceLen, error_offset, error_type);
+		MemorySegment error_offset = arena.allocateFrom(OfInt.JAVA_INT, 0);
+		MemorySegment error_type = arena.allocateFrom(OfInt.JAVA_INT, 0);
+		// MemorySegment querySegment = TreeSitter.ts_query_new(languageSegment, sourceSegment, sourceLen, error_offset, error_type);
+		MemorySegment querySegment = TreeSitter
+				.ts_query_new(languageSegment, sourceSegment, sourceLen, error_offset, error_type)
+				.reinterpret(arena, TreeSitter::ts_query_delete);
 		TreeSitter.ts_query_cursor_exec(cursor, querySegment, node.getTreeSegment());
 
 		MemorySegment queryMatch = TSQueryMatch.allocate(offHeap);
