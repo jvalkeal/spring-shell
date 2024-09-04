@@ -25,40 +25,53 @@ import org.springframework.shell.treesitter.ts.TreeSitter;
  *
  * @author Janne Valkealahti
  */
-public class TreeSitterNode {
+public final class TreeSitterNode {
 
-	private MemorySegment treeSegment;
+	private final MemorySegment node;
+	private final TreeSitterPoint startPoint;
+	private final TreeSitterPoint endPoint;
+	private final int startByte;
+	private final int endByte;
 
-	public TreeSitterNode(MemorySegment treeSegment) {
-		this.treeSegment = treeSegment;
+	private TreeSitterNode(MemorySegment node, TreeSitterPoint startPoint, TreeSitterPoint endPoint,
+			int startByte, int endByte) {
+		this.node = node;
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
+		this.startByte = startByte;
+		this.endByte = endByte;
 	}
 
-	public MemorySegment getTreeSegment() {
-		return treeSegment;
+	protected static TreeSitterNode of(MemorySegment node) {
+		try (Arena arena = Arena.ofConfined()) {
+			MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(arena, node);
+			MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(arena, node);
+			TreeSitterPoint startPoint = new TreeSitterPoint(TSPoint.row(nodeStartPoint), TSPoint.column(nodeStartPoint));
+			TreeSitterPoint endPoint = new TreeSitterPoint(TSPoint.row(nodeEndPoint), TSPoint.column(nodeEndPoint));
+			int startByte = TreeSitter.ts_node_start_byte(node);
+			int endByte = TreeSitter.ts_node_end_byte(node);
+			return new TreeSitterNode(node, startPoint, endPoint, startByte, endByte);
+		}
 	}
 
     public TreeSitterPoint getStartPoint() {
-		Arena offHeap = Arena.ofConfined();
-		MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(offHeap, treeSegment);
-		int startX = TSPoint.column(nodeStartPoint);
-		int startY = TSPoint.row(nodeStartPoint);
-		return new TreeSitterPoint(startY, startX);
+		return startPoint;
     }
 
     public TreeSitterPoint getEndPoint() {
-		Arena offHeap = Arena.ofConfined();
-		MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(offHeap, treeSegment);
-		int endX = TSPoint.column(nodeEndPoint);
-		int endY = TSPoint.row(nodeEndPoint);
-		return new TreeSitterPoint(endY, endX);
+		return endPoint;
     }
 
     public int getStartByte() {
-        return TreeSitter.ts_node_start_byte(treeSegment);
+		return startByte;
     }
 
     public int getEndByte() {
-        return TreeSitter.ts_node_end_byte(treeSegment);
+		return endByte;
     }
+
+	protected MemorySegment getNode() {
+		return node;
+	}
 
 }

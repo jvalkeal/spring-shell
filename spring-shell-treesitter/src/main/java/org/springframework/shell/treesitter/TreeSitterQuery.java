@@ -56,18 +56,16 @@ public class TreeSitterQuery implements AutoCloseable {
 		// }
 
 		Arena offHeap = Arena.ofConfined();
-		// MemorySegment cursor = TreeSitter.ts_query_cursor_new();
 		MemorySegment cursor = TreeSitter.ts_query_cursor_new().reinterpret(arena, TreeSitter::ts_query_cursor_delete);
 		MemorySegment languageSegment = language.init();
 		MemorySegment sourceSegment = arena.allocateFrom(source);
 		int sourceLen = source.length();
 		MemorySegment error_offset = arena.allocateFrom(OfInt.JAVA_INT, 0);
 		MemorySegment error_type = arena.allocateFrom(OfInt.JAVA_INT, 0);
-		// MemorySegment querySegment = TreeSitter.ts_query_new(languageSegment, sourceSegment, sourceLen, error_offset, error_type);
 		MemorySegment querySegment = TreeSitter
 				.ts_query_new(languageSegment, sourceSegment, sourceLen, error_offset, error_type)
 				.reinterpret(arena, TreeSitter::ts_query_delete);
-		TreeSitter.ts_query_cursor_exec(cursor, querySegment, node.getTreeSegment());
+		TreeSitter.ts_query_cursor_exec(cursor, querySegment, node.getNode());
 
 		MemorySegment queryMatch = TSQueryMatch.allocate(offHeap);
 
@@ -97,7 +95,7 @@ public class TreeSitterQuery implements AutoCloseable {
 				MemorySegment capture = TSQueryCapture.asSlice(captures, i);
 				String name = captureNames.get(TSQueryCapture.index(capture));
 				MemorySegment captureNode = TSNode.allocate(offHeap).copyFrom(TSQueryCapture.node(capture));
-				TreeSitterNode treeSitterNode = new TreeSitterNode(captureNode);
+				TreeSitterNode treeSitterNode = TreeSitterNode.of(captureNode);
 				TreeSitterQueryCapture treeSitterQueryCapture = new TreeSitterQueryCapture(treeSitterNode, i);
 				queryCaptures.add(treeSitterQueryCapture);
 				names.add(name);

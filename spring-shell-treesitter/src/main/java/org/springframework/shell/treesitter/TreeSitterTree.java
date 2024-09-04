@@ -35,6 +35,7 @@ public class TreeSitterTree {
 	public TreeSitterNode getRootNode() {
 		Arena offHeap = Arena.ofConfined();
 		MemorySegment node = TreeSitter.ts_tree_root_node(offHeap, treeSegment);
-		return new TreeSitterNode(node);
+		// return new TreeSitterNode(node);
+		return TreeSitterNode.of(node);
 	}
 }
