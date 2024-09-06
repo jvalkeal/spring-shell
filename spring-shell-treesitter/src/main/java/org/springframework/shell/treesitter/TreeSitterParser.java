@@ -53,7 +53,7 @@ public class TreeSitterParser implements AutoCloseable {
 			MemorySegment sourceCode = a.allocateFrom(ValueLayout.JAVA_BYTE, code);
 			int length = (int) sourceCode.byteSize() - 1;
 			MemorySegment tree = TreeSitter.ts_parser_parse_string(parser, MemorySegment.NULL, sourceCode, length);
-			return new TreeSitterTree(tree);
+			return new TreeSitterTree(tree, code);
 		}
 	}
 }

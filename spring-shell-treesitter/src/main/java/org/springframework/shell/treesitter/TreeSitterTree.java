@@ -27,14 +27,20 @@ import org.springframework.shell.treesitter.ts.TreeSitter;
 public class TreeSitterTree {
 
 	private MemorySegment tree;
+	private byte[] content;
 
-	public TreeSitterTree(MemorySegment tree) {
+	public TreeSitterTree(MemorySegment tree, byte[] content) {
 		this.tree = tree;
+		this.content = content;
 	}
 
 	public TreeSitterNode getRootNode() {
 		Arena arena = Arena.ofShared();
 		MemorySegment node = TreeSitter.ts_tree_root_node(arena, tree);
-		return TreeSitterNode.of(node);
+		return TreeSitterNode.of(node, this);
+	}
+
+	public byte[] getContent() {
+		return content;
 	}
 }

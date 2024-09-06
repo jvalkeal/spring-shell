@@ -15,32 +15,14 @@
  */
 package org.springframework.shell.treesitter;
 
-/**
- *
- * @author Janne Valkealahti
- */
-public class TreeSitterQueryCapture {
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-	private TreeSitterNode node;
-	private int index;
-	private String name;
+public class TreeSitterQueryTests {
 
-	public TreeSitterQueryCapture(TreeSitterNode node, int index, String name) {
-		this.node = node;
-		this.index = index;
-		this.name = name;
+	@Test
+	@Tag("treesitter")
+	void test1() {
+
 	}
-
-	public TreeSitterNode getNode() {
-		return node;
-	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 }

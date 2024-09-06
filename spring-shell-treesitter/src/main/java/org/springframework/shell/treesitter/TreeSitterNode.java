@@ -32,17 +32,23 @@ public final class TreeSitterNode {
 	private final TreeSitterPoint endPoint;
 	private final int startByte;
 	private final int endByte;
+	private TreeSitterTree tree;
 
-	private TreeSitterNode(MemorySegment node, TreeSitterPoint startPoint, TreeSitterPoint endPoint,
+	private TreeSitterNode(MemorySegment node, TreeSitterTree tree, TreeSitterPoint startPoint, TreeSitterPoint endPoint,
 			int startByte, int endByte) {
 		this.node = node;
+		this.tree = tree;
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		this.startByte = startByte;
 		this.endByte = endByte;
 	}
 
-	protected static TreeSitterNode of(MemorySegment node) {
+	public TreeSitterTree getTree() {
+		return tree;
+	}
+
+	protected static TreeSitterNode of(MemorySegment node, TreeSitterTree tree) {
 		try (Arena arena = Arena.ofConfined()) {
 			MemorySegment nodeStartPoint = TreeSitter.ts_node_start_point(arena, node);
 			MemorySegment nodeEndPoint = TreeSitter.ts_node_end_point(arena, node);
@@ -50,7 +56,7 @@ public final class TreeSitterNode {
 			TreeSitterPoint endPoint = new TreeSitterPoint(TSPoint.row(nodeEndPoint), TSPoint.column(nodeEndPoint));
 			int startByte = TreeSitter.ts_node_start_byte(node);
 			int endByte = TreeSitter.ts_node_end_byte(node);
-			return new TreeSitterNode(node, startPoint, endPoint, startByte, endByte);
+			return new TreeSitterNode(node, tree, startPoint, endPoint, startByte, endByte);
 		}
 	}
 

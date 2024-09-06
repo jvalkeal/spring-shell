@@ -20,11 +20,21 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.lang.foreign.ValueLayout.OfInt;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.shell.treesitter.ts.TSNode;
 import org.springframework.shell.treesitter.ts.TSQueryCapture;
 import org.springframework.shell.treesitter.ts.TSQueryMatch;
+import org.springframework.shell.treesitter.ts.TSQueryPredicateStep;
 import org.springframework.shell.treesitter.ts.TreeSitter;
 import org.springframework.util.Assert;
 
@@ -34,6 +44,7 @@ import org.springframework.util.Assert;
  */
 public class TreeSitterQuery implements AutoCloseable {
 
+	private final static Logger log = LoggerFactory.getLogger(TreeSitterQuery.class);
 	private TreeSitterLanguage language;
 	private String source;
 	private final Arena arena;
@@ -74,6 +85,54 @@ public class TreeSitterQuery implements AutoCloseable {
 			captureNames.add(name.getString(0));
 		}
 
+		// XXX
+
+		Map<Integer, TreeSitterQueryPredicate> predicates = new HashMap<>();
+
+        int stringCount = TreeSitter.ts_query_string_count(querySegment);
+        List<String> stringValues = new ArrayList<>(stringCount);
+        try (var alloc = Arena.ofConfined()) {
+            for (int i = 0; i < stringCount; ++i) {
+                MemorySegment length = alloc.allocate(ValueLayout.JAVA_INT);
+                MemorySegment name = TreeSitter.ts_query_string_value_for_id(querySegment, i, length);
+                stringValues.add(name.getString(0));
+            }
+        }
+
+
+		try (Arena arenax = Arena.ofConfined()) {
+			int patternCount = TreeSitter.ts_query_pattern_count(querySegment);
+			for (int i = 0; i < patternCount; i++) {
+				MemorySegment count = arenax.allocate(OfInt.JAVA_INT);
+				MemorySegment tokens = TreeSitter.ts_query_predicates_for_pattern(querySegment, i, count);
+
+				int steps = count.get(OfInt.JAVA_INT, 0);
+				for (long j = 0, nargs = 0; j < steps; ++j) {
+					for (; ; ++nargs) {
+						MemorySegment t = TSQueryPredicateStep.asSlice(tokens, nargs);
+						int type = TSQueryPredicateStep.type(t);
+						log.info("XXX1 patternIndex={} type={}", i, type);
+						if (type == TreeSitter.TSQueryPredicateStepTypeDone()) {
+							break;
+						}
+						MemorySegment t0 = TSQueryPredicateStep.asSlice(tokens, 0);
+						String predicate = stringValues.get(TSQueryPredicateStep.value_id(t0));
+						log.info("XXX2 {}", predicate);
+						if ("match?".equals(predicate)) {
+							MemorySegment t1 = TSQueryPredicateStep.asSlice(tokens, 1);
+							MemorySegment t2 = TSQueryPredicateStep.asSlice(tokens, 2);
+							String value1 = captureNames.get(TSQueryPredicateStep.value_id(t1));
+							String value2 = stringValues.get(TSQueryPredicateStep.value_id(t2));
+							log.info("XXX3 {} {}", value1, value2);
+							TreeSitterQueryPredicate p = new MatchTreeSitterQueryPredicate(value1, Pattern.compile(value2));
+							predicates.put(i, p);
+						}
+					}
+				}
+			}
+		}
+		// XXX
+
 		List<TreeSitterQueryMatch> matches = new ArrayList<>();
 
 		while (TreeSitter.ts_query_cursor_next_match(cursor, queryMatch)) {
@@ -91,17 +150,66 @@ public class TreeSitterQuery implements AutoCloseable {
 				MemorySegment capture = TSQueryCapture.asSlice(captures, i);
 				String name = captureNames.get(TSQueryCapture.index(capture));
 				MemorySegment captureNode = TSNode.allocate(arena).copyFrom(TSQueryCapture.node(capture));
-				TreeSitterNode treeSitterNode = TreeSitterNode.of(captureNode);
-				TreeSitterQueryCapture treeSitterQueryCapture = new TreeSitterQueryCapture(treeSitterNode, i);
+				TreeSitterNode treeSitterNode = TreeSitterNode.of(captureNode, node.getTree());
+				TreeSitterQueryCapture treeSitterQueryCapture = new TreeSitterQueryCapture(treeSitterNode, i, name);
 				queryCaptures.add(treeSitterQueryCapture);
 				names.add(name);
 			}
 
 			int index = TSQueryCapture.index(captures);
-			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount, queryCaptures, names);
-			matches.add(treeSitterQueryMatch);
+			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount,
+					queryCaptures, names);
+			TreeSitterQueryPredicate p = predicates.get(treeSitterQueryMatch.getPatternIndex());
+			boolean add = true;
+			if (p != null) {
+				add = p.test(treeSitterQueryMatch);
+			}
+			if (add) {
+				matches.add(treeSitterQueryMatch);
+			}
+			// matches.add(treeSitterQueryMatch);
 		}
 
 		return matches;
+	}
+
+	interface TreeSitterQueryPredicate extends Predicate<TreeSitterQueryMatch> {
+
+	}
+
+	static class MatchTreeSitterQueryPredicate implements TreeSitterQueryPredicate {
+
+		String capture;
+		Pattern pattern;
+
+		MatchTreeSitterQueryPredicate(String capture, Pattern pattern) {
+			this.capture = capture;
+			this.pattern = pattern;
+		}
+
+		@Override
+		public boolean test(TreeSitterQueryMatch match) {
+			List<TreeSitterNode> nodes = match.getCaptures().stream()
+				.filter(c -> c.getName().equals(capture))
+				.map(c -> c.getNode())
+				.collect(Collectors.toList())
+				;
+			boolean present = nodes.stream()
+				.filter(n -> {
+					TreeSitterTree tree = n.getTree();
+					byte[] xxx = new byte[n.getEndByte() - n.getStartByte()];
+					System.arraycopy(tree.getContent(), n.getStartByte(), xxx, 0, xxx.length);
+					String ddd = new String(xxx);
+					boolean matches = pattern.matcher(ddd).matches();
+					log.info("DDD1 ddd={} pattern={} matches={}", ddd, pattern, matches);
+					return matches;
+				})
+				.findFirst()
+				.isPresent()
+				;
+			log.info("DDD2 {}", present);
+			return present;
+		}
+
 	}
 }
