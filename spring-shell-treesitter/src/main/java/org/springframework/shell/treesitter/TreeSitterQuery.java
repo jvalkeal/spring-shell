@@ -162,25 +162,27 @@ public class TreeSitterQuery implements AutoCloseable {
 			TreeSitterQueryPredicate p = predicates.get(treeSitterQueryMatch.getPatternIndex());
 			boolean add = true;
 			if (p != null) {
-				add = p.test(treeSitterQueryMatch);
+				TreeSitterQueryPredicateContext context = new TreeSitterQueryPredicateContext(treeSitterQueryMatch);
+				add = p.test(context);
 			}
 			if (add) {
 				matches.add(treeSitterQueryMatch);
 			}
-			// matches.add(treeSitterQueryMatch);
 		}
 
 		return matches;
 	}
 
-	interface TreeSitterQueryPredicate extends Predicate<TreeSitterQueryMatch> {
-
+	interface TreeSitterQueryPredicate extends Predicate<TreeSitterQueryPredicateContext> {
 	}
 
-	static class MatchTreeSitterQueryPredicate implements TreeSitterQueryPredicate {
+	record TreeSitterQueryPredicateContext(TreeSitterQueryMatch match) {
+	}
 
-		String capture;
-		Pattern pattern;
+	private static class MatchTreeSitterQueryPredicate implements TreeSitterQueryPredicate {
+
+		private final String capture;
+		private final Pattern pattern;
 
 		MatchTreeSitterQueryPredicate(String capture, Pattern pattern) {
 			this.capture = capture;
@@ -188,7 +190,8 @@ public class TreeSitterQuery implements AutoCloseable {
 		}
 
 		@Override
-		public boolean test(TreeSitterQueryMatch match) {
+		public boolean test(TreeSitterQueryPredicateContext context) {
+			TreeSitterQueryMatch match = context.match();
 			List<TreeSitterNode> nodes = match.getCaptures().stream()
 				.filter(c -> c.getName().equals(capture))
 				.map(c -> c.getNode())
