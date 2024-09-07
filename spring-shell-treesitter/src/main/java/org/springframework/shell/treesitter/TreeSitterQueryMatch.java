@@ -30,7 +30,8 @@ public class TreeSitterQueryMatch {
 	private List<TreeSitterQueryCapture> captures;
 	private List<String> names;
 
-	public TreeSitterQueryMatch(int id, int patternIndex, int captureIndex, int captureCount, List<TreeSitterQueryCapture> captures, List<String> names) {
+	public TreeSitterQueryMatch(int id, int patternIndex, int captureIndex, int captureCount,
+			List<TreeSitterQueryCapture> captures, List<String> names) {
 		this.id = id;
 		this.patternIndex = patternIndex;
 		this.captureIndex = captureIndex;

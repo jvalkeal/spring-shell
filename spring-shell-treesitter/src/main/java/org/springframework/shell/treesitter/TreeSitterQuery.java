@@ -23,14 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.shell.treesitter.predicate.MatchTreeSitterQueryPredicate;
+import org.springframework.shell.treesitter.predicate.TreeSitterQueryPredicate;
 import org.springframework.shell.treesitter.ts.TSNode;
 import org.springframework.shell.treesitter.ts.TSQueryCapture;
 import org.springframework.shell.treesitter.ts.TSQueryMatch;
@@ -162,7 +161,7 @@ public class TreeSitterQuery implements AutoCloseable {
 			TreeSitterQueryPredicate p = predicates.get(treeSitterQueryMatch.getPatternIndex());
 			boolean add = true;
 			if (p != null) {
-				TreeSitterQueryPredicateContext context = new TreeSitterQueryPredicateContext(treeSitterQueryMatch);
+				TreeSitterQueryPredicate.TreeSitterQueryPredicateContext context = new TreeSitterQueryPredicate.TreeSitterQueryPredicateContext(treeSitterQueryMatch);
 				add = p.test(context);
 			}
 			if (add) {
@@ -173,46 +172,4 @@ public class TreeSitterQuery implements AutoCloseable {
 		return matches;
 	}
 
-	interface TreeSitterQueryPredicate extends Predicate<TreeSitterQueryPredicateContext> {
-	}
-
-	record TreeSitterQueryPredicateContext(TreeSitterQueryMatch match) {
-	}
-
-	private static class MatchTreeSitterQueryPredicate implements TreeSitterQueryPredicate {
-
-		private final String capture;
-		private final Pattern pattern;
-
-		MatchTreeSitterQueryPredicate(String capture, Pattern pattern) {
-			this.capture = capture;
-			this.pattern = pattern;
-		}
-
-		@Override
-		public boolean test(TreeSitterQueryPredicateContext context) {
-			TreeSitterQueryMatch match = context.match();
-			List<TreeSitterNode> nodes = match.getCaptures().stream()
-				.filter(c -> c.getName().equals(capture))
-				.map(c -> c.getNode())
-				.collect(Collectors.toList())
-				;
-			boolean present = nodes.stream()
-				.filter(n -> {
-					TreeSitterTree tree = n.getTree();
-					byte[] xxx = new byte[n.getEndByte() - n.getStartByte()];
-					System.arraycopy(tree.getContent(), n.getStartByte(), xxx, 0, xxx.length);
-					String ddd = new String(xxx);
-					boolean matches = pattern.matcher(ddd).matches();
-					log.info("DDD1 ddd={} pattern={} matches={}", ddd, pattern, matches);
-					return matches;
-				})
-				.findFirst()
-				.isPresent()
-				;
-			log.info("DDD2 {}", present);
-			return present;
-		}
-
-	}
 }
