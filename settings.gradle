@@ -58,8 +58,8 @@ file("${rootDir}/spring-shell-samples").eachDirMatch(~/spring-shell-sample.*/) {
 	include "spring-shell-samples:${it.name}"
 }
 
-file("${rootDir}/spring-shell-treesitter-language").eachDirMatch(~/spring-shell-treesitter-language.*/) {
-	include "spring-shell-treesitter-language:${it.name}"
+file("${rootDir}/spring-shell-treesitter-languages").eachDirMatch(~/spring-shell-treesitter-language.*/) {
+	include "spring-shell-treesitter-languages:${it.name}"
 }
 
 rootProject.children.each { project ->
@@ -73,7 +73,7 @@ rootProject.children.each { project ->
 			subproject.buildFileName = "${subproject.name}.gradle"
 		}
 	}
-	else if (project.name == 'spring-shell-treesitter-language') {
+	else if (project.name == 'spring-shell-treesitter-languages') {
 		project.children.each { subproject ->
 			subproject.buildFileName = "${subproject.name}.gradle"
 		}

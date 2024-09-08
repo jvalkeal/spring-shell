@@ -1,6 +1,6 @@
 ---
 force: true
-to: spring-shell-treesitter-language/spring-shell-treesitter-language-<%= language %>/src/test/java/org/springframework/shell/treesitter/language/<%= language %>/TreeSitterLanguage<%= h.changeCase.pascal(language) %>Tests.java
+to: spring-shell-treesitter-languages/spring-shell-treesitter-language-<%= language %>/src/test/java/org/springframework/shell/treesitter/language/<%= language %>/TreeSitterLanguage<%= h.changeCase.pascal(language) %>Tests.java
 ---
 /*
  * Copyright 2024 the original author or authors.

@@ -62,7 +62,7 @@ for VALUE in $VALUES;
     LANGUAGEID=$(echo $VALUE | cut -f4 -d,)
     LANGUAGENAME="${LANGUAGEID^}"
     REPOPATH=$TMPDIR/$GHOWNER/$GHREPO
-    TARGETMODULEPATH=spring-shell-treesitter-language/spring-shell-treesitter-language-$LANGUAGEID
+    TARGETMODULEPATH=spring-shell-treesitter-languages/spring-shell-treesitter-language-$LANGUAGEID
     git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $REPOPATH
 
     if [ "$dojextract" == "true" ]; then

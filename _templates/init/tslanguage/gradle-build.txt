@@ -1,6 +1,6 @@
 ---
 force: true
-to: spring-shell-treesitter-language/spring-shell-treesitter-language-<%= language %>/spring-shell-treesitter-language-<%= language %>.gradle
+to: spring-shell-treesitter-languages/spring-shell-treesitter-language-<%= language %>/spring-shell-treesitter-language-<%= language %>.gradle
 ---
 plugins {
 	id 'org.springframework.shell.module'
