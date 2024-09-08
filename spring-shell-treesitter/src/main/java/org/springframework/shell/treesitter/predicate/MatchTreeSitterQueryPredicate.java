@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
  */
 public class MatchTreeSitterQueryPredicate extends AbstractMatchTreeSitterQueryPredicate {
 
+	public final static String PREDICATE = "match?";
+
 	public MatchTreeSitterQueryPredicate(String capture, Pattern pattern) {
 		super(capture, pattern, true, false);
 	}
