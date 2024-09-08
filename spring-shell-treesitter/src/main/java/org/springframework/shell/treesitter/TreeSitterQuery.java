@@ -36,6 +36,9 @@ import org.springframework.shell.treesitter.ts.TSQueryMatch;
 import org.springframework.shell.treesitter.ts.TSQueryPredicateStep;
 import org.springframework.shell.treesitter.ts.TreeSitter;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 
 /**
  *
@@ -86,50 +89,55 @@ public class TreeSitterQuery implements AutoCloseable {
 
 		// XXX
 
-		Map<Integer, TreeSitterQueryPredicate> predicates = new HashMap<>();
+		// Map<Integer, TreeSitterQueryPredicate> predicates = new HashMap<>();
 
-        int stringCount = TreeSitter.ts_query_string_count(querySegment);
-        List<String> stringValues = new ArrayList<>(stringCount);
-        try (var alloc = Arena.ofConfined()) {
-            for (int i = 0; i < stringCount; ++i) {
-                MemorySegment length = alloc.allocate(ValueLayout.JAVA_INT);
-                MemorySegment name = TreeSitter.ts_query_string_value_for_id(querySegment, i, length);
-                stringValues.add(name.getString(0));
-            }
-        }
+		// int stringCount = TreeSitter.ts_query_string_count(querySegment);
+		// List<String> stringValues = new ArrayList<>(stringCount);
+		// try (var alloc = Arena.ofConfined()) {
+		// 	for (int i = 0; i < stringCount; ++i) {
+		// 		MemorySegment length = alloc.allocate(ValueLayout.JAVA_INT);
+		// 		MemorySegment name = TreeSitter.ts_query_string_value_for_id(querySegment, i, length);
+		// 		stringValues.add(name.getString(0));
+		// 	}
+		// }
 
 
-		try (Arena arenax = Arena.ofConfined()) {
-			int patternCount = TreeSitter.ts_query_pattern_count(querySegment);
-			for (int i = 0; i < patternCount; i++) {
-				MemorySegment count = arenax.allocate(OfInt.JAVA_INT);
-				MemorySegment tokens = TreeSitter.ts_query_predicates_for_pattern(querySegment, i, count);
+		// try (Arena arenax = Arena.ofConfined()) {
+		// 	int patternCount = TreeSitter.ts_query_pattern_count(querySegment);
+		// 	for (int i = 0; i < patternCount; i++) {
+		// 		MemorySegment count = arenax.allocate(OfInt.JAVA_INT);
+		// 		MemorySegment tokens = TreeSitter.ts_query_predicates_for_pattern(querySegment, i, count);
 
-				int steps = count.get(OfInt.JAVA_INT, 0);
-				for (long j = 0, nargs = 0; j < steps; ++j) {
-					for (; ; ++nargs) {
-						MemorySegment t = TSQueryPredicateStep.asSlice(tokens, nargs);
-						int type = TSQueryPredicateStep.type(t);
-						log.info("XXX1 patternIndex={} type={}", i, type);
-						if (type == TreeSitter.TSQueryPredicateStepTypeDone()) {
-							break;
-						}
-						MemorySegment t0 = TSQueryPredicateStep.asSlice(tokens, 0);
-						String predicate = stringValues.get(TSQueryPredicateStep.value_id(t0));
-						log.info("XXX2 {}", predicate);
-						if ("match?".equals(predicate)) {
-							MemorySegment t1 = TSQueryPredicateStep.asSlice(tokens, 1);
-							MemorySegment t2 = TSQueryPredicateStep.asSlice(tokens, 2);
-							String value1 = captureNames.get(TSQueryPredicateStep.value_id(t1));
-							String value2 = stringValues.get(TSQueryPredicateStep.value_id(t2));
-							log.info("XXX3 {} {}", value1, value2);
-							TreeSitterQueryPredicate p = new MatchTreeSitterQueryPredicate(value1, Pattern.compile(value2));
-							predicates.put(i, p);
-						}
-					}
-				}
-			}
-		}
+		// 		int steps = count.get(OfInt.JAVA_INT, 0);
+		// 		for (long j = 0, nargs = 0; j < steps; ++j) {
+		// 			for (; ; ++nargs) {
+		// 				MemorySegment t = TSQueryPredicateStep.asSlice(tokens, nargs);
+		// 				int type = TSQueryPredicateStep.type(t);
+		// 				log.info("XXX1 patternIndex={} type={}", i, type);
+		// 				if (type == TreeSitter.TSQueryPredicateStepTypeDone()) {
+		// 					break;
+		// 				}
+		// 				MemorySegment t0 = TSQueryPredicateStep.asSlice(tokens, 0);
+		// 				String predicate = stringValues.get(TSQueryPredicateStep.value_id(t0));
+		// 				log.info("XXX2 {}", predicate);
+		// 				if ("match?".equals(predicate)) {
+		// 					MemorySegment t1 = TSQueryPredicateStep.asSlice(tokens, 1);
+		// 					MemorySegment t2 = TSQueryPredicateStep.asSlice(tokens, 2);
+		// 					String value1 = captureNames.get(TSQueryPredicateStep.value_id(t1));
+		// 					String value2 = stringValues.get(TSQueryPredicateStep.value_id(t2));
+		// 					log.info("XXX3 {} {}", value1, value2);
+		// 					TreeSitterQueryPredicate p = new MatchTreeSitterQueryPredicate(value1, Pattern.compile(value2));
+		// 					predicates.put(i, p);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		List<String> queryCaptureNames = getQueryCaptureNames(querySegment);
+		List<String> queryStringValues = getQueryStringValues(querySegment);
+		MultiValueMap<Integer, TreeSitterQueryPredicate> queryPredicates = getQueryPredicates(querySegment, queryStringValues, queryCaptureNames);
+		log.info("XXX queryPredicates={}", queryPredicates);
 		// XXX
 
 		List<TreeSitterQueryMatch> matches = new ArrayList<>();
@@ -158,18 +166,128 @@ public class TreeSitterQuery implements AutoCloseable {
 			int index = TSQueryCapture.index(captures);
 			TreeSitterQueryMatch treeSitterQueryMatch = new TreeSitterQueryMatch(id, patternIndex, index, captureCount,
 					queryCaptures, names);
-			TreeSitterQueryPredicate p = predicates.get(treeSitterQueryMatch.getPatternIndex());
+			// TreeSitterQueryPredicate p = predicates.get(treeSitterQueryMatch.getPatternIndex());
+			List<TreeSitterQueryPredicate> pList = queryPredicates.get(treeSitterQueryMatch.getPatternIndex());
 			boolean add = true;
-			if (p != null) {
+			if (pList != null) {
 				TreeSitterQueryPredicate.TreeSitterQueryPredicateContext context = new TreeSitterQueryPredicate.TreeSitterQueryPredicateContext(treeSitterQueryMatch);
-				add = p.test(context);
+				add = pList.stream().allMatch(p -> p.test(context));
 			}
+
+			// if (p != null) {
+			// 	TreeSitterQueryPredicate.TreeSitterQueryPredicateContext context = new TreeSitterQueryPredicate.TreeSitterQueryPredicateContext(treeSitterQueryMatch);
+			// 	add = p.test(context);
+			// }
 			if (add) {
 				matches.add(treeSitterQueryMatch);
 			}
 		}
 
 		return matches;
+	}
+
+	private List<String> getQueryCaptureNames(MemorySegment querySegment) {
+		int captureCount = TreeSitter.ts_query_capture_count(querySegment);
+		List<String> captureNames = new ArrayList<>(captureCount);
+		try (var alloc = Arena.ofConfined()) {
+			for (int i = 0; i < captureCount; i++) {
+				MemorySegment length = arena.allocate(ValueLayout.JAVA_INT);
+				MemorySegment name = TreeSitter.ts_query_capture_name_for_id(querySegment, i, length);
+				captureNames.add(name.getString(0));
+			}
+		}
+		return captureNames;
+	}
+
+	private List<String> getQueryStringValues(MemorySegment querySegment) {
+		int stringCount = TreeSitter.ts_query_string_count(querySegment);
+		List<String> stringValues = new ArrayList<>(stringCount);
+		try (var alloc = Arena.ofConfined()) {
+			for (int i = 0; i < stringCount; ++i) {
+				MemorySegment length = alloc.allocate(ValueLayout.JAVA_INT);
+				MemorySegment name = TreeSitter.ts_query_string_value_for_id(querySegment, i, length);
+				stringValues.add(name.getString(0));
+			}
+		}
+		return stringValues;
+	}
+
+	private MultiValueMap<Integer, TreeSitterQueryPredicate> getQueryPredicates(MemorySegment querySegment, List<String> stringValues, List<String> captureNames) {
+		MultiValueMap<Integer, TreeSitterQueryPredicate> predicates = new LinkedMultiValueMap<>();
+		try (Arena alloc = Arena.ofConfined()) {
+			int patternCount = TreeSitter.ts_query_pattern_count(querySegment);
+			for (int patternIndex = 0; patternIndex < patternCount; patternIndex++) {
+				MemorySegment count = alloc.allocate(OfInt.JAVA_INT);
+				MemorySegment tokens = TreeSitter.ts_query_predicates_for_pattern(querySegment, patternIndex, count);
+				int steps = count.get(OfInt.JAVA_INT, 0);
+				log.info("XXX pattern predicate - patternIndex={} steps={}", patternIndex, steps);
+
+				// TSQueryPredicateStepTypeDone		0
+				// TSQueryPredicateStepTypeCapture	1
+				// TSQueryPredicateStepTypeString	2
+
+				List<TreeSitterQueryPredicate.TreeSitterQueryPredicateDefinition> defs = new ArrayList<>();
+				List<TreeSitterQueryPredicate.TreeSitterQueryPredicateArg> args = null;
+				String predicateValue = null;
+				for (long stepIndex = 0; stepIndex < steps; ++stepIndex) {
+					if (args == null) {
+						args = new ArrayList<>();
+					}
+					MemorySegment t = TSQueryPredicateStep.asSlice(tokens, stepIndex);
+					int type = TSQueryPredicateStep.type(t);
+					if (type == TreeSitter.TSQueryPredicateStepTypeDone()) {
+						log.info("XXX pattern steps -  patternIndex={} type={} done", patternIndex, type);
+						defs.add(new TreeSitterQueryPredicate.TreeSitterQueryPredicateDefinition(predicateValue, args));
+						if ("match?".equals(predicateValue)) {
+							log.info("XXX should add {}", predicateValue);
+							TreeSitterQueryPredicate p = MatchTreeSitterQueryPredicate.of(args);
+							predicates.add(patternIndex, p);
+						}
+						args = null;
+						predicateValue = null;
+						continue;
+					}
+					else if (type == TreeSitter.TSQueryPredicateStepTypeCapture()) {
+						String value = captureNames.get(TSQueryPredicateStep.value_id(t));
+						args.add(new TreeSitterQueryPredicate.TreeSitterQueryPredicateArg(value, TreeSitterQueryPredicate.TreeSitterQueryPredicateType.CAPTURE));
+						log.info("XXX pattern steps -  patternIndex={} type={} value={}", patternIndex, type, value);
+					}
+					else if (type == TreeSitter.TSQueryPredicateStepTypeString()) {
+						if (predicateValue == null) {
+							predicateValue = stringValues.get(TSQueryPredicateStep.value_id(t));
+						}
+						else {
+							String value = stringValues.get(TSQueryPredicateStep.value_id(t));
+							args.add(new TreeSitterQueryPredicate.TreeSitterQueryPredicateArg(value, TreeSitterQueryPredicate.TreeSitterQueryPredicateType.STRING));
+							log.info("XXX pattern steps -  patternIndex={} type={} value={}", patternIndex, type, value);
+						}
+					}
+				}
+
+				// for (long j = 0, nargs = 0; j < steps; ++j) {
+				// 	for (; ; ++nargs) {
+				// 		MemorySegment t = TSQueryPredicateStep.asSlice(tokens, nargs);
+				// 		int type = TSQueryPredicateStep.type(t);
+				// 		log.info("XXX1 patternIndex={} type={}", i, type);
+				// 		if (type == TreeSitter.TSQueryPredicateStepTypeDone()) {
+				// 			break;
+				// 		}
+				// 		MemorySegment t0 = TSQueryPredicateStep.asSlice(tokens, 0);
+				// 		String predicate = stringValues.get(TSQueryPredicateStep.value_id(t0));
+				// 		if ("match?".equals(predicate)) {
+				// 			MemorySegment t1 = TSQueryPredicateStep.asSlice(tokens, 1);
+				// 			MemorySegment t2 = TSQueryPredicateStep.asSlice(tokens, 2);
+				// 			String value1 = captureNames.get(TSQueryPredicateStep.value_id(t1));
+				// 			String value2 = stringValues.get(TSQueryPredicateStep.value_id(t2));
+				// 			log.info("XXX3 {} {}", value1, value2);
+				// 			TreeSitterQueryPredicate p = new MatchTreeSitterQueryPredicate(value1, Pattern.compile(value2));
+				// 			predicates.add(i, p);
+				// 		}
+				// 	}
+				// }
+			}
+		}
+		return predicates;
 	}
 
 }

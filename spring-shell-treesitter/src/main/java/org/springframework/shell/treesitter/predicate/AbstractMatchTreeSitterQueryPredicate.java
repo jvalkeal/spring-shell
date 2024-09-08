@@ -86,13 +86,11 @@ abstract class AbstractMatchTreeSitterQueryPredicate extends AbstractTreeSitterQ
 		else {
 			return pStream.anyMatch(x -> x.matcher(text).matches());
 		}
-		// for (Pattern p : patterns) {
-		// 	// boolean matches = p.matcher(text).matches();
-		// 	// if (matches) {
-		// 	// 	return true;
-		// 	// }
-		// }
-		// return false;
+	}
+
+	@Override
+	public String toString() {
+		return "[capture=" + capture + ", patterns=" + patterns + ", matchAll=" + matchAll + ", negate=" + negate + "]";
 	}
 
 }

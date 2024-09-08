@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.treesitter.predicate;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.springframework.shell.treesitter.TreeSitterQueryMatch;
@@ -23,6 +24,17 @@ import org.springframework.shell.treesitter.predicate.TreeSitterQueryPredicate.T
 public interface TreeSitterQueryPredicate extends Predicate<TreeSitterQueryPredicateContext> {
 
 	record TreeSitterQueryPredicateContext(TreeSitterQueryMatch match) {
+	}
+
+	enum TreeSitterQueryPredicateType {
+		CAPTURE,
+		STRING;
+	}
+
+	record TreeSitterQueryPredicateArg(String value, TreeSitterQueryPredicateType type) {
+	}
+
+	record TreeSitterQueryPredicateDefinition(String value, List<TreeSitterQueryPredicateArg> args) {
 	}
 
 }

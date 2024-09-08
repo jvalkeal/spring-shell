@@ -52,4 +52,16 @@ class MatchTreeSitterQueryPredicateTests extends BaseTreeSitterQueryPredicateTes
 		boolean test = predicate.test(context);
 		assertThat(test).isTrue();
 	}
+
+	@Test
+	void test2() {
+		Pattern pattern = Pattern.compile("fakecontent");
+		MatchTreeSitterQueryPredicate predicate = new MatchTreeSitterQueryPredicate("test", pattern);
+
+		TreeSitterQueryPredicateContext ctx = mockContext("test", "fakecontent");
+		boolean test = predicate.test(ctx);
+
+		assertThat(test).isTrue();
+	}
+
 }

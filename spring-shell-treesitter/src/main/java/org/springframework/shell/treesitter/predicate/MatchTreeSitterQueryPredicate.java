@@ -15,6 +15,7 @@
  */
 package org.springframework.shell.treesitter.predicate;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -26,6 +27,22 @@ public class MatchTreeSitterQueryPredicate extends AbstractMatchTreeSitterQueryP
 
 	public MatchTreeSitterQueryPredicate(String capture, Pattern pattern) {
 		super(capture, pattern, true, false);
+	}
+
+	public static MatchTreeSitterQueryPredicate of(List<TreeSitterQueryPredicate.TreeSitterQueryPredicateArg> args) {
+		if (args.size() == 2) {
+			TreeSitterQueryPredicateArg captureArg = args.get(0);
+			TreeSitterQueryPredicateArg patternArg = args.get(1);
+			return new MatchTreeSitterQueryPredicate(captureArg.value(), Pattern.compile(patternArg.value()));
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "MatchTreeSitterQueryPredicate [%s]".formatted(super.toString());
 	}
 
 }

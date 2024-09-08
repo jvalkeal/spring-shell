@@ -15,6 +15,33 @@
  */
 package org.springframework.shell.treesitter.predicate;
 
+import java.util.List;
+
+import org.springframework.shell.treesitter.TreeSitterNode;
+import org.springframework.shell.treesitter.TreeSitterQueryCapture;
+import org.springframework.shell.treesitter.TreeSitterQueryMatch;
+import org.springframework.shell.treesitter.TreeSitterTree;
+import org.springframework.shell.treesitter.predicate.TreeSitterQueryPredicate.TreeSitterQueryPredicateContext;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 class BaseTreeSitterQueryPredicateTests {
 
+	TreeSitterQueryPredicateContext mockContext(String captureName, String captureContent) {
+		TreeSitterTree tree = mock(TreeSitterTree.class);
+		TreeSitterNode node = mock(TreeSitterNode.class);
+		TreeSitterQueryMatch match = mock(TreeSitterQueryMatch.class);
+		TreeSitterQueryCapture tsqc = mock(TreeSitterQueryCapture.class);
+
+		doReturn(captureName).when(tsqc).getName();
+		doReturn(List.of(tsqc)).when(match).getCaptures();
+		doReturn(node).when(tsqc).getNode();
+		doReturn(tree).when(node).getTree();
+		doReturn(0).when(node).getStartByte();
+		doReturn(captureContent.length()).when(node).getEndByte();
+		doReturn(captureContent.getBytes()).when(tree).getContent();
+
+		return new TreeSitterQueryPredicate.TreeSitterQueryPredicateContext(match);
+	}
 }
