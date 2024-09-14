@@ -1,0 +1,23 @@
+= Spring Shell Treesitter Languages
+
+Modules in this space depends on `spring-shell-treesitter` and are mostly generated programmatically based on available `treesitter` languages.
+
+Per standard treesitter language module do this:
+
+
+Metadata for a language:
+repo: https://github.com/tree-sitter/tree-sitter-java
+tag: v0.21.0
+
+git clone --depth 1 -b v0.21.0 https://github.com/tree-sitter/tree-sitter-java.git /tmp/ddd/tree-sitter/tree-sitter-java
+
+clone repo
+copy c header file
+run jextract
+run zig
+
+
+jextract --header-class-name TreeSitterJson --output spring-shell-treesitter/spring-shell-treesitter-language-json/src/main/java -t org.springframework.shell.treesitter.language.json.ts src/ts/tree-sitter-json.h
+jextract --header-class-name TreeSitterJava --output src/main/java -t org.springframework.shell.treesitter.java.ts src/ts/tree-sitter-java.h
+
+zig cc -g0 -shared -target x86_64-linux-gnu -I src -o libtree-sitter-java.so src/parser.c

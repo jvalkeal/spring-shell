@@ -5,30 +5,31 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - nickname: linux jdk17
-            java: 17
-            os: ubuntu-latest
-          - nickname: macos jdk17
-            java: 17
-            os: macos-latest
-          - nickname: windows jdk17
-            java: 17
-            os: windows-latest
-    name: CI Build ${{ matrix.nickname }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: adopt
-          java-version: |
-            22
-            17
-          cache: gradle
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-zig
+      - uses: ./.github/actions/setup-jextract
+      - uses: ./.github/actions/setup-java
+      - name: Update TS Languages
+        run: |
+          ./scripts/generate-ts.sh -jz
+          ./scripts/generate-languages.sh -jz
       - name: Build
-        run: ./gradlew build
-
+        run: ./gradlew build -PshellIncludeTags=treesitter
+      - name: Publish Local Repo
+        run: ./gradlew publishMavenJavaPublicationToLocalRepository
+      - name: Upload Local Repo
+        uses: actions/upload-artifact@v3
+        with:
+          name: localrepo
+          path: |
+            build/publications/repos
+      - name: Upload Build Logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: buildlogs-${{ matrix.nickname }}
+          path: |
+            */build/reports
+            */*/build/reports
