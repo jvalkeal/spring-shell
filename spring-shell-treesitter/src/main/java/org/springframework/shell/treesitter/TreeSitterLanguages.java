@@ -15,7 +15,6 @@
  */
 package org.springframework.shell.treesitter;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

@@ -326,8 +326,8 @@ public class TreeSitterNativeLoader {
 		}
 
 		// Load the os-dependent library from the jar file
-		String packagePath = TreeSitterNativeLoader.class.getPackage().getName().replace('.', '/');
-		jlineNativeLibraryPath = String.format("/%s/%s", packagePath, OSInfo.getNativeLibFolderPathForCurrentOS());
+		String packagePath = TreeSitterNativeLoader.class.getPackage().getName().replace('.', '/') + "/libs";
+		jlineNativeLibraryPath = String.format("/%s/%s", packagePath, OSInfo.getNativeLibFolderPathForCurrentOS().toLowerCase());
 		boolean hasNativeLib = hasResource(jlineNativeLibraryPath + "/" + jlineNativeLibraryName);
 
 		if (hasNativeLib) {

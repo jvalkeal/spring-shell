@@ -215,16 +215,16 @@ if [ "$dojextract" == "true" ]; then
 fi
 
 if [ "$dozig" == "true" ]; then
-  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64
-  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64
-  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64
-  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64
+  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/linux/x86_64
+  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/windows/x86_64
+  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/mac/x86_64
+  mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/mac/arm64
   ZIGFILES=$REPOPATH/lib/src/lib.c
 
-  zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Linux/x86_64/libtree-sitter.so $ZIGFILES
-  zig cc -g0 -O2 -shared -target x86_64-windows -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/tree-sitter.dll $ZIGFILES
-  rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.pdb
-  rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Windows/x86_64/*.lib
-  zig cc -g0 -O2 -shared -target x86_64-macos -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/x86_64/libtree-sitter.jnilib $ZIGFILES
-  zig cc -g0 -O2 -shared -target aarch64-macos -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/Mac/arm64/libtree-sitter.jnilib $ZIGFILES
+  zig cc -g0 -O2 -shared -target x86_64-linux-gnu -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/linux/x86_64/libtree-sitter.so $ZIGFILES
+  zig cc -g0 -O2 -shared -target x86_64-windows -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/windows/x86_64/tree-sitter.dll $ZIGFILES
+  rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/windows/x86_64/*.pdb
+  rm $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/windows/x86_64/*.lib
+  zig cc -g0 -O2 -shared -target x86_64-macos -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/mac/x86_64/libtree-sitter.jnilib $ZIGFILES
+  zig cc -g0 -O2 -shared -target aarch64-macos -std=c11 -I $REPOPATH/lib/include -I $REPOPATH/lib/src -o $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/libs/mac/arm64/libtree-sitter.jnilib $ZIGFILES
 fi
