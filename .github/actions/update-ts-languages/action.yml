@@ -4,6 +4,7 @@ runs:
   using: composite
   steps:
     - name: Update TS Languages
+      shell: bash
       run: |
         ./scripts/generate-ts.sh -jz
         ./scripts/generate-languages.sh -jz
