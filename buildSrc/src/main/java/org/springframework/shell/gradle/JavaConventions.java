@@ -41,7 +41,7 @@ class JavaConventions {
 	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "17";
 	private static final String INCLUDE_TAGS = "shellIncludeTags";
 	private static final String EXCLUDE_TAGS = "shellExcludeTags";
-	private static final String[] DEFAULT_EXCLUDE_TAGS = new String[] { };
+	private static final String[] DEFAULT_EXCLUDE_TAGS = new String[] { "treesitter" };
 
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, java -> {

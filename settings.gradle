@@ -48,6 +48,7 @@ include 'spring-shell-standard-commands'
 include 'spring-shell-table'
 include 'spring-shell-test'
 include 'spring-shell-test-autoconfigure'
+include 'spring-shell-treesitter'
 
 file("${rootDir}/spring-shell-starters").eachDirMatch(~/spring-shell-starter.*/) {
 	include "spring-shell-starters:${it.name}"
@@ -57,6 +58,10 @@ file("${rootDir}/spring-shell-samples").eachDirMatch(~/spring-shell-sample.*/) {
 	include "spring-shell-samples:${it.name}"
 }
 
+file("${rootDir}/spring-shell-treesitter-languages").eachDirMatch(~/spring-shell-treesitter-language.*/) {
+	include "spring-shell-treesitter-languages:${it.name}"
+}
+
 rootProject.children.each { project ->
 	if (project.name == 'spring-shell-starters') {
 		project.children.each { subproject ->
@@ -64,6 +69,11 @@ rootProject.children.each { project ->
 		}
 	}
 	else if (project.name == 'spring-shell-samples') {
+		project.children.each { subproject ->
+			subproject.buildFileName = "${subproject.name}.gradle"
+		}
+	}
+	else if (project.name == 'spring-shell-treesitter-languages') {
 		project.children.each { subproject ->
 			subproject.buildFileName = "${subproject.name}.gradle"
 		}

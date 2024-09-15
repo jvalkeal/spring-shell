@@ -1,0 +1,10 @@
+= Spring Shell Treesitter Languages
+
+Modules in this space depends on `spring-shell-treesitter` and are mostly
+generated programmatically based on available `treesitter` languages.
+
+Not yet full build automation so some things here for reminder:
+
+Generate java api and compile shared libs. These needs jextract and zig locally.
+
+scripts/generate-languages.sh -jz

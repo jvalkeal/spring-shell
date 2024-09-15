@@ -1,0 +1,6 @@
+---
+force: true
+to: spring-shell-treesitter-languages/spring-shell-treesitter-language-<%= language %>/src/main/resources/META-INF/spring/treesitter.factories
+---
+org.springframework.shell.treesitter.TreeSitterLanguageProvider=\
+org.springframework.shell.treesitter.language.<%= language %>.TreeSitterLanguage<%= h.changeCase.pascal(language) %>

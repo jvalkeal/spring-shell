@@ -1,0 +1,15 @@
+plugins {
+	id 'org.springframework.shell.starter'
+	id 'org.springframework.shell.toolchain'
+}
+
+description = 'Spring Shell Starter Treesitter All'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	api(project(':spring-shell-starters:spring-shell-starter'))
+	api(project(":spring-shell-treesitter"))
+	file("${rootDir}/spring-shell-treesitter-languages").eachDirMatch(~/spring-shell-treesitter-language.*/) {
+		api(project(":spring-shell-treesitter-languages:${it.name}"))
+	}
+}
