@@ -11,10 +11,7 @@ jobs:
       - uses: ./.github/actions/setup-zig
       - uses: ./.github/actions/setup-jextract
       - uses: ./.github/actions/setup-java
-      - name: Update TS Languages
-        run: |
-          ./scripts/generate-ts.sh -jz
-          ./scripts/generate-languages.sh -jz
+      - uses: ./.github/actions/update-ts-languages
       - name: Build
         run: ./gradlew build -PshellIncludeTags=treesitter
       - name: Publish Local Repo
@@ -29,7 +26,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: buildlogs-${{ matrix.nickname }}
+          name: buildlogs
           path: |
             */build/reports
             */*/build/reports

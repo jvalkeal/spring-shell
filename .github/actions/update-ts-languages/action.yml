@@ -1,0 +1,9 @@
+name: Update TS Languages
+description: Runs scripts to update treesitter and its languages
+runs:
+  using: composite
+  steps:
+    - name: Update TS Languages
+      run: |
+        ./scripts/generate-ts.sh -jz
+        ./scripts/generate-languages.sh -jz
