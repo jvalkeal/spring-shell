@@ -30,11 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
-// import java.util.logging.Level;
-// import java.util.logging.Logger;
 
-// import org.jline.nativ.JLineNativeLoader;
-// import org.jline.nativ.JLineNativeLoader;
 import org.jline.nativ.OSInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
+ * Handles loading of a {@code treesitter} libraries including both main library
+ * and a related grammar libraries.
  *
  * @author Janne Valkealahti
  */
@@ -120,7 +118,7 @@ public class TreeSitterNativeLoader {
 					try {
 						nativeLibFile.delete();
 					} catch (SecurityException e) {
-						// logger.log(Level.INFO, "Failed to delete old native lib" + e.getMessage(), e);
+						log.info("Failed to delete old native lib {}", e.getMessage(), e);
 					}
 				}
 			}
@@ -413,15 +411,5 @@ public class TreeSitterNativeLoader {
 		}
 		return sb.toString();
 	}
-
-	// private static void log(Level level, String message, Throwable t) {
-	// 	if (logger.isLoggable(level)) {
-	// 		if (logger.isLoggable(Level.FINE)) {
-	// 			logger.log(level, message, t);
-	// 		} else {
-	// 			logger.log(level, message + " (caused by: " + t + ", enable debug logging for stacktrace)");
-	// 		}
-	// 	}
-	// }
 
 }
