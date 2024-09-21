@@ -1,0 +1,12 @@
+plugins {
+	id 'org.springframework.shell.module'
+	id 'org.springframework.shell.toolchain'
+}
+
+description = 'Spring Shell Treesitter Json'
+
+dependencies {
+	management platform(project(":spring-shell-management"))
+	implementation project(':spring-shell-treesitter')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

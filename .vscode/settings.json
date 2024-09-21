@@ -6,6 +6,9 @@
         "org.springframework",
         "#"
     ],
+    "java.project.resourceFilters": [
+        "sample"
+    ],
     "java.checkstyle.configuration": "https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-build/main/spring-cloud-dataflow-build-tools/src/main/resources/checkstyle.xml",
     "java.checkstyle.properties": {
         "checkstyle.suppressions.file": "https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow-build/main/spring-cloud-dataflow-build-tools/src/checkstyle/checkstyle-suppressions.xml",

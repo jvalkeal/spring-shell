@@ -17,6 +17,14 @@ spring-shell.log
 shell.log
 shell.log.*.gz
 shell.log.*.tmp
+shell-*.log
+shell-*.log.*.gz
+shell-*.log.*.tmp
+
+# Native Libs
+*.so
+*.dll
+*.jnilib
 
 # Visual Studio Code
 .vscode/*

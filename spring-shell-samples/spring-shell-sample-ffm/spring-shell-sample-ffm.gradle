@@ -14,6 +14,7 @@ tasks.named("bootJar") {
 dependencies {
 	management platform(project(":spring-shell-management"))
 	implementation project(':spring-shell-starters:spring-shell-starter-ffm')
+	implementation project(':spring-shell-starters:spring-shell-starter-treesitter-all')
 	testImplementation project(':spring-shell-starters:spring-shell-starter-test')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.awaitility:awaitility'

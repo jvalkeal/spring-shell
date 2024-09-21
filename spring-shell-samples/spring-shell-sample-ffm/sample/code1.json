@@ -1,0 +1,5 @@
+{
+    "stringkey": "stringvalue",
+    "intkey": 1,
+    "stringarraykey": ["string1", "string2"]
+}

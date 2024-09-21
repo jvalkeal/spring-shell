@@ -109,6 +109,14 @@
             "console": "externalTerminal",
             "mainClass": "org.springframework.shell.samples.catalog.SpringShellApplication",
             "projectName": "spring-shell-sample-catalog"
+        },
+        {
+            "type": "java",
+            "name": "ffm interactive",
+            "request": "launch",
+            "mainClass": "org.springframework.shell.samples.ffm.SpringShellApplication",
+            "projectName": "spring-shell-sample-ffm",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED"
         }
     ]
 }
