@@ -1,15 +1,17 @@
 #!/bin/bash
 
 find_basedir() {
-  local basedir=$(cd -P -- "$(dirname -- "$0")" && cd .. && pwd -P)
+  local basedir=$(cd -P -- "$(dirname -- "$0")" && cd .. && cd ..  && pwd -P)
   echo "${basedir}"
 }
+
+PROJECTBASEDIR=$(find_basedir)
 
 dojextract='false'
 dozig='false'
 
 print_usage() {
-  echo "Usage: generate-languages.sh [-j] [-z]"
+  echo "Usage: generate-ts-languages.sh [-j] [-z]"
 }
 
 while getopts 'jz' flag; do
@@ -52,8 +54,6 @@ tree-sitter-grammars,tree-sitter-yaml,v0.6.1,yaml
 # tree-sitter-grammars,tree-sitter-xml,v0.6.4,xml
 # tree-sitter-grammars,tree-sitter-lua,v0.1.0,lua
 
-export PROJECTBASEDIR=$(find_basedir)
-
 for VALUE in $VALUES;
   do
     GHOWNER=$(echo $VALUE | cut -f1 -d,)
@@ -62,11 +62,12 @@ for VALUE in $VALUES;
     LANGUAGEID=$(echo $VALUE | cut -f4 -d,)
     LANGUAGENAME="${LANGUAGEID^}"
     REPOPATH=$TMPDIR/$GHOWNER/$GHREPO
-    TARGETMODULEPATH=spring-shell-treesitter-languages/spring-shell-treesitter-language-$LANGUAGEID
+    TARGETMODULEPATH=$PROJECTBASEDIR/spring-shell-treesitter-languages/spring-shell-treesitter-language-$LANGUAGEID
     git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $REPOPATH
 
     if [ "$dojextract" == "true" ]; then
-      npx hygen init tslanguage --language $LANGUAGEID
+      (cd $PROJECTBASEDIR; HYGEN_TMPLS=$PROJECTBASEDIR/src/hygen npx hygen init tslanguage --language $LANGUAGEID)
+      # npx hygen init tslanguage --language $LANGUAGEID
       mkdir -p $TARGETMODULEPATH/src/ts
       cp $REPOPATH/bindings/c/tree-sitter-$LANGUAGEID.h $TARGETMODULEPATH/src/ts/
       mkdir -p $TARGETMODULEPATH/src/main/resources/org/springframework/shell/treesitter/queries/$LANGUAGEID

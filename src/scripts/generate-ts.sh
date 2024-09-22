@@ -1,9 +1,11 @@
 #!/bin/bash
 
 find_basedir() {
-  local basedir=$(cd -P -- "$(dirname -- "$0")" && cd .. && pwd -P)
+  local basedir=$(cd -P -- "$(dirname -- "$0")" && cd .. && cd ..  && pwd -P)
   echo "${basedir}"
 }
+
+PROJECTBASEDIR=$(find_basedir)
 
 dojextract='false'
 dozig='false'
@@ -28,7 +30,7 @@ GHOWNER=tree-sitter
 GHREPO=tree-sitter
 TAG=v0.23.0
 REPOPATH=$TMPDIR/$GHOWNER/$GHREPO
-TARGETMODULEPATH=spring-shell-treesitter
+TARGETMODULEPATH=$PROJECTBASEDIR/spring-shell-treesitter
 
 git clone --depth 1 -b $TAG https://github.com/$GHOWNER/$GHREPO.git $REPOPATH
 mkdir -p $TARGETMODULEPATH/src/ts

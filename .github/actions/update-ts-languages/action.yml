@@ -6,5 +6,5 @@ runs:
     - name: Update TS Languages
       shell: bash
       run: |
-        ./scripts/generate-ts.sh -jz
-        ./scripts/generate-languages.sh -jz
+        ./src/scripts/generate-ts.sh -jz
+        ./src/scripts/generate-ts-languages.sh -jz
